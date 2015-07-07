@@ -1,0 +1,2 @@
+GET        /        controllers.Application.index
+->         /        com.example.router.Routes
