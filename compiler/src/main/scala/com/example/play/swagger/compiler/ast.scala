@@ -30,14 +30,20 @@ case object ApplicationJson extends MimeType(name = "application/json")
 
 case class Body(value: String) extends Expr
 
-// APPLICATION
+// DOMAIN
 
 abstract class Type extends Expr
 case object Int extends Type
 case object Str extends Type
 
-abstract class Parm(name: String, value: Type)
-abstract class Method(name: String, params: Seq[Parm], result: Type)
-abstract class Handler(name: String, methods: Seq[Method])
+abstract class Entity extends Type
+case class Field(name: String, kind: Entity) extends Expr
+case class TypeDef(name: String, fields: Seq[Field]) extends Entity
+
+// APPLICATION
+
+abstract class Parm(name: String, value: Type) extends Expr
+abstract class Method(name: String, params: Seq[Parm], result: Type) extends Expr
+abstract class Handler(name: String, methods: Seq[Method]) extends Expr
 
 
