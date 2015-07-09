@@ -3,7 +3,7 @@ package com.example.play.swagger.sbt
 import com.example.play.BuildInfo
 import com.example.play.swagger.compiler._
 import com.typesafe.sbt.web.incremental._
-import play.sbt.routes.RoutesCompiler
+import sbt.plugins.JvmPlugin
 import sbt._
 import sbt.Keys._
 
@@ -35,8 +35,8 @@ object PlaySwagger extends AutoPlugin {
 
   // Users have to explicitly enable it
   override def trigger = noTrigger
-  // We depend on the routes compiler, so that we can add to its sources
-  override def requires = RoutesCompiler
+
+  override def requires = JvmPlugin
 
   import autoImport._
 
@@ -76,9 +76,10 @@ object PlaySwagger extends AutoPlugin {
     // And the swagger compiler definiton
     swagger := swaggerCompile.value,
 
-    // Now wire the results of swagger compilation into the routes compiler and the rest of sbt
-    sources in RoutesCompiler.autoImport.routes ++= swagger.value.filter(_.getName.endsWith(".routes")),
+    watchSources in Defaults.ConfigGlobal <++= sources in swagger,
+
     managedSources ++= swagger.value.filter(_.getName.endsWith(".scala")),
+
     managedSourceDirectories += (target in swagger).value
   )
 
