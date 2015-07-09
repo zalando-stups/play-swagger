@@ -16,7 +16,6 @@ object SwaggerCompiler {
     Files.write(routesFile.toPath, """GET /example com.example.play.swagger.api.ExampleController.index""".getBytes("utf-8"))
     SwaggerCompilationResult(routesFile, Nil)
   }
-
 }
 
 /**
