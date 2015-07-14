@@ -21,7 +21,12 @@ lazy val compiler = (project in file("compiler"))
   .settings(common: _*)
   .settings(
     name := "play-swagger-compiler",
-    scalaVersion := "2.10.5"
+    scalaVersion := "2.10.5",
+    libraryDependencies ++= Seq(
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.5.3",
+      "org.scalatest" %% "scalatest" % "2.2.3" % "test"
+    )
   )
 
 // This is the sbt plugin

@@ -5,14 +5,14 @@ package de.zalando.swagger
  */
 object model {
 
-  case class Swagger(
-                      info: Info,
-                      host: Host, basePath: BasePath,
-                      tags: Tags, schemes: Schemes,
-                      consumes: Consumes, produces: Produces,
-                      securityRequirements: SecurityRequirements, securityDefinitions: SecurityDefinitions,
-                      paths: Paths, definitions: Definitions, parameters: Parameters, externalDocs: ExternalDocs
-                      ) {
+  case class SwaggerModel(
+                           info: Info,
+                           host: Host, basePath: BasePath,
+                           tags: Tags, schemes: Schemes,
+                           consumes: Consumes, produces: Produces,
+                           securityRequirements: SecurityRequirements, securityDefinitions: SecurityDefinitions,
+                           paths: Paths, definitions: Definitions, parameters: Parameters, externalDocs: ExternalDocs
+                           ) {
     val swagger = "2.0"
   }
 
@@ -20,38 +20,73 @@ object model {
 
   case class License(name: String, url: String)
 
-  case class Info(title: String, description: Option[String], termsOfService: Option[String],
-                  contact: Contact, license: License, version: Option[String])
-
   case class Tag(name: String, description: String, externalDocs: ExternalDocs)
 
   case class ExternalDocumentation(description: String, url: String)
 
-  case class Parameter(name: String, in: String, description: String, required: Boolean)
-
-  case class SchemaObject(`$ref`: String, format: Format,
-                          title: String,
-                          description: String,
-                          default: String,
-                          multipleOf: String,
-                          maximum: String,
-                          exclusiveMaximum: String,
-                          minimum: String,
-                          exclusiveMinimum: String,
-                          maxLength: String,
-                          minLength: String,
-                          pattern: String,
-                          maxItems: String,
-                          minItems: String,
-                          uniqueItems: String,
-                          maxProperties: String,
-                          minProperties: String,
-                          required: Boolean,
-                          enum: String,
-                          `type`: String
-                           )
+  case class Parameter(
+                        `type`: String,
+                        name: String,
+                        in: String,
+                        description: String,
+                        required: Boolean,
+                        schema: SchemaObject,
+                        format: String,
+                        allowEmptyValue: Boolean,
+                        items: Items,
+                        default: String,
+                        maximum: Int,
+                        exclusiveMaximum: Boolean,
+                        minimum: Int,
+                        exclusiveMinimum: Boolean,
+                        maxLength: Int,
+                        minLength: Int,
+                        pattern: String,
+                        maxItems: Int,
+                        minItems: Int,
+                        uniqueItems: Boolean,
+                        enum: String,
+                        multipleOf: Int
+                        /*, TODO too many properties for the case class
+                        collectionFormat: String*/
+                        )
 
   case class Response(description: String, schema: SchemaObject, headers: Headers, examples: Examples)
+
+  case class Info(
+                   title: String,
+                   description: Option[String],
+                   termsOfService: Option[String],
+                   contact: Contact,
+                   license: License,
+                   version: Option[String]
+                   )
+
+  case class SchemaObject(
+                           format: Format,
+                           title: String,
+                           description: String,
+                           default: String,
+                           multipleOf: String,
+                           maximum: String,
+                           exclusiveMaximum: String,
+                           minimum: String,
+                           exclusiveMinimum: String,
+                           maxLength: String,
+                           minLength: String,
+                           pattern: String,
+                           maxItems: String,
+                           minItems: String,
+                           uniqueItems: String,
+                           maxProperties: String,
+                           minProperties: String,
+                           required: Many[String],
+                           enum: String,
+                           `type`: String
+                           /*
+                           `$ref`: String
+                           */
+                           )
 
   case class Item(
                    `type`: String,
@@ -92,17 +127,14 @@ object model {
                     multipleOf: Int
                      )
 
-  case class Operation(tags: Tags,
+  case class Operation(tags: SimpleTags,
                        summary: String, description: String, externalDocs: ExternalDocs, operationId: String,
                        consumes: Consumes, produces: Produces, parameters: Parameters, responses: Responses,
                        schemes: Schemes,
                        deprecated: Boolean, security: SecurityRequirement
-
                         )
 
-
   case class PathItem(
-                       `$ref`: String,
                        get: Operation,
                        put: Operation,
                        post: Operation,
@@ -121,6 +153,7 @@ object model {
   type Produce    = String
   type Scheme     = String
   type Format     = String
+  type SimpleTag  = String
 
   type Many[T]    = Iterable[T]
 
@@ -128,6 +161,7 @@ object model {
   type Produces             = Many[Produce]
   type Schemes              = Many[Scheme]
   type Tags                 = Many[Tag]
+  type SimpleTags           = Many[SimpleTag]
   type Examples             = Many[Example]
   type Items                = Many[Item]
   type SecurityRequirements = Many[SecurityRequirement]
