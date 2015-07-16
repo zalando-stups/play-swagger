@@ -1,0 +1,28 @@
+---
+swagger: '2.0'
+info:
+  version: 0.0.0
+  title: Simple API
+  x-info-extension: info-extension
+paths:
+  /:
+    x-path-extension: path-extension
+    get:
+      x-operation-extension: operation-extension
+      parameters:
+        - name: A parameter
+          x-parameter-extension: parameter-extension
+      responses:
+        200:
+          description: OK
+          x-response-extension: response-extension
+tags:
+  - name: A tag 
+    x-tag-extension: tag-extension
+securityDefinitions:
+  security:
+    x-security-extension: security-extension
+    
+    
+
+

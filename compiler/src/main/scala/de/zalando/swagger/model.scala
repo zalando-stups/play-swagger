@@ -1,182 +1,300 @@
 package de.zalando.swagger
 
+import com.fasterxml.jackson.annotation.{JsonAnySetter, JsonProperty}
+import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
+import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
+
+import scala.collection.mutable
+
 /**
  * @since 13.07.2015
  */
 object model {
 
-  case class SwaggerModel(
-                           info: Info,
-                           host: Host, basePath: BasePath,
-                           tags: Tags, schemes: Schemes,
-                           consumes: Consumes, produces: Produces,
-                           securityRequirements: SecurityRequirements, securityDefinitions: SecurityDefinitions,
-                           paths: Paths, definitions: Definitions, parameters: Parameters, externalDocs: ExternalDocs
-                           ) {
-    val swagger = "2.0"
+  sealed trait API
+
+  case class Swagger(
+    swagger: Version = "2.0",
+    info: Info,
+    host: Host,
+    basePath: BasePath,
+    @JsonScalaEnumeration(classOf[SchemeType]) schemes: Schemes,
+    consumes: Consumes,
+    produces: Produces,
+    paths: Paths,
+    definitions: Definitions,
+    parameters: Map[String, Parameter],
+    responses: Responses,
+    securityDefinitions: SecurityDefinitions,
+    security: SecurityRequirements,
+    tags: Tags
+    ) extends API
+
+  private[swagger] class SchemeType extends TypeReference[Scheme.type]
+  case object Scheme extends Enumeration {
+    type Scheme = Value
+    val HTTP  = Value("http")
+    val HTTPS = Value("https")
+    val WS    = Value("ws")
+    val WSS   = Value("wss")
   }
 
-  case class Contact(name: String, url: String, email: String)
+  case class Info(
+    title: String,
+    description: String,
+    termsOfService: String,
+    contact: Contact,
+    license: License,
+    version: Version
+    ) extends VendorExtensions with API
 
-  case class License(name: String, url: String)
+  case class Contact(
+    name: String,
+    url: String,
+    email: String
+    ) extends API
 
-  case class Tag(name: String, description: String, externalDocs: ExternalDocs)
+  case class License(
+    name: String,
+    url: URL
+    ) extends API
 
-  case class ExternalDocumentation(description: String, url: String)
+  case class Path(
+    @JsonProperty("$ref") ref: Ref,
+    get: Operation,
+    put: Operation,
+    post: Operation,
+    delete: Operation,
+    options: Operation,
+    head: Operation,
+    patch: Operation,
+    parameters: List[Parameter]
+    ) extends VendorExtensions with API
+
+  case class Operation(
+    tags: SimpleTags,
+    summary: String,
+    description: String,
+    externalDocs: ExternalDocumentation,
+    operationId: String,
+    consumes: Consumes,
+    produces: Produces,
+    parameters: Parameters, // TODO should be ParameterOrReference
+    responses: Responses, // TODO should be OperationResponses
+    @JsonScalaEnumeration(classOf[SchemeType]) schemes: Schemes,
+    deprecated: Boolean,
+    security: SecurityRequirements
+    ) extends VendorExtensions with API
+
+  trait ParameterOrReference extends API
 
   case class Parameter(
-                        `type`: String,
-                        name: String,
-                        in: String,
-                        description: String,
-                        required: Boolean,
-                        schema: SchemaObject,
-                        format: String,
-                        allowEmptyValue: Boolean,
-                        items: Items,
-                        default: String,
-                        maximum: Int,
-                        exclusiveMaximum: Boolean,
-                        minimum: Int,
-                        exclusiveMinimum: Boolean,
-                        maxLength: Int,
-                        minLength: Int,
-                        pattern: String,
-                        maxItems: Int,
-                        minItems: Int,
-                        uniqueItems: Boolean,
-                        enum: String,
-                        multipleOf: Int
-                        /*, TODO too many properties for the case class
-                        collectionFormat: String*/
-                        )
+    name: String,
+    in: String,
+    description: String,
+    required: Boolean,
+    // if in is "body"
+    schema: Schema,
+    // if in is any other value than body 
+    @JsonProperty("type") kind: String,
+    format: String,
+    allowEmptValue: Boolean,
+    items: Items,
+    collectionFormat: String,
+    default: String,
+    maximum: String,
+    exclusiveMaximum: Boolean,
+    minimum: String,
+    exclusiveMinimum: Boolean,
+    maxLength: Int,
+    minLength: Int,
+    pattern: String,
+    maxItems: Int,
+    minItems: Int,
+    uniqueItems: Boolean,
+    enum: Enum
+    // multipleOf: Int // TODO Scala 2.10.5 limits case classes to 22 attributes 
+    ) extends VendorExtensions with ParameterOrReference
 
-  case class Response(description: String, schema: SchemaObject, headers: Headers, examples: Examples)
+  case class Reference(
+    @JsonProperty("$ref") ref: Ref
+    ) extends ParameterOrReference
 
-  case class Info(
-                   title: String,
-                   description: Option[String],
-                   termsOfService: Option[String],
-                   contact: Contact,
-                   license: License,
-                   version: Option[String]
-                   )
+  case class Response(
+    description: String,
+    schema: Schema,
+    headers: Headers,
+    examples: Examples
+    ) extends VendorExtensions with API
 
-  case class SchemaObject(
-                           format: Format,
-                           title: String,
-                           description: String,
-                           default: String,
-                           multipleOf: String,
-                           maximum: String,
-                           exclusiveMaximum: String,
-                           minimum: String,
-                           exclusiveMinimum: String,
-                           maxLength: String,
-                           minLength: String,
-                           pattern: String,
-                           maxItems: String,
-                           minItems: String,
-                           uniqueItems: String,
-                           maxProperties: String,
-                           minProperties: String,
-                           required: Many[String],
-                           enum: String,
-                           `type`: String
-                           /*
-                           `$ref`: String
-                           */
-                           )
+  case class Schema(
+    discriminator: String,
+    readOnly: Boolean,
+    xml: Xml,
+    externalDocs: ExternalDocumentation,
+    example: Any,
+    @JsonProperty("type") kind: String,
+    @JsonProperty("$ref") ref: String,
+    title: String,
+    format: String,
+    description: String,
+    required: RequiredFields,
+    items: Items,
+    properties: Properties,
+    enum: Enum
+    ) extends API
 
-  case class Item(
-                   `type`: String,
-                   format: String,
-                   items: Items,
-                   collectionFormat: String,
-                   default: String,
-                   maximum: Int,
-                   exclusiveMaximum: Boolean,
-                   minimum: Int,
-                   exclusiveMinimum: Boolean,
-                   maxLength: Int,
-                   minLength: Int,
-                   pattern: String,
-                   maxItems: Int,
-                   minItems: Int,
-                   uniqueItems: Boolean,
-                   enum: String,
-                   multipleOf: Int)
+  case class Header(
+    description: String,
+    @JsonScalaEnumeration(classOf[HeaderTypeReference]) @JsonProperty("type") headerType: HeaderType.Value,
+    format: String,
+    items: Items,
+    collectionFormat: String,
+    default: String,
+    maximum: Int,
+    exclusiveMaximum: Boolean,
+    minimum: Int,
+    exclusiveMinimum: Boolean,
+    maxLength: Int,
+    minLength: Int,
+    pattern: String,
+    maxItems: Int,
+    minItems: Int,
+    uniqueItems: Boolean,
+    enum: Enum,
+    multipleOf: Int
+    ) extends API
 
-  case class Header(description: String,
-                    `type`: String,
-                    format: String,
-                    items: Items,
-                    collectionFormat: String,
-                    default: String,
-                    maximum: Int,
-                    exclusiveMaximum: Boolean,
-                    minimum: Int,
-                    exclusiveMinimum: Boolean,
-                    maxLength: Int,
-                    minLength: Int,
-                    pattern: String,
-                    maxItems: Int,
-                    minItems: Int,
-                    uniqueItems: Boolean,
-                    enum: AnyRef,
-                    multipleOf: Int
-                     )
+  private[swagger] class HeaderTypeReference extends TypeReference[HeaderType.type]
+  case object HeaderType extends Enumeration {
+    type HeaderType = Value
+    val STRING  = Value("string")
+    val NUMBER  = Value("number")
+    val INTEGER = Value("integer")
+    val BOOLEAN = Value("boolean")
+    val ARRAY   = Value("array")
+  }
 
-  case class Operation(tags: SimpleTags,
-                       summary: String, description: String, externalDocs: ExternalDocs, operationId: String,
-                       consumes: Consumes, produces: Produces, parameters: Parameters, responses: Responses,
-                       schemes: Schemes,
-                       deprecated: Boolean, security: SecurityRequirement
-                        )
+  case class Items(
+    @JsonProperty("type") kind: String, // TODO should be enum
+    format: String,
+    items: Items,
+    @JsonProperty("$ref") ref: String,
+    collectionFormat: String,
+    default: String,
+    maximum: Int,
+    exclusiveMaximum: Int,
+    minimum: Int,
+    exclusiveMinimum: Int,
+    maxLength: Int,
+    minLength: Int,
+    pattern: String,
+    maxItems: Int,
+    minItems: Int,
+    uniqueItems: Boolean,
+    enum: List[String],
+    multipleOf: Int
+    ) extends API
 
-  case class PathItem(
-                       get: Operation,
-                       put: Operation,
-                       post: Operation,
-                       delete: Operation,
-                       options: Operation,
-                       head: Operation,
-                       patch: Operation,
-                       parameters: Parameters
-                       )
+  case class Definition(
+    properties: Properties,
+    required: RequiredFields
+    ) extends API
 
+  case class Property(
+    @JsonProperty("type") kind: String,
+    @JsonProperty("$ref") ref: String,
+    description: String,
+    format: String,
+    items: Items,
+    example: String,
+    properties: Properties
+    ) extends API
 
+  case class SecurityDefinition(
+    @JsonProperty("type") kind: String,
+    description: String,
+    name: String,
+    in: String,
+    flow: String,
+    authorizationUrl: String,
+    tokenUrl: String,
+    scopes: Scopes
+    ) extends VendorExtensions with API
+
+  case class Tag(
+    name: String,
+    description: String,
+    externalDocs: ExternalDocumentation
+    ) extends VendorExtensions with API
+
+  case class ExternalDocumentation(
+    description: String,
+    url: String
+    ) extends API
+
+  case class Xml(
+    name: String,
+    namespace: String,
+    prefix: String,
+    attribute: Boolean,
+    wrapped: Boolean
+    ) extends API
+
+  class VendorExtensions { self =>
+    private[this] val extensions = new mutable.HashMap[String, String]
+
+    @JsonAnySetter
+    private[this] def handleUnknown(key: String, value: Any) {
+      if (key.startsWith("x-") && value.isInstanceOf[String]) {
+        extensions + key -> value.asInstanceOf[String]
+      }
+      else throw new UnrecognizedPropertyException(
+        s"Unknown property: $key",
+        null,
+        self.getClass,
+        key,
+        null
+      )
+    }
+
+    val vendorExtensions = extensions.toMap
+  }
+  
   // format: OFF
+  type Version    = String
   type Host       = String
   type BasePath   = String
   type Consume    = String
   type Produce    = String
-  type Scheme     = String
   type Format     = String
   type SimpleTag  = String
+  type URL        = String
+  type Ref        = String
 
-  type Many[T]    = Iterable[T]
+  type Many[T]    = List[T]
 
   type Consumes             = Many[Consume]
   type Produces             = Many[Produce]
-  type Schemes              = Many[Scheme]
+  type Schemes              = Many[Scheme.Value]
   type Tags                 = Many[Tag]
   type SimpleTags           = Many[SimpleTag]
   type Examples             = Many[Example]
-  type Items                = Many[Item]
-  type SecurityRequirements = Many[SecurityRequirement]
-  type SecurityDefinitions  = Many[SecurityDefinition]
   type ExternalDocs         = Many[ExternalDocumentation]
   type Parameters           = Many[Parameter]
+  type SecurityRequirements = Many[SecurityRequirement]
+  type Enum                 = Many[String]
+  type RequiredFields       = Many[String]
 
-  type Responses            = Map[Int, Response]
+  type Responses            = Map[String, Response]
   type Headers              = Map[String, Header]
-  type Paths                = Map[String, PathItem]
-  type SecurityRequirement  = Map[String, String]
-  type SecurityDefinition   = Map[String, SecurityRequirement]
-  type Definitions          = Map[String, SchemaObject]
+  type Paths                = Map[String, Path]  // TODO add VendorExtensions
+  type SecurityDefinitions  = Map[String, SecurityDefinition]
+  type SecurityRequirement  = Map[String, List[String]]
+  type Definitions          = Map[String, Definition]
   type Example              = Map[String, AnyRef]
+  type Properties           = Map[String, Property]
+  type Scopes               = Map[String, String]
   // format: ON
-
-
 }
