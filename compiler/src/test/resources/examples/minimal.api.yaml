@@ -6,6 +6,7 @@ info:
 paths:
   /:
     get:
+      "x-api-first-handler": "admin.Dashboard.index"
       responses:
         200:
           description: OK

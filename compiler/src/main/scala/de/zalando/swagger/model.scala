@@ -14,7 +14,7 @@ object model {
 
   sealed trait API
 
-  case class Swagger(
+  case class SwaggerModel(
     swagger: Version = "2.0",
     info: Info,
     host: Host,
@@ -61,7 +61,6 @@ object model {
     ) extends API
 
   case class Path(
-    @JsonProperty("$ref") ref: Ref,
     get: Operation,
     put: Operation,
     post: Operation,
@@ -69,7 +68,8 @@ object model {
     options: Operation,
     head: Operation,
     patch: Operation,
-    parameters: List[Parameter]
+    parameters: List[Parameter],
+    @JsonProperty("$ref") ref: Ref
     ) extends VendorExtensions with API
 
   case class Operation(
@@ -96,10 +96,10 @@ object model {
     required: Boolean,
     // if in is "body"
     schema: Schema,
-    // if in is any other value than body 
+    // if in is any other value than body
     @JsonProperty("type") kind: String,
     format: String,
-    allowEmptValue: Boolean,
+    allowEmptyValue: Boolean,
     items: Items,
     collectionFormat: String,
     default: String,
@@ -114,8 +114,11 @@ object model {
     minItems: Int,
     uniqueItems: Boolean,
     enum: Enum
-    // multipleOf: Int // TODO Scala 2.10.5 limits case classes to 22 attributes 
-    ) extends VendorExtensions with ParameterOrReference
+    // multipleOf: Int // TODO Scala 2.10.5 limits case classes to 22 attributes
+    ) extends VendorExtensions with ParameterOrReference {
+    lazy val bodyParameter = in.toLowerCase == "body"
+    lazy val queryParameter = in.toLowerCase == "query"
+  }
 
   case class Reference(
     @JsonProperty("$ref") ref: Ref
@@ -167,6 +170,7 @@ object model {
     ) extends API
 
   private[swagger] class HeaderTypeReference extends TypeReference[HeaderType.type]
+
   case object HeaderType extends Enumeration {
     type HeaderType = Value
     val STRING  = Value("string")
@@ -248,7 +252,7 @@ object model {
     @JsonAnySetter
     private[this] def handleUnknown(key: String, value: Any) {
       if (key.startsWith("x-") && value.isInstanceOf[String]) {
-        extensions + key -> value.asInstanceOf[String]
+        extensions += key -> value.asInstanceOf[String]
       }
       else throw new UnrecognizedPropertyException(
         s"Unknown property: $key",
@@ -258,10 +262,9 @@ object model {
         null
       )
     }
-
-    val vendorExtensions = extensions.toMap
+    lazy val vendorExtensions = extensions.toMap
   }
-  
+
   // format: OFF
   type Version    = String
   type Host       = String

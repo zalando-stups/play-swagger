@@ -2,8 +2,8 @@ package de.zalando.swagger
 
 import java.io.File
 
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.{MustMatchers, FunSpec, FlatSpec, Matchers}
+import de.zalando.swagger.model.SwaggerModel
+import org.scalatest.{FunSpec, MustMatchers}
 
 class ParseExamplesTest extends FunSpec with MustMatchers {
 
@@ -12,12 +12,12 @@ class ParseExamplesTest extends FunSpec with MustMatchers {
   describe("Swagger Parser") {
     fixtures.filter(_.getName.endsWith(".json")).foreach { file =>
       it(s"should parse the json swagger file ${file.getName} as specification") {
-        JsonParser.parse(file)
+        JsonParser.parse(file).getClass mustBe SwaggerModel
       }
     }
     fixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
       it(s"should parse the yaml swagger file ${file.getName} as specification") {
-        YamlParser.parse(file)
+        YamlParser.parse(file).getClass mustBe SwaggerModel
       }
     }
   }

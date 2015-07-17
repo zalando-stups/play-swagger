@@ -14,17 +14,17 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
   describe("The swagger parser") {
     it("should read valid vendor extensions") {
       val swagger = YamlParser.parse(ok)
-      swagger.info.vendorExtensions contains ("x-info-extension")
-      swagger.paths("/").vendorExtensions contains ("x-path-extension")
-      swagger.paths("/").get.vendorExtensions contains ("x-operation-extension")
-      swagger.paths("/").get.parameters(0).vendorExtensions contains ("x-parameter-extension")
-      swagger.paths("/").get.responses("200").vendorExtensions contains ("x-response-extension")
-      swagger.tags(0).vendorExtensions contains ("x-tag-extension")
-      swagger.securityDefinitions("security").vendorExtensions contains ("x-security-extension")
+      swagger.info.vendorExtensions contains "x-info-extension"
+      swagger.paths("/").vendorExtensions contains "x-path-extension"
+      swagger.paths("/").get.vendorExtensions contains "x-operation-extension"
+      swagger.paths("/").get.parameters.head.vendorExtensions contains "x-parameter-extension"
+      swagger.paths("/").get.responses("200").vendorExtensions contains "x-response-extension"
+      swagger.tags.head.vendorExtensions contains "x-tag-extension"
+      swagger.securityDefinitions("security").vendorExtensions contains "x-security-extension"
     }
     it("should reject invalid vendor extensions") {
       intercept[JsonMappingException] {
-        val swagger = YamlParser.parse(nok)
+        YamlParser.parse(nok)
       }
     }
   }
