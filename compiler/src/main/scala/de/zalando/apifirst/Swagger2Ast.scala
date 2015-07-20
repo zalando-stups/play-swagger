@@ -11,15 +11,17 @@ import scala.util.parsing.input.CharSequenceReader
  * @since 17.07.2015
  */
 object Swagger2Ast extends HandlerParser {
-  implicit def convert(model: SwaggerModel): Model = Model(model.paths map toCall)
+  implicit def convert(model: SwaggerModel): Model = Model(model.paths map toCall toList)
 
   import Http.string2verb
 
   // TODO the way of throwing an exception is not good. Improve.
   def toCall(path: (String, model.Path)): ApiCall = {
     import scala.reflect.runtime.universe._
-    val signatures = typeOf[model.Path].members.filter(_.typeSignature =:= typeOf[Operation]).iterator
+    val signatures = typeOf[model.Path].members.filter(_.typeSignature =:= typeOf[Operation]).iterator.toSeq.reverseIterator
+
     val ops = path._2.productIterator.zip(signatures).filter(_._1 != null).toList
+
     val call = ops.headOption match {
       case Some((operation: Operation, signature: Symbol)) =>
         for {

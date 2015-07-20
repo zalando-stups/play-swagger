@@ -1,1 +1,12 @@
-test test test
+---
+swagger: '2.0'
+info:
+  version: 0.0.0
+  title: Simple API
+paths:
+  /:
+    post:
+      "x-api-first-handler": "admin.Dashboard.index"
+      responses:
+        200:
+          description: OK

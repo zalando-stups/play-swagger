@@ -26,7 +26,8 @@ lazy val compiler = (project in file("compiler"))
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.5.3",
-      "org.scalatest" %% "scalatest" % "2.2.3" % "test"
+      "org.scalatest" %% "scalatest" % "2.2.3" % "test",
+      "com.typesafe.play" %% "routes-compiler" % PlayVersion % Provided
     )
   )
 

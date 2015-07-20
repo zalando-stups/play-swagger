@@ -3,6 +3,7 @@ package com.example.play.swagger.sbt
 import com.example.play.BuildInfo
 import com.example.play.swagger.compiler._
 import com.typesafe.sbt.web.incremental._
+import play.routes.compiler.RoutesGenerator
 import play.sbt.routes.RoutesCompiler
 import sbt._
 import sbt.Keys._
@@ -26,7 +27,7 @@ object PlaySwagger extends AutoPlugin {
     // Options for swagger compilation
     val swaggerDefinition = settingKey[File]("The swagger definition file")
     val swaggerPackageName = settingKey[String]("The package to which the swagger definition will be compiled")
-    val swaggerSomeOtherOption = settingKey[String]("Some other swagger option")
+    val playGenerator = settingKey[RoutesGenerator]("Play's generator to be used for play routes generation")
 
     // By default, end users won't define this themselves, they'll just use the options above for one single
     // swagger definition, however, if they want more control over settings, or what to compile multiple files,
@@ -42,8 +43,7 @@ object PlaySwagger extends AutoPlugin {
   import autoImport._
 
   override def projectSettings = Seq(
-    swaggerPackageName := "com.example",
-    swaggerSomeOtherOption := "foo",
+    swaggerPackageName := "swagger",
     libraryDependencies += "com.example.play" %% "play-swagger-api" % BuildInfo.version
   ) ++ inConfig(Compile)(unscopedSwaggerSettings)
 
@@ -69,22 +69,22 @@ object PlaySwagger extends AutoPlugin {
       } else {
         BuildInfo.version
       }
-      SwaggerCompilationTask(source, swaggerPackageName.value, swaggerSomeOtherOption.value, version)
+      SwaggerCompilationTask(source, swaggerPackageName.value, playGenerator.value, version)
     },
 
     // Target directory
     target in swagger := crossTarget.value / "swagger" / Defaults.nameForSrc(configuration.value.name),
-    // And the swagger compiler definiton
+
+    // And the swagger compiler definition
     swagger := swaggerCompile.value,
-
-
-    sources in RoutesCompiler.autoImport.routes ++= swagger.value.filter(_.getName.endsWith(".routes")),
 
     watchSources in Defaults.ConfigGlobal <++= sources in swagger,
 
     managedSources ++= swagger.value.filter(_.getName.endsWith(".scala")),
 
-    managedSourceDirectories += (target in swagger).value
+    managedSourceDirectories += (target in swagger).value,
+
+    playGenerator :=  RoutesCompiler.autoImport.routesGenerator.value
   )
 
   def swaggerCompile = Def.task {
@@ -95,9 +95,15 @@ object PlaySwagger extends AutoPlugin {
     // Read the detailed scaladoc for syncIncremental to see how it works
     val (products, errors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
 
+      val genRevRoutes = RoutesCompiler.autoImport.generateReverseRouter.value
+
+      val namespaceRevRoutes = RoutesCompiler.autoImport.namespaceReverseRouter.value
+
+      val routesImport = RoutesCompiler.autoImport.routesImport.value
+
       val results = tasksToRun.map { task =>
         task -> Try {
-          SwaggerCompiler.compile(task, outputDirectory)
+          SwaggerCompiler.compile(task, outputDirectory, genRevRoutes, namespaceRevRoutes, routesImport)
         }
       }
 

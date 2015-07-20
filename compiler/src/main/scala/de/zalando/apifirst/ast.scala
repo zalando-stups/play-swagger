@@ -94,7 +94,7 @@ object Application {
                       )
 
   // TODO we could analyse project files for further implementation details and do some kind of autowiring here
-  case class Model(calls: Iterable[ApiCall])
+  case class Model(calls: Seq[ApiCall])
 
 }
 
