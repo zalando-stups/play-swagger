@@ -2,8 +2,9 @@ package com.example.play.swagger.compiler
 
 import java.io.File
 
-import com.example.play.swagger.compiler.Http.PATCH
-import com.example.play.swagger.compiler.Path.{FullPath, Root}
+import de.zalando.apifirst.{Swagger2Ast, Path, Http}
+import Http.PATCH
+import Path.{FullPath, Root}
 import de.zalando.swagger.YamlParser
 import org.scalatest.{FunSpec, MustMatchers}
 

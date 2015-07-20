@@ -3,9 +3,10 @@ package com.example.play.swagger.sbt
 import com.example.play.BuildInfo
 import com.example.play.swagger.compiler._
 import com.typesafe.sbt.web.incremental._
-import sbt.plugins.JvmPlugin
+import play.sbt.routes.RoutesCompiler
 import sbt._
 import sbt.Keys._
+
 
 import scala.util.{Failure, Success, Try}
 
@@ -36,7 +37,7 @@ object PlaySwagger extends AutoPlugin {
   // Users have to explicitly enable it
   override def trigger = noTrigger
 
-  override def requires = JvmPlugin
+  override def requires = RoutesCompiler
 
   import autoImport._
 
@@ -75,6 +76,9 @@ object PlaySwagger extends AutoPlugin {
     target in swagger := crossTarget.value / "swagger" / Defaults.nameForSrc(configuration.value.name),
     // And the swagger compiler definiton
     swagger := swaggerCompile.value,
+
+
+    sources in RoutesCompiler.autoImport.routes ++= swagger.value.filter(_.getName.endsWith(".routes")),
 
     watchSources in Defaults.ConfigGlobal <++= sources in swagger,
 

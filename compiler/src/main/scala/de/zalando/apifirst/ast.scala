@@ -1,6 +1,6 @@
-package com.example.play.swagger.compiler
+package de.zalando.apifirst
 
-import com.example.play.swagger.compiler.Http.MimeType
+import de.zalando.apifirst.Http.MimeType
 
 import scala.util.parsing.input.Positional
 

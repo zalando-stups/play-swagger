@@ -1,8 +1,8 @@
-package com.example.play.swagger.compiler
+package de.zalando.apifirst
 
-import com.example.play.swagger.compiler.Application._
+import de.zalando.apifirst.Application.{Parameter, HandlerCall, ApiCall, Model}
 import de.zalando.swagger.model
-import de.zalando.swagger.model.{Path, Operation, SwaggerModel}
+import model.{Operation, SwaggerModel}
 
 import scala.util.parsing.combinator.JavaTokenParsers
 import scala.util.parsing.input.CharSequenceReader
@@ -18,7 +18,7 @@ object Swagger2Ast extends HandlerParser {
   // TODO the way of throwing an exception is not good. Improve.
   def toCall(path: (String, model.Path)): ApiCall = {
     import scala.reflect.runtime.universe._
-    val signatures = typeOf[Path].members.filter(_.typeSignature =:= typeOf[Operation]).iterator
+    val signatures = typeOf[model.Path].members.filter(_.typeSignature =:= typeOf[Operation]).iterator
     val ops = path._2.productIterator.zip(signatures).filter(_._1 != null).toList
     val call = ops.headOption match {
       case Some((operation: Operation, signature: Symbol)) =>
