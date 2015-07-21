@@ -3,7 +3,7 @@ package com.example.play.swagger.compiler
 import java.io.File
 
 import de.zalando.apifirst.{Swagger2Ast, Path, Http}
-import Http.PATCH
+import de.zalando.apifirst.Http.{GET, PATCH}
 import Path.{FullPath, Root}
 import de.zalando.swagger.YamlParser
 import org.scalatest.{FunSpec, MustMatchers}
@@ -29,7 +29,7 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
     }
 
     it("has correct method") {
-      call.verb mustBe PATCH
+      call.verb mustBe GET
     }
 
     it("has correct handler") {
