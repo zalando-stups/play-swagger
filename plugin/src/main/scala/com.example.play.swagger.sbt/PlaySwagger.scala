@@ -28,11 +28,12 @@ object PlaySwagger extends AutoPlugin {
     val swaggerDefinition = settingKey[File]("The swagger definition file")
     val swaggerPackageName = settingKey[String]("The package to which the swagger definition will be compiled")
     val playGenerator = settingKey[RoutesGenerator]("Play's generator to be used for play routes generation")
-
+    val keyPrefix = settingKey[String]("The key prefix is a name for swagger vendor extension")
     // By default, end users won't define this themselves, they'll just use the options above for one single
     // swagger definition, however, if they want more control over settings, or what to compile multiple files,
     // they can ignore the above options, and just define this directly.
     val swaggerCompilationTasks = taskKey[Seq[SwaggerCompilationTask]]("The compilation tasks")
+
   }
 
   // Users have to explicitly enable it
@@ -84,7 +85,9 @@ object PlaySwagger extends AutoPlugin {
 
     managedSourceDirectories += (target in swagger).value,
 
-    playGenerator :=  RoutesCompiler.autoImport.routesGenerator.value
+    playGenerator :=  RoutesCompiler.autoImport.routesGenerator.value,
+
+    keyPrefix :=  "x-api-first"
   )
 
   def swaggerCompile = Def.task {
@@ -103,7 +106,7 @@ object PlaySwagger extends AutoPlugin {
 
       val results = tasksToRun.map { task =>
         task -> Try {
-          SwaggerCompiler.compile(task, outputDirectory, genRevRoutes, namespaceRevRoutes, routesImport)
+          SwaggerCompiler.compile(task, outputDirectory, genRevRoutes, namespaceRevRoutes, routesImport, keyPrefix.value)
         }
       }
 

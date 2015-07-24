@@ -7,6 +7,23 @@ paths:
   /:
     post:
       "x-api-first-handler": "admin.Dashboard.index"
+      parameters:
+        - in: path
+          name: username
+          description: The name that needs to be deleted
+          required: true
+          type: array
+          items:
+            type: string
+        - in: path
+          default: slava
+          name: surName
+          required: true
+          type: string
+        - in: path
+          name: developer
+          type: boolean
+          default: true
       responses:
         200:
           description: OK

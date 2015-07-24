@@ -118,6 +118,7 @@ object model {
     ) extends VendorExtensions with ParameterOrReference {
     lazy val bodyParameter = in.toLowerCase == "body"
     lazy val queryParameter = in.toLowerCase == "query"
+    lazy val pathParameter = in.toLowerCase == "path"
   }
 
   case class Reference(

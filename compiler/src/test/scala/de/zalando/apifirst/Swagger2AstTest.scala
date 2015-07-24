@@ -15,7 +15,7 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
   describe("Swagger2Ast Converter") {
 
     val minimal = YamlParser.parse(new File("compiler/src/test/resources/examples/minimal.api.yaml"))
-    val model = Swagger2Ast.convert(minimal)
+    val model = Swagger2Ast.convert("x-api-first")(minimal)
 
     it("coverts single-call spec to single-call model") {
       model.calls.size mustBe 1

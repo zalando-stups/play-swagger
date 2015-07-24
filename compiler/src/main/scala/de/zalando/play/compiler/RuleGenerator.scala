@@ -13,7 +13,7 @@ object RuleGenerator {
     val verb = HttpVerb(call.verb.name)
 
     val handlerCall = HandlerCall(packageName(call), call.handler.controller, call.handler.instantiate,
-      call.handler.method, parameters2parameters(call))
+      call.handler.method, Some(parameters2parameters(call)))
 
     val path = PathPattern(path2path(call))
     val comments = List.empty
@@ -22,19 +22,17 @@ object RuleGenerator {
 
   private def packageName(call: ApiCall) = call.handler.packageName
 
-  private def parameters2parameters(call: ApiCall): Option[Seq[Parameter]] = {
-    call.handler.parameters map {
-      _ map { p =>
-        Parameter(p.name, p.typeName, p.fixed, p.default)
-      }
+  private def parameters2parameters(call: ApiCall): Seq[Parameter] = {
+    call.handler.parameters map { p =>
+      Parameter(p.name, p.typeName.name, p.fixed, p.default)
     }
   }
 
   private def path2path(call: ApiCall): Seq[PathPart] =
     call.path.value flatMap {
       case Root => None
-      case Segment(value) => Some(StaticPart(value))
-      case InPathParameter(value, default, encode) => Some(DynamicPart(value, default, encode))
+      case s : Segment => Some(StaticPart(s.value))
+      case p : InPathParameter => Some(DynamicPart(p.value, p.constraint, p.encode))
     }
 
 }

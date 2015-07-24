@@ -33,22 +33,16 @@ object Hypermedia {
 }
 
 object Domain {
-  trait Type extends Expr
-  case object Int extends Type
-  case object Str extends Type
-  case object Unknown extends Type
+  abstract class Type(val name: String) extends Expr
+  case object Int extends Type("Int")
+  case object Str extends Type("String")
+  case object Bool extends Type("Boolean")
+  case class Arr(underlying: Type) extends Type(s"Seq[${underlying.name}]")
+  case object Unknown extends Type("Unknown")
 
-  object Type {
-    implicit def string2Type(name: String): Domain.Type = name.toLowerCase match {
-      case "int" => Domain.Int
-      case "string" => Domain.Str
-      case _ => Domain.Unknown
-    }
-  }
-
-  abstract class Entity extends Type
+  abstract class Entity(override val name: String) extends Type(name)
   case class Field(name: String, kind: Entity) extends Expr
-  case class TypeDef(name: String, fields: Seq[Field]) extends Entity
+  case class TypeDef(override val name: String, fields: Seq[Field]) extends Entity(name)
 
 }
 
@@ -56,20 +50,27 @@ object Path {
   abstract class PathElem(val value: String) extends Expr
   case object Root extends PathElem(value = "/")
   case class Segment(override val value: String) extends PathElem(value)
-  case class InPathParameter(override val value: String, constant: String, encode: Boolean) extends PathElem(value)
 
+  // swagger in version 2.0 only supports Play's singleComponentPathPart - should be encoded
+  // for constraint,
+  case class InPathParameter(override val value: String, constraint: String, encode: Boolean = true) extends PathElem(value)
+
+  object InPathParameter {
+    val encode = true
+    val constraint = """[^/]+"""
+  }
   case class FullPath(value: PathElem*) extends Expr
 
-  def path2path(path: String, defaults: Map[String, (String, Boolean)]): FullPath = {
+  def path2path(path: String, parameters: Seq[Application.Parameter]): FullPath = {
     val segments = path split Root.value map {
       case seg if seg.startsWith("{") && seg.endsWith("}") =>
         val name = seg.tail.init
-        val (default, encode) = defaults.get(name).getOrElse("", false)
-        InPathParameter(name, default, encode)
-      case seg => Segment(seg)
+        parameters.find(_.name == name) map { p => InPathParameter(name, p.constraint, p.encode) }
+      case seg =>
+        Some(Segment(seg))
     } toList
-    val fullPath = if (path.startsWith(Root.value)) Root :: segments else segments
-    FullPath(fullPath:_*)
+    val start = if (path.startsWith(Root.value)) Some(Root) else None
+    FullPath((start :: segments).flatten:_*)
   }
 }
 
@@ -82,23 +83,25 @@ object Query {
 object Application {
 
   // Play definition
-  case class Parameter(name: String, typeName: String,
-                       fixed: Option[String], default: Option[String]) extends Expr with Positional
-                        // TODO use Domain.Type for typeName
+  case class Parameter(name: String, typeName: Domain.Type,
+                       fixed: Option[String], default: Option[String],
+                       constraint: String, encode: Boolean) extends Expr with Positional
 
   // Play definition
   case class HandlerCall(packageName: String, controller: String, instantiate: Boolean,
-                         method: String, parameters: Option[Seq[Parameter]])
+                         method: String, parameters: Seq[Parameter])
 
   case class ApiCall(
                       verb: Http.Verb,
                       path: Path.FullPath,
-                      query: Query.FullQuery,
-                      body: Http.Body,
-                      handler: HandlerCall,
-                      mimeIn: MimeType,
-                      mimeOut: MimeType
+                      handler: HandlerCall
                       )
+/*
+  query: Query.FullQuery,
+  body: Http.Body,
+  mimeIn: MimeType,
+  mimeOut: MimeType
+*/
 
   case class Model(calls: Seq[ApiCall])
 

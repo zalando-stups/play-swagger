@@ -1,6 +1,7 @@
 package de.zalando.swagger
 
 import de.zalando.apifirst.Application.{HandlerCall, Parameter}
+import de.zalando.apifirst.Domain
 
 import scala.util.parsing.combinator.JavaTokenParsers
 import scala.util.parsing.input.CharSequenceReader
@@ -75,6 +76,22 @@ trait HandlerParser extends JavaTokenParsers {
 
   def space(s: String): Parser[String] = ignoreWhiteSpace ~> s <~ ignoreWhiteSpace
 
+  def stableId: Parser[String] = rep1sep(identifier, space(".")) ^^ (_ mkString ".")
+
+  def expression: Parser[String] = (string | parentheses | brackets | """[^),?=\n]""".r +) ^^ {
+    case p => p.mkString
+  }
+
+  /*
+  def typeArgs: Parser[String] = {
+    (space("[") ~ types ~ space("]") ~ opt(typeArgs)) ^^ {
+      case _ ~ ts ~ _ ~ ta => "[" + ts + "]" + ta.getOrElse("")
+    } |
+      (space("#") ~ identifier ~ opt(typeArgs)) ^^ {
+        case _ ~ id ~ ta => "#" + id + ta.getOrElse("")
+      }
+  }
+
   def parameterType: Parser[String] = ":" ~> ignoreWhiteSpace ~> simpleType
 
   def simpleType: Parser[String] = {
@@ -86,22 +103,8 @@ trait HandlerParser extends JavaTokenParsers {
       }
   }
 
-  def typeArgs: Parser[String] = {
-    (space("[") ~ types ~ space("]") ~ opt(typeArgs)) ^^ {
-      case _ ~ ts ~ _ ~ ta => "[" + ts + "]" + ta.getOrElse("")
-    } |
-      (space("#") ~ identifier ~ opt(typeArgs)) ^^ {
-        case _ ~ id ~ ta => "#" + id + ta.getOrElse("")
-      }
-  }
-
   def types: Parser[String] = rep1sep(simpleType, space(",")) ^^ (_ mkString ",")
 
-  def stableId: Parser[String] = rep1sep(identifier, space(".")) ^^ (_ mkString ".")
-
-  def expression: Parser[String] = (string | parentheses | brackets | """[^),?=\n]""".r +) ^^ {
-    case p => p.mkString
-  }
 
   def parameterFixedValue: Parser[String] = "=" ~ ignoreWhiteSpace ~ expression ^^ {
     case a ~ _ ~ b => a + b
@@ -112,10 +115,11 @@ trait HandlerParser extends JavaTokenParsers {
   }
 
   def parameter: Parser[Parameter] = (identifier <~ ignoreWhiteSpace) ~ opt(parameterType) ~ (ignoreWhiteSpace ~> opt(parameterDefaultValue | parameterFixedValue)) ^^ {
-    case name ~ t ~ d => Parameter(name, t.getOrElse("String"), d.filter(_.startsWith("=")).map(_.drop(1)), d.filter(_.startsWith("?")).map(_.drop(2)))
+    case name ~ t ~ d => Parameter(name, Domain.Type.string2Type(t.getOrElse("String")), d.filter(_.startsWith("=")).map(_.drop(1)), d.filter(_.startsWith("?")).map(_.drop(2)))
   }
 
   def parameters: Parser[List[Parameter]] = "(" ~> repsep(ignoreWhiteSpace ~>  positioned(parameter) <~ ignoreWhiteSpace, ",") <~ ")"
+*/
 
   // Absolute method consists of a series of Java identifiers representing the package name, controller and method.
   // Since the Scala parser is greedy, we can't easily extract this out, so just parse at least 3
@@ -123,14 +127,14 @@ trait HandlerParser extends JavaTokenParsers {
     case first ~ _ ~ second ~ _ ~ rest => first :: second :: rest
   }, "Controller method call expected")
 
-  def call: Parser[HandlerCall] = opt("@") ~ absoluteMethod ~ opt(parameters) ^^ {
-    case instantiate ~ absMethod ~ parameters => {
+  def call: Parser[HandlerCall] = opt("@") ~ absoluteMethod /*~ opt(parameters)*/ ^^ {
+    case instantiate ~ absMethod /*~ parameters*/ => {
       val (packageParts, classAndMethod) = absMethod.splitAt(absMethod.size - 2)
       val packageName = packageParts.mkString(".")
       val className = classAndMethod.head
       val methodName = classAndMethod(1)
       val dynamic = instantiate.isDefined
-      HandlerCall(packageName, className, dynamic, methodName, parameters)
+      HandlerCall(packageName, className, dynamic, methodName, Nil)
     }
   }
 

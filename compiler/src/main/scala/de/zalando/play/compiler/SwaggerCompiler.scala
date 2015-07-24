@@ -14,7 +14,7 @@ import scala.io.Codec
 object SwaggerCompiler {
 
   def compile(task: SwaggerCompilationTask, outputDir: File,
-              reverseRouter: Boolean, namespaceReverseRouter: Boolean, routesImport: Seq[String]): SwaggerCompilationResult = {
+              reverseRouter: Boolean, namespaceReverseRouter: Boolean, routesImport: Seq[String], keyPrefix: String): SwaggerCompilationResult = {
 
     outputDir.mkdirs()
 
@@ -22,7 +22,7 @@ object SwaggerCompiler {
 
     val swaggerModel = parser.parse(task.definitionFile)
 
-    val ast = Swagger2Ast.convert(swaggerModel)
+    val ast = Swagger2Ast.convert(keyPrefix)(swaggerModel)
 
     val playRules = RuleGenerator.apiCalls2PlayRules(ast.calls:_*).toList
 
