@@ -1,8 +1,8 @@
 package com.example.play.swagger.sbt
 
 import com.example.play.BuildInfo
-import com.example.play.swagger.compiler._
 import com.typesafe.sbt.web.incremental._
+import de.zalando.play.compiler.{SwaggerCompilationTask, SwaggerCompiler}
 import play.routes.compiler.RoutesGenerator
 import play.sbt.routes.RoutesCompiler
 import sbt._
@@ -110,7 +110,7 @@ object PlaySwagger extends AutoPlugin {
       // Collect the results into a map of task to OpResult for syncIncremental
       val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
         case (task, Success(result)) =>
-          task -> OpSuccess(Set(task.definitionFile), (result.modelFiles :+ result.routesFile).toSet)
+          task -> OpSuccess(Set(task.definitionFile), (result.modelFiles ++ result.routesFiles).toSet)
         case (op, Failure(_)) => op -> OpFailure
       }.toMap
 

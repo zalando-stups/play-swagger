@@ -1,45 +1,13 @@
-package de.zalando.apifirst
+package de.zalando.swagger
 
-import de.zalando.apifirst.Application.{Parameter, HandlerCall, ApiCall, Model}
-import de.zalando.swagger.model
-import model.{Operation, SwaggerModel}
+import de.zalando.apifirst.Application.{HandlerCall, Parameter}
 
 import scala.util.parsing.combinator.JavaTokenParsers
 import scala.util.parsing.input.CharSequenceReader
 
 /**
- * @since 17.07.2015
+ * @since 24.07.2015
  */
-object Swagger2Ast extends HandlerParser {
-  implicit def convert(model: SwaggerModel): Model = Model(model.paths map toCall toList)
-
-  import Http.string2verb
-
-  // TODO the way of throwing an exception is not good. Improve.
-  def toCall(path: (String, model.Path)): ApiCall = {
-    import scala.reflect.runtime.universe._
-    val signatures = typeOf[model.Path].members.filter(_.typeSignature =:= typeOf[Operation]).iterator.toSeq.reverseIterator
-
-    val ops = path._2.productIterator.zip(signatures).filter(_._1 != null).toList
-
-    val call = ops.headOption match {
-      case Some((operation: Operation, signature: Symbol)) =>
-        for {
-          verb <- string2verb(signature.name.decoded)
-          astPath = Path.path2path(path._1)
-          handlerText <- operation.vendorExtensions.get("x-api-first-handler")
-          parseResult = parse(handlerText)
-          handler <- if (parseResult.successful) Some(parseResult.get) else None
-        } yield ApiCall(verb, astPath, null, null, handler, null, null) // TODO convert query, body, handler, mimeIn, mimeOut as well
-      case _ =>
-        throw new IllegalArgumentException("Can't do anything with Operation without methods")
-    }
-    call.getOrElse {
-      throw new IllegalArgumentException(s"Could not parse path ${path._1}")
-    }
-  }
-}
-
 
 // handler related part of the play's parser
 // we can use it if we won't change handler definition syntax

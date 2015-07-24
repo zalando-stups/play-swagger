@@ -19,7 +19,6 @@ private[swagger] abstract class SwaggerParser extends Parser {
     mapper.registerModule(DefaultScalaModule)
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
     mapper.configure(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, true)
-//    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     mapper.readValue(file, classOf[SwaggerModel])
   }
 }

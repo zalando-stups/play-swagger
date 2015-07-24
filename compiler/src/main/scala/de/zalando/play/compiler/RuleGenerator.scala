@@ -34,8 +34,7 @@ object RuleGenerator {
     call.path.value flatMap {
       case Root => None
       case Segment(value) => Some(StaticPart(value))
-      // TODO check constant and encode params
-      case InPathParameter(value: String) => Some(DynamicPart(value, "", encode = false))
+      case InPathParameter(value, default, encode) => Some(DynamicPart(value, default, encode))
     }
 
 }

@@ -33,9 +33,18 @@ object Hypermedia {
 }
 
 object Domain {
-  abstract class Type extends Expr
+  trait Type extends Expr
   case object Int extends Type
   case object Str extends Type
+  case object Unknown extends Type
+
+  object Type {
+    implicit def string2Type(name: String): Domain.Type = name.toLowerCase match {
+      case "int" => Domain.Int
+      case "string" => Domain.Str
+      case _ => Domain.Unknown
+    }
+  }
 
   abstract class Entity extends Type
   case class Field(name: String, kind: Entity) extends Expr
@@ -47,13 +56,16 @@ object Path {
   abstract class PathElem(val value: String) extends Expr
   case object Root extends PathElem(value = "/")
   case class Segment(override val value: String) extends PathElem(value)
-  case class InPathParameter(override val value: String) extends PathElem(value)
+  case class InPathParameter(override val value: String, constant: String, encode: Boolean) extends PathElem(value)
 
   case class FullPath(value: PathElem*) extends Expr
 
-  implicit def path2path(path: String): FullPath = {
+  def path2path(path: String, defaults: Map[String, (String, Boolean)]): FullPath = {
     val segments = path split Root.value map {
-      case seg if seg.startsWith("{") && seg.endsWith("}") => InPathParameter(seg.tail.dropRight(1))
+      case seg if seg.startsWith("{") && seg.endsWith("}") =>
+        val name = seg.tail.init
+        val (default, encode) = defaults.get(name).getOrElse("", false)
+        InPathParameter(name, default, encode)
       case seg => Segment(seg)
     } toList
     val fullPath = if (path.startsWith(Root.value)) Root :: segments else segments
@@ -71,17 +83,12 @@ object Application {
 
   // Play definition
   case class Parameter(name: String, typeName: String,
-                       fixed: Option[String], default: Option[String]) extends Expr with Positional // TODO use Domain.Type for typeName
+                       fixed: Option[String], default: Option[String]) extends Expr with Positional
+                        // TODO use Domain.Type for typeName
 
   // Play definition
   case class HandlerCall(packageName: String, controller: String, instantiate: Boolean,
                          method: String, parameters: Option[Seq[Parameter]])
-
-/*
-  TODO enrich HandlerCall model
-  case class Method(name: String, parameters: Seq[Parameter], result: Domain.Type) extends Expr
-  case class Handler(packageName: String, name: String, method: Method, resultType: Domain.Type) extends Expr
-*/
 
   case class ApiCall(
                       verb: Http.Verb,
@@ -93,7 +100,6 @@ object Application {
                       mimeOut: MimeType
                       )
 
-  // TODO we could analyse project files for further implementation details and do some kind of autowiring here
   case class Model(calls: Seq[ApiCall])
 
 }

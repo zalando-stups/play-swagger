@@ -1,11 +1,7 @@
-package com.example.play.swagger.compiler
+package de.zalando.play.compiler
 
 import java.io.File
-import java.nio.file.Files
-
-import de.zalando.apifirst.Swagger2Ast
-import de.zalando.play.compiler.RuleGenerator
-import de.zalando.swagger.{JsonParser, YamlParser}
+import de.zalando.swagger.{Swagger2Ast, JsonParser, YamlParser}
 import org.apache.commons.io.FileUtils
 import play.routes.compiler.RoutesCompiler.RoutesCompilerTask
 import play.routes.compiler.RoutesGenerator
@@ -35,18 +31,14 @@ object SwaggerCompiler {
 
     val generated = task.generator.generate(playTask, None, playRules)
 
-    generated.map {
+    val routesFiles = generated.map {
       case (filename, content) =>
         val file = new File(outputDir, filename)
         FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
         file
     }
 
-    // As an example, generate a routes file
-
-    val routesFile = new File(outputDir, task.packageName + ".router.routes")
-    Files.write(routesFile.toPath, """GET /example com.example.play.swagger.api.ExampleController.index""".getBytes("utf-8"))
-    SwaggerCompilationResult(routesFile, Nil)
+    SwaggerCompilationResult(routesFiles, Nil)
   }
 }
 
@@ -62,4 +54,4 @@ case class SwaggerCompilationTask(definitionFile: File, packageName: String, gen
 /**
  * The result of a compilation
  */
-case class SwaggerCompilationResult(routesFile: File, modelFiles: Seq[File])
+case class SwaggerCompilationResult(routesFiles: Seq[File], modelFiles: Seq[File])
