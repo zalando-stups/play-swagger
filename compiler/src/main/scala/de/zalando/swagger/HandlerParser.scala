@@ -9,12 +9,6 @@ import scala.util.parsing.input.CharSequenceReader
 /**
  * @since 17.07.2015
  */
-object Swagger2Ast extends HandlerParser {
-  import scala.language.postfixOps
-  import scala.language.implicitConversions
-  
-  implicit def convert(model: SwaggerModel): Model = Model(model.paths map toCall toList)
-
 // handler related part of the play's parser
 // we can use it if we won't change handler definition syntax
 trait HandlerParser extends JavaTokenParsers {
@@ -88,45 +82,6 @@ trait HandlerParser extends JavaTokenParsers {
   def expression: Parser[String] = (string | parentheses | brackets | """[^),?=\n]""".r +) ^^ {
     case p => p.mkString
   }
-
-  /*
-  def typeArgs: Parser[String] = {
-    (space("[") ~ types ~ space("]") ~ opt(typeArgs)) ^^ {
-      case _ ~ ts ~ _ ~ ta => "[" + ts + "]" + ta.getOrElse("")
-    } |
-      (space("#") ~ identifier ~ opt(typeArgs)) ^^ {
-        case _ ~ id ~ ta => "#" + id + ta.getOrElse("")
-      }
-  }
-
-  def parameterType: Parser[String] = ":" ~> ignoreWhiteSpace ~> simpleType
-
-  def simpleType: Parser[String] = {
-    ((stableId <~ ignoreWhiteSpace) ~ opt(typeArgs)) ^^ {
-      case sid ~ ta => sid.toString + ta.getOrElse("")
-    } |
-      (space("(") ~ types ~ space(")")) ^^ {
-        case _ ~ b ~ _ => "(" + b + ")"
-      }
-  }
-
-  def types: Parser[String] = rep1sep(simpleType, space(",")) ^^ (_ mkString ",")
-
-
-  def parameterFixedValue: Parser[String] = "=" ~ ignoreWhiteSpace ~ expression ^^ {
-    case a ~ _ ~ b => a + b
-  }
-
-  def parameterDefaultValue: Parser[String] = "?=" ~ ignoreWhiteSpace ~ expression ^^ {
-    case a ~ _ ~ b => a + b
-  }
-
-  def parameter: Parser[Parameter] = (identifier <~ ignoreWhiteSpace) ~ opt(parameterType) ~ (ignoreWhiteSpace ~> opt(parameterDefaultValue | parameterFixedValue)) ^^ {
-    case name ~ t ~ d => Parameter(name, Domain.Type.string2Type(t.getOrElse("String")), d.filter(_.startsWith("=")).map(_.drop(1)), d.filter(_.startsWith("?")).map(_.drop(2)))
-  }
-
-  def parameters: Parser[List[Parameter]] = "(" ~> repsep(ignoreWhiteSpace ~>  positioned(parameter) <~ ignoreWhiteSpace, ",") <~ ")"
-*/
 
   // Absolute method consists of a series of Java identifiers representing the package name, controller and method.
   // Since the Scala parser is greedy, we can't easily extract this out, so just parse at least 3
