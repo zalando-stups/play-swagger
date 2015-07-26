@@ -2,6 +2,10 @@ package de.zalando.apifirst
 
 import java.io.File
 
+import de.zalando.apifirst.{Swagger2Ast, Path, Http}
+import de.zalando.apifirst.Http.{GET, PATCH}
+import Path.{FullPath, Root}
+import de.zalando.swagger.YamlParser
 import de.zalando.apifirst.Http.{GET, PATCH}
 import de.zalando.apifirst.Path.{FullPath, Root}
 import de.zalando.swagger.{Swagger2Ast, YamlParser}

@@ -57,6 +57,9 @@ object Domain {
 }
 
 object Path {
+  import scala.language.postfixOps
+  import scala.language.implicitConversions
+  
   abstract class PathElem(val value: String) extends Expr
   case object Root extends PathElem(value = "/")
   case class Segment(override val value: String) extends PathElem(value)

@@ -7,12 +7,19 @@ import scala.util.parsing.combinator.JavaTokenParsers
 import scala.util.parsing.input.CharSequenceReader
 
 /**
- * @since 24.07.2015
+ * @since 17.07.2015
  */
+object Swagger2Ast extends HandlerParser {
+  import scala.language.postfixOps
+  import scala.language.implicitConversions
+  
+  implicit def convert(model: SwaggerModel): Model = Model(model.paths map toCall toList)
 
 // handler related part of the play's parser
 // we can use it if we won't change handler definition syntax
 trait HandlerParser extends JavaTokenParsers {
+  import scala.language.postfixOps
+  import scala.language.implicitConversions
 
   override def skipWhitespace = false
 

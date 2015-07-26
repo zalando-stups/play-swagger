@@ -13,11 +13,12 @@ class ParseExamplesTest extends FunSpec with MustMatchers {
     fixtures.filter(_.getName.endsWith(".json")).foreach { file =>
       it(s"should parse the json swagger file ${file.getName} as specification") {
         JsonParser.parse(file).getClass mustBe classOf[SwaggerModel]
+        JsonParser.parse(file) mustBe a [SwaggerModel]
       }
     }
     fixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
       it(s"should parse the yaml swagger file ${file.getName} as specification") {
-        YamlParser.parse(file).getClass mustBe classOf[SwaggerModel]
+        YamlParser.parse(file) mustBe a [SwaggerModel]
       }
     }
   }
