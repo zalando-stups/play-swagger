@@ -33,20 +33,20 @@ object model {
   )
 
   case class SwaggerModel(
-    swagger: Version = "2.0",
-    info: Info,
-    host: Host,
-    basePath: BasePath,
     @JsonScalaEnumeration(classOf[SchemeType]) schemes: Schemes,
-    consumes: Consumes,
-    produces: Produces,
-    paths: Paths,
-    definitions: Definitions,
-    parameters: Map[String, Parameter],
-    responses: Responses,
-    securityDefinitions: SecurityDefinitions,
-    security: SecurityRequirements,
-    tags: Tags
+    swagger:              Version = "2.0",
+    info:                 Info,
+    host:                 Host,
+    basePath:             BasePath,
+    consumes:             Consumes,
+    produces:             Produces,
+    paths:                Paths,
+    definitions:          Definitions,
+    parameters:           Map[String, Parameter],
+    responses:            Responses,
+    securityDefinitions:  SecurityDefinitions,
+    security:             SecurityRequirements,
+    tags:                 Tags
     ) extends API
 
   private[swagger] class SchemeType extends TypeReference[Scheme.type]
@@ -60,50 +60,50 @@ object model {
   }
 
   case class Info(
-    title:          String,
-    description:    String,
-    termsOfService: String,
-    contact:        Contact,
-    license:        License,
-    version:        Version
+    title:                String,
+    description:          String,
+    termsOfService:       String,
+    contact:              Contact,
+    license:              License,
+    version:              Version
   ) extends VendorExtensions with API
 
   case class Contact(
-    name: String,
-    url: String,
-    email: String
+    name:                 String,
+    url:                  String,
+    email:                String
   ) extends API
 
   case class License(
-    name: String,
-    url: URL
+    name:                 String,
+    url:                  URL
   ) extends API
 
   case class Path(
-    get: Operation,
-    put: Operation,
-    post: Operation,
-    delete: Operation,
-    options: Operation,
-    head: Operation,
-    patch: Operation,
-    parameters: List[Parameter],
+    get:                  Operation,
+    put:                  Operation,
+    post:                 Operation,
+    delete:               Operation,
+    options:              Operation,
+    head:                 Operation,
+    patch:                Operation,
+    parameters:           List[Parameter],
     @JsonProperty("$ref") ref: Ref
   ) extends VendorExtensions with API
 
   case class Operation(
-    tags: SimpleTags,
-    summary: String,
-    description: String,
-    externalDocs: ExternalDocumentation,
-    operationId: String,
-    consumes: Consumes,
-    produces: Produces,
-    parameters: Parameters, // TODO should be ParameterOrReference
-    responses: Responses, // TODO should be OperationResponses
-    @JsonScalaEnumeration(classOf[SchemeType]) schemes: Schemes,
-    deprecated: Boolean,
-    security: SecurityRequirements
+    tags:                 SimpleTags,
+    summary:              String,
+    description:          String,
+    externalDocs:         ExternalDocumentation,
+    operationId:          String,
+    consumes:             Consumes,
+    produces:             Produces,
+    parameters:           Parameters, // TODO should be ParameterOrReference
+    responses:            Responses,  // TODO should be OperationResponses
+    deprecated:           Boolean,
+    security:             SecurityRequirements,
+    @JsonScalaEnumeration(classOf[SchemeType]) schemes: Schemes
   ) extends VendorExtensions with API
 
   trait ParameterOrReference extends API
@@ -134,16 +134,16 @@ object model {
     @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) @JsonProperty("type") kind: PrimitiveType.Value // same values as for header
     // Scala 2.10.5 limits case classes to 22 attributes
     // multipleOf: Int
-    //     allowEmptyValue:                Boolean,  // if in is any other value than body
+    // allowEmptyValue:                Boolean,  // if in is any other value than body
   ) extends CommonProperties(
       format, default, multipleOf, maximum, exclusiveMaximum, minimum, exclusiveMinimum,
       maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum
     ) with VendorExtensions with ParameterOrReference {
-    lazy val bodyParameter = in.toLowerCase == "body"
-    lazy val queryParameter = in.toLowerCase == "query"
-    lazy val pathParameter = in.toLowerCase == "path"
-    lazy val headerParameter = in.toLowerCase == "header"
-    lazy val formDataParameter = in.toLowerCase == "formData"
+    lazy val bodyParameter      = in.toLowerCase == "body"
+    lazy val queryParameter     = in.toLowerCase == "query"
+    lazy val pathParameter      = in.toLowerCase == "path"
+    lazy val headerParameter    = in.toLowerCase == "header"
+    lazy val formDataParameter  = in.toLowerCase == "formData"
   }
 
   case class Reference(
@@ -151,10 +151,10 @@ object model {
   ) extends ParameterOrReference
 
   case class Response(
-    description: String,
-    schema: Schema,
-    headers: Headers,
-    examples: Examples
+    description:                    String,
+    schema:                         Schema,
+    headers:                        Headers,
+    examples:                       Examples
   ) extends VendorExtensions with API
 
   case class Schema(
@@ -180,14 +180,13 @@ object model {
     title:                          String,
     @JsonProperty("type") kind:     String,
     @JsonProperty("$ref") ref:      String
-//  commented out for now to overcome the max-22-properties limitation
+// Scala 2.10.5 limits case classes to 22 attributes
 //    properties:                     Properties,
 //    additionalProperties:           Properties,
 //    discriminator:                  String,   // polymorphism support
 //    readOnly:                       Boolean,  // properties only
 //    xml:                            Xml,      // properties only ?
 //    externalDocs:                   ExternalDocumentation,
-//
 //    allOf:                          Many[Any], // TODO check JSON Schema
 //    maxProperties:                  Int, // TODO no description in swagger spec, check JSON Schema
 //    minProperties:                  Int, // TODO no description in swagger spec, check JSON Schema
@@ -196,9 +195,6 @@ object model {
     maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum
   ) with API
 
-  /*
-
-   */
   case class Header(
     override val format:            String,
     override val default:           String,

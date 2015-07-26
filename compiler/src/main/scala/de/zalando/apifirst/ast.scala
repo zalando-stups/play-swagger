@@ -46,6 +46,8 @@ object Domain {
   case object Password extends Type("Password")
 
   case class Arr(underlying: Type) extends Type(s"Seq[${underlying.name}]")
+  case class Opt(underlying: Type) extends Type(s"Option[${underlying.name}]")
+
   case object Unknown extends Type("Unknown")
 
   abstract class Entity(override val name: String) extends Type(name)

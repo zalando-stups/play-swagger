@@ -4,7 +4,6 @@ import de.zalando.apifirst
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Domain, Application, Http}
 import apifirst.Application.{ApiCall, Model}
-import de.zalando.swagger.model.PrimitiveType.PrimitiveType
 import de.zalando.swagger.model._
 
 import scala.language.{postfixOps, implicitConversions}
@@ -22,7 +21,8 @@ object Swagger2Ast extends HandlerParser {
         for {
           verb <- string2verb(signature)
           pathParams = pathParameters(operation)
-          astPath = apifirst.Path.path2path(path._1, pathParams)
+          queryParams = queryParameters(operation)
+          astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
           handlerText <- operation.vendorExtensions.get(s"$keyPrefix-handler")
           parseResult = parse(handlerText)
           handler <- if (parseResult.successful) Some(parseResult.get.copy(parameters = pathParams)) else None
@@ -36,11 +36,22 @@ object Swagger2Ast extends HandlerParser {
   private def pathParameters(operation: model.Operation): Seq[Application.Parameter] =
     Option(operation.parameters).map(_.filter(_.pathParameter) map pathParameter).toSeq.flatten
 
+  private def queryParameters(operation: model.Operation): Seq[Application.Parameter] =
+    Option(operation.parameters).map(_.filter(_.queryParameter) map queryParameter).toSeq.flatten
+
   private def pathParameter(p: model.Parameter): Application.Parameter = {
-    val fixed = None // TODO check difference between fixed and default
-    val default = Option(p.default)
+    val fixed = None
+    val default = None
     val typeName = swaggerType2Type(p.kind, p.format, p.items)
     Application.Parameter(p.name, typeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
+  }
+
+  private def queryParameter(p: model.Parameter): Application.Parameter = {
+    val fixed = None // There is no way to define fixed parameters in swagger spec
+    val default = if (p.required && p.default != null) Some(p.default) else None
+    val typeName = swaggerType2Type(p.kind, p.format, p.items)
+    val fullTypeName = if (p.required) typeName else Domain.Opt(typeName)
+    Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
 
   private def operation(path: (String, Path)) = {
