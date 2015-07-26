@@ -4,7 +4,8 @@ import de.zalando.apifirst
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Domain, Application, Http}
 import apifirst.Application.{ApiCall, Model}
-import de.zalando.swagger.model.{Items, Path, Operation, SwaggerModel}
+import de.zalando.swagger.model.PrimitiveType.PrimitiveType
+import de.zalando.swagger.model._
 
 import scala.language.{postfixOps, implicitConversions}
 
@@ -38,7 +39,7 @@ object Swagger2Ast extends HandlerParser {
   private def pathParameter(p: model.Parameter): Application.Parameter = {
     val fixed = None // TODO check difference between fixed and default
     val default = Option(p.default)
-    val typeName = swaggerType2Type(p.kind, p.items)
+    val typeName = swaggerType2Type(p.kind, p.format, p.items)
     Application.Parameter(p.name, typeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
 
@@ -50,12 +51,29 @@ object Swagger2Ast extends HandlerParser {
     ops.headOption
   }
 
-  private def swaggerType2Type(name: String, items: Items): Domain.Type = name.toLowerCase match {
-    case "string" => Domain.Str
-    case "integer" => Domain.Int
-    case "boolean" => Domain.Bool
-    case "array" => Domain.Arr(swaggerType2Type(items.kind, items.items)) // TODO only for arrays with defined item types first
-    case _ => Domain.Str // TODO custom types ? check specification
+  // format: OFF
+  import PrimitiveType._
+
+  private def swaggerType2Type(name: PrimitiveType, format: String, items: Items): Domain.Type = (name, format.toLowerCase) match {
+    case (INTEGER, "int64")     => Domain.Lng
+    case (INTEGER, "int32")     => Domain.Int
+    case (INTEGER, _)           => Domain.Int
+
+    case (NUMBER, "float")      => Domain.Flt
+    case (NUMBER, "double")     => Domain.Dbl
+    case (NUMBER, _)            => Domain.Dbl
+
+    case (BOOLEAN, _)           => Domain.Bool
+
+    case (STRING, "byte")       => Domain.Byt
+    case (STRING, "date")       => Domain.Date
+    case (STRING, "date-time")  => Domain.DateTime
+    case (STRING, "password")   => Domain.Password
+    case (STRING, _)            => Domain.Str
+
+    case (ARRAY, _)             => Domain.Arr(swaggerType2Type(items.kind, items.format, items.items)) // TODO only for arrays with defined item types for now
+    case _                      => Domain.Str // TODO custom types ? check specs
   }
+  // format: ON
 }
 

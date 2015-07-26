@@ -1,7 +1,5 @@
 package de.zalando.apifirst
 
-import de.zalando.apifirst.Http.MimeType
-
 import scala.util.parsing.input.Positional
 
 sealed trait Expr
@@ -35,8 +33,18 @@ object Hypermedia {
 object Domain {
   abstract class Type(val name: String) extends Expr
   case object Int extends Type("Int")
+  case object Lng extends Type("Long")
+  case object Flt extends Type("Float")
+  case object Dbl extends Type("Double")
+
+  case object Byt extends Type("Byte")
+
   case object Str extends Type("String")
   case object Bool extends Type("Boolean")
+  case object Date extends Type("java.util.Date")
+  case object DateTime extends Type("java.util.Date")
+  case object Password extends Type("Password")
+
   case class Arr(underlying: Type) extends Type(s"Seq[${underlying.name}]")
   case object Unknown extends Type("Unknown")
 

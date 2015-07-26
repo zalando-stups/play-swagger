@@ -2,7 +2,7 @@ package de.zalando.apifirst
 
 import java.io.File
 
-import de.zalando.apifirst.Http.PATCH
+import de.zalando.apifirst.Http.{GET, PATCH}
 import de.zalando.apifirst.Path.{FullPath, Root}
 import de.zalando.swagger.{Swagger2Ast, YamlParser}
 import org.scalatest.{FunSpec, MustMatchers}
@@ -28,7 +28,7 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
     }
 
     it("has correct method") {
-      call.verb mustBe PATCH
+      call.verb mustBe GET
     }
 
     it("has correct handler") {
@@ -36,7 +36,7 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
       call.handler.controller mustBe "Dashboard"
       call.handler.instantiate mustBe false
       call.handler.method mustBe "index"
-      call.handler.parameters mustBe None
+      call.handler.parameters mustBe Nil
     }
   }
 
