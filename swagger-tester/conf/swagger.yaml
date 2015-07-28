@@ -4,7 +4,7 @@ info:
   version: 0.0.0
   title: Simple API
 paths:
-  /:
+  /{username}/{password}:
     post:
       "x-api-first-handler": "admin.Dashboard.index"
       parameters:
@@ -12,18 +12,17 @@ paths:
           name: username
           description: The name that needs to be deleted
           required: true
-          type: array
-          items:
-            type: string
-        - in: path
-          default: slava
-          name: surName
-          required: true
           type: string
         - in: path
+          default: slava
+          name: password
+          required: true
+          type: string
+        - in: query
           name: developer
-          type: boolean
-          default: true
+          type: string
+          default: bam
+          required: true
       responses:
         200:
           description: OK

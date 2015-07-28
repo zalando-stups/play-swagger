@@ -1,16 +1,18 @@
-package com.example.play.swagger.sbt
+package de.zalando.play.swagger.sbt
 
-import com.example.play.BuildInfo
+import _root_.sbt.Keys._
+import _root_.sbt._
 import com.typesafe.sbt.web.incremental._
+import de.zalando.BuildInfo
 import de.zalando.play.compiler.{SwaggerCompilationTask, SwaggerCompiler}
 import play.routes.compiler.RoutesGenerator
 import play.sbt.routes.RoutesCompiler
-import sbt._
-import sbt.Keys._
-
 
 import scala.util.{Failure, Success, Try}
 
+/**
+ * @since 28.07.2015
+ */
 object PlaySwagger extends AutoPlugin {
 
   // Anything in this object will automatically be available in all *.sbt files
@@ -25,10 +27,10 @@ object PlaySwagger extends AutoPlugin {
     val swagger = taskKey[Seq[File]]("Compile swagger definitions")
 
     // Options for swagger compilation
-    val swaggerDefinition = settingKey[File]("The swagger definition file")
     val swaggerPackageName = settingKey[String]("The package to which the swagger definition will be compiled")
     val playGenerator = settingKey[RoutesGenerator]("Play's generator to be used for play routes generation")
     val keyPrefix = settingKey[String]("The key prefix is a name for swagger vendor extension")
+    val swaggerDefinitions = taskKey[Seq[File]]("The swagger definition files")
     // By default, end users won't define this themselves, they'll just use the options above for one single
     // swagger definition, however, if they want more control over settings, or what to compile multiple files,
     // they can ignore the above options, and just define this directly.
@@ -45,7 +47,7 @@ object PlaySwagger extends AutoPlugin {
 
   override def projectSettings = Seq(
     swaggerPackageName := "swagger",
-    libraryDependencies += "com.example.play" %% "play-swagger-api" % BuildInfo.version
+    libraryDependencies += "de.zalando" %% "play-swagger-api" % BuildInfo.version
   ) ++ inConfig(Compile)(unscopedSwaggerSettings)
 
   /**
@@ -54,10 +56,10 @@ object PlaySwagger extends AutoPlugin {
    */
   def unscopedSwaggerSettings: Seq[Setting[_]] = Seq(
 
-    // First, the simple option where there's a single definition, its default is swagger.yaml in the resource directory
-    swaggerDefinition := resourceDirectory.value / "swagger.yaml",
-    // Now add the single definition to the list of sources
-    sources in swagger := Seq(swaggerDefinition.value),
+    swaggerDefinitions := (resourceDirectory.value * "*.yaml").get,
+
+    sources in swagger := swaggerDefinitions.value,
+
     // Now from the list of sources, build the compilation tasks
     swaggerCompilationTasks := (sources in swagger).value.map { source =>
       val version = if (BuildInfo.version.endsWith("-SNAPSHOT")) {
@@ -70,11 +72,12 @@ object PlaySwagger extends AutoPlugin {
       } else {
         BuildInfo.version
       }
-      SwaggerCompilationTask(source, swaggerPackageName.value, playGenerator.value, version)
+
+      SwaggerCompilationTask(source, source.getName.takeWhile(_ != '.'), playGenerator.value, version)
     },
 
     // Target directory
-    target in swagger := crossTarget.value / "swagger" / Defaults.nameForSrc(configuration.value.name),
+    target in swagger := crossTarget.value / "routes" / Defaults.nameForSrc(configuration.value.name),
 
     // And the swagger compiler definition
     swagger := swaggerCompile.value,
@@ -98,7 +101,7 @@ object PlaySwagger extends AutoPlugin {
     // Read the detailed scaladoc for syncIncremental to see how it works
     val (products, errors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
 
-      val genRevRoutes = RoutesCompiler.autoImport.generateReverseRouter.value
+      val genRevRoutes = false // RoutesCompiler.autoImport.generateReverseRouter.value
 
       val namespaceRevRoutes = RoutesCompiler.autoImport.namespaceReverseRouter.value
 

@@ -1,1 +1,1 @@
-addSbtPlugin("com.example.play" % "sbt-play-swagger" % sys.props("project.version"))
+addSbtPlugin("de.zalando" % "sbt-play-swagger" % sys.props("project.version"))

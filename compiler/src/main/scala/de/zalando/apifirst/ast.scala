@@ -64,6 +64,10 @@ object Path {
   case object Root extends PathElem(value = "/")
   case class Segment(override val value: String) extends PathElem(value)
 
+  object PathElem {
+    def apply(value: String): PathElem = if (value == Root.value) Root else Segment(value)
+  }
+
   // swagger in version 2.0 only supports Play's singleComponentPathPart - should be encoded
   // for constraint,
   case class InPathParameter(override val value: String, constraint: String, encode: Boolean = true) extends PathElem(value)
@@ -75,15 +79,17 @@ object Path {
   case class FullPath(value: PathElem*) extends Expr
 
   def path2path(path: String, parameters: Seq[Application.Parameter]): FullPath = {
-    val segments = path split Root.value map {
+    val segments = path.trim split Root.value map {
       case seg if seg.startsWith("{") && seg.endsWith("}") =>
         val name = seg.tail.init
         parameters.find(_.name == name) map { p => InPathParameter(name, p.constraint, p.encode) }
+      case seg if seg.nonEmpty =>
+        println(path + " - " + seg)
+        Some(PathElem(seg + Root.value))
       case seg =>
-        Some(Segment(seg))
-    } toList
-    val start = if (path.startsWith(Root.value)) Some(Root) else None
-    FullPath((start :: segments).flatten:_*)
+        None
+    }
+    FullPath(segments.toList.flatten:_*)
   }
 }
 

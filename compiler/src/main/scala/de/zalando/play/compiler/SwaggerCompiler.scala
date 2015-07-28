@@ -29,7 +29,9 @@ object SwaggerCompiler {
     val playTask = RoutesCompilerTask(task.definitionFile, routesImport,
       forwardsRouter = true, reverseRouter = reverseRouter, namespaceReverseRouter)
 
-    val generated = task.generator.generate(playTask, None, playRules)
+    val namespace = Some(task.definitionFile.getName.takeWhile(_ != '.'))
+
+    val generated = task.generator.generate(playTask, namespace, playRules)
 
     val routesFiles = generated.map {
       case (filename, content) =>

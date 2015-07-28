@@ -22,6 +22,7 @@ object Swagger2Ast extends HandlerParser {
           verb <- string2verb(signature)
           pathParams = pathParameters(operation)
           queryParams = queryParameters(operation)
+          allParams = pathParams ++ queryParams
           astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
           handlerText <- operation.vendorExtensions.get(s"$keyPrefix-handler")
           parseResult = parse(handlerText)
@@ -51,6 +52,7 @@ object Swagger2Ast extends HandlerParser {
     val default = if (p.required && p.default != null) Some(p.default) else None
     val typeName = swaggerType2Type(p.kind, p.format, p.items)
     val fullTypeName = if (p.required) typeName else Domain.Opt(typeName)
+    // TODO don't use InPathParameter in the next line
     Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
 
@@ -65,7 +67,7 @@ object Swagger2Ast extends HandlerParser {
   // format: OFF
   import PrimitiveType._
 
-  private def swaggerType2Type(name: PrimitiveType, format: String, items: Items): Domain.Type = (name, format.toLowerCase) match {
+  private def swaggerType2Type(name: PrimitiveType, format: String, items: Items): Domain.Type = (name, format) match {
     case (INTEGER, "int64")     => Domain.Lng
     case (INTEGER, "int32")     => Domain.Int
     case (INTEGER, _)           => Domain.Int

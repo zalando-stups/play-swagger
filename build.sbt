@@ -44,7 +44,7 @@ lazy val plugin = (project in file("plugin"))
     addSbtPlugin("com.typesafe.play" % "sbt-plugin" % PlayVersion),
 
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "com.example.play",
+    buildInfoPackage := "de.zalando",
 
     scriptedLaunchOpts := { scriptedLaunchOpts.value ++
       Seq("-Dproject.version=" + version.value)
@@ -68,6 +68,6 @@ lazy val root = (project in file("."))
   .aggregate(api, compiler, plugin)
 
 def common: Seq[Setting[_]] = Seq(
-  organization := "com.example.play"
+  organization := "de.zalando"
 )
 
