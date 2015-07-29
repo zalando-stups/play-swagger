@@ -27,7 +27,7 @@ object SwaggerCompiler {
     val playRules = RuleGenerator.apiCalls2PlayRules(ast.calls:_*).toList
 
     val playTask = RoutesCompilerTask(task.definitionFile, routesImport,
-      forwardsRouter = true, reverseRouter = reverseRouter, namespaceReverseRouter)
+      forwardsRouter = true, reverseRouter, namespaceReverseRouter = true)
 
     val namespace = Some(task.definitionFile.getName.takeWhile(_ != '.'))
 

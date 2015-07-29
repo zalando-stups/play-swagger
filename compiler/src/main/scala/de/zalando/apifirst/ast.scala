@@ -84,7 +84,6 @@ object Path {
         val name = seg.tail.init
         parameters.find(_.name == name) map { p => InPathParameter(name, p.constraint, p.encode) }
       case seg if seg.nonEmpty =>
-        println(path + " - " + seg)
         Some(PathElem(seg + Root.value))
       case seg =>
         None

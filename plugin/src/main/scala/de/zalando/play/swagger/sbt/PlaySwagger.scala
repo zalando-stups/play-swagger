@@ -86,7 +86,7 @@ object PlaySwagger extends AutoPlugin {
 
     managedSources ++= swagger.value.filter(_.getName.endsWith(".scala")),
 
-    managedSourceDirectories += (target in swagger).value,
+    managedSourceDirectories <+= target in swagger,
 
     playGenerator :=  RoutesCompiler.autoImport.routesGenerator.value,
 
@@ -101,7 +101,7 @@ object PlaySwagger extends AutoPlugin {
     // Read the detailed scaladoc for syncIncremental to see how it works
     val (products, errors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
 
-      val genRevRoutes = false // RoutesCompiler.autoImport.generateReverseRouter.value
+      val genRevRoutes = RoutesCompiler.autoImport.generateReverseRouter.value
 
       val namespaceRevRoutes = RoutesCompiler.autoImport.namespaceReverseRouter.value
 

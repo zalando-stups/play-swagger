@@ -26,7 +26,7 @@ object Swagger2Ast extends HandlerParser {
           astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
           handlerText <- operation.vendorExtensions.get(s"$keyPrefix-handler")
           parseResult = parse(handlerText)
-          handler <- if (parseResult.successful) Some(parseResult.get.copy(parameters = pathParams)) else None
+          handler <- if (parseResult.successful) Some(parseResult.get.copy(parameters = allParams)) else None
         } yield Some(ApiCall(verb, astPath, handler))
       case _ =>
         None
