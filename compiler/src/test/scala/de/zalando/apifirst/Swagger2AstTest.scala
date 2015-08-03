@@ -24,7 +24,7 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
     val call = model.calls.head
 
     it("has correct path") {
-      call.path mustBe FullPath(Root)
+      call.path mustBe FullPath.is(Root)
     }
 
     it("has correct method") {

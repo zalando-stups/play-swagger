@@ -17,7 +17,7 @@ object Http {
 
   private val verbs = GET :: POST :: PUT :: DELETE :: HEAD :: OPTIONS :: TRACE :: PATCH :: Nil
 
-  def string2verb(name: String): Option[Verb] = verbs find  { _.name == name.trim.toUpperCase }
+  def string2verb(name: String): Option[Verb] = verbs find { _.name == name.trim.toUpperCase }
 
   abstract class MimeType(name: String) extends Expr
   case object ApplicationJson extends MimeType(name = "application/json")
@@ -27,7 +27,8 @@ object Http {
 }
 
 object Hypermedia {
-  case class Relation(tpe: String, url: String) // TODO relation should be another API call, not an url
+  // TODO relation should be another API call, not an url
+  case class Relation(tpe: String, url: String)
 }
 
 object Domain {
@@ -45,8 +46,8 @@ object Domain {
   case object DateTime extends Type("java.util.Date")
   case object Password extends Type("Password")
 
-  case class Arr(underlying: Type) extends Type(s"Seq[${underlying.name}]")
-  case class Opt(underlying: Type) extends Type(s"Option[${underlying.name}]")
+  case class Arr(underlying: Type) extends Type(s"Seq[${ underlying.name }]")
+  case class Opt(underlying: Type) extends Type(s"Option[${ underlying.name }]")
 
   case object Unknown extends Type("Unknown")
 
@@ -57,39 +58,47 @@ object Domain {
 }
 
 object Path {
-  import scala.language.postfixOps
-  import scala.language.implicitConversions
-  
+
+  import scala.language.{implicitConversions, postfixOps}
+
   abstract class PathElem(val value: String) extends Expr
   case object Root extends PathElem(value = "/")
   case class Segment(override val value: String) extends PathElem(value)
-
-  object PathElem {
-    def apply(value: String): PathElem = if (value == Root.value) Root else Segment(value)
-  }
-
-  // swagger in version 2.0 only supports Play's singleComponentPathPart - should be encoded
-  // for constraint,
+  // swagger in version 2.0 only supports Play's singleComponentPathPart - should be encoded for constraint,
   case class InPathParameter(override val value: String, constraint: String, encode: Boolean = true) extends PathElem(value)
 
   object InPathParameter {
-    val encode = true
+    val encode     = true
     val constraint = """[^/]+"""
   }
-  case class FullPath(value: PathElem*) extends Expr
+  
+  case class FullPath(value: Seq[PathElem]) extends Expr {
+    def isAbsolute = value match {
+      case Root :: segments => true
+      case _                => false
+    }
+  }
+  object FullPath {
+    def is(elements: PathElem*): FullPath = FullPath(elements.toList)
+  }
 
   def path2path(path: String, parameters: Seq[Application.Parameter]): FullPath = {
-    val segments = path.trim split Root.value map {
-      case seg if seg.startsWith("{") && seg.endsWith("}") =>
-        val name = seg.tail.init
-        parameters.find(_.name == name) map { p => InPathParameter(name, p.constraint, p.encode) }
-      case seg if seg.nonEmpty =>
-        Some(PathElem(seg + Root.value))
-      case seg =>
-        None
+    def path2segments(path: String, parameters: Seq[Application.Parameter]) = {
+      path.trim split Root.value map {
+        case seg if seg.startsWith("{") && seg.endsWith("}") =>
+          val name = seg.tail.init
+          parameters.find(_.name == name) map { p => InPathParameter(name, p.constraint, p.encode) }
+        case seg if seg.nonEmpty                             =>
+          Some(Segment(seg))
+        case seg                                             =>
+          None
+      }
     }
-    FullPath(segments.toList.flatten:_*)
+    val segments = path2segments(path, parameters).toList.flatten
+    val elements = if (path.startsWith("/")) Root :: segments else segments
+    FullPath(elements)
   }
+
 }
 
 object Query {
@@ -97,29 +106,28 @@ object Query {
   case class FullQuery(values: QueryParam*) extends Expr
 }
 
-
 object Application {
 
   // Play definition
   case class Parameter(name: String, typeName: Domain.Type,
-                       fixed: Option[String], default: Option[String],
-                       constraint: String, encode: Boolean) extends Expr with Positional
+    fixed: Option[String], default: Option[String],
+    constraint: String, encode: Boolean) extends Expr with Positional
 
   // Play definition
   case class HandlerCall(packageName: String, controller: String, instantiate: Boolean,
-                         method: String, parameters: Seq[Parameter])
+    method: String, parameters: Seq[Parameter])
 
   case class ApiCall(
-                      verb: Http.Verb,
-                      path: Path.FullPath,
-                      handler: HandlerCall
-                      )
-/*
-  query: Query.FullQuery,
-  body: Http.Body,
-  mimeIn: MimeType,
-  mimeOut: MimeType
-*/
+    verb: Http.Verb,
+    path: Path.FullPath,
+    handler: HandlerCall
+    )
+  /*
+    query: Query.FullQuery,
+    body: Http.Body,
+    mimeIn: MimeType,
+    mimeOut: MimeType
+  */
 
   case class Model(calls: Seq[ApiCall])
 

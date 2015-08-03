@@ -1,12 +1,12 @@
 package de.zalando.swagger
 
 import de.zalando.apifirst
+import de.zalando.apifirst.Application.{ApiCall, Model}
 import de.zalando.apifirst.Path.InPathParameter
-import de.zalando.apifirst.{Domain, Application, Http}
-import apifirst.Application.{ApiCall, Model}
+import de.zalando.apifirst.{Application, Domain, Http}
 import de.zalando.swagger.model._
 
-import scala.language.{postfixOps, implicitConversions}
+import scala.language.{implicitConversions, postfixOps}
 
 /**
  * @since 17.07.2015
