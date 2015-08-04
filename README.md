@@ -1,6 +1,6 @@
-# sbt plugin skeleton
+# Play-Swagger
 
-This is a skeleton for an sbt plugin called Play Swagger.
+[![Build Status](https://travis-ci.org/zalando/play-swagger.svg)](https://travis-ci.org/zalando/play-swagger)
 
 There are 3 sub projects:
 
