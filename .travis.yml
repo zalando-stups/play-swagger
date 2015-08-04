@@ -1,0 +1,14 @@
+# See http://about.travis-ci.org/docs/user/build-configuration/
+language: scala
+scala:
+   - 2.10.5
+branches:
+  only:
+    - master
+notifications:
+  email:
+    recipients:
+      - marco.borst.extern@zalando.de
+      - slava.schmidt.extern@zalando.de
+jdk:
+  - oraclejdk8
