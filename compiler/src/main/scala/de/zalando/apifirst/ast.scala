@@ -46,6 +46,8 @@ object Domain {
   case object DateTime extends Type("java.util.Date")
   case object Password extends Type("Password")
 
+  case object Null extends Type("null")
+
   case class Arr(underlying: Type) extends Type(s"Seq[${ underlying.name }]")
   case class Opt(underlying: Type) extends Type(s"Option[${ underlying.name }]")
 
@@ -53,6 +55,15 @@ object Domain {
   case class ReferenceObject(url: String) extends Reference(url)
   case class RelativeSchemaFile(file: String) extends Reference(file)
   case class EmbeddedSchema(file: String, ref: Reference) extends Reference(file)
+
+  case object Object extends Type("object") // TODO this should be modelled with Entities
+
+  case object Unknown extends Type("Unknown")
+
+  abstract class Entity(override val name: String) extends Type(name)
+  case class Field(name: String, kind: Entity) extends Expr
+  case class TypeDef(override val name: String, fields: Seq[Field]) extends Entity(name)
+
 
   object Reference {
     def apply(url: String): Reference = url.indexOf('#') match {
@@ -63,14 +74,6 @@ object Domain {
         EmbeddedSchema(filePart, apply(urlPart))
     }
   }
-
-
-  case object Unknown extends Type("Unknown")
-
-  abstract class Entity(override val name: String) extends Type(name)
-  case class Field(name: String, kind: Entity) extends Expr
-  case class TypeDef(override val name: String, fields: Seq[Field]) extends Entity(name)
-
 }
 
 object Path {

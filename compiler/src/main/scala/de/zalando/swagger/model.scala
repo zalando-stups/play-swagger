@@ -14,6 +14,8 @@ object model {
 
   sealed trait API
 
+  // Header, Items, Parameter, Schema
+
   // format: OFF
   abstract class CommonProperties (
     val format:           String,
@@ -29,7 +31,9 @@ object model {
     val maxItems:         Long,
     val minItems:         Long,
     val uniqueItems:      Boolean,
-    val enum:             Enum
+    val enum:             Enum,
+    val items:            Items,
+    val `type`:           PrimitiveType.Value
   )
 
   case class SwaggerModel(
@@ -123,21 +127,22 @@ object model {
     override val minItems:         Long,
     override val uniqueItems:      Boolean,
     override val enum:             Enum,
+    override val items:            Items,
+    @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) override val `type`: PrimitiveType.Value,
 
     name:                           String,
     in:                             String,
     required:                       Boolean,
     schema:                         Schema,   // if in is "body"
-    items:                          Items,
+
     collectionFormat:               String,
-    description:                    String,
-    @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) @JsonProperty("type") kind: PrimitiveType.Value // same values as for header
+    description:                    String
     // Scala 2.10.5 limits case classes to 22 attributes
     // multipleOf: Int
     // allowEmptyValue:                Boolean,  // if in is any other value than body
   ) extends CommonProperties(
       format, default, multipleOf, maximum, exclusiveMaximum, minimum, exclusiveMinimum,
-      maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum
+      maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum, items, `type`
     ) with VendorExtensions with ParameterOrReference {
     lazy val bodyParameter      = in.toLowerCase == "body"
     lazy val queryParameter     = in.toLowerCase == "query"
@@ -172,13 +177,13 @@ object model {
     override val minItems:          Long,
     override val uniqueItems:       Boolean,
     override val enum:              Enum,
+    override val items:             Items,
+    @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) override val `type`: PrimitiveType.Value,
 
-    items:                          Items,
     required:                       Boolean,
     example:                        Any,
     description:                    String,
     title:                          String,
-    @JsonProperty("type") kind:     String,
     @JsonProperty("$ref") ref:      String
 // Scala 2.10.5 limits case classes to 22 attributes
 //    properties:                     Properties,
@@ -192,7 +197,7 @@ object model {
 //    minProperties:                  Int, // TODO no description in swagger spec, check JSON Schema
   ) extends CommonProperties(
       format, default, multipleOf, maximum, exclusiveMaximum, minimum, exclusiveMinimum,
-    maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum
+    maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum, items, `type`
   ) with API
 
   case class Header(
@@ -210,25 +215,27 @@ object model {
     override val minItems:          Long,
     override val uniqueItems:       Boolean,
     override val enum:              Enum,
+    override val items:             Items,
+    @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) override val `type`: PrimitiveType.Value, // except NULL and OBJECT
 
-    items:                          Items,
     description:                    String,
-    collectionFormat:               String,
-    @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) @JsonProperty("type") headerType: PrimitiveType.Value
+    collectionFormat:               String
    ) extends CommonProperties (
     format, default, multipleOf, maximum, exclusiveMaximum, minimum, exclusiveMinimum,
-    maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum
+    maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum, items, `type`
   ) with API
 
   private[swagger] class PrimitiveTypeReference extends TypeReference[PrimitiveType.type]
 
   case object PrimitiveType extends Enumeration {
     type PrimitiveType = Value
-    val STRING  = Value("string")
-    val NUMBER  = Value("number")
-    val INTEGER = Value("integer")
-    val BOOLEAN = Value("boolean")
     val ARRAY   = Value("array")
+    val BOOLEAN = Value("boolean")
+    val INTEGER = Value("integer")
+    val NUMBER  = Value("number")
+    val NULL    = Value("null")
+    val OBJECT  = Value("object")
+    val STRING  = Value("string")
   }
 
   case class Items(
@@ -246,14 +253,14 @@ object model {
     override val minItems:         Long,
     override val uniqueItems:      Boolean,
     override val enum:             Enum,
-    @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) @JsonProperty("type") kind: PrimitiveType.Value, // same values as for header
+    override val items:            Items,
+    @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) override val `type`: PrimitiveType.Value,
 
-    items:                         Items,
     collectionFormat:              String,
     @JsonProperty("$ref") ref:     String
   ) extends CommonProperties(
     format, default, multipleOf, maximum, exclusiveMaximum, minimum, exclusiveMinimum,
-    maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum
+    maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum, items, `type`
   ) with API
 
   case class Definition(

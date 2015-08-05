@@ -43,14 +43,14 @@ object Swagger2Ast extends HandlerParser {
   private def pathParameter(p: model.Parameter): Application.Parameter = {
     val fixed = None
     val default = None
-    val typeName = swaggerType2Type(p.kind, p.format, p.items)
+    val typeName = swaggerType2Type(p)
     Application.Parameter(p.name, typeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
 
   private def queryParameter(p: model.Parameter): Application.Parameter = {
     val fixed = None // There is no way to define fixed parameters in swagger spec
     val default = if (p.required && p.default != null) Some(p.default) else None
-    val typeName = swaggerType2Type(p.kind, p.format, p.items)
+    val typeName = swaggerType2Type(p)
     val fullTypeName = if (p.required) typeName else Domain.Opt(typeName)
     // TODO don't use InPathParameter in the next line
     Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
@@ -67,7 +67,7 @@ object Swagger2Ast extends HandlerParser {
   // format: OFF
   import PrimitiveType._
 
-  private def swaggerType2Type(name: PrimitiveType, format: String, items: Items): Domain.Type = (name, format) match {
+  private def swaggerType2Type(p: model.CommonProperties): Domain.Type = (p.`type`, p.format) match {
     case (INTEGER, "int64")     => Domain.Lng
     case (INTEGER, "int32")     => Domain.Int
     case (INTEGER, _)           => Domain.Int
@@ -84,8 +84,14 @@ object Swagger2Ast extends HandlerParser {
     case (STRING, "password")   => Domain.Password
     case (STRING, _)            => Domain.Str
 
-    case (ARRAY, _)             => Domain.Arr(swaggerType2Type(items.kind, items.format, items.items)) // TODO only for arrays with defined item types for now
-    case _                      => Domain.Str // TODO custom types ? check specs
+    case (NULL, _)              => Domain.Null
+
+    case (OBJECT, _)            => Domain.Object
+
+    case (ARRAY, _)             => Domain.Arr(swaggerType2Type(p.items)) // TODO only for arrays with defined item types for now
+
+//    case (null, _) if p.
+    case _                      => Domain.Unknown // TODO custom types ? check specs
   }
   // format: ON
 }
