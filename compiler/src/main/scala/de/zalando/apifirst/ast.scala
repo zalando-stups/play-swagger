@@ -49,6 +49,22 @@ object Domain {
   case class Arr(underlying: Type) extends Type(s"Seq[${ underlying.name }]")
   case class Opt(underlying: Type) extends Type(s"Option[${ underlying.name }]")
 
+  abstract class Reference(override val name: String) extends Type(name)
+  case class ReferenceObject(url: String) extends Reference(url)
+  case class RelativeSchemaFile(file: String) extends Reference(file)
+  case class EmbeddedSchema(file: String, ref: Reference) extends Reference(file)
+
+  object Reference {
+    def apply(url: String): Reference = url.indexOf('#') match {
+      case 0 => ReferenceObject(url.tail)
+      case i if i < 0 => RelativeSchemaFile(url)
+      case i if i > 0 =>
+        val (filePart, urlPart) = url.splitAt(i)
+        EmbeddedSchema(filePart, apply(urlPart))
+    }
+  }
+
+
   case object Unknown extends Type("Unknown")
 
   abstract class Entity(override val name: String) extends Type(name)
