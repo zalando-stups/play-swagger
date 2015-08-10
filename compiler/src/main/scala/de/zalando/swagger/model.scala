@@ -1,9 +1,10 @@
 package de.zalando.swagger
 
-import com.fasterxml.jackson.annotation.{JsonAnySetter, JsonProperty}
+import com.fasterxml.jackson.annotation.{JsonProperty, JsonAnySetter}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
+import de.zalando.swagger.model.ParameterIn
 
 import scala.collection.mutable
 
@@ -108,8 +109,8 @@ object model {
     options:              Operation,
     head:                 Operation,
     patch:                Operation,
-    parameters:           List[Parameter],
-    @JsonProperty("$ref") ref: Ref
+    parameters:           Many[ParameterOrReference],
+    @JsonProperty("$ref") $ref: Ref
   ) extends VendorExtensions with API
 
   case class Operation(
@@ -120,7 +121,7 @@ object model {
     operationId:          String,
     consumes:             Consumes,
     produces:             Produces,
-    parameters:           Parameters, // TODO should be ParameterOrReference
+    parameters:           ParametersOrReferences,
     responses:            Responses,  // TODO should be OperationResponses
     deprecated:           Boolean,
     security:             SecurityRequirements,
@@ -129,48 +130,54 @@ object model {
 
   trait ParameterOrReference extends API
 
-  case class Parameter(
-    override val format:           String,
-    override val default:          String,
-    override val multipleOf:       Int,
-    override val maximum:          Double,
-    override val exclusiveMaximum: Boolean,
-    override val minimum:          Double,
-    override val exclusiveMinimum: Boolean,
-    override val maxLength:        Long,
-    override val minLength:        Long,
-    override val pattern:          String,
-    override val maxItems:         Long,
-    override val minItems:         Long,
-    override val uniqueItems:      Boolean,
-    override val enum:             Enum,
-    override val items:            Items,
+  class Parameter(
+    override val format:                String,
+    override val default:               String,
+    override val multipleOf:            Int,
+    override val maximum:               Double,
+    override val exclusiveMaximum:      Boolean,
+    override val minimum:               Double,
+    override val exclusiveMinimum:      Boolean,
+    override val maxLength:             Long,
+    override val minLength:             Long,
+    override val pattern:               String,
+    override val maxItems:              Long,
+    override val minItems:              Long,
+    override val uniqueItems:           Boolean,
+    override val enum:                  Enum,
+    override val items:                 Items,
     @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) override val `type`: PrimitiveType.Value,
 
-    name:                           String,
-    in:                             String,
-    required:                       Boolean,
-    schema:                         Schema,   // if in is "body"
+    val name:                           String,
+    @JsonScalaEnumeration(classOf[ParameterInTypeReference]) val in: ParameterIn.Value,
+    val required:                       Boolean,
+    val schema:                         Schema,   // if in is "body"
 
-    collectionFormat:               String,
-    description:                    String
-    // Scala 2.10.5 limits case classes to 22 attributes
-    // multipleOf: Int
-    // allowEmptyValue:                Boolean,  // if in is any other value than body
+    val collectionFormat:               String,
+    val description:                    String,
+    val allowEmptyValue:                Boolean  // if in is any other value than body
   ) extends CommonProperties(
       format, default, multipleOf, maximum, exclusiveMaximum, minimum, exclusiveMinimum,
       maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum, items, `type`
     ) with VendorExtensions with ParameterOrReference with API {
-    lazy val bodyParameter      = in.toLowerCase == "body"
-    lazy val queryParameter     = in.toLowerCase == "query"
-    lazy val pathParameter      = in.toLowerCase == "path"
-    lazy val headerParameter    = in.toLowerCase == "header"
-    lazy val formDataParameter  = in.toLowerCase == "formData"
+    lazy val bodyParameter      = in == ParameterIn.BODY
+    lazy val queryParameter     = in == ParameterIn.QUERY
+    lazy val pathParameter      = in == ParameterIn.PATH
+    lazy val headerParameter    = in == ParameterIn.HEADER
+    lazy val formDataParameter  = in == ParameterIn.FORM_DATA
   }
 
-  case class Reference(
-    @JsonProperty("$ref") ref: Ref
+  case class ParameterReference(
+    @JsonProperty("$ref") $ref: Ref
   ) extends ParameterOrReference
+
+  implicit def parameterOrReference2Parameter(pr: ParameterOrReference)(implicit model: SwaggerModel): Parameter =
+    pr match {
+      case p: Parameter => p
+      case pr: ParameterReference => model.parameters(pr.$ref)
+      case other => println(other);null
+    }
+
 
   case class Response(
     description:                    String,
@@ -208,7 +215,7 @@ object model {
     val readOnly:                       Boolean,  // properties only
     val xml:                            Xml,      // properties only ?
     val externalDocs:                   ExternalDocumentation,
-    val allOf:                          Many[Any], // TODO check JSON Schema
+    val allOf:                          Many[ParameterOrReference],
     val maxProperties:                  Int, // TODO no description in swagger spec, check JSON Schema
     val minProperties:                  Int // TODO no description in swagger spec, check JSON Schema
   ) extends CommonProperties(
@@ -255,6 +262,18 @@ object model {
     val FILE    = Value("file")
   }
 
+  private[swagger] class ParameterInTypeReference extends TypeReference[ParameterIn.type]
+
+  case object ParameterIn extends Enumeration {
+    type ParameterIn = Value
+    val QUERY       = Value("query")
+    val HEADER      = Value("header")
+    val PATH        = Value("path")
+    val FORM_DATA   = Value("formData")
+    val BODY        = Value("body")
+  }
+
+
   case class Items(
     override val format:           String,
     override val default:          String,
@@ -274,7 +293,8 @@ object model {
     @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) override val `type`: PrimitiveType.Value,
 
     collectionFormat:              String,
-    @JsonProperty("$ref") $ref:    String
+    @JsonProperty("$ref") $ref:    String,
+    allOf:                         Many[ParameterOrReference]
   ) extends CommonProperties(
     format, default, multipleOf, maximum, exclusiveMaximum, minimum, exclusiveMinimum,
     maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum, items, `type`
@@ -331,38 +351,39 @@ object model {
     lazy val vendorExtensions = extensions.toMap
   }
 
-  type Version              = String
-  type Host                 = String
-  type BasePath             = String
-  type Consume              = String
-  type Produce              = String
-  type Format               = String
-  type SimpleTag            = String
-  type URL                  = String
-  type Ref                  = String
+  type Version                = String
+  type Host                   = String
+  type BasePath               = String
+  type Consume                = String
+  type Produce                = String
+  type Format                 = String
+  type SimpleTag              = String
+  type URL                    = String
+  type Ref                    = String
 
-  type Many[T]              = List[T]
+  type Many[T]                = List[T]
 
-  type Consumes             = Many[Consume]
-  type Produces             = Many[Produce]
-  type Schemes              = Many[Scheme.Value]
-  type Tags                 = Many[Tag]
-  type SimpleTags           = Many[SimpleTag]
-  type Examples             = Many[Example]
-  type ExternalDocs         = Many[ExternalDocumentation]
-  type Parameters           = Many[Parameter]
-  type SecurityRequirements = Many[SecurityRequirement]
-  type Enum                 = Many[String]
-  type RequiredFields       = Many[String]
+  type Consumes               = Many[Consume]
+  type Produces               = Many[Produce]
+  type Schemes                = Many[Scheme.Value]
+  type Tags                   = Many[Tag]
+  type SimpleTags             = Many[SimpleTag]
+  type Examples               = Many[Example]
+  type ExternalDocs           = Many[ExternalDocumentation]
+  type Parameters             = Many[Parameter]
+  type ParametersOrReferences = Many[ParameterOrReference]
+  type SecurityRequirements   = Many[SecurityRequirement]
+  type Enum                   = Many[String]
+  type RequiredFields         = Many[String]
 
-  type Responses            = Map[String, Response]
-  type Headers              = Map[String, Header]
-  type Paths                = Map[String, Path]  // TODO add VendorExtensions
-  type SecurityDefinitions  = Map[String, SecurityDefinition]
-  type SecurityRequirement  = Map[String, List[String]]
-  type Definitions          = Map[String, Schema]
-  type Example              = Map[String, AnyRef]
-  type Properties           = Map[String, Property]
-  type Scopes               = Map[String, String]
+  type Responses              = Map[String, Response]
+  type Headers                = Map[String, Header]
+  type Paths                  = Map[String, Path]  // TODO add VendorExtensions
+  type SecurityDefinitions    = Map[String, SecurityDefinition]
+  type SecurityRequirement    = Map[String, List[String]]
+  type Definitions            = Map[String, Schema]
+  type Example                = Map[String, AnyRef]
+  type Properties             = Map[String, Property]
+  type Scopes                 = Map[String, String]
   // format: ON
 }

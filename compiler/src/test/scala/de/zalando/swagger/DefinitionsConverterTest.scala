@@ -41,7 +41,17 @@ class DefinitionsConverterTest extends FunSpec with MustMatchers {
       "/definitions/Profile" -> TypeDef("Profile",List(Field("first_name",Str(None)), Field("email",Str(None)), Field("promo_code",Str(None)), Field("last_name",Str(None)), Field("picture",Str(None)))),
       "/definitions/PriceEstimate" -> TypeDef("PriceEstimate",List(Field("low_estimate",Dbl), Field("display_name",Str(None)), Field("estimate",Str(None)), Field("high_estimate",Dbl), Field("product_id",Str(None)), Field("currency_code",Str(None)), Field("surge_multiplier",Dbl))),
       "/definitions/Error" -> TypeDef("Error",List(Field("code",Int), Field("message",Str(None)), Field("fields",Str(None))))
-    )
+    ),
+    "instagram.api.yaml" -> Map(
+      "/definitions/Like" -> TypeDef("Like",List(Field("first_name",Str(None)), Field("id",Str(None)), Field("last_name",Str(None)), Field("type",Str(None)), Field("user_name",Str(None))),List()),
+      "/definitions/User" -> TypeDef("User",List(Field("website",Str(None)), Field("profile_picture",Str(None)), Field("username",Str(None)), Field("full_name",Str(None)), Field("bio",Str(None)), Field("id",Int), Field("counts",TypeDef("counts",List(Field("media",Int), Field("follows",Int), Field("follwed_by",Int)),List()))),List()),
+      "/definitions/Location" -> TypeDef("Location",List(Field("id",Str(None)), Field("name",Str(None)), Field("latitude",Dbl), Field("longitude",Dbl)),List()),
+      "/definitions/Media" -> TypeDef("Media",List(Field("location",ReferenceObject("/definitions/Location")), Field("created_time",Int), Field("comments:",TypeDef("comments:",List(Field("count",Int), Field("data",Arr(ReferenceObject("/definitions/Comment")))),List())), Field("tags",Arr(ReferenceObject("/definitions/Tag"))), Field("users_in_photo",Arr(ReferenceObject("/definitions/MiniProfile"))), Field("filter",Str(None)), Field("likes",TypeDef("likes",List(Field("count",Int), Field("data",Arr(ReferenceObject("/definitions/MiniProfile")))),List())), Field("id",Int), Field("videos",TypeDef("videos",List(Field("low_resolution",ReferenceObject("/definitions/Image")), Field("standard_resolution",ReferenceObject("/definitions/Image"))),List())), Field("type",Str(None)), Field("images",TypeDef("images",List(Field("low_resolution",ReferenceObject("/definitions/Image")), Field("thumbnail",ReferenceObject("/definitions/Image")), Field("standard_resolution",ReferenceObject("/definitions/Image"))),List())), Field("user",ReferenceObject("/definitions/MiniProfile"))),List()),
+      "/definitions/Tag" -> TypeDef("Tag",List(Field("media_count",Int), Field("name",Str(None))),List()),
+      "/definitions/MiniProfile" -> TypeDef("MiniProfile",List(Field("user_name",Str(None)), Field("full_name",Str(None)), Field("id",Int), Field("profile_picture",Str(None))),List()),
+      "/definitions/Image" -> TypeDef("Image",List(Field("width",Int), Field("height",Int), Field("url",Str(None))),List()),
+      "/definitions/Comment" -> TypeDef("Comment",List(Field("id",Str(None)), Field("created_time",Str(None)), Field("text",Str(None)), Field("from",ReferenceObject("/definitions/MiniProfile"))),List())
+  )
 
   ).withDefaultValue(Map.empty[String, Domain.Type])
 

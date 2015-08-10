@@ -16,24 +16,24 @@ import scala.language.{reflectiveCalls, implicitConversions, postfixOps}
  */
 object Swagger2Ast extends HandlerParser {
 
-  implicit def convert(keyPrefix: String)(model: SwaggerModel): Model =
-    Model(convertCalls(keyPrefix, model), convertDefinitions(model))
+  implicit def convert(keyPrefix: String)(implicit swaggerModel: SwaggerModel): Model =
+    Model(convertCalls(keyPrefix), convertDefinitions)
 
-  def convertCalls(keyPrefix: String, model: SwaggerModel) =
-    model.paths.flatMap(toCall(keyPrefix) _).toList
+  def convertCalls(keyPrefix: String)(implicit swaggerModel: SwaggerModel) =
+    swaggerModel.paths.flatMap(toCall(keyPrefix) _).toList
 
-  def convertDefinitions(model: SwaggerModel) =
-    Option(model.definitions) map { d =>
+  def convertDefinitions(implicit swaggerModel: SwaggerModel) =
+    Option(swaggerModel.definitions) map { d =>
       val definitions = d map toDefinition("/definitions/")
       definitions.toMap
     } getOrElse Map.empty[String, Domain.Type]
 
   import Http.string2verb
 
-  def toDefinition(namespace: String)(definition: (String, model.Schema)): (String, Domain.Type) =
+  def toDefinition(namespace: String)(definition: (String, model.Schema))(implicit swaggerModel: SwaggerModel): (String, Domain.Type) =
     (namespace + definition._1) -> SchemaConverter.schema2Type(definition._2, definition._1)
 
-  def toCall(keyPrefix: String)(path: (String, model.Path)): Option[ApiCall] = {
+  def toCall(keyPrefix: String)(path: (String, model.Path))(implicit swaggerModel: SwaggerModel): Option[ApiCall] = {
     val call = operation(path) flatMap { case (operation: Operation, signature: String) =>
       for {
         verb <- string2verb(signature)
@@ -51,20 +51,22 @@ object Swagger2Ast extends HandlerParser {
     call.flatten
   }
 
-  private def pathParameters(operation: model.Operation): Seq[Application.Parameter] =
+  import model.parameterOrReference2Parameter
+
+  private def pathParameters(operation: model.Operation)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
     Option(operation.parameters).map(_.filter(_.pathParameter) map pathParameter).toSeq.flatten
 
-  private def queryParameters(operation: model.Operation): Seq[Application.Parameter] =
+  private def queryParameters(operation: model.Operation)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
     Option(operation.parameters).map(_.filter(_.queryParameter) map queryParameter).toSeq.flatten
 
-  private def pathParameter(p: model.Parameter): Application.Parameter = {
+  private def pathParameter(p: model.ParameterOrReference)(implicit swaggerModel: SwaggerModel): Application.Parameter = {
     val fixed = None
     val default = None
     val typeName = SchemaConverter.swaggerType2Type(p)
     Application.Parameter(p.name, typeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
 
-  private def queryParameter(p: model.Parameter): Application.Parameter = {
+  private def queryParameter(p: model.ParameterOrReference)(implicit swaggerModel: SwaggerModel): Application.Parameter = {
     val fixed = None // There is no way to define fixed parameters in swagger spec
     val default = if (p.required && p.default != null) Some(p.default) else None
     val typeName = SchemaConverter.swaggerType2Type(p)
@@ -91,7 +93,7 @@ object SchemaConverter {
     else p match {
       case s: model.Schema =>
         fieldsToTypeDef(name, s)
-      case s: model.Property if s.`type` == OBJECT =>
+      case s: model.Property if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
         fieldsToTypeDef(name, s)
       case s: model.Property if s.`type` == ARRAY =>
         Domain.Arr(schema2Type(s.items, name))

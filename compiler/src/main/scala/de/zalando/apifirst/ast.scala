@@ -61,7 +61,7 @@ object Domain {
 
   abstract class Entity(override val name: String) extends Type(name)
   case class Field(override val name: String, kind: Type) extends Type(name)
-  case class TypeDef(override val name: String, fields: Seq[Field]) extends Entity(name)
+  case class TypeDef(override val name: String, fields: Seq[Field], extend: Seq[Type] = Nil) extends Entity(name)
 
   object Reference {
     def apply(url: String): Reference = url.indexOf('#') match {

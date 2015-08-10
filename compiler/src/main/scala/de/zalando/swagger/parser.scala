@@ -2,11 +2,16 @@ package de.zalando.swagger
 
 import java.io.File
 
-import com.fasterxml.jackson.core.JsonFactory
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.fasterxml.jackson.core.{Version, JsonParser => JParser, JsonFactory}
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.node.{NullNode, BaseJsonNode, ObjectNode}
+import com.fasterxml.jackson.databind.{DeserializationContext, DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import de.zalando.swagger.model.SwaggerModel
+import de.zalando.swagger.model.{Parameter, ParameterReference, ParameterOrReference, SwaggerModel}
+
+import scala.language.postfixOps
 
 trait Parser {
   def parse(file: File): SwaggerModel
@@ -14,11 +19,22 @@ trait Parser {
 
 private[swagger] abstract class SwaggerParser extends Parser {
   def factory: JsonFactory
+
   def parse(file: File): SwaggerModel = {
     val mapper = new ObjectMapper(factory)
     mapper.registerModule(DefaultScalaModule)
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
     mapper.configure(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, true)
+
+    val deserializer = new ParameterOrReferenceDeserializer(
+      "$ref" -> classOf[ParameterReference],
+      "type" -> classOf[Parameter],
+      "name" -> classOf[Parameter]
+    )
+    val module = new SimpleModule("PolymorphicParameterOrReferenceDeserializerModule", new Version(1, 0, 0, null, "", ""))
+    module.addDeserializer(classOf[ParameterOrReference], deserializer)
+    mapper.registerModule(module)
+
     mapper.readValue(file, classOf[SwaggerModel])
   }
 }
@@ -31,3 +47,24 @@ object JsonParser extends SwaggerParser {
   val factory = new JsonFactory()
 }
 
+protected class ParameterOrReferenceDeserializer(mappings: (String, Class[_])*)
+  extends StdDeserializer[ParameterOrReference](classOf[ParameterOrReference]) {
+
+  import scala.collection.JavaConversions._
+
+  private val registry = mappings.toMap
+
+  @Override
+  def deserialize(jp: JParser, ctxt: DeserializationContext): ParameterOrReference = {
+    val mapper = jp.getCodec.asInstanceOf[ObjectMapper]
+    val root = mapper.readTree(jp).asInstanceOf[BaseJsonNode]
+
+    if (root == null || root == NullNode.instance) null
+    else {
+      val clazzez = root.fieldNames.toSeq.flatMap { registry.get }
+      clazzez.headOption map { definition =>
+        mapper.readValue(root.traverse, definition).asInstanceOf[ParameterOrReference]
+      } orNull
+    }
+  }
+}
