@@ -40,9 +40,10 @@ object Domain {
 
   case object Byt extends Type("Byte")
 
-  case object Str extends Type("String")
+  case class Str(format: Option[String] = None) extends Type("String")
   case object Bool extends Type("Boolean")
   case object Date extends Type("java.util.Date")
+  case object File extends Type("java.io.File")
   case object DateTime extends Type("java.util.Date")
   case object Password extends Type("Password")
 
@@ -56,14 +57,11 @@ object Domain {
   case class RelativeSchemaFile(file: String) extends Reference(file)
   case class EmbeddedSchema(file: String, ref: Reference) extends Reference(file)
 
-  case object Object extends Type("object") // TODO this should be modelled with Entities
-
   case object Unknown extends Type("Unknown")
 
   abstract class Entity(override val name: String) extends Type(name)
-  case class Field(name: String, kind: Entity) extends Expr
+  case class Field(override val name: String, kind: Type) extends Type(name)
   case class TypeDef(override val name: String, fields: Seq[Field]) extends Entity(name)
-
 
   object Reference {
     def apply(url: String): Reference = url.indexOf('#') match {
@@ -148,7 +146,7 @@ object Application {
     mimeOut: MimeType
   */
 
-  case class Model(calls: Seq[ApiCall])
+  case class Model(calls: Seq[ApiCall], definitions: Map[String, Domain.Type])
 
 }
 
