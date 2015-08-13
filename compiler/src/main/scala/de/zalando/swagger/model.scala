@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.{JsonProperty, JsonAnySetter}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
-import de.zalando.swagger.model.ParameterIn
 
 import scala.collection.mutable
 
@@ -210,7 +209,7 @@ object model {
     val title:                          String,
     @JsonProperty("$ref") val $ref:     String,
     val properties:                     Properties,
-    val additionalProperties:           Properties,
+    val additionalProperties:           Property,
     val discriminator:                  String,   // polymorphism support
     val readOnly:                       Boolean,  // properties only
     val xml:                            Xml,      // properties only ?

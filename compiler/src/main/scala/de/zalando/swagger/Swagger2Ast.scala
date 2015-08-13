@@ -91,8 +91,11 @@ object SchemaConverter {
     if (propsPartialFunction.isDefinedAt(p.`type`, p.format))
       propsPartialFunction(p.`type`, p.format)
     else p match {
-      case s: model.Schema =>
+      case s: model.Schema if s.properties != null =>
         fieldsToTypeDef(name, s)
+      case s: model.Schema if s.additionalProperties != null =>
+        Domain.CatchAll(schema2Type(s.additionalProperties, name))
+
       case s: model.Property if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
         fieldsToTypeDef(name, s)
       case s: model.Property if s.`type` == ARRAY =>

@@ -4,7 +4,7 @@ import java.io.{FileWriter, BufferedWriter, File}
 
 import de.zalando.apifirst.Domain
 import de.zalando.apifirst.Domain.{Field, TypeDef}
-import de.zalando.swagger.model.PrimitiveType
+import de.zalando.swagger.model.{Property, PrimitiveType}
 import org.scalatest.{FunSpec, MustMatchers}
 
 import scala.language.implicitConversions
@@ -30,6 +30,20 @@ class SchemaConverterTest extends FunSpec with MustMatchers {
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, List("mainprops"), null, null, null, null, mainprops, null, null, false, null, null, null, 0, 0)
       val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
       result mustBe TypeDef("/definitions/type_name", Seq(Field("properties", Domain.TypeDef("properties", Seq(Field("name", Domain.Str()))))))
+    }
+
+    it("should convert primitive additionalProperties") {
+      val props = model.Property(PrimitiveType.STRING, null, null, null, null, null, null)
+      val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, null, props, null, false, null, null, null, 0, 0)
+      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
+      result mustBe Domain.CatchAll(Domain.Str(None))
+    }
+
+    it("should convert complex additionalProperties") {
+      val props = model.Property(null, "#/definitions/ComplexModel", null, null, null, null, null)
+      val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, null, props, null, false, null, null, null, 0, 0)
+      val result = SchemaConverter.schema2Type(schema, "/definitions")
+      result mustBe Domain.CatchAll(Domain.ReferenceObject("/definitions/ComplexModel"))
     }
   }
 
