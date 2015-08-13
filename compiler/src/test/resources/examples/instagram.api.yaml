@@ -471,7 +471,7 @@ paths:
           schema:
             $ref: '#/definitions/Media'
 
-  /media1/{shortcode}: #FIXME: correct path is /media/{shortcode}
+  /media/{shortcode}:
     parameters:
       - name: shortcode
         in: path

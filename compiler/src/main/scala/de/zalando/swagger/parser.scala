@@ -2,14 +2,14 @@ package de.zalando.swagger
 
 import java.io.File
 
-import com.fasterxml.jackson.core.{Version, JsonParser => JParser, JsonFactory}
+import com.fasterxml.jackson.core.{JsonFactory, JsonParser => JParser, Version}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.node.{NullNode, BaseJsonNode, ObjectNode}
+import com.fasterxml.jackson.databind.node.{BaseJsonNode, NullNode}
 import com.fasterxml.jackson.databind.{DeserializationContext, DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import de.zalando.swagger.model.{Parameter, ParameterReference, ParameterOrReference, SwaggerModel}
+import de.zalando.swagger.model.{Parameter, ParameterOrReference, ParameterReference, SwaggerModel}
 
 import scala.language.postfixOps
 

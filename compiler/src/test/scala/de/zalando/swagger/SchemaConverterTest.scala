@@ -1,10 +1,10 @@
 package de.zalando.swagger
 
-import java.io.{FileWriter, BufferedWriter, File}
+import java.io.{BufferedWriter, File, FileWriter}
 
 import de.zalando.apifirst.Domain
 import de.zalando.apifirst.Domain.{Field, TypeDef}
-import de.zalando.swagger.model.{Property, PrimitiveType}
+import de.zalando.swagger.model.PrimitiveType
 import org.scalatest.{FunSpec, MustMatchers}
 
 import scala.language.implicitConversions

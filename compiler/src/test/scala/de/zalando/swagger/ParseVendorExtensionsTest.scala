@@ -3,8 +3,7 @@ package de.zalando.swagger
 import java.io.File
 
 import com.fasterxml.jackson.databind.JsonMappingException
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.{MustMatchers, FunSpec, FlatSpec, Matchers}
+import org.scalatest.{FunSpec, MustMatchers}
 
 class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
 
