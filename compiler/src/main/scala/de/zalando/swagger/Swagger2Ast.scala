@@ -9,6 +9,7 @@ import de.zalando.swagger.model.PrimitiveType
 import de.zalando.swagger.model.PrimitiveType._
 import de.zalando.swagger.model._
 
+import scala.collection.immutable
 import scala.language.{reflectiveCalls, implicitConversions, postfixOps}
 
 /**
@@ -95,10 +96,15 @@ object SchemaConverter {
         fieldsToTypeDef(name, s)
       case s: model.Schema if s.additionalProperties != null =>
         Domain.CatchAll(schema2Type(s.additionalProperties, name))
+      case s: model.Schema if s.allOf != null =>
+        val (toExtend, types) = s.allOf.partition(_.isRef)
+        val fields = types flatMap extractFields
+        val extensions = toExtend map { t => schema2Type(t, name) }
+        Domain.TypeDef(name, fields, extensions)
 
-      case s: model.Property if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
+      case s: model.Schema if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
         fieldsToTypeDef(name, s)
-      case s: model.Property if s.`type` == ARRAY =>
+      case s: model.Schema if s.`type` == ARRAY =>
         Domain.Arr(schema2Type(s.items, name))
       case s if s.$ref != null =>
         Domain.Reference(s.$ref)
@@ -107,17 +113,23 @@ object SchemaConverter {
         Domain.Unknown
     }
 
-  def fieldsToTypeDef(name: String, s: { def properties: Properties }): TypeDef = {
+  def fieldsToTypeDef(name: String, s: {def properties: Properties}): TypeDef = {
+    val fields = extractFields(s)
+    TypeDef(name, fields.toSeq)
+  }
+
+  def extractFields(s: {def properties: Properties}) = {
     val fields = s.properties map { prop =>
       val name = prop._1
       val pr = prop._2
       Field(name, schema2Type(pr, name))
     }
-    TypeDef(name, fields.toSeq)
+    fields
   }
 
-  // format: OFF
   import PrimitiveType._
+
+  // format: OFF
 
   protected[swagger] def swaggerType2Type(p: model.Parameter): Domain.Type = propsPartialFunction(p.`type`, p.format)
 

@@ -51,7 +51,17 @@ class DefinitionsConverterTest extends FunSpec with MustMatchers {
       "/definitions/MiniProfile" -> TypeDef("MiniProfile",List(Field("user_name",Str(None)), Field("full_name",Str(None)), Field("id",Int), Field("profile_picture",Str(None))),List()),
       "/definitions/Image" -> TypeDef("Image",List(Field("width",Int), Field("height",Int), Field("url",Str(None))),List()),
       "/definitions/Comment" -> TypeDef("Comment",List(Field("id",Str(None)), Field("created_time",Str(None)), Field("text",Str(None)), Field("from",ReferenceObject("/definitions/MiniProfile"))),List())
-  )
+  ),
+    "basic_extension.yaml" -> Map(
+      "/definitions/ErrorModel" -> TypeDef("ErrorModel",List(Field("message",Str(None)), Field("code",Int)),List()),
+      "/definitions/ExtendedErrorModel" -> TypeDef("ExtendedErrorModel",List(Field("rootCause",Str(None))), List(ReferenceObject("/definitions/ErrorModel")))
+    ),
+    "basic_polymorphism.yaml" -> Map(
+      "/definitions/Pet" -> TypeDef("Pet",List(Field("name",Str(None)), Field("petType",Str(None))),List()),
+      "/definitions/Cat" -> TypeDef("Cat",List(Field("huntingSkill",Str(None))),List(ReferenceObject("/definitions/Pet"))),
+      "/definitions/Dog" -> TypeDef("Dog",List(Field("packSize",Int)),List(ReferenceObject("/definitions/Pet")))
+    )
+
 
   ).withDefaultValue(Map.empty[String, Domain.Type])
 

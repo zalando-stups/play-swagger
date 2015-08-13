@@ -51,7 +51,7 @@ object model {
     items:                Items,
     example:              String,
     properties:           Properties
-  ) extends TypeInfo
+  ) extends TypeInfo with VendorExtensions
 
   case class SwaggerModel(
     @JsonScalaEnumeration(classOf[SchemeType]) schemes: Schemes,
@@ -174,7 +174,6 @@ object model {
     pr match {
       case p: Parameter => p
       case pr: ParameterReference => model.parameters(pr.$ref)
-      case other => println(other);null
     }
 
 
@@ -214,13 +213,15 @@ object model {
     val readOnly:                       Boolean,  // properties only
     val xml:                            Xml,      // properties only ?
     val externalDocs:                   ExternalDocumentation,
-    val allOf:                          Many[ParameterOrReference],
+    val allOf:                          Many[Schema],
     val maxProperties:                  Int, // TODO no description in swagger spec, check JSON Schema
     val minProperties:                  Int // TODO no description in swagger spec, check JSON Schema
   ) extends CommonProperties(
       format, default, multipleOf, maximum, exclusiveMaximum, minimum, exclusiveMinimum,
     maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum, items, `type`
-  ) with TypeInfo
+  ) with TypeInfo {
+    val isRef = $ref != null && $ref.trim.nonEmpty
+  }
 
   case class Header(
     override val format:            String,
@@ -382,7 +383,7 @@ object model {
   type SecurityRequirement    = Map[String, List[String]]
   type Definitions            = Map[String, Schema]
   type Example                = Map[String, AnyRef]
-  type Properties             = Map[String, Property]
+  type Properties             = Map[String, Schema]
   type Scopes                 = Map[String, String]
   // format: ON
 }

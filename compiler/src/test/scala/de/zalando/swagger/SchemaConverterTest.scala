@@ -18,15 +18,17 @@ class SchemaConverterTest extends FunSpec with MustMatchers {
       result mustBe Domain.Str(Some("email"))
     }
     it("should convert simple object") {
-      val props = Map("name" -> model.Property(PrimitiveType.STRING, null, null, null, null, null, null))
+      val internalSchema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.STRING, Nil, null, null, null, null, null, null, null, false, null, null, null, 0, 0)
+      val props = Map("name" -> internalSchema)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, List("name"), null, null, null, null, props, null, null, false, null, null, null, 0, 0)
       val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
       result mustBe TypeDef("/definitions/type_name", Seq(Field("name", Domain.Str())))
     }
-
     it("should convert a complex object") {
-      val props = Map("name" -> model.Property(PrimitiveType.STRING, null, null, null, null, null, null))
-      val mainprops = Map("properties" -> model.Property(PrimitiveType.OBJECT, null, null, null, null, null, props))
+      val internalSchema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.STRING, Nil, null, null, null, null, null, null, null, false, null, null, null, 0, 0)
+      val internalProps = Map("name" -> internalSchema)
+      val properties = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, internalProps, null, null, false, null, null, null, 0, 0)
+      val mainprops = Map("properties" -> properties)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, List("mainprops"), null, null, null, null, mainprops, null, null, false, null, null, null, 0, 0)
       val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
       result mustBe TypeDef("/definitions/type_name", Seq(Field("properties", Domain.TypeDef("properties", Seq(Field("name", Domain.Str()))))))
