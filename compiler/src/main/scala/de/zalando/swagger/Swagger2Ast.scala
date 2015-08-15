@@ -88,30 +88,28 @@ object Swagger2Ast extends HandlerParser {
 
 object SchemaConverter {
 
-  def schema2Type(p: model.TypeInfo, name: String): Domain.Type =
-    if (propsPartialFunction.isDefinedAt(p.`type`, p.format))
+  def schema2Type(p: model.TypeInfo, name: String): Domain.Type = p match {
+    case _ if propsPartialFunction.isDefinedAt(p.`type`, p.format) =>
       propsPartialFunction(p.`type`, p.format)
-    else p match {
-      case s: model.Schema if s.properties != null =>
-        fieldsToTypeDef(name, s)
-      case s: model.Schema if s.additionalProperties != null =>
-        Domain.CatchAll(schema2Type(s.additionalProperties, name))
-      case s: model.Schema if s.allOf != null =>
-        val (toExtend, types) = s.allOf.partition(_.isRef)
-        val fields = types flatMap extractFields
-        val extensions = toExtend map { t => schema2Type(t, name) }
-        Domain.TypeDef(name, fields, extensions)
+    case s: model.Schema if s.properties != null =>
+      fieldsToTypeDef(name, s)
+    case s: model.Schema if s.additionalProperties != null =>
+      Domain.CatchAll(schema2Type(s.additionalProperties, name))
+    case s: model.Schema if s.allOf != null =>
+      val (toExtend, types) = s.allOf.partition(_.isRef)
+      val fields = types flatMap extractFields
+      val extensions = toExtend map { t => schema2Type(t, name) }
+      Domain.TypeDef(name, fields, extensions)
 
-      case s: model.Schema if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
-        fieldsToTypeDef(name, s)
-      case s: model.Schema if s.`type` == ARRAY =>
-        Domain.Arr(schema2Type(s.items, name))
-      case s if s.$ref != null =>
-        Domain.Reference(s.$ref)
-      case other =>
-        println("Cannot process " + other)
-        Domain.Unknown
-    }
+    case s: model.Schema if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
+      fieldsToTypeDef(name, s)
+    case s: model.Schema if s.`type` == ARRAY =>
+      Domain.Arr(schema2Type(s.items, name))
+    case s if s.$ref != null =>
+      Domain.Reference(s.$ref)
+    case other =>
+      ???
+  }
 
   def fieldsToTypeDef(name: String, s: {def properties: Properties}): TypeDef = {
     val fields = extractFields(s)
