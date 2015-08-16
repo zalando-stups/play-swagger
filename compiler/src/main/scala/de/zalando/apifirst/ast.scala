@@ -1,5 +1,8 @@
 package de.zalando.apifirst
 
+import de.zalando.swagger.model._
+
+import scala.language.implicitConversions
 import scala.util.parsing.input.Positional
 
 sealed trait Expr
@@ -32,45 +35,69 @@ object Hypermedia {
 }
 
 object Domain {
-  abstract class Type(val name: String) extends Expr
-  case object Int extends Type("Int")
-  case object Lng extends Type("Long")
-  case object Flt extends Type("Float")
-  case object Dbl extends Type("Double")
+  // First comments, then everything else
+  case class TypeMeta(comment: Option[String]) {
+    override def toString = s"""TypeMeta(${comment match {
+      case None => "None"
+      case Some(s) => "Some(\"" + s.replaceAll("\"", "\\\"") + "\")"
+    }})"""
+  }
+  implicit def option2TypeMeta(o:Option[String]):TypeMeta = TypeMeta(o)
+  implicit def schema2TypeMeta(s: Schema): TypeMeta = Option(s.description)
+  implicit def typeInfo2TypeMeta(s: TypeInfo): TypeMeta = Option(s.format)
+  implicit def paramOrRefInfo2TypeMeta(s: ParameterOrReference): TypeMeta = s match {
+    case s: Parameter => Option(s.description)
+    case s: ParameterReference => Option(s.$ref)
+  }
 
-  case object Byt extends Type("Byte")
+  abstract class Type(val name: String, val meta: TypeMeta) extends Expr
+  case class Int(override val meta: TypeMeta) extends Type("Int", meta)
+  case class Lng(override val meta: TypeMeta) extends Type("Long", meta)
+  case class Flt(override val meta: TypeMeta) extends Type("Float", meta)
+  case class Dbl(override val meta: TypeMeta) extends Type("Double", meta)
 
-  case class Str(format: Option[String] = None) extends Type("String")
-  case object Bool extends Type("Boolean")
-  case object Date extends Type("java.util.Date")
-  case object File extends Type("java.io.File")
-  case object DateTime extends Type("java.util.Date")
-  case object Password extends Type("Password")
+  case class Byt(override val meta: TypeMeta) extends Type("Byte", meta)
 
-  case object Null extends Type("null")
+  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends Type("String", meta)
+  case class Bool(override val meta: TypeMeta) extends Type("Boolean", meta)
+  case class Date(override val meta: TypeMeta) extends Type("java.util.Date", meta)
+  case class File(override val meta: TypeMeta) extends Type("java.io.File", meta)
+  case class DateTime(override val meta: TypeMeta) extends Type("java.util.Date", meta)
+  case class Password(override val meta: TypeMeta) extends Type("Password", meta)
 
-  case class Arr(underlying: Type) extends Type(s"Seq[${ underlying.name }]")
-  case class Opt(underlying: Type) extends Type(s"Option[${ underlying.name }]")
+  case class Null(override val meta: TypeMeta) extends Type("null", meta)
 
-  abstract class Reference(override val name: String) extends Type(name)
-  case class ReferenceObject(url: String) extends Reference(url)
-  case class RelativeSchemaFile(file: String) extends Reference(file)
-  case class EmbeddedSchema(file: String, ref: Reference) extends Reference(file)
+  case class Arr(underlying: Type, override val meta: TypeMeta) extends Type(s"Seq[${ underlying.name }]", meta)
+  case class Opt(underlying: Type, override val meta: TypeMeta) extends Type(s"Option[${ underlying.name }]", meta)
 
-  case object Unknown extends Type("Unknown")
+  abstract class Reference(override val name: String, override val meta: TypeMeta) extends Type(name, meta)
+  case class ReferenceObject(url: String, override val meta: TypeMeta) extends Reference(url, meta) {
+    override def toString = s"""ReferenceObject("$url", $meta)"""
+  }
+  case class RelativeSchemaFile(file: String, override val meta: TypeMeta) extends Reference(file, meta)
+  case class EmbeddedSchema(file: String, ref: Reference, override val meta: TypeMeta) extends Reference(file, meta)
 
-  abstract class Entity(override val name: String) extends Type(name)
-  case class Field(override val name: String, kind: Type) extends Type(name)
-  case class TypeDef(override val name: String, fields: Seq[Field], extend: Seq[Type] = Nil) extends Entity(name)
-  case class CatchAll(kind: Type) extends Entity("additionalProperties")
+  case class Unknown(override val meta: TypeMeta) extends Type("Unknown", meta)
+
+  abstract class Entity(override val name: String, override val meta: TypeMeta) extends Type(name, meta)
+  case class Field(override val name: String, kind: Type, override val meta: TypeMeta = None) extends Type(name, meta) {
+    override def toString = s"""Field("$name", $kind, $meta)"""
+  }
+  case class TypeDef(override val name: String,
+                     fields: Seq[Field],
+                     extend: Seq[Type] = Nil,
+                     override val meta: TypeMeta = None) extends Entity(name, meta) {
+    override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
+  }
+  case class CatchAll(kind: Type, override val meta: TypeMeta) extends Entity("additionalProperties", meta)
 
   object Reference {
-    def apply(url: String): Reference = url.indexOf('#') match {
-      case 0 => ReferenceObject(url.tail)
-      case i if i < 0 => RelativeSchemaFile(url)
+    def apply(url: String, meta: TypeMeta = None): Reference = url.indexOf('#') match {
+      case 0 => ReferenceObject(url.tail, meta)
+      case i if i < 0 => RelativeSchemaFile(url, meta)
       case i if i > 0 =>
         val (filePart, urlPart) = url.splitAt(i)
-        EmbeddedSchema(filePart, apply(urlPart))
+        EmbeddedSchema(filePart, apply(urlPart, meta), meta)
     }
   }
 }

@@ -1,7 +1,6 @@
 package de.zalando.swagger
 
-import de.zalando.apifirst.Application.{HandlerCall, Parameter}
-import de.zalando.apifirst.Domain
+import de.zalando.apifirst.Application.HandlerCall
 
 import scala.util.parsing.combinator.JavaTokenParsers
 import scala.util.parsing.input.CharSequenceReader
@@ -12,8 +11,7 @@ import scala.util.parsing.input.CharSequenceReader
 // handler related part of the play's parser
 // we can use it if we won't change handler definition syntax
 trait HandlerParser extends JavaTokenParsers {
-  import scala.language.postfixOps
-  import scala.language.implicitConversions
+  import scala.language.{implicitConversions, postfixOps}
 
   override def skipWhitespace = false
 

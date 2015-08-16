@@ -2,15 +2,12 @@ package de.zalando.swagger
 
 import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
-import de.zalando.apifirst.Domain.{Field, TypeDef}
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Application, Domain, Http}
-import de.zalando.swagger.model.PrimitiveType
 import de.zalando.swagger.model.PrimitiveType._
-import de.zalando.swagger.model._
+import de.zalando.swagger.model.{PrimitiveType, _}
 
-import scala.collection.immutable
-import scala.language.{reflectiveCalls, implicitConversions, postfixOps}
+import scala.language.{implicitConversions, postfixOps, reflectiveCalls}
 
 /**
  * @since 17.07.2015
@@ -71,7 +68,8 @@ object Swagger2Ast extends HandlerParser {
     val fixed = None // There is no way to define fixed parameters in swagger spec
     val default = if (p.required && p.default != null) Some(p.default) else None
     val typeName = SchemaConverter.swaggerType2Type(p)
-    val fullTypeName = if (p.required) typeName else Domain.Opt(typeName)
+    import Domain.paramOrRefInfo2TypeMeta
+    val fullTypeName = if (p.required) typeName else Domain.Opt(typeName, p)
     // TODO don't use InPathParameter in the next line
     Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
@@ -88,39 +86,44 @@ object Swagger2Ast extends HandlerParser {
 
 object SchemaConverter {
 
+  import Domain._
+
   def schema2Type(p: model.TypeInfo, name: String): Domain.Type = p match {
     case _ if propsPartialFunction.isDefinedAt(p.`type`, p.format) =>
-      propsPartialFunction(p.`type`, p.format)
-    case s: model.Schema if s.properties != null =>
-      fieldsToTypeDef(name, s)
+      propsPartialFunction(p.`type`, p.format)(p)
+
     case s: model.Schema if s.additionalProperties != null =>
-      Domain.CatchAll(schema2Type(s.additionalProperties, name))
+      Domain.CatchAll(schema2Type(s.additionalProperties, name), s)
+
     case s: model.Schema if s.allOf != null =>
       val (toExtend, types) = s.allOf.partition(_.isRef)
       val fields = types flatMap extractFields
       val extensions = toExtend map { t => schema2Type(t, name) }
-      Domain.TypeDef(name, fields, extensions)
+      Domain.TypeDef(name, fields, extensions, s)
 
     case s: model.Schema if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
       fieldsToTypeDef(name, s)
+
     case s: model.Schema if s.`type` == ARRAY =>
-      Domain.Arr(schema2Type(s.items, name))
+      Domain.Arr(schema2Type(s.items, name), s)
+
     case s if s.$ref != null =>
-      Domain.Reference(s.$ref)
+      Domain.Reference(s.$ref, s)
+
     case other =>
       ???
   }
 
   def fieldsToTypeDef(name: String, s: {def properties: Properties}): TypeDef = {
     val fields = extractFields(s)
-    TypeDef(name, fields.toSeq)
+    TypeDef(name, fields.toSeq, Nil, None)
   }
 
   def extractFields(s: {def properties: Properties}) = {
     val fields = s.properties map { prop =>
       val name = prop._1
       val pr = prop._2
-      Field(name, schema2Type(pr, name))
+      Field(name, schema2Type(pr, name), prop._2)
     }
     fields
   }
@@ -129,9 +132,9 @@ object SchemaConverter {
 
   // format: OFF
 
-  protected[swagger] def swaggerType2Type(p: model.Parameter): Domain.Type = propsPartialFunction(p.`type`, p.format)
+  protected[swagger] def swaggerType2Type(p: model.Parameter): Domain.Type = propsPartialFunction(p.`type`, p.format)(p)
 
-  protected def propsPartialFunction: PartialFunction[(PrimitiveType.Value, String), Domain.Type] = {
+  protected def propsPartialFunction: PartialFunction[(PrimitiveType.Value, String), TypeMeta => Domain.Type] = {
     case (INTEGER, "int64")     => Domain.Lng
     case (INTEGER, "int32")     => Domain.Int
     case (INTEGER, _)           => Domain.Int
@@ -146,7 +149,7 @@ object SchemaConverter {
     case (STRING, "date")       => Domain.Date
     case (STRING, "date-time")  => Domain.DateTime
     case (STRING, "password")   => Domain.Password
-    case (STRING, format)       => Domain.Str(Option(format))
+    case (STRING, format)       => Domain.Str.curried(Option(format))
 
     case (FILE, _)              => Domain.File
 
