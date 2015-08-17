@@ -2,6 +2,7 @@ package de.zalando.swagger
 
 import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
+import de.zalando.apifirst.Domain.Field
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Application, Domain, Http}
 import de.zalando.swagger.model.PrimitiveType._
@@ -69,7 +70,7 @@ object Swagger2Ast extends HandlerParser {
     val default = if (p.required && p.default != null) Some(p.default) else None
     val typeName = SchemaConverter.swaggerType2Type(p)
     import Domain.paramOrRefInfo2TypeMeta
-    val fullTypeName = if (p.required) typeName else Domain.Opt(typeName, p)
+    val fullTypeName = if (p.required) typeName else Domain.Opt(Field(typeName.name, typeName), p)
     // TODO don't use InPathParameter in the next line
     Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
@@ -93,19 +94,21 @@ object SchemaConverter {
       propsPartialFunction(p.`type`, p.format)(p)
 
     case s: model.Schema if s.additionalProperties != null =>
-      Domain.CatchAll(schema2Type(s.additionalProperties, name), s)
+      val field = Field(name, schema2Type(s.additionalProperties, name))
+      Domain.CatchAll(field, s)
 
     case s: model.Schema if s.allOf != null =>
       val (toExtend, types) = s.allOf.partition(_.isRef)
       val fields = types flatMap extractFields
-      val extensions = toExtend map { t => schema2Type(t, name) }
+      val extensions = toExtend map { s => Domain.Reference(s.$ref, s) }
       Domain.TypeDef(name, fields, extensions, s)
 
     case s: model.Schema if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
       fieldsToTypeDef(name, s)
 
     case s: model.Schema if s.`type` == ARRAY =>
-      Domain.Arr(schema2Type(s.items, name), s)
+      val field = Field(name, schema2Type(s.items, name))
+      Domain.Arr(field, s)
 
     case s if s.$ref != null =>
       Domain.Reference(s.$ref, s)
@@ -114,9 +117,9 @@ object SchemaConverter {
       ???
   }
 
-  def fieldsToTypeDef(name: String, s: {def properties: Properties}): TypeDef = {
+  def fieldsToTypeDef(name: String, s: {def properties: Properties; def description: String}): TypeDef = {
     val fields = extractFields(s)
-    TypeDef(name, fields.toSeq, Nil, None)
+    TypeDef(name, fields.toSeq, Nil, TypeMeta(Option(s.description)))
   }
 
   def extractFields(s: {def properties: Properties}) = {

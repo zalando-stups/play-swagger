@@ -38,3 +38,16 @@ definitions:
           minimum: 0
       required:
       - packSize
+  Labrador:
+    description: A concrete implementation of a dog
+    allOf:
+    - $ref: '#/definitions/Dog'
+    - properties:
+        cuteness:
+          type: integer
+          format: int32
+          description: the cuteness of the animal in percent
+          default: 50
+          minimum: 0
+      required:
+      - cuteness

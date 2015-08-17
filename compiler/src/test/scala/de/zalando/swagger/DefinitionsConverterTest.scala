@@ -41,8 +41,8 @@ class DefinitionsConverterTest extends FunSpec with MustMatchers {
       "/definitions/Pet" ->
         TypeDef("Pet", List(
           Field("name", Str(None,TypeMeta(None)), TypeMeta(None)),
-          Field("tags", Arr(ReferenceObject("/definitions/Tag", TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
-          Field("photoUrls", Arr(Str(None,TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+          Field("tags", Arr(Field("tags",ReferenceObject("/definitions/Tag", TypeMeta(None))),TypeMeta(None)), TypeMeta(None)),
+          Field("photoUrls", Arr(Field("photoUrls", Str(None,TypeMeta(None))),TypeMeta(None)), TypeMeta(None)),
           Field("id", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),
           Field("status", Str(None,TypeMeta(None)), TypeMeta(Some("pet status in the store"))),
           Field("category", ReferenceObject("/definitions/Category", TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
@@ -100,7 +100,7 @@ class DefinitionsConverterTest extends FunSpec with MustMatchers {
           Field("offset", Int(TypeMeta(Some("int32"))), TypeMeta(Some("Position in pagination."))),
           Field("limit", Int(TypeMeta(Some("int32"))), TypeMeta(Some("Number of items to retrieve (100 max)."))),
           Field("count", Int(TypeMeta(Some("int32"))), TypeMeta(Some("Total number of items available."))),
-          Field("history", Arr(ReferenceObject("/definitions/Activity", TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+          Field("history", Arr(Field("history",ReferenceObject("/definitions/Activity", TypeMeta(None))),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
       ,
       "/definitions/Product" ->
         TypeDef("Product", List(
@@ -172,15 +172,15 @@ class DefinitionsConverterTest extends FunSpec with MustMatchers {
           Field("comments:",
             TypeDef("comments:", List(
               Field("count", Int(TypeMeta(None)), TypeMeta(None)),
-              Field("data", Arr(ReferenceObject("/definitions/Comment", TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+              Field("data", Arr(Field("data", ReferenceObject("/definitions/Comment", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
             , TypeMeta(None)),
-          Field("tags", Arr(ReferenceObject("/definitions/Tag", TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
-          Field("users_in_photo", Arr(ReferenceObject("/definitions/MiniProfile", TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+          Field("tags", Arr(Field("tags", ReferenceObject("/definitions/Tag", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+          Field("users_in_photo", Arr(Field("users_in_photo", ReferenceObject("/definitions/MiniProfile", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
           Field("filter", Str(None,TypeMeta(None)), TypeMeta(None)),
           Field("likes",
             TypeDef("likes", List(
               Field("count", Int(TypeMeta(None)), TypeMeta(None)),
-              Field("data", Arr(ReferenceObject("/definitions/MiniProfile", TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+              Field("data", Arr(Field("data", ReferenceObject("/definitions/MiniProfile", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
             , TypeMeta(None)),
           Field("id", Int(TypeMeta(None)), TypeMeta(None)),
           Field("videos",
@@ -207,7 +207,7 @@ class DefinitionsConverterTest extends FunSpec with MustMatchers {
           Field("user_name", Str(None,TypeMeta(None)), TypeMeta(None)),
           Field("full_name", Str(None,TypeMeta(None)), TypeMeta(None)),
           Field("id", Int(TypeMeta(None)), TypeMeta(None)),
-          Field("profile_picture", Str(None,TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+          Field("profile_picture", Str(None,TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(Some("A shorter version of User for likes array")))
       ,
       "/definitions/Image" ->
         TypeDef("Image", List(
@@ -223,19 +223,32 @@ class DefinitionsConverterTest extends FunSpec with MustMatchers {
           Field("from", ReferenceObject("/definitions/MiniProfile", TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
     ),
     "basic_extension.yaml" -> Map(
-      "/definitions/ErrorModel" -> TypeDef("ErrorModel",List(Field("message",Str(None, None)), Field("code",Int(None))),List()),
-      "/definitions/ExtendedErrorModel" -> TypeDef("ExtendedErrorModel",List(Field("rootCause",Str(None, None))), List(ReferenceObject("/definitions/ErrorModel", None)))
+      "/definitions/ErrorModel" ->
+        TypeDef("ErrorModel", List(
+          Field("message", Str(None,TypeMeta(None)), TypeMeta(Some("The text of the error message"))),
+          Field("code", Int(TypeMeta(None)), TypeMeta(Some("The error code")))), List(), TypeMeta(Some("Basic error model")))
+      ,
+      "/definitions/ExtendedErrorModel" ->
+        TypeDef("ExtendedErrorModel", List(
+          Field("rootCause", Str(None,TypeMeta(None)), TypeMeta(None))), List(ReferenceObject("/definitions/ErrorModel", TypeMeta(None))), TypeMeta(Some("Extended error model")))
     ),
     "basic_polymorphism.yaml" -> Map(
-      "/definitions/Pet" -> TypeDef("Pet",List(
-          Field("name",Str(None,None),None),
-          Field("petType",Str(None,None),None)),List(),None),
-      "/definitions/Cat" -> TypeDef("Cat",List(
-        Field("huntingSkill",Str(None,None),Some("The measured skill for hunting"))),
-        List(ReferenceObject("/definitions/Pet",None)),Some("A representation of a cat")),
-      "/definitions/Dog" -> TypeDef("Dog",List(
-        Field("packSize",Int(Some("int32")),Some("the size of the pack the dog is from"))),
-        List(ReferenceObject("/definitions/Pet",None)),Some("A representation of a dog"))
+      "/definitions/Pet" ->
+        TypeDef("Pet", List(
+          Field("name", Str(None,TypeMeta(None)), TypeMeta(None)),
+          Field("petType", Str(None,TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+      ,
+      "/definitions/Cat" ->
+        TypeDef("Cat", List(
+          Field("huntingSkill", Str(None,TypeMeta(None)), TypeMeta(Some("The measured skill for hunting")))), List(ReferenceObject("/definitions/Pet", TypeMeta(None))), TypeMeta(Some("A representation of a cat")))
+      ,
+      "/definitions/Dog" ->
+        TypeDef("Dog", List(
+          Field("packSize", Int(TypeMeta(Some("int32"))), TypeMeta(Some("the size of the pack the dog is from")))), List(ReferenceObject("/definitions/Pet", TypeMeta(None))), TypeMeta(Some("A representation of a dog")))
+      ,
+      "/definitions/Labrador" ->
+        TypeDef("Labrador", List(
+          Field("cuteness", Int(TypeMeta(Some("int32"))), TypeMeta(Some("the cuteness of the animal in percent")))), List(ReferenceObject("/definitions/Dog", TypeMeta(None))), TypeMeta(Some("A concrete implementation of a dog")))
     )
   ).withDefaultValue(Map.empty[String, Domain.Type])
 

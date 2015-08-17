@@ -38,14 +38,14 @@ class SchemaConverterTest extends FunSpec with MustMatchers {
       val props = model.Property(PrimitiveType.STRING, null, null, null, null, null, null)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, null, props, null, false, null, null, null, 0, 0)
       val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
-      result mustBe Domain.CatchAll(Domain.Str(None, None), None)
+      result mustBe Domain.CatchAll(Field("/definitions/type_name",Domain.Str(None, None)), None)
     }
 
     it("should convert complex additionalProperties") {
       val props = model.Property(null, "#/definitions/ComplexModel", null, null, null, null, null)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, null, props, null, false, null, null, null, 0, 0)
       val result = SchemaConverter.schema2Type(schema, "/definitions")
-      result mustBe Domain.CatchAll(Domain.ReferenceObject("/definitions/ComplexModel", None), None)
+      result mustBe Domain.CatchAll(Field("/definitions",Domain.ReferenceObject("/definitions/ComplexModel", None)), None)
     }
   }
 
