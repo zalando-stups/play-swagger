@@ -73,6 +73,16 @@ object Domain {
   object TypeName {
     val SL = '/'
     def apply(namespace: String, simpleName: String):TypeName = TypeName(namespace + SL + simpleName)
+    def escapeName(name: String) = {
+      val innerType =
+        if (name.lastIndexOf('[')>0 && name.indexOf(']') > name.lastIndexOf('['))
+          name.substring(name.lastIndexOf('[')+1, name.indexOf(']'))
+        else
+          name
+      val escapedType = innerType.split('.').map(escape).toSeq.mkString(".")
+      name.replace(innerType, escapedType)
+    }
+
     def escape(name: String) = {
       import de.zalando.swagger.ScalaReserved._
       if (
@@ -86,7 +96,6 @@ object Domain {
     }
   }
 
-  implicit def string2TypeName(s: String): TypeName = TypeName(s)
 
   // First comments, then everything else
   case class TypeMeta(comment: Option[String]) {
@@ -111,7 +120,10 @@ object Domain {
 
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
     def nestedTypes: Seq[Type] = Nil
+    def imports: Set[String] = Set.empty
   }
+
+  implicit def string2TypeName(s: String): TypeName = TypeName(s)
 
   case class Int(override val meta: TypeMeta) extends Type("Int", meta)
 
@@ -127,17 +139,23 @@ object Domain {
 
   case class Bool(override val meta: TypeMeta) extends Type("Boolean", meta)
 
-  case class Date(override val meta: TypeMeta) extends Type("java.util.Date", meta)
+  case class Date(override val meta: TypeMeta) extends Type("Date", meta) {
+    override val imports = Set("java.util.Date")
+  }
 
-  case class File(override val meta: TypeMeta) extends Type("java.io.File", meta)
+  case class File(override val meta: TypeMeta) extends Type("File", meta) {
+    override val imports = Set("java.io.File")
+  }
 
-  case class DateTime(override val meta: TypeMeta) extends Type("java.util.Date", meta)
+  case class DateTime(override val meta: TypeMeta) extends Type("Date", meta) {
+    override val imports = Set("java.util.Date")
+  }
 
   case class Password(override val meta: TypeMeta) extends Type("Password", meta)
 
   case class Null(override val meta: TypeMeta) extends Type("null", meta)
 
-  abstract class Container(override val name: TypeName, val field: Field, override val meta: TypeMeta, val imports: Set[String])
+  abstract class Container(override val name: TypeName, val field: Field, override val meta: TypeMeta, override val imports: Set[String])
     extends Type(name, meta) {
     def allImports: Set[String] = imports ++ field.imports
     override def nestedTypes = field.kind.nestedTypes :+ field.kind
@@ -159,9 +177,9 @@ object Domain {
 
     def asCode(prefix: String = "") = s"$name: ${kind.name}"
 
-    def imports = kind match {
+    override def imports = kind match {
       case c: Container => c.allImports
-      case _ => Set.empty[String]
+      case o => o.imports
     }
 
     override def nestedTypes = kind.nestedTypes :+ kind

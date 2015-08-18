@@ -16,16 +16,17 @@ object ModelGenerator {
 
   def generate(packageName: Option[String],
                namespace: String = "definitions")(implicit model: ModelDefinition) = {
-    val (imports: String, result: String) = generateNamespace(namespace)
+    val (imports, result) = generateNamespace(namespace)
+    if (result.nonEmpty) {
+      val now = new SimpleDateFormat(nowFormat).format(new Date())
+      val pkgName = packageName.fold("") { p => s"package $p" }
 
-    val now = new SimpleDateFormat(nowFormat).format(new Date())
-    val pkgName = packageName.fold("") { p => s"package $p" }
-
-    val prefix = mainTemplate.
-      replace("#IMPORT#", imports).
-      replace("#PACKAGE#", pkgName).
-      replace("#NOW#", now)
-    prefix + result
+      val prefix = mainTemplate.
+        replace("#IMPORT#", imports).
+        replace("#PACKAGE#", pkgName).
+        replace("#NOW#", now)
+      prefix + result
+    } else result
   }
 
   def generateNamespace(namespace: String)(implicit model: ModelDefinition): (String, String) = {
@@ -43,13 +44,13 @@ object ModelGenerator {
     val traits = traitInfo.map(_._2)
     val classInfo = generateClasses(namespace)
     val classImports = classInfo.map(_._1)
-    val classes = classInfo.map( _._2)
+    val classes = classInfo.map(_._2)
     val imports = (traitImports ++ classImports).flatten.map { i: String => "import " + i }.mkString("\n")
     lazy val result = namespaceTemplate.
-        replace("#NAMESPACE#", namespace).
-        replace("#NESTED#", nested map pad mkString "\n").
-        replace("#TRAITS#", traits map pad mkString "\n").
-        replace("#CLASSES#", classes map pad mkString "\n")
+      replace("#NAMESPACE#", namespace).
+      replace("#NESTED#", nested map pad mkString "\n").
+      replace("#TRAITS#", traits map pad mkString "\n").
+      replace("#CLASSES#", classes map pad mkString "\n")
     val endResult = if (classes.isEmpty && traits.isEmpty) "" else result
     (imports, endResult)
   }
@@ -69,7 +70,7 @@ object ModelGenerator {
     }
 
   private def traitCode(typeDef: TypeDef)(implicit model: ModelDefinition) = {
-    s"""${comment(typeDef.meta)}
+    s"""|${comment(typeDef.meta)}
         |trait ${traitName(typeDef.name).asSimpleType}${extendClause(typeDef, selfExtend = false)} {
         |${traitFields(typeDef).mkString("\n")}
         |}""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
@@ -84,7 +85,9 @@ object ModelGenerator {
     _.split("\n").map(c => "// " + c).mkString("\n")
   } getOrElse ""
 
-  private def traitName(name: TypeName) = TypeName(name.namespace, name.asSimpleType + "Def")
+  private def traitName(name: TypeName) = TypeName.escape {
+    TypeName(name.namespace, name.asSimpleType + "Def").simpleName
+  }
 
   protected def generateClasses(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
     val namedClasses = model map generateSingleTypeDef(namespace, Set.empty)
@@ -96,9 +99,6 @@ object ModelGenerator {
       case t@TypeDef(typeName, fields, extend, meta) =>
         Some((t.imports ++ imports, classCode(typeName, t)))
       // TODO add support for anonymous Objects (example instagram)
-      // TODO add support for nested objects (provide an example)
-      // FIXME options are not working anymore
-      // TODO test nested options support
       // TODO add support for enums
       // TODO add support for catch-all property
       case c: Container =>
@@ -111,7 +111,7 @@ object ModelGenerator {
 
   private def classCode(name: TypeName, typeDef: TypeDef)(implicit model: ModelDefinition) = {
     s"""${comment(typeDef.meta)}
-        |case class ${name.asSimpleType}(
+        |case class ${TypeName.escape(name.asSimpleType)}(
         |${classFields(typeDef).mkString(",\n")}
         |)${extendClause(typeDef, selfExtend = true)}
         | """.stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
@@ -120,14 +120,16 @@ object ModelGenerator {
   def extendClause(typeDef: TypeDef, selfExtend: Boolean)(implicit model: ModelDefinition): String = {
     val selfExtending = traitsToGenerate find (typeDef.name == _.name && selfExtend)
     val extend = typeDef.extend ++ selfExtending.toSeq
-    val extendClause = extend map { _.name } map traitName mkString " with "
+    val extendClause = extend map {
+      _.name
+    } map traitName mkString " with "
     (if (extendClause.nonEmpty) " extends " else "") + extendClause
   }
 
   private def classFields(typeDef: TypeDef)(implicit model: ModelDefinition) =
     typeDef.allFields map { f =>
       s"""$PAD${comment(f.meta)}
-          |$PAD${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(typeDef.name)}""".stripMargin
+          |$PAD${TypeName.escape(f.name.simpleName)}: ${TypeName.escapeName(f.kind.name.relativeTo(typeDef.name))}""".stripMargin
     }
 
   protected val nowFormat = "dd.MM.yyyy HH:mm:ss"
@@ -144,7 +146,8 @@ object ModelGenerator {
   protected[compiler] val namespaceTemplate =
     s"""
        |object #NAMESPACE# {#NESTED#
-       |#TRAITS##CLASSES#
+       |#TRAITS#
+       |#CLASSES#
        |}""".stripMargin
 
 }

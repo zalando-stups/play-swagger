@@ -27,227 +27,227 @@ class ModelGeneratorTest extends FunSpec with MustMatchers {
       val result = removeNoise(ModelGenerator.generate(Some("pkg")))
       result mustBe expected
     }
-/*
-    it ("should escape package if it contains reserved words") {
-      fail("Not implemented yet") TODO
-    }
-*/
+    /*
+        it ("should escape package if it contains reserved words") {
+          fail("Not implemented yet") TODO
+        }
+    */
   }
 
   val standardDefinitions = Map(
-  "uber.api.yaml" ->
-    """package pkg
-      |import scala.collection.Seq
-      |object definitions {
-      |  case class Profile(
-      |    // First name of the Uber user.
-      |    first_name: String,
-      |    // Email address of the Uber user
-      |    email: String,
-      |    // Promo code of the Uber user.
-      |    promo_code: String,
-      |    // Last name of the Uber user.
-      |    last_name: String,
-      |    // Image URL of the Uber user.
-      |    picture: String
-      |  )
-      |  case class Activity(
-      |    // Unique identifier for the activity
-      |    uuid: String
-      |  )
-      |  case class Error(
-      |    code: Int,
-      |    message: String,
-      |    fields: String
-      |  )
-      |  case class PriceEstimate(
-      |    // Lower bound of the estimated price.
-      |    low_estimate: Double,
-      |    // Display name of product.
-      |    display_name: String,
-      |    // Formatted string of estimate in local currency of the start location. Estimate could be a range, a single number (flat rate) or "Metered" for TAXI.
-      |    estimate: String,
-      |    // Upper bound of the estimated price.
-      |    high_estimate: Double,
-      |    // Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles
-      |    product_id: String,
-      |    // [ISO 4217](http://en.wikipedia.org/wiki/ISO_4217) currency code.
-      |    currency_code: String,
-      |    // Expected surge multiplier. Surge is active if surge_multiplier is greater than 1. Price estimate already factors in the surge multiplier.
-      |    surge_multiplier: Double
-      |  )
-      |  case class Activities(
-      |    // Position in pagination.
-      |    offset: Int,
-      |    // Number of items to retrieve (100 max).
-      |    limit: Int,
-      |    // Total number of items available.
-      |    count: Int,
-      |    history: Seq[Activity]
-      |  )
-      |  case class Product(
-      |    // Image URL representing the product.
-      |    image: String,
-      |    // Description of product.
-      |    description: String,
-      |    // Display name of product.
-      |    display_name: String,
-      |    // Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles.
-      |    product_id: String,
-      |    // Capacity of product. For example, 4 people.
-      |    capacity: String
-      |  )
-      |}""".stripMargin
-  ,
-  "simple.petstore.api.yaml" ->
-    """package pkg
-      |object definitions {
-      |  case class pet(
-      |    id: Long,
-      |    name: String,
-      |    tag: String
-      |  )
-      |  case class newPet(
-      |    id: Long,
-      |    name: String,
-      |    tag: String
-      |  )
-      |  case class errorModel(
-      |    code: Int,
-      |    message: String
-      |  )
-      |}""".stripMargin
-  ,
-  "security.api.yaml" ->
-    """package pkg
-      |object definitions {
-      |  case class Pet(
-      |    name: String,
-      |    tag: String
-      |  )
-      |  case class ErrorModel(
-      |    code: Int,
-      |    message: String
-      |  )
-      |}""".stripMargin
-  ,
-  "instagram.api.yaml" ->
-    """package pkg
-      |import scala.collection.Seq
-      |object definitions {
-      |  case class Media(
-      |    location: Location,
-      |    // Epoc time (ms)
-      |    created_time: Int,
-      |    comments:: comments:,
-      |    tags: Seq[Tag],
-      |    users_in_photo: Seq[MiniProfile],
-      |    filter: String,
-      |    likes: likes,
-      |    id: Int,
-      |    videos: videos,
-      |    type: String,
-      |    images: images,
-      |    user: MiniProfile
-      |  )
-      |  case class Image(
-      |    width: Int,
-      |    height: Int,
-      |    url: String
-      |  )
-      |  case class Like(
-      |    first_name: String,
-      |    id: String,
-      |    last_name: String,
-      |    type: String,
-      |    user_name: String
-      |  )
-      |  case class Location(
-      |    id: String,
-      |    name: String,
-      |    latitude: Double,
-      |    longitude: Double
-      |  )
-      |  case class Comment(
-      |    id: String,
-      |    created_time: String,
-      |    text: String,
-      |    from: MiniProfile
-      |  )
-      |  case class User(
-      |    website: String,
-      |    profile_picture: String,
-      |    username: String,
-      |    full_name: String,
-      |    bio: String,
-      |    id: Int,
-      |    counts: counts
-      |  )
-      |  // A shorter version of User for likes array
-      |  case class MiniProfile(
-      |    user_name: String,
-      |    full_name: String,
-      |    id: Int,
-      |    profile_picture: String
-      |  )
-      |  case class Tag(
-      |    media_count: Int,
-      |    name: String
-      |  )
-      |}""".stripMargin
-  ,
-  "heroku.petstore.api.yaml" ->
-    """package pkg
-      |object definitions {
-      |  case class Pet(
-      |    name: String,
-      |    birthday: Int
-      |  )
-      |}""".stripMargin
-  ,
-  "full.petstore.api.yaml" ->
-    """package pkg
-      |import scala.collection.Seq
-      |object definitions {
-      |  case class Category(
-      |    id: Long,
-      |    name: String
-      |  )
-      |  case class Tag(
-      |    id: Long,
-      |    name: String
-      |  )
-      |  case class Pet(
-      |    name: String,
-      |    tags: Seq[Tag],
-      |    photoUrls: Seq[String],
-      |    id: Long,
-      |    // pet status in the store
-      |    status: String,
-      |    category: Category
-      |  )
-      |  case class Order(
-      |    shipDate: java.util.Date,
-      |    quantity: Int,
-      |    petId: Long,
-      |    id: Long,
-      |    complete: Boolean,
-      |    // Order Status
-      |    status: String
-      |  )
-      |  case class User(
-      |    email: String,
-      |    username: String,
-      |    // User Status
-      |    userStatus: Int,
-      |    lastName: String,
-      |    firstName: String,
-      |    id: Long,
-      |    phone: String,
-      |    password: String
-      |  )
-      |}""".stripMargin
-  ,
+    "uber.api.yaml" ->
+      """package pkg
+        |import scala.collection.Seq
+        |object definitions {
+        |  case class Profile(
+        |    // First name of the Uber user.
+        |    first_name: String,
+        |    // Email address of the Uber user
+        |    email: String,
+        |    // Promo code of the Uber user.
+        |    promo_code: String,
+        |    // Last name of the Uber user.
+        |    last_name: String,
+        |    // Image URL of the Uber user.
+        |    picture: String
+        |  )
+        |  case class Activity(
+        |    // Unique identifier for the activity
+        |    uuid: String
+        |  )
+        |  case class Error(
+        |    code: Int,
+        |    message: String,
+        |    fields: String
+        |  )
+        |  case class PriceEstimate(
+        |    // Lower bound of the estimated price.
+        |    low_estimate: Double,
+        |    // Display name of product.
+        |    display_name: String,
+        |    // Formatted string of estimate in local currency of the start location. Estimate could be a range, a single number (flat rate) or "Metered" for TAXI.
+        |    estimate: String,
+        |    // Upper bound of the estimated price.
+        |    high_estimate: Double,
+        |    // Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles
+        |    product_id: String,
+        |    // [ISO 4217](http://en.wikipedia.org/wiki/ISO_4217) currency code.
+        |    currency_code: String,
+        |    // Expected surge multiplier. Surge is active if surge_multiplier is greater than 1. Price estimate already factors in the surge multiplier.
+        |    surge_multiplier: Double
+        |  )
+        |  case class Activities(
+        |    // Position in pagination.
+        |    offset: Int,
+        |    // Number of items to retrieve (100 max).
+        |    limit: Int,
+        |    // Total number of items available.
+        |    count: Int,
+        |    history: Seq[Activity]
+        |  )
+        |  case class Product(
+        |    // Image URL representing the product.
+        |    image: String,
+        |    // Description of product.
+        |    description: String,
+        |    // Display name of product.
+        |    display_name: String,
+        |    // Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles.
+        |    product_id: String,
+        |    // Capacity of product. For example, 4 people.
+        |    capacity: String
+        |  )
+        |}""".stripMargin
+    ,
+    "simple.petstore.api.yaml" ->
+      """package pkg
+        |object definitions {
+        |  case class pet(
+        |    id: Long,
+        |    name: String,
+        |    tag: String
+        |  )
+        |  case class newPet(
+        |    id: Long,
+        |    name: String,
+        |    tag: String
+        |  )
+        |  case class errorModel(
+        |    code: Int,
+        |    message: String
+        |  )
+        |}""".stripMargin
+    ,
+    "security.api.yaml" ->
+      """package pkg
+        |object definitions {
+        |  case class Pet(
+        |    name: String,
+        |    tag: String
+        |  )
+        |  case class ErrorModel(
+        |    code: Int,
+        |    message: String
+        |  )
+        |}""".stripMargin
+    ,
+    "instagram.api.yaml" ->
+      """package pkg
+        |import scala.collection.Seq
+        |object definitions {
+        |  case class Media(
+        |    location: Location,
+        |    // Epoc time (ms)
+        |    created_time: Int,
+        |    comments:: comments:,
+        |    tags: Seq[Tag],
+        |    users_in_photo: Seq[MiniProfile],
+        |    filter: String,
+        |    likes: likes,
+        |    id: Int,
+        |    videos: videos,
+        |    type: String,
+        |    images: images,
+        |    user: MiniProfile
+        |  )
+        |  case class Image(
+        |    width: Int,
+        |    height: Int,
+        |    url: String
+        |  )
+        |  case class Like(
+        |    first_name: String,
+        |    id: String,
+        |    last_name: String,
+        |    type: String,
+        |    user_name: String
+        |  )
+        |  case class Location(
+        |    id: String,
+        |    name: String,
+        |    latitude: Double,
+        |    longitude: Double
+        |  )
+        |  case class Comment(
+        |    id: String,
+        |    created_time: String,
+        |    text: String,
+        |    from: MiniProfile
+        |  )
+        |  case class User(
+        |    website: String,
+        |    profile_picture: String,
+        |    username: String,
+        |    full_name: String,
+        |    bio: String,
+        |    id: Int,
+        |    counts: counts
+        |  )
+        |  // A shorter version of User for likes array
+        |  case class MiniProfile(
+        |    user_name: String,
+        |    full_name: String,
+        |    id: Int,
+        |    profile_picture: String
+        |  )
+        |  case class Tag(
+        |    media_count: Int,
+        |    name: String
+        |  )
+        |}""".stripMargin
+    ,
+    "heroku.petstore.api.yaml" ->
+      """package pkg
+        |object definitions {
+        |  case class Pet(
+        |    name: String,
+        |    birthday: Int
+        |  )
+        |}""".stripMargin
+    ,
+    "full.petstore.api.yaml" ->
+      """package pkg
+        |import scala.collection.Seq
+        |object definitions {
+        |  case class Category(
+        |    id: Long,
+        |    name: String
+        |  )
+        |  case class Tag(
+        |    id: Long,
+        |    name: String
+        |  )
+        |  case class Pet(
+        |    name: String,
+        |    tags: Seq[Tag],
+        |    photoUrls: Seq[String],
+        |    id: Long,
+        |    // pet status in the store
+        |    status: String,
+        |    category: Category
+        |  )
+        |  case class Order(
+        |    shipDate: java.util.Date,
+        |    quantity: Int,
+        |    petId: Long,
+        |    id: Long,
+        |    complete: Boolean,
+        |    // Order Status
+        |    status: String
+        |  )
+        |  case class User(
+        |    email: String,
+        |    username: String,
+        |    // User Status
+        |    userStatus: Int,
+        |    lastName: String,
+        |    firstName: String,
+        |    id: Long,
+        |    phone: String,
+        |    password: String
+        |  )
+        |}""".stripMargin
+    ,
     "basic_extension.yaml" ->
       """package pkg
         |object definitions {
@@ -274,7 +274,7 @@ class ModelGeneratorTest extends FunSpec with MustMatchers {
         |    code: Int
         |  ) extends ErrorModelDef
         |}""".stripMargin
-  ,
+    ,
     "basic_polymorphism.yaml" ->
       """package pkg
         |object definitions {
@@ -333,7 +333,7 @@ class ModelGeneratorTest extends FunSpec with MustMatchers {
         |    nestedArrays: Option[Seq[Seq[Seq[Seq[String]]]]]
         |  )
         |}""".stripMargin
-  ,
+    ,
     "options.yaml" ->
       """package pkg
         |import scala.collection.Seq
@@ -350,10 +350,10 @@ class ModelGeneratorTest extends FunSpec with MustMatchers {
         |object definitions {
         |}""".stripMargin)
 
-/*  describe("Model Generator standard tests") {
+  describe("Model Generator standard tests") {
     val fixtures = new File("compiler/src/test/resources/examples").listFiles
     testFixture(fixtures, standardDefinitions)
-  }*/
+  }
 
   describe("Model Generator special cases") {
     val fixtures = new File("compiler/src/test/resources/model").listFiles
@@ -362,19 +362,20 @@ class ModelGeneratorTest extends FunSpec with MustMatchers {
 
   def testFixture(fixtures: Array[File], expectedDefinitions: Map[String, String]): Unit = {
     fixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
-        it(s"should parse the yaml swagger file ${file.getName} with expected definitions result") {
+      it(s"should parse the yaml swagger file ${file.getName} with expected definitions result") {
         val swaggerModel = YamlParser.parse(file)
         implicit val definitions = Swagger2Ast.convertDefinitions(swaggerModel)
-        val fullResult = ModelGenerator.generate(Some("pkg"))
+        val fullResult = ModelGenerator.generate(Some(file.getName))
         val result = removeNoise(fullResult)
-        val newFile = new File("./src/test/scala/pkg/" + file.getName + ".scala")
-        newFile.getParentFile.mkdirs()
-        newFile.delete()
-        newFile.createNewFile()
-        val out = new FileOutputStream(newFile)
-        out.write(fullResult.getBytes)
-        out.close
-        println(newFile.getAbsolutePath)
+        if (fullResult.nonEmpty) {
+          val newFile = new File("./src/test/scala/" + file.getName + ".scala")
+          newFile.getParentFile.mkdirs()
+          newFile.delete()
+          newFile.createNewFile()
+          val out = new FileOutputStream(newFile)
+          out.write(fullResult.getBytes)
+          out.close
+        }
         result mustBe expectedDefinitions(file.getName)
       }
     }
