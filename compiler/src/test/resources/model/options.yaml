@@ -1,0 +1,17 @@
+definitions:
+  Basic:
+    required:
+      - required
+      - id
+    properties:
+      id:
+        type: integer
+        format: int64
+      required:
+        type: array
+        items:
+          type: string
+      optional:
+        type: array
+        items:
+          type: string

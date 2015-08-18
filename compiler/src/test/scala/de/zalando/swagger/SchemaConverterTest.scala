@@ -3,7 +3,7 @@ package de.zalando.swagger
 import java.io.{BufferedWriter, File, FileWriter}
 
 import de.zalando.apifirst.Domain
-import de.zalando.apifirst.Domain.{TypeMeta, Field, TypeDef}
+import de.zalando.apifirst.Domain._
 import de.zalando.swagger.model.PrimitiveType
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -14,15 +14,15 @@ class SchemaConverterTest extends FunSpec with MustMatchers {
   describe("Schema Converter") {
     it("should convert primitive schema") {
       val schema = new model.Schema("email", null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.STRING, Nil, null, null, null, null, null, null, null, false, null, null, null, 0, 0)
-      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
+      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name", "definitions")
       result mustBe Domain.Str(Some("email"),TypeMeta(Some("email")))
     }
     it("should convert simple object") {
       val internalSchema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.STRING, Nil, null, null, null, null, null, null, null, false, null, null, null, 0, 0)
       val props = Map("name" -> internalSchema)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, List("name"), null, null, null, null, props, null, null, false, null, null, null, 0, 0)
-      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
-      result mustBe TypeDef("/definitions/type_name", Seq(Field("name", Domain.Str(meta = None))))
+      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name", "definitions")
+      result mustBe TypeDef("type_name", Seq(Field("name", Str(meta = None))))
     }
     it("should convert a complex object") {
       val internalSchema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.STRING, Nil, null, null, null, null, null, null, null, false, null, null, null, 0, 0)
@@ -30,21 +30,25 @@ class SchemaConverterTest extends FunSpec with MustMatchers {
       val properties = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, internalProps, null, null, false, null, null, null, 0, 0)
       val mainprops = Map("properties" -> properties)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, List("mainprops"), null, null, null, null, mainprops, null, null, false, null, null, null, 0, 0)
-      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
-      result mustBe TypeDef("/definitions/type_name", Seq(Field("properties", Domain.TypeDef("properties", Seq(Field("name", Domain.Str(meta = None)))))))
+      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name", "definitions")
+      result mustBe 	TypeDef("type_name", List(
+        Field("properties", Opt(Field("properties",
+          TypeDef("properties", List(
+            Field("name", Opt(Field("name", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+          , TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
     }
 
     it("should convert primitive additionalProperties") {
       val props = model.Property(PrimitiveType.STRING, null, null, null, null, null, null)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, null, props, null, false, null, null, null, 0, 0)
-      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
+      val result = SchemaConverter.schema2Type(schema, "/definitions/type_name", "definitions")
       result mustBe Domain.CatchAll(Field("/definitions/type_name",Domain.Str(None, None)), None)
     }
 
     it("should convert complex additionalProperties") {
       val props = model.Property(null, "#/definitions/ComplexModel", null, null, null, null, null)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, null, props, null, false, null, null, null, 0, 0)
-      val result = SchemaConverter.schema2Type(schema, "/definitions")
+      val result = SchemaConverter.schema2Type(schema, "/definitions", "definitions")
       result mustBe Domain.CatchAll(Field("/definitions",Domain.ReferenceObject("/definitions/ComplexModel", None)), None)
     }
   }

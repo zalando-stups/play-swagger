@@ -30,7 +30,7 @@ object Swagger2Ast extends HandlerParser {
   import Http.string2verb
 
   def toDefinition(namespace: String)(definition: (String, model.Schema))(implicit swaggerModel: SwaggerModel): (String, Domain.Type) =
-    (namespace + definition._1) -> SchemaConverter.schema2Type(definition._2, definition._1)
+    (namespace + definition._1) -> SchemaConverter.schema2Type(definition._2, definition._1, namespace)
 
   def toCall(keyPrefix: String)(path: (String, model.Path))(implicit swaggerModel: SwaggerModel): Option[ApiCall] = {
     val call = operation(path) flatMap { case (operation: Operation, signature: String) =>
@@ -89,26 +89,46 @@ object SchemaConverter {
 
   import Domain._
 
-  def schema2Type(p: model.TypeInfo, name: String): Domain.Type = p match {
+  def wrap[T <: Type](s: Schema, t: T): Type = t match {
+    case td @ TypeDef(name, fields, extend, meta) =>
+      val wrapped = fields map { f =>
+        if (s.required != null && s.required.contains(f.name)) f
+        else f.copy(kind = Domain.Opt(f, f.meta))
+      }
+      td.copy(fields = wrapped)
+    case _ => t
+  }
+
+  def schema2Type(p: model.TypeInfo, name: String, namespace: String): Domain.Type = p match {
+    case s: model.Schema if propsPartialFunction.isDefinedAt(p.`type`, p.format) =>
+      wrap(s, propsPartialFunction(p.`type`, p.format)(p))
+
     case _ if propsPartialFunction.isDefinedAt(p.`type`, p.format) =>
       propsPartialFunction(p.`type`, p.format)(p)
 
     case s: model.Schema if s.additionalProperties != null =>
-      val field = Field(name, schema2Type(s.additionalProperties, name))
-      Domain.CatchAll(field, s)
+      val field = Field(name, schema2Type(s.additionalProperties, removeNamespace(namespace)(name), namespace))
+      wrap(s, Domain.CatchAll(field, s))
 
     case s: model.Schema if s.allOf != null =>
       val (toExtend, types) = s.allOf.partition(_.isRef)
-      val fields = types flatMap extractFields
+      val fields = types flatMap extractFields(namespace)
       val extensions = toExtend map { s => Domain.Reference(s.$ref, s) }
-      Domain.TypeDef(name, fields, extensions, s)
+      wrap(s, Domain.TypeDef(removeNamespace(namespace)(name), fields, extensions, s))
 
     case s: model.Schema if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
-      fieldsToTypeDef(name, s)
+      wrap(s, fieldsToTypeDef(removeNamespace(namespace)(name), s, namespace))
 
     case s: model.Schema if s.`type` == ARRAY =>
-      val field = Field(name, schema2Type(s.items, name))
-      Domain.Arr(field, s)
+      val field = Field(name, schema2Type(s.items, removeNamespace(namespace)(name), namespace))
+      wrap(s, Domain.Arr(field, s))
+
+    case i: Items if i.`type` == ARRAY =>
+      val field = Field(name, schema2Type(i.items, removeNamespace(namespace)(name), namespace))
+      Domain.Arr(field, i)
+
+    case s: Schema if s.$ref != null =>
+      wrap(s, Domain.Reference(s.$ref, s))
 
     case s if s.$ref != null =>
       Domain.Reference(s.$ref, s)
@@ -117,16 +137,16 @@ object SchemaConverter {
       ???
   }
 
-  def fieldsToTypeDef(name: String, s: {def properties: Properties; def description: String}): TypeDef = {
-    val fields = extractFields(s)
+  def fieldsToTypeDef(name: String, s: {def properties: Properties; def description: String}, namespace: String): TypeDef = {
+    val fields = extractFields(namespace)(s)
     TypeDef(name, fields.toSeq, Nil, TypeMeta(Option(s.description)))
   }
 
-  def extractFields(s: {def properties: Properties}) = {
+  def extractFields(namespace: String)(s: {def properties: Properties}) = {
     val fields = s.properties map { prop =>
       val name = prop._1
       val pr = prop._2
-      Field(name, schema2Type(pr, name), prop._2)
+      Field(name, schema2Type(pr, name, namespace), prop._2)
     }
     fields
   }
@@ -160,5 +180,20 @@ object SchemaConverter {
   }
 
   // format: ON
+
+  def removeNamespace(namespace: String)(ref: String) = ref.replace(s"""/$namespace/""", "")
+
+  def escape(name: String) = {
+    import de.zalando.swagger.ScalaReserved._
+    if (
+      names.contains(name) ||
+        startNames.exists(name.startsWith) ||
+        partNames.exists(name.contains)
+    )
+      "`" + name + "`"
+    else
+      name
+  }
+
 }
 

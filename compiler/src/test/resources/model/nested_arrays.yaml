@@ -1,0 +1,22 @@
+definitions:
+  Example:
+    type: object
+    properties:
+      messages:
+        description: The text of the error message
+        type: array
+        items:
+          type: array
+          items:
+            $ref: '#/definitions/Activity'
+      nestedArrays:
+        type: array
+        items:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: string
+                format: nested arrays

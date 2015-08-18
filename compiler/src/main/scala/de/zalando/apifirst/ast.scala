@@ -2,7 +2,6 @@ package de.zalando.apifirst
 
 import de.zalando.swagger.model._
 
-import scala.annotation.tailrec
 import scala.language.implicitConversions
 import scala.util.parsing.input.Positional
 
@@ -53,7 +52,6 @@ object Domain {
 
   type ModelDefinition = Map[String, Domain.Type]
 
-
   // First comments, then everything else
   case class TypeMeta(comment: Option[String]) {
     override def toString = s"""TypeMeta(${
@@ -101,14 +99,16 @@ object Domain {
 
   case class Null(override val meta: TypeMeta) extends Type("null", meta)
 
-  abstract class Container(override val name: String, val field: Field, override val meta: TypeMeta, val imports: String) extends Type(name, meta)
+  abstract class Container(override val name: String, val field: Field, override val meta: TypeMeta, val imports: Set[String]) extends Type(name, meta) {
+    def allImports: Set[String] = imports ++ field.imports
+  }
 
-  case class Arr(override val field: Field, override val meta: TypeMeta) extends Container(s"Seq[${field.name}]", field, meta, "scala.collection.Seq")
+  case class Arr(override val field: Field, override val meta: TypeMeta) extends Container(s"Seq[${field.kind.name}]", field, meta, Set("scala.collection.Seq"))
 
-  case class Opt(override val field: Field, override val meta: TypeMeta) extends Container(s"Option[${field.name}]", field, meta, "scala.Option")
+  case class Opt(override val field: Field, override val meta: TypeMeta) extends Container(s"Option[${field.kind.name}]", field, meta, Set("scala.Option"))
 
   case class CatchAll(override val field: Field, override val meta: TypeMeta)
-    extends Container(s"Map[String, ${ field.name }]", field, meta, "scala.collection.immutable.Map")
+    extends Container(s"Map[String, ${ field.kind.name }]", field, meta, Set("scala.collection.immutable.Map"))
 
   abstract class Entity(override val name: String, override val meta: TypeMeta) extends Type(name, meta)
 
@@ -116,8 +116,8 @@ object Domain {
     override def toString = s"""Field("$name", $kind, $meta)"""
     def asCode(prefix: String = "") = s"$name: ${kind.name}"
     def imports = kind match {
-      case c: Container => Some(c.imports)
-      case _ => None
+      case c: Container => c.allImports
+      case _ => Set.empty[String]
     }
   }
 
@@ -126,21 +126,24 @@ object Domain {
                      extend: Seq[Reference] = Nil,
                      override val meta: TypeMeta = None) extends Entity(name, meta) {
     override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
-    def imports(implicit model: ModelDefinition): Seq[String] = {
+    def imports(implicit model: ModelDefinition): Set[String] = {
       val fromFields = fields.flatMap(_.imports)
-      val transient = extend.flatMap(_.resolve(model).map(_.imports(model)))
-      fromFields ++ transient.flatten
+      val transient = extend.flatMap(_.resolve(model).toSeq.flatMap(_.imports))
+      (fromFields ++ transient).filter(_.trim.nonEmpty).toSet
     }
+    def allFields(implicit model: ModelDefinition):Seq[Field] =
+      fields ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allFields))
+    def allExtends(implicit model: ModelDefinition):Seq[Reference] =
+      extend ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allExtends))
   }
-
 
   abstract class Reference(override val name: String, override val meta: TypeMeta) extends Type(name, meta) {
     def resolve(implicit model:ModelDefinition): Option[TypeDef] = ???
   }
 
-  case class ReferenceObject(url: String, override val meta: TypeMeta) extends Reference(url, meta) {
-    override def toString = s"""ReferenceObject("$url", $meta)"""
-    override def resolve(implicit model:ModelDefinition): Option[TypeDef] = model.get(url) match {
+  case class ReferenceObject(override val name: String, override val meta: TypeMeta) extends Reference(name, meta) {
+    override def toString = s"""ReferenceObject("$name", $meta)"""
+    override def resolve(implicit model:ModelDefinition): Option[TypeDef] = model.get(name) match {
       case Some(t: TypeDef) => Some(t)
       case _ => None
     }
