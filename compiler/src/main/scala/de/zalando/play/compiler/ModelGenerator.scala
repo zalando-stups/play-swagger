@@ -12,160 +12,139 @@ import scala.language.postfixOps
  */
 object ModelGenerator {
 
-  import de.zalando.swagger.SchemaConverter.{removeNamespace, escape}
+  val PAD = "  "
 
   def generate(packageName: Option[String],
                namespace: String = "definitions")(implicit model: ModelDefinition) = {
-    val traitInfo = generateTraits(namespace)
-    val traitImports = traitInfo.map(_._1)
-    val traits = traitInfo.map("\n" + _._2)
-    val classInfo = generateClasses(namespace)
-    val classImports = classInfo.map(_._1)
-    val classes = classInfo.map("\n" + _._2)
-    val imports = (traitImports ++ classImports).flatten.map { i: String => "import " + i }.mkString("\n") // TODO what with transient imports?
+    val (imports: String, result: String) = generateNamespace(namespace)
+
     val now = new SimpleDateFormat(nowFormat).format(new Date())
-    val result = template.
-      replace("#NAMESPACE#", namespace).
+    val pkgName = packageName.fold("") { p => s"package $p" }
+
+    val prefix = mainTemplate.
       replace("#IMPORT#", imports).
-      replace("#PACKAGE#", packageName.fold("") { p => s"package $p" }).
-      replace("#NOW#", now).
-      replace("#TRAITS#", traits.mkString("\n")).
-      replace("#CLASSES#", classes.mkString("\n"))
-    result
+      replace("#PACKAGE#", pkgName).
+      replace("#NOW#", now)
+    prefix + result
   }
 
-  /*  protected def validate(model: ModelDefinition, namespace: String): Iterable[String] = {
-      val defined = model.keys.toSet
-      val fields = for {
-        (name, typedef) <- model
-        field <- typedef match {
-          case c if c.isInstanceOf[Container] => Seq(c.asInstanceOf[Container].field)
-          case e if e.isInstanceOf[TypeDef] => e.asInstanceOf[TypeDef].fields
-          case _ => Seq.empty[Field]
-        }
-      } yield (typedef, field)
-      val result = fields map {
-        case (typedef, f@Field(fName, ref: ReferenceObject, _)) =>
-          if (!defined.contains(ref.url)) {
-            val expected = removeNamespace(ref, namespace)
-            Seq(
-              s"Field <$fName> of type <${typedef.name}> is defined being of type <$expected> but <$expected> could not be found")
-          } else Seq.empty[String]
-        case (typedef, f@Field(fName, ref: Reference, _)) =>
-          Seq(s"Unsupported Reference type for field <$fName> of type <${typedef.name}>")
-        case (typedef, f@Field(fName, container: Container, _)) =>
-          val typeName = fName + "." + container.name
-          validate(Map(typeName -> container), namespace)
-        case (typedef, f@Field(fName, typeDef: TypeDef, _)) =>
-          val extend = typeDef.extend.map(f => f.name -> f)
-          validate((extend :+ typeDef.name -> typeDef).toMap, namespace)
-        case (typeDef: TypeDef, _) =>
-          val extend = typeDef.extend.map(f => f.name -> f)
-          validate(extend.toMap, namespace)
+  def generateNamespace(namespace: String)(implicit model: ModelDefinition): (String, String) = {
 
-        case (a, b) =>
-          println("Nothing found for " + a + " and " + b)
-          Seq.empty[String]
-      }
-      result.flatten
-    }*/
+    def pad(s: String) = s split "\n" map { l => PAD + l } mkString "\n"
+
+    val thisNamespace = model.flatMap(_.nestedTypes)
+
+    val nested = thisNamespace groupBy (_.name.namespace) map { case (space, typeDefs) =>
+      generateNamespace(space.simpleName)(typeDefs)
+    } values
+
+    val traitInfo = generateTraits(namespace)
+    val traitImports = traitInfo.map(_._1)
+    val traits = traitInfo.map(_._2)
+    val classInfo = generateClasses(namespace)
+    val classImports = classInfo.map(_._1)
+    val classes = classInfo.map( _._2)
+    val imports = (traitImports ++ classImports).flatten.map { i: String => "import " + i }.mkString("\n")
+    lazy val result = namespaceTemplate.
+        replace("#NAMESPACE#", namespace).
+        replace("#NESTED#", nested map pad mkString "\n").
+        replace("#TRAITS#", traits map pad mkString "\n").
+        replace("#CLASSES#", classes map pad mkString "\n")
+    val endResult = if (classes.isEmpty && traits.isEmpty) "" else result
+    (imports, endResult)
+  }
 
   private def traitsToGenerate(implicit model: ModelDefinition): Set[Reference] =
     model flatMap {
-      _._2 match {
-        case TypeDef(_, _, extend, meta) => extend
-        case _ => Nil
-      }
+      case TypeDef(_, _, extend, meta) => extend
+      case _ => Nil
     } toSet
 
   protected def generateTraits(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] =
     traitsToGenerate flatMap { reference =>
       reference.resolve map { typeDef =>
-        val code = traitCode(typeDef.name, namespace, typeDef)
+        val code = traitCode(typeDef)
         (typeDef.imports, code)
       }
     }
 
-  private def traitCode(name: String, namespace: String, typeDef: TypeDef)(implicit model: ModelDefinition) = {
-    s"""  ${comment(typeDef.meta)}
-        |  trait ${traitName(name)}${extendClause(typeDef, namespace, selfExtend = false)} {
-        |${traitFields(typeDef, namespace).mkString("\n")}
-        |  }""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
+  private def traitCode(typeDef: TypeDef)(implicit model: ModelDefinition) = {
+    s"""${comment(typeDef.meta)}
+        |trait ${traitName(typeDef.name).asSimpleType}${extendClause(typeDef, selfExtend = false)} {
+        |${traitFields(typeDef).mkString("\n")}
+        |}""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
 
-  private def traitFields(typeDef: TypeDef, namespace: String) = typeDef.fields map { f =>
-    s"""    ${comment(f.meta)}
-        |    def ${escape(f.name)}: ${removeNamespace(namespace)(f.kind.name)}""".stripMargin
+  private def traitFields(typeDef: TypeDef) = typeDef.fields map { f =>
+    s"""$PAD${comment(f.meta)}
+        |${PAD}def ${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(f.name)}""".stripMargin
   }
 
   private def comment(meta: TypeMeta) = meta.comment.map {
     _.split("\n").map(c => "// " + c).mkString("\n")
   } getOrElse ""
 
-  private def traitName(name: String) = name + "Def"
-
-  private def removeNamespaceFromRef(namespace: String)(ref: Reference) =
-    removeNamespace(namespace)(ref.name)
+  private def traitName(name: TypeName) = TypeName(name.namespace, name.asSimpleType + "Def")
 
   protected def generateClasses(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
-    val namedClasses = model map { case (name, typeDef) =>
-      generateSingleTypeDef(namespace, typeDef, Set.empty)
-    }
+    val namedClasses = model map generateSingleTypeDef(namespace, Set.empty)
     namedClasses.flatten.toSet
   }
 
-  def generateSingleTypeDef(namespace: String, typeDef: Type, imports: Set[String])(implicit model: ModelDefinition): Option[(Set[String], String)] = {
+  def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)(implicit model: ModelDefinition): Option[(Set[String], String)] = {
     typeDef match {
       case t@TypeDef(typeName, fields, extend, meta) =>
-        Some((t.imports ++ imports, classCode(typeName, t, namespace)))
+        Some((t.imports ++ imports, classCode(typeName, t)))
       // TODO add support for anonymous Objects (example instagram)
+      // TODO add support for nested objects (provide an example)
+      // FIXME options are not working anymore
+      // TODO test nested options support
       // TODO add support for enums
-      // TODO add support for nested objects or options (provide an example)
       // TODO add support for catch-all property
       case c: Container =>
-        generateSingleTypeDef(namespace, c.field.kind, c.imports ++ imports)
+        generateSingleTypeDef(namespace, c.imports ++ imports)(c.field.kind)
       case other =>
         println("Not generating class for " + other) // TODO
         None
     }
   }
 
-  private def classCode(name: String, typeDef: TypeDef, namespace: String)(implicit model: ModelDefinition) = {
-    s"""
-        |  ${comment(typeDef.meta)}
-        |  case class $name(
-        |${classFields(typeDef, namespace).mkString(",\n")}
-        |  )${extendClause(typeDef, namespace, selfExtend = true)}
+  private def classCode(name: TypeName, typeDef: TypeDef)(implicit model: ModelDefinition) = {
+    s"""${comment(typeDef.meta)}
+        |case class ${name.asSimpleType}(
+        |${classFields(typeDef).mkString(",\n")}
+        |)${extendClause(typeDef, selfExtend = true)}
         | """.stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
 
-  def extendClause(typeDef: TypeDef, namespace: String, selfExtend: Boolean)(implicit model: ModelDefinition): String = {
-    val selfExtending = traitsToGenerate find (removeNamespaceFromRef(namespace)(_) == typeDef.name && selfExtend)
-    val extend = (typeDef.extend ++ selfExtending.toSeq) map {
-      removeNamespaceFromRef(namespace)
-    } map traitName mkString " with "
-    (if (extend.nonEmpty) " extends " else "") + extend
+  def extendClause(typeDef: TypeDef, selfExtend: Boolean)(implicit model: ModelDefinition): String = {
+    val selfExtending = traitsToGenerate find (typeDef.name == _.name && selfExtend)
+    val extend = typeDef.extend ++ selfExtending.toSeq
+    val extendClause = extend map { _.name } map traitName mkString " with "
+    (if (extendClause.nonEmpty) " extends " else "") + extendClause
   }
 
-  private def classFields(typeDef: TypeDef, namespace: String)(implicit model: ModelDefinition) =
+  private def classFields(typeDef: TypeDef)(implicit model: ModelDefinition) =
     typeDef.allFields map { f =>
-      s"""    ${comment(f.meta)}
-          |    ${escape(f.name)}: ${removeNamespace(namespace)(f.kind.name)}""".stripMargin
+      s"""$PAD${comment(f.meta)}
+          |$PAD${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(typeDef.name)}""".stripMargin
     }
 
   protected val nowFormat = "dd.MM.yyyy HH:mm:ss"
 
-  protected[compiler] val template =
-    s"""
-       |#PACKAGE#
+  protected[compiler] val mainTemplate =
+    s"""#PACKAGE#
        |
        |#IMPORT#
        |
        |/** @since #NOW# */
-       |
-       |object #NAMESPACE# {
-       |#TRAITS#
-       |#CLASSES#
+       |""".stripMargin
+
+
+  protected[compiler] val namespaceTemplate =
+    s"""
+       |object #NAMESPACE# {#NESTED#
+       |#TRAITS##CLASSES#
        |}""".stripMargin
 
 }

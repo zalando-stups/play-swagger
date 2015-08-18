@@ -15,14 +15,15 @@ class ModelGeneratorTest extends FunSpec with MustMatchers {
 
   describe("Model Generator standalone") {
     it("should convert empty model") {
-      val expected = removeNoise(ModelGenerator.template.
+      val template = ModelGenerator.mainTemplate + ModelGenerator.namespaceTemplate
+      val expected = removeNoise(template.
         replace("#IMPORT#", "").
         replace("#NAMESPACE#", "definitions").
         replace("#PACKAGE#", "package pkg").
         replace("#TRAITS#", "").
         replace("#CLASSES#", "")
       )
-      implicit val emptyModel = Map.empty[String, Domain.Type]
+      implicit val emptyModel = Seq.empty[Domain.Type]
       val result = removeNoise(ModelGenerator.generate(Some("pkg")))
       result mustBe expected
     }
@@ -349,12 +350,10 @@ class ModelGeneratorTest extends FunSpec with MustMatchers {
         |object definitions {
         |}""".stripMargin)
 
-/*
-  describe("Model Generator standard tests") {
+/*  describe("Model Generator standard tests") {
     val fixtures = new File("compiler/src/test/resources/examples").listFiles
     testFixture(fixtures, standardDefinitions)
-  }
-*/
+  }*/
 
   describe("Model Generator special cases") {
     val fixtures = new File("compiler/src/test/resources/model").listFiles

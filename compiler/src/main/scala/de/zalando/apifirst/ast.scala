@@ -2,7 +2,7 @@ package de.zalando.apifirst
 
 import de.zalando.swagger.model._
 
-import scala.language.implicitConversions
+import scala.language.{postfixOps, implicitConversions}
 import scala.util.parsing.input.Positional
 
 sealed trait Expr
@@ -50,7 +50,43 @@ object Hypermedia {
 
 object Domain {
 
-  type ModelDefinition = Map[String, Domain.Type]
+  type ModelDefinition = Iterable[Domain.Type]
+
+  case class TypeName(fullName: String) {
+    import TypeName.SL
+    val simpleName = fullName.trim.takeRight(fullName.length - fullName.lastIndexOf(SL) - 1)
+    val asSimpleType = camelize(simpleName)
+    val namespace = fullName.trim.take(fullName.lastIndexOf(SL)).toLowerCase
+    val oneUp = {
+      val space = Option(namespace).flatMap(_.split(SL).filter(_.nonEmpty).drop(1).lastOption).getOrElse("")
+      (if (space.nonEmpty) space + "." else "") + asSimpleType
+    }
+
+    def nestedIn(t: TypeName) = namespace.nonEmpty && t.fullName.toLowerCase.startsWith(namespace)
+    def relativeTo(t: TypeName) = {
+      val newSpace = namespace.replace(t.namespace,"").dropWhile(_ == SL).replace(SL, '.')
+      if (newSpace.nonEmpty) newSpace + '.' + asSimpleType else asSimpleType
+    }
+    def nest(name: String) = TypeName(fullName + SL + name)
+    private def camelize(s: String) = if (s.isEmpty) s else s.head.toUpper + s.tail
+  }
+  object TypeName {
+    val SL = '/'
+    def apply(namespace: String, simpleName: String):TypeName = TypeName(namespace + SL + simpleName)
+    def escape(name: String) = {
+      import de.zalando.swagger.ScalaReserved._
+      if (
+        names.contains(name) ||
+          startNames.exists(name.startsWith) ||
+          partNames.exists(name.contains)
+      )
+        "`" + name + "`"
+      else
+        name
+    }
+  }
+
+  implicit def string2TypeName(s: String): TypeName = TypeName(s)
 
   // First comments, then everything else
   case class TypeMeta(comment: Option[String]) {
@@ -73,7 +109,9 @@ object Domain {
     case s: ParameterReference => Option(s.$ref)
   }
 
-  abstract class Type(val name: String, val meta: TypeMeta) extends Expr
+  abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
+    def nestedTypes: Seq[Type] = Nil
+  }
 
   case class Int(override val meta: TypeMeta) extends Type("Int", meta)
 
@@ -99,51 +137,64 @@ object Domain {
 
   case class Null(override val meta: TypeMeta) extends Type("null", meta)
 
-  abstract class Container(override val name: String, val field: Field, override val meta: TypeMeta, val imports: Set[String]) extends Type(name, meta) {
+  abstract class Container(override val name: TypeName, val field: Field, override val meta: TypeMeta, val imports: Set[String])
+    extends Type(name, meta) {
     def allImports: Set[String] = imports ++ field.imports
+    override def nestedTypes = field.kind.nestedTypes :+ field.kind
   }
 
-  case class Arr(override val field: Field, override val meta: TypeMeta) extends Container(s"Seq[${field.kind.name}]", field, meta, Set("scala.collection.Seq"))
+  case class Arr(override val field: Field, override val meta: TypeMeta)
+    extends Container(s"Seq[${field.kind.name.oneUp}]", field, meta, Set("scala.collection.Seq"))
 
-  case class Opt(override val field: Field, override val meta: TypeMeta) extends Container(s"Option[${field.kind.name}]", field, meta, Set("scala.Option"))
+  case class Opt(override val field: Field, override val meta: TypeMeta)
+    extends Container(s"Option[${field.kind.name.oneUp}]", field, meta, Set("scala.Option"))
 
   case class CatchAll(override val field: Field, override val meta: TypeMeta)
-    extends Container(s"Map[String, ${ field.kind.name }]", field, meta, Set("scala.collection.immutable.Map"))
+    extends Container(s"Map[String, ${field.kind.name.oneUp}]", field, meta, Set("scala.collection.immutable.Map"))
 
-  abstract class Entity(override val name: String, override val meta: TypeMeta) extends Type(name, meta)
+  abstract class Entity(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta)
 
-  case class Field(override val name: String, kind: Type, override val meta: TypeMeta = None) extends Type(name, meta) {
+  case class Field(override val name: TypeName, kind: Type, override val meta: TypeMeta) extends Type(name, meta) {
     override def toString = s"""Field("$name", $kind, $meta)"""
+
     def asCode(prefix: String = "") = s"$name: ${kind.name}"
+
     def imports = kind match {
       case c: Container => c.allImports
       case _ => Set.empty[String]
     }
+
+    override def nestedTypes = kind.nestedTypes :+ kind
   }
 
-  case class TypeDef(override val name: String,
+  case class TypeDef(override val name: TypeName,
                      fields: Seq[Field],
                      extend: Seq[Reference] = Nil,
-                     override val meta: TypeMeta = None) extends Entity(name, meta) {
+                     override val meta: TypeMeta) extends Entity(name, meta) {
     override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
+
     def imports(implicit model: ModelDefinition): Set[String] = {
       val fromFields = fields.flatMap(_.imports)
       val transient = extend.flatMap(_.resolve(model).toSeq.flatMap(_.imports))
       (fromFields ++ transient).filter(_.trim.nonEmpty).toSet
     }
-    def allFields(implicit model: ModelDefinition):Seq[Field] =
+
+    def allFields(implicit model: ModelDefinition): Seq[Field] =
       fields ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allFields))
-    def allExtends(implicit model: ModelDefinition):Seq[Reference] =
+
+    def allExtends(implicit model: ModelDefinition): Seq[Reference] =
       extend ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allExtends))
+
+    override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.nestedIn(name) } distinct
   }
 
-  abstract class Reference(override val name: String, override val meta: TypeMeta) extends Type(name, meta) {
-    def resolve(implicit model:ModelDefinition): Option[TypeDef] = ???
+  abstract class Reference(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta) {
+    def resolve(implicit model: ModelDefinition): Option[TypeDef] = ???
   }
 
-  case class ReferenceObject(override val name: String, override val meta: TypeMeta) extends Reference(name, meta) {
+  case class ReferenceObject(override val name: TypeName, override val meta: TypeMeta) extends Reference(name, meta) {
     override def toString = s"""ReferenceObject("$name", $meta)"""
-    override def resolve(implicit model:ModelDefinition): Option[TypeDef] = model.get(name) match {
+    override def resolve(implicit model: ModelDefinition): Option[TypeDef] = model.find(_.name == name) match {
       case Some(t: TypeDef) => Some(t)
       case _ => None
     }
@@ -245,7 +296,7 @@ object Application {
     mimeOut: MimeType
   */
 
-  case class Model(calls: Seq[ApiCall], definitions: Map[String, Domain.Type])
+  case class Model(calls: Seq[ApiCall], definitions: Iterable[Domain.Type])
 
 }
 

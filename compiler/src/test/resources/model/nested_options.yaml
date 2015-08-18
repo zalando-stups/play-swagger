@@ -1,0 +1,11 @@
+definitions:
+  Basic:
+    required:
+      - required
+      - id
+    properties:
+      optional:
+        type: object
+        properties:
+          nested_optional:
+            type: string

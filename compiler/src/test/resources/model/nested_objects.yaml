@@ -1,0 +1,25 @@
+definitions:
+  NestedObjects:
+    description: Nested Objects Model
+    properties:
+      plain:
+        type: object
+        required:
+        - simple
+        properties:
+          simple:
+            type: string
+      nested:
+        type: object
+        required:
+        - nested2
+        properties:
+          nested2:
+            type: object
+            properties:
+              nested3:
+                type: object
+                properties:
+                  bottom:
+                    type: string
+

@@ -1,4 +1,10 @@
 definitions:
+  Activity:
+    type: object
+    properties:
+      actions:
+        description: The text of the error message
+        type: string
   Example:
     type: object
     properties:

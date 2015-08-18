@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
-import de.zalando.apifirst.Domain.Field
+import de.zalando.apifirst.Domain.{TypeMeta, Field}
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Application, Domain, Http}
 import de.zalando.swagger.model.PrimitiveType._
@@ -22,15 +22,14 @@ object Swagger2Ast extends HandlerParser {
     swaggerModel.paths.flatMap(toCall(keyPrefix) _).toList
 
   def convertDefinitions(implicit swaggerModel: SwaggerModel) =
-    Option(swaggerModel.definitions) map { d =>
-      val definitions = d map toDefinition("/definitions/")
-      definitions.toMap
-    } getOrElse Map.empty[String, Domain.Type]
+    Option(swaggerModel.definitions).map { d =>
+      d map toDefinition("/definitions/")
+    }.toSeq.flatten
 
   import Http.string2verb
 
-  def toDefinition(namespace: String)(definition: (String, model.Schema))(implicit swaggerModel: SwaggerModel): (String, Domain.Type) =
-    (namespace + definition._1) -> SchemaConverter.schema2Type(definition._2, definition._1, namespace)
+  def toDefinition(namespace: String)(definition: (String, model.Schema))(implicit swaggerModel: SwaggerModel) =
+    SchemaConverter.schema2Type(definition._2, namespace + definition._1)
 
   def toCall(keyPrefix: String)(path: (String, model.Path))(implicit swaggerModel: SwaggerModel): Option[ApiCall] = {
     val call = operation(path) flatMap { case (operation: Operation, signature: String) =>
@@ -70,7 +69,7 @@ object Swagger2Ast extends HandlerParser {
     val default = if (p.required && p.default != null) Some(p.default) else None
     val typeName = SchemaConverter.swaggerType2Type(p)
     import Domain.paramOrRefInfo2TypeMeta
-    val fullTypeName = if (p.required) typeName else Domain.Opt(Field(typeName.name, typeName), p)
+    val fullTypeName = if (p.required) typeName else Domain.Opt(Field(typeName.name.simpleName, typeName, TypeMeta(Option(p.description))), p)
     // TODO don't use InPathParameter in the next line
     Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
@@ -92,14 +91,14 @@ object SchemaConverter {
   def wrap[T <: Type](s: Schema, t: T): Type = t match {
     case td @ TypeDef(name, fields, extend, meta) =>
       val wrapped = fields map { f =>
-        if (s.required != null && s.required.contains(f.name)) f
+        if (s.required != null && s.required.contains(f.name.simpleName)) f
         else f.copy(kind = Domain.Opt(f, f.meta))
       }
       td.copy(fields = wrapped)
     case _ => t
   }
 
-  def schema2Type(p: model.TypeInfo, name: String, namespace: String): Domain.Type = p match {
+  def schema2Type(p: model.TypeInfo, name: TypeName): Domain.Type = p match {
     case s: model.Schema if propsPartialFunction.isDefinedAt(p.`type`, p.format) =>
       wrap(s, propsPartialFunction(p.`type`, p.format)(p))
 
@@ -107,24 +106,26 @@ object SchemaConverter {
       propsPartialFunction(p.`type`, p.format)(p)
 
     case s: model.Schema if s.additionalProperties != null =>
-      val field = Field(name, schema2Type(s.additionalProperties, removeNamespace(namespace)(name), namespace))
+      val field = Field(name.simpleName, schema2Type(s.additionalProperties, name), TypeMeta(Option(s.description)))
       wrap(s, Domain.CatchAll(field, s))
 
     case s: model.Schema if s.allOf != null =>
       val (toExtend, types) = s.allOf.partition(_.isRef)
-      val fields = types flatMap extractFields(namespace)
+      val fields = types flatMap extractFields(name)
+      // TODO extract fields to private types here
+      // TODO use s.properties instead of fields here
       val extensions = toExtend map { s => Domain.Reference(s.$ref, s) }
-      wrap(s, Domain.TypeDef(removeNamespace(namespace)(name), fields, extensions, s))
+      wrap(s, Domain.TypeDef(name, fields, extensions, s))
 
     case s: model.Schema if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
-      wrap(s, fieldsToTypeDef(removeNamespace(namespace)(name), s, namespace))
+      wrap(s, fieldsToTypeDef(name, s))
 
     case s: model.Schema if s.`type` == ARRAY =>
-      val field = Field(name, schema2Type(s.items, removeNamespace(namespace)(name), namespace))
+      val field = Field(name.simpleName, schema2Type(s.items, name), TypeMeta(Option(s.description)))
       wrap(s, Domain.Arr(field, s))
 
     case i: Items if i.`type` == ARRAY =>
-      val field = Field(name, schema2Type(i.items, removeNamespace(namespace)(name), namespace))
+      val field = Field(name.simpleName, schema2Type(i.items, name), TypeMeta(Option(i.format)))
       Domain.Arr(field, i)
 
     case s: Schema if s.$ref != null =>
@@ -137,16 +138,15 @@ object SchemaConverter {
       ???
   }
 
-  def fieldsToTypeDef(name: String, s: {def properties: Properties; def description: String}, namespace: String): TypeDef = {
-    val fields = extractFields(namespace)(s)
+  def fieldsToTypeDef(name: TypeName, s: {def properties: Properties; def description: String}): TypeDef = {
+    val fields = extractFields(name)(s)
     TypeDef(name, fields.toSeq, Nil, TypeMeta(Option(s.description)))
   }
 
-  def extractFields(namespace: String)(s: {def properties: Properties}) = {
+  def extractFields(name: TypeName)(s: {def properties: Properties}) = {
     val fields = s.properties map { prop =>
-      val name = prop._1
-      val pr = prop._2
-      Field(name, schema2Type(pr, name, namespace), prop._2)
+      val fieldName = name.nest(prop._1)
+      Field(fieldName, schema2Type(prop._2, fieldName), TypeMeta(Option(prop._2.description)))
     }
     fields
   }
@@ -180,20 +180,5 @@ object SchemaConverter {
   }
 
   // format: ON
-
-  def removeNamespace(namespace: String)(ref: String) = ref.replace(s"""/$namespace/""", "")
-
-  def escape(name: String) = {
-    import de.zalando.swagger.ScalaReserved._
-    if (
-      names.contains(name) ||
-        startNames.exists(name.startsWith) ||
-        partNames.exists(name.contains)
-    )
-      "`" + name + "`"
-    else
-      name
-  }
-
 }
 
