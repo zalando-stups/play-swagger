@@ -8,9 +8,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.{BaseJsonNode, NullNode}
 import com.fasterxml.jackson.databind.{DeserializationContext, DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import de.zalando.swagger.model.{Parameter, ParameterOrReference, ParameterReference, SwaggerModel}
 
+import scala.io.Source
 import scala.language.postfixOps
 
 trait Parser {
@@ -21,6 +23,11 @@ private[swagger] abstract class SwaggerParser extends Parser {
   def factory: JsonFactory
 
   def parse(file: File): SwaggerModel = {
+    val input = prepareFile(file)
+    mapper.readValue(input.getBytes, classOf[SwaggerModel])
+  }
+
+  lazy val mapper: ObjectMapper = {
     val mapper = new ObjectMapper(factory)
     mapper.registerModule(DefaultScalaModule)
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
@@ -34,13 +41,22 @@ private[swagger] abstract class SwaggerParser extends Parser {
     val module = new SimpleModule("PolymorphicParameterOrReferenceDeserializerModule", new Version(1, 0, 0, null, "", ""))
     module.addDeserializer(classOf[ParameterOrReference], deserializer)
     mapper.registerModule(module)
-
-    mapper.readValue(file, classOf[SwaggerModel])
+    mapper
   }
+
+  def prepareFile(file: File) =
+    Source.fromFile(file).getLines().mkString("\n")
+
 }
 
 object YamlParser extends SwaggerParser {
   val factory = new YAMLFactory()
+  override def prepareFile(file: File) = {
+    val input = super.prepareFile(file)
+    val yaml = new Yaml
+    val normalized = yaml.load(input)
+    mapper.writeValueAsString(normalized)
+  }
 }
 
 object JsonParser extends SwaggerParser {

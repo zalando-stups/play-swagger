@@ -69,22 +69,6 @@ object ModelGenerator {
       }
     }
 
-  private def traitCode(typeDef: TypeDef)(implicit model: ModelDefinition) = {
-    s"""|${comment(typeDef.meta)}
-        |trait ${traitName(typeDef.name).asSimpleType}${extendClause(typeDef, selfExtend = false)} {
-        |${traitFields(typeDef).mkString("\n")}
-        |}""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
-  }
-
-  private def traitFields(typeDef: TypeDef) = typeDef.fields map { f =>
-    s"""$PAD${comment(f.meta)}
-        |${PAD}def ${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(f.name)}""".stripMargin
-  }
-
-  private def comment(meta: TypeMeta) = meta.comment.map {
-    _.split("\n").map(c => "// " + c).mkString("\n")
-  } getOrElse ""
-
   private def traitName(name: TypeName) = TypeName.escape {
     TypeName(name.namespace, name.asSimpleType + "Def").simpleName
   }
@@ -115,13 +99,30 @@ object ModelGenerator {
     }
   }
 
+  private def traitCode(typeDef: TypeDef)(implicit model: ModelDefinition) = {
+    s"""|${comment(typeDef.meta, "")}
+        |trait ${traitName(typeDef.name).asSimpleType}${extendClause(typeDef, selfExtend = false)} {
+        |${traitFields(typeDef).mkString("\n")}
+        |}""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
+  }
+
+  private def traitFields(typeDef: TypeDef) = typeDef.fields map { f =>
+    s"""${comment(f.meta)}
+        |${PAD}def ${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(f.name)}""".stripMargin
+  }
   private def classCode(name: TypeName, typeDef: TypeDef)(implicit model: ModelDefinition) = {
-    s"""${comment(typeDef.meta)}
+    s"""${comment(typeDef.meta, "")}
         |case class ${TypeName.escape(name.asSimpleType)}(
         |${classFields(typeDef).mkString(",\n")}
         |)${extendClause(typeDef, selfExtend = true)}
         | """.stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
+
+  private def classFields(typeDef: TypeDef)(implicit model: ModelDefinition) =
+    typeDef.allFields map { f =>
+      s"""${comment(f.meta)}
+          |$PAD${TypeName.escape(f.name.simpleName)}: ${TypeName.escapeName(f.kind.name.relativeTo(typeDef.name))}""".stripMargin
+    }
 
   def extendClause(typeDef: TypeDef, selfExtend: Boolean)(implicit model: ModelDefinition): String = {
     val selfExtending = traitsToGenerate find (typeDef.name == _.name && selfExtend)
@@ -132,11 +133,9 @@ object ModelGenerator {
     (if (extendClause.nonEmpty) " extends " else "") + extendClause
   }
 
-  private def classFields(typeDef: TypeDef)(implicit model: ModelDefinition) =
-    typeDef.allFields map { f =>
-      s"""$PAD${comment(f.meta)}
-          |$PAD${TypeName.escape(f.name.simpleName)}: ${TypeName.escapeName(f.kind.name.relativeTo(typeDef.name))}""".stripMargin
-    }
+  private def comment(meta: TypeMeta, pad: String = PAD) = meta.comment.map {
+    _.split("\n").map(c => pad + "// " + c).mkString("\n")
+  } getOrElse ""
 
   protected val nowFormat = "dd.MM.yyyy HH:mm:ss"
 
