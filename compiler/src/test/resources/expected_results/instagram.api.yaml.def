@@ -1,0 +1,80 @@
+List(
+	TypeDef("TypeName(/definitions/Like)", List(
+		Field("TypeName(/definitions/Like/first_name)", Opt(Field("TypeName(/definitions/Like/first_name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Like/id)", Opt(Field("TypeName(/definitions/Like/id)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Like/last_name)", Opt(Field("TypeName(/definitions/Like/last_name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Like/type)", Opt(Field("TypeName(/definitions/Like/type)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Like/user_name)", Opt(Field("TypeName(/definitions/Like/user_name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/Location)", List(
+		Field("TypeName(/definitions/Location/id)", Opt(Field("TypeName(/definitions/Location/id)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Location/name)", Opt(Field("TypeName(/definitions/Location/name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Location/latitude)", Opt(Field("TypeName(/definitions/Location/latitude)", Dbl(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Location/longitude)", Opt(Field("TypeName(/definitions/Location/longitude)", Dbl(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/Media)", List(
+		Field("TypeName(/definitions/Media/location)", Opt(Field("TypeName(/definitions/Media/location)", ReferenceObject("TypeName(/definitions/Location)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/created_time)", Opt(Field("TypeName(/definitions/Media/created_time)", Int(TypeMeta(None)), TypeMeta(Some("Epoc time (ms)"))),TypeMeta(Some("Epoc time (ms)"))), TypeMeta(Some("Epoc time (ms)"))),
+		Field("TypeName(/definitions/Media/comments:)", Opt(Field("TypeName(/definitions/Media/comments:)", 
+	TypeDef("TypeName(/definitions/Media/comments:)", List(
+		Field("TypeName(/definitions/Media/comments:/count)", Opt(Field("TypeName(/definitions/Media/comments:/count)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/comments:/data)", Opt(Field("TypeName(/definitions/Media/comments:/data)", Arr(Field("TypeName(data)", ReferenceObject("TypeName(/definitions/Comment)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/tags)", Opt(Field("TypeName(/definitions/Media/tags)", Arr(Field("TypeName(tags)", ReferenceObject("TypeName(/definitions/Tag)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/users_in_photo)", Opt(Field("TypeName(/definitions/Media/users_in_photo)", Arr(Field("TypeName(users_in_photo)", ReferenceObject("TypeName(/definitions/MiniProfile)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/filter)", Opt(Field("TypeName(/definitions/Media/filter)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/likes)", Opt(Field("TypeName(/definitions/Media/likes)", 
+	TypeDef("TypeName(/definitions/Media/likes)", List(
+		Field("TypeName(/definitions/Media/likes/count)", Opt(Field("TypeName(/definitions/Media/likes/count)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/likes/data)", Opt(Field("TypeName(/definitions/Media/likes/data)", Arr(Field("TypeName(data)", ReferenceObject("TypeName(/definitions/MiniProfile)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/id)", Opt(Field("TypeName(/definitions/Media/id)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/videos)", Opt(Field("TypeName(/definitions/Media/videos)", 
+	TypeDef("TypeName(/definitions/Media/videos)", List(
+		Field("TypeName(/definitions/Media/videos/low_resolution)", Opt(Field("TypeName(/definitions/Media/videos/low_resolution)", ReferenceObject("TypeName(/definitions/Image)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/videos/standard_resolution)", Opt(Field("TypeName(/definitions/Media/videos/standard_resolution)", ReferenceObject("TypeName(/definitions/Image)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/type)", Opt(Field("TypeName(/definitions/Media/type)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/images)", Opt(Field("TypeName(/definitions/Media/images)", 
+	TypeDef("TypeName(/definitions/Media/images)", List(
+		Field("TypeName(/definitions/Media/images/low_resolution)", Opt(Field("TypeName(/definitions/Media/images/low_resolution)", ReferenceObject("TypeName(/definitions/Image)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/images/thumbnail)", Opt(Field("TypeName(/definitions/Media/images/thumbnail)", ReferenceObject("TypeName(/definitions/Image)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/images/standard_resolution)", Opt(Field("TypeName(/definitions/Media/images/standard_resolution)", ReferenceObject("TypeName(/definitions/Image)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Media/user)", Opt(Field("TypeName(/definitions/Media/user)", ReferenceObject("TypeName(/definitions/MiniProfile)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/MiniProfile)", List(
+		Field("TypeName(/definitions/MiniProfile/user_name)", Opt(Field("TypeName(/definitions/MiniProfile/user_name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/MiniProfile/full_name)", Opt(Field("TypeName(/definitions/MiniProfile/full_name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/MiniProfile/id)", Opt(Field("TypeName(/definitions/MiniProfile/id)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/MiniProfile/profile_picture)", Opt(Field("TypeName(/definitions/MiniProfile/profile_picture)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(Some("A shorter version of User for likes array")))
+, 
+	TypeDef("TypeName(/definitions/Tag)", List(
+		Field("TypeName(/definitions/Tag/media_count)", Opt(Field("TypeName(/definitions/Tag/media_count)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Tag/name)", Opt(Field("TypeName(/definitions/Tag/name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/User)", List(
+		Field("TypeName(/definitions/User/website)", Opt(Field("TypeName(/definitions/User/website)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/profile_picture)", Opt(Field("TypeName(/definitions/User/profile_picture)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/username)", Opt(Field("TypeName(/definitions/User/username)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/full_name)", Opt(Field("TypeName(/definitions/User/full_name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/bio)", Opt(Field("TypeName(/definitions/User/bio)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/id)", Opt(Field("TypeName(/definitions/User/id)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/counts)", Opt(Field("TypeName(/definitions/User/counts)", 
+	TypeDef("TypeName(/definitions/User/counts)", List(
+		Field("TypeName(/definitions/User/counts/media)", Opt(Field("TypeName(/definitions/User/counts/media)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/counts/follows)", Opt(Field("TypeName(/definitions/User/counts/follows)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/counts/follwed_by)", Opt(Field("TypeName(/definitions/User/counts/follwed_by)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/Image)", List(
+		Field("TypeName(/definitions/Image/width)", Opt(Field("TypeName(/definitions/Image/width)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Image/height)", Opt(Field("TypeName(/definitions/Image/height)", Int(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Image/url)", Opt(Field("TypeName(/definitions/Image/url)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/Comment)", List(
+		Field("TypeName(/definitions/Comment/id)", Opt(Field("TypeName(/definitions/Comment/id)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Comment/created_time)", Opt(Field("TypeName(/definitions/Comment/created_time)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Comment/text)", Opt(Field("TypeName(/definitions/Comment/text)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Comment/from)", Opt(Field("TypeName(/definitions/Comment/from)", ReferenceObject("TypeName(/definitions/MiniProfile)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+)

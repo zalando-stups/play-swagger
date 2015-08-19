@@ -1,0 +1,5 @@
+List(
+	TypeDef("TypeName(/definitions/Pet)", List(
+		Field("TypeName(/definitions/Pet/name)", Opt(Field("TypeName(/definitions/Pet/name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Pet/birthday)", Opt(Field("TypeName(/definitions/Pet/birthday)", Int(TypeMeta(Some("int32"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+)

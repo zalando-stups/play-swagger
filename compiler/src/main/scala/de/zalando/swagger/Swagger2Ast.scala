@@ -112,8 +112,8 @@ object SchemaConverter {
     case s: model.Schema if s.allOf != null =>
       val (toExtend, types) = s.allOf.partition(_.isRef)
       val fields = types flatMap extractFields(name)
-      // TODO extract fields to private types here
-      // TODO use s.properties instead of fields here
+      // TODO extract fields to private types
+      // TODO use s.properties instead of fields
       val extensions = toExtend map { s => Domain.Reference(s.$ref, s) }
       wrap(s, Domain.TypeDef(name, fields, extensions, s))
 

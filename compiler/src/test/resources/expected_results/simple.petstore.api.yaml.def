@@ -1,0 +1,15 @@
+List(
+	TypeDef("TypeName(/definitions/pet)", List(
+		Field("TypeName(/definitions/pet/id)", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),
+		Field("TypeName(/definitions/pet/name)", Str(None,TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/pet/tag)", Opt(Field("TypeName(/definitions/pet/tag)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/newPet)", List(
+		Field("TypeName(/definitions/newPet/id)", Opt(Field("TypeName(/definitions/newPet/id)", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/newPet/name)", Str(None,TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/newPet/tag)", Opt(Field("TypeName(/definitions/newPet/tag)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/errorModel)", List(
+		Field("TypeName(/definitions/errorModel/code)", Int(TypeMeta(Some("int32"))), TypeMeta(None)),
+		Field("TypeName(/definitions/errorModel/message)", Str(None,TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+)

@@ -1,0 +1,35 @@
+List(
+	TypeDef("TypeName(/definitions/Pet)", List(
+		Field("TypeName(/definitions/Pet/name)", Str(None,TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Pet/tags)", Opt(Field("TypeName(/definitions/Pet/tags)", Arr(Field("TypeName(tags)", ReferenceObject("TypeName(/definitions/Tag)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Pet/photoUrls)", Arr(Field("TypeName(photoUrls)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Pet/id)", Opt(Field("TypeName(/definitions/Pet/id)", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Pet/status)", Opt(Field("TypeName(/definitions/Pet/status)", Str(None,TypeMeta(None)), TypeMeta(Some("pet status in the store"))),TypeMeta(Some("pet status in the store"))), TypeMeta(Some("pet status in the store"))),
+		Field("TypeName(/definitions/Pet/category)", Opt(Field("TypeName(/definitions/Pet/category)", ReferenceObject("TypeName(/definitions/Category)", TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/Category)", List(
+		Field("TypeName(/definitions/Category/id)", Opt(Field("TypeName(/definitions/Category/id)", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Category/name)", Opt(Field("TypeName(/definitions/Category/name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/Tag)", List(
+		Field("TypeName(/definitions/Tag/id)", Opt(Field("TypeName(/definitions/Tag/id)", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Tag/name)", Opt(Field("TypeName(/definitions/Tag/name)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/User)", List(
+		Field("TypeName(/definitions/User/email)", Opt(Field("TypeName(/definitions/User/email)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/username)", Opt(Field("TypeName(/definitions/User/username)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/userStatus)", Opt(Field("TypeName(/definitions/User/userStatus)", Int(TypeMeta(Some("int32"))), TypeMeta(Some("User Status"))),TypeMeta(Some("User Status"))), TypeMeta(Some("User Status"))),
+		Field("TypeName(/definitions/User/lastName)", Opt(Field("TypeName(/definitions/User/lastName)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/firstName)", Opt(Field("TypeName(/definitions/User/firstName)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/id)", Opt(Field("TypeName(/definitions/User/id)", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/phone)", Opt(Field("TypeName(/definitions/User/phone)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/User/password)", Opt(Field("TypeName(/definitions/User/password)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(), TypeMeta(None))
+, 
+	TypeDef("TypeName(/definitions/Order)", List(
+		Field("TypeName(/definitions/Order/shipDate)", Opt(Field("TypeName(/definitions/Order/shipDate)", DateTime(TypeMeta(Some("date-time"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Order/quantity)", Opt(Field("TypeName(/definitions/Order/quantity)", Int(TypeMeta(Some("int32"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Order/petId)", Opt(Field("TypeName(/definitions/Order/petId)", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Order/id)", Opt(Field("TypeName(/definitions/Order/id)", Lng(TypeMeta(Some("int64"))), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Order/complete)", Opt(Field("TypeName(/definitions/Order/complete)", Bool(TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None)),
+		Field("TypeName(/definitions/Order/status)", Opt(Field("TypeName(/definitions/Order/status)", Str(None,TypeMeta(None)), TypeMeta(Some("Order Status"))),TypeMeta(Some("Order Status"))), TypeMeta(Some("Order Status")))), List(), TypeMeta(None))
+)

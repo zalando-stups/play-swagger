@@ -1,0 +1,8 @@
+List(
+	TypeDef("TypeName(/definitions/ErrorModel)", List(
+		Field("TypeName(/definitions/ErrorModel/message)", Str(None,TypeMeta(None)), TypeMeta(Some("The text of the error message"))),
+		Field("TypeName(/definitions/ErrorModel/code)", Int(TypeMeta(None)), TypeMeta(Some("The error code")))), List(), TypeMeta(Some("Basic error model")))
+, 
+	TypeDef("TypeName(/definitions/ExtendedErrorModel)", List(
+		Field("TypeName(/definitions/ExtendedErrorModel/rootCause)", Opt(Field("TypeName(/definitions/ExtendedErrorModel/rootCause)", Str(None,TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(None))), List(ReferenceObject("TypeName(/definitions/ErrorModel)", TypeMeta(None))), TypeMeta(Some("Extended error model")))
+)
