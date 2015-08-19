@@ -1,0 +1,9 @@
+definitions:
+  KeyedArrays:
+    type: object
+    description: An object, all keys of which represent and ID
+    example: { "1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "2": [9, 6, 8]}
+    additionalProperties:
+      type: array
+      items:
+        type: integer

@@ -33,14 +33,23 @@ object SwaggerCompiler {
 
     val generated = task.generator.generate(playTask, namespace, playRules)
 
-    val routesFiles = generated.map {
-      case (filename, content) =>
-        val file = new File(outputDir, filename)
-        FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
-        file
-    }
+    val routesFiles = generated map writeToFile(outputDir).tupled
 
-    SwaggerCompilationResult(routesFiles, Nil)
+    implicit val definitions = ast.definitions
+
+    val model = ModelGenerator.generate(namespace)
+
+    val modelFileName = "model/" + task.definitionFile.getName + ".scala"
+
+    val modelFile = writeToFile(outputDir)(modelFileName, model)
+
+    SwaggerCompilationResult(routesFiles, Seq(modelFile))
+  }
+
+  def writeToFile(outputDir: File) = (filename: String, content: String) => {
+    val file = new File(outputDir, filename)
+    FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
+    file
   }
 }
 

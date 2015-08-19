@@ -45,14 +45,20 @@ class SchemaConverterTest extends FunSpec with MustMatchers {
       val props = model.Property(PrimitiveType.STRING, null, null, null, null, null, null)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, null, props, null, false, null, null, null, 0, 0)
       val result = SchemaConverter.schema2Type(schema, "/definitions/type_name")
-      result mustBe Domain.CatchAll(Field("type_name",Domain.Str(None, None), TypeMeta(None)), None)
+      result mustBe TypeDef(TypeName("/definitions/type_name"), List(
+        Field(TypeName("/definitions/type_name/additionalProperties"),
+          CatchAll(Field(TypeName("/definitions/type_name/additionalProperties"), Str(None,TypeMeta(None)),
+            TypeMeta(None)),TypeMeta(None)), TypeMeta(Some("Catch-All property")))), List(), TypeMeta(None))
+
     }
 
     it("should convert complex additionalProperties") {
       val props = model.Property(null, "#/definitions/ComplexModel", null, null, null, null, null)
       val schema = new model.Schema(null, null, 0, 0, false, 0, false, 0, 0, null, 0, 0, false, null, null, PrimitiveType.OBJECT, Nil, null, null, null, null, null, props, null, false, null, null, null, 0, 0)
       val result = SchemaConverter.schema2Type(schema, "/definitions/")
-      result mustBe Domain.CatchAll(Field("",Domain.ReferenceObject("/definitions/ComplexModel", None), TypeMeta(None)), None)
+      result mustBe TypeDef(TypeName("/definitions/"), List(
+        Field(TypeName("/definitions//additionalProperties"), CatchAll(Field(TypeName("/definitions//additionalProperties"), ReferenceObject(TypeName("/definitions/ComplexModel"), TypeMeta(None)), TypeMeta(None)),TypeMeta(None)), TypeMeta(Some("Catch-All property")))), List(), TypeMeta(None))
+
     }
 
   }

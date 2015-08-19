@@ -221,6 +221,15 @@ object model {
     maxLength, minLength, pattern, maxItems, minItems, uniqueItems, enum, items, `type`
   ) with TypeInfo {
     val isRef = $ref != null && $ref.trim.nonEmpty
+
+    override def toString =
+      s"""Schema($isRef, $format, $default, $multipleOf, $maximum, $exclusiveMaximum, $minimum,
+         |$exclusiveMinimum, $maxLength, $minLength, $pattern, $maxItems, $minItems, $uniqueItems,
+         |$enum, $items, ${`type`}, $required, $example, $description, $title, ${$ref}, $properties,
+         |$additionalProperties, $discriminator, $readOnly, $xml, $externalDocs, $allOf, $maxProperties,
+         |$minProperties)
+         |""".stripMargin
+
   }
 
   case class Header(

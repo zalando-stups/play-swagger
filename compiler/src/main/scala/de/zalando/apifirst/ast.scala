@@ -74,13 +74,20 @@ object Domain {
     val SL = '/'
     def apply(namespace: String, simpleName: String):TypeName = TypeName(namespace + SL + simpleName)
     def escapeName(name: String) = {
-      val innerType =
-        if (name.lastIndexOf('[')>0 && name.indexOf(']') > name.lastIndexOf('['))
-          name.substring(name.lastIndexOf('[')+1, name.indexOf(']'))
-        else
-          name
-      val escapedType = innerType.split('.').map(escape).toSeq.mkString(".")
-      name.replace(innerType, escapedType)
+      val SimpleInnerPattern = """.*(?:Seq|Option)\[([^\]\[]+)\].*""".r
+      val ComplexInnerPattern = """.*(?:Map)\[String,([^\]\[]+)\].*""".r
+      name match {
+        case SimpleInnerPattern(innerName) =>
+          name.replace(innerName, escapeComplexName(innerName))
+        case ComplexInnerPattern(innerName) =>
+          ComplexInnerPattern.replaceFirstIn(name, name.replace(innerName, escapeComplexName(innerName)))
+        case _ =>
+          escapeComplexName(name)
+      }
+    }
+
+    def escapeComplexName(innerName: String): String = {
+      innerName.split('.').map(escape).toSeq.mkString(".")
     }
 
     def escape(name: String) = {

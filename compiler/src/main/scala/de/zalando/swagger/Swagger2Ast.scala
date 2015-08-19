@@ -85,13 +85,16 @@ object Swagger2Ast extends HandlerParser {
 }
 
 object SchemaConverter {
+  val ADDITIONAL_PROPS = "additionalProperties"
+  val requiredProperties = Seq(ADDITIONAL_PROPS)
 
   import Domain._
 
   def wrap[T <: Type](s: Schema, t: T): Type = t match {
     case td @ TypeDef(name, fields, extend, meta) =>
       val wrapped = fields map { f =>
-        if (s.required != null && s.required.contains(f.name.simpleName)) f
+        if (s.required != null && s.required.contains(f.name.simpleName) ||
+          requiredProperties.contains(f.name.simpleName)) f
         else f.copy(kind = Domain.Opt(f, f.meta))
       }
       td.copy(fields = wrapped)
@@ -105,10 +108,6 @@ object SchemaConverter {
     case _ if propsPartialFunction.isDefinedAt(p.`type`, p.format) =>
       propsPartialFunction(p.`type`, p.format)(p)
 
-    case s: model.Schema if s.additionalProperties != null =>
-      val field = Field(name.simpleName, schema2Type(s.additionalProperties, name), TypeMeta(Option(s.description)))
-      wrap(s, Domain.CatchAll(field, s))
-
     case s: model.Schema if s.allOf != null =>
       val (toExtend, types) = s.allOf.partition(_.isRef)
       val fields = types flatMap extractFields(name)
@@ -116,9 +115,6 @@ object SchemaConverter {
       // TODO use s.properties instead of fields
       val extensions = toExtend map { s => Domain.Reference(s.$ref, s) }
       wrap(s, Domain.TypeDef(name, fields, extensions, s))
-
-    case s: model.Schema if (s.`type` == OBJECT || s.`type` == null) && s.properties != null =>
-      wrap(s, fieldsToTypeDef(name, s))
 
     case s: model.Schema if s.`type` == ARRAY =>
       val field = Field(name.simpleName, schema2Type(s.items, name), TypeMeta(Option(s.description)))
@@ -131,19 +127,33 @@ object SchemaConverter {
     case s: Schema if s.$ref != null =>
       wrap(s, Domain.Reference(s.$ref, s))
 
+    case s: model.Schema if s.`type` == OBJECT || s.`type` == null =>
+      wrap(s, fieldsToTypeDef(name, s))
+
     case s if s.$ref != null =>
       Domain.Reference(s.$ref, s)
 
+    case p: Property if p.items != null =>
+      schema2Type(p.items, name)
+
     case other =>
+      println("Don't know what to do with " + other)
       ???
   }
 
-  def fieldsToTypeDef(name: TypeName, s: {def properties: Properties; def description: String}): TypeDef = {
-    val fields = extractFields(name)(s)
-    TypeDef(name, fields.toSeq, Nil, TypeMeta(Option(s.description)))
+  def fieldsToTypeDef(name: TypeName,  s: Schema): TypeDef = {
+    val fields = if (s.properties != null) extractFields(name)(s) else Nil
+    val catchAll = if (s.additionalProperties != null) {
+      val fieldName = name.nest(ADDITIONAL_PROPS)
+      val field = Field(fieldName, schema2Type(s.additionalProperties, fieldName), s)
+      val mainField =
+        Field(fieldName, Domain.CatchAll(field, s), TypeMeta(Some("Catch-All property")))
+      Seq(mainField)
+    } else Nil
+    TypeDef(name, catchAll ++ fields, Nil, s)
   }
 
-  def extractFields(name: TypeName)(s: {def properties: Properties}) = {
+  def extractFields(name: TypeName)(s: Schema) = {
     val fields = s.properties map { prop =>
       val fieldName = name.nest(prop._1)
       Field(fieldName, schema2Type(prop._2, fieldName), TypeMeta(Option(prop._2.description)))

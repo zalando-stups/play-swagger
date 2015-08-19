@@ -32,7 +32,7 @@ object RuleGenerator {
     call.path.value flatMap {
       case Root => None
       case s : Segment => Some(StaticPart(s.value + Root.value))
-      case p : InPathParameter => Some(DynamicPart(p.value + Root.value, p.constraint, p.encode))
+      case p : InPathParameter => Some(DynamicPart(p.value, p.constraint, p.encode))
     }
 
 }
