@@ -1,7 +1,7 @@
 package instagram.api.yaml
 import scala.Option
 import scala.collection.Seq
-object definitions {  
+object definitions {
   object user {
     case class Counts(
       media: Option[Int],
@@ -9,7 +9,7 @@ object definitions {
       follwed_by: Option[Int]
     )
   }
-  object media {  
+  object media {
     case class `Comments:`(
       count: Option[Int],
       data: Option[Seq[Comment]]

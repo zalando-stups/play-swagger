@@ -1,7 +1,7 @@
 package nested_arrays.yaml
 import scala.Option
 import scala.collection.Seq
-object definitions {  
+object definitions {
   case class Activity(
     // The text of the error message
     actions: Option[String]

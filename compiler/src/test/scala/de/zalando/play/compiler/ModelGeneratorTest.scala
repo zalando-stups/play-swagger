@@ -19,8 +19,8 @@ class ModelGeneratorTest extends FunSpec with MustMatchers with ExpectedResults 
       val template = ModelGenerator.mainTemplate + ModelGenerator.namespaceTemplate
       val expected = ""
       implicit val emptyModel = Seq.empty[Domain.Type]
-      val result = removeNoise(ModelGenerator.generate(Some("pkg")))
-      result mustBe ""
+      val result = removeNoise(ModelGenerator.generate("pkg").head._2)
+      result mustBe expected
     }
     /*
         it ("should escape package name if it contains reserved words") {
@@ -44,9 +44,9 @@ class ModelGeneratorTest extends FunSpec with MustMatchers with ExpectedResults 
       it(s"should parse the yaml swagger file ${file.getName} with expected definitions result") {
         val swaggerModel = YamlParser.parse(file)
         implicit val definitions = Swagger2Ast.convertDefinitions(swaggerModel)
-        val fullResult = ModelGenerator.generate(Some(file.getName))
-        val result = removeNoise(fullResult)
-        result mustBe asInFile(file, "scala")
+        val fullResult = ModelGenerator.generate(file.getName)
+        val result = removeNoise(fullResult.head._2)
+        result mustBe  asInFile(file, "scala")
       }
     }
   }

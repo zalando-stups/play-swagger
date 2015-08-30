@@ -10,47 +10,53 @@ import scala.language.postfixOps
 /**
  * @since 16.08.2015
  */
-object ModelGenerator extends ClassGenerator {
+object ModelGenerator extends GeneratorBase {
 
-  def generate(packageName: Option[String],
-               namespace: String = "definitions")(implicit model: ModelDefinition) = {
-    val (imports, result) = generateNamespace(namespace)
+  override val placeHolder = "#IMPORT#"
+
+  def generate(namespace: String)(implicit model: ModelDefinition) = {
+    val (imports, result) = generateNamespace("definitions", new TraitGenerator :: new ClassGenerator :: Nil)
     if (result.nonEmpty) {
       val now = new SimpleDateFormat(nowFormat).format(new Date())
-      val pkgName = packageName.fold("") { p => s"package $p" }
+      val pkgName = s"package $namespace"
 
       val prefix = mainTemplate.
-        replace("#IMPORT#", imports).
+        replace(placeHolder, imports.toSeq.sorted.map { i: String => "import " + i }.mkString("\n")).
         replace("#PACKAGE#", pkgName).
         replace("#NOW#", now)
-      prefix + result
-    } else result
+      Seq((imports, prefix + result))
+    } else Seq((imports, result))
   }
 
-  def generateNamespace(namespace: String)(implicit model: ModelDefinition): (String, String) = {
-
-    def pad(s: String) = s split "\n" map { l => PAD + l } mkString "\n"
+  def generateNamespace(namespace: String, generators: Seq[GeneratorBase])(implicit model: ModelDefinition): (Set[String], String) = {
 
     val thisNamespace = model.flatMap(_.nestedTypes)
 
-    val nested = thisNamespace groupBy (_.name.namespace) map { case (space, typeDefs) =>
-      generateNamespace(space.simpleName)(typeDefs)
-    } values
+    val template =
+      if (thisNamespace.nonEmpty) {
+        val nested = thisNamespace groupBy (_.name.namespace) map { case (space, typeDefs) =>
+          generateNamespace(space.simpleName, generators)(typeDefs)
+        }
+        val nestedStr = nested.values map pad mkString "\n"
+        namespaceTemplate.
+          replace("#NAMESPACE#", namespace).
+          replace("#NESTED#", nestedStr)
+      } else
+        if (model.exists(!_.isInstanceOf[Reference])) {
+          namespaceTemplate.
+            replace("#NAMESPACE#", namespace).
+            replace("#NESTED#", "")
+        }
+      else
+        ""
 
-    val traitInfo = generateTraits(namespace)
-    val traitImports = traitInfo.map(_._1)
-    val traits = traitInfo.map(_._2)
-    val classInfo = generateClasses(namespace)
-    val classImports = classInfo.map(_._1)
-    val classes = classInfo.map(_._2)
-    val imports = (traitImports ++ classImports).flatten.map { i: String => "import " + i }.mkString("\n")
-    lazy val result = namespaceTemplate.
-      replace("#NAMESPACE#", namespace).
-      replace("#NESTED#", nested map pad mkString "\n").
-      replace("#TRAITS#", traits map pad mkString "\n").
-      replace("#CLASSES#", classes map pad mkString "\n")
-    val endResult = if (classes.isEmpty && traits.isEmpty) "" else result
-    (imports, endResult)
+    val endResult = generators.foldLeft((Set.empty[String], template)) { case (result, generator) =>
+      val info = generator.generate(namespace)
+      val imports = info.map(_._1)
+      val code = info map (_._2) map pad mkString "\n"
+      (imports.flatten.toSet ++ result._1, result._2.replace(generator.placeHolder, code))
+    }
+    endResult
   }
 
   protected val nowFormat = "dd.MM.yyyy HH:mm:ss"
@@ -73,9 +79,11 @@ object ModelGenerator extends ClassGenerator {
 
 }
 
-trait ClassGenerator extends TraitGenerator {
+class ClassGenerator extends TraitGenerator {
 
-  def generateClasses(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
+  override val placeHolder = "#CLASSES#"
+
+  override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
     val namedClasses = model map generateSingleTypeDef(namespace, Set.empty)
     namedClasses.flatten.toSet
   }
@@ -104,7 +112,7 @@ trait ClassGenerator extends TraitGenerator {
   private def classCode(name: TypeName, typeDef: TypeDef)(implicit model: ModelDefinition) = {
     s"""${comment(typeDef.meta, "")}
         |case class ${TypeName.escape(name.asSimpleType)}(
-                                                           |${classFields(typeDef).mkString(",\n")}
+        |${classFields(typeDef).mkString(",\n")}
         |)${extendClause(typeDef, selfExtend = true)}
         | """.stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
@@ -116,9 +124,11 @@ trait ClassGenerator extends TraitGenerator {
     }
 }
 
-trait TraitGenerator extends GeneratorBase {
+class TraitGenerator extends GeneratorBase {
 
-  def generateTraits(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] =
+  override val placeHolder = "#TRAITS#"
+
+  override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] =
     traitsToGenerate flatMap { reference =>
       reference.resolve map { typeDef =>
         val code = traitCode(typeDef)
@@ -138,7 +148,7 @@ trait TraitGenerator extends GeneratorBase {
   private def traitCode(typeDef: TypeDef)(implicit model: ModelDefinition) = {
     s"""|${comment(typeDef.meta, "")}
         |trait ${traitName(typeDef.name).asSimpleType}${extendClause(typeDef, selfExtend = false)} {
-                                                                                                    |${traitFields(typeDef).mkString("\n")}
+        |${traitFields(typeDef).mkString("\n")}
         |}""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
 
@@ -160,10 +170,16 @@ trait TraitGenerator extends GeneratorBase {
 
 trait GeneratorBase {
 
+  def pad(s: String) = s split "\n" map { l => if (l.trim.nonEmpty) PAD + l else l } mkString "\n"
+
+  def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)]
+
+  def placeHolder: String
+
   val PAD = "  "
 
   def comment(meta: TypeMeta, pad: String = PAD) = meta.comment.map {
-    _.split("\n").map(c => pad + "// " + c).mkString("\n")
+    _.split("\n").map(c => if (c.nonEmpty) pad + "// " + c else c).mkString("\n")
   } getOrElse ""
 
 }

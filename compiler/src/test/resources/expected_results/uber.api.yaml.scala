@@ -1,7 +1,7 @@
 package uber.api.yaml
 import scala.Option
 import scala.collection.Seq
-object definitions {  
+object definitions {
   case class PriceEstimate(
     // Lower bound of the estimated price.
     low_estimate: Option[Double],

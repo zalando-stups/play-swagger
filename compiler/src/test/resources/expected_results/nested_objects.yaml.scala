@@ -1,8 +1,8 @@
 package nested_objects.yaml
 import scala.Option
-object definitions {  
-  object nestedobjects {  
-    object nested {  
+object definitions {
+  object nestedobjects {
+    object nested {
       object nested2 {
         case class Nested3(
           bottom: Option[String]

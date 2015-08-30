@@ -1,8 +1,8 @@
 package full.petstore.api.yaml
+import java.util.Date
 import scala.Option
 import scala.collection.Seq
-import java.util.Date
-object definitions {  
+object definitions {
   case class Pet(
     name: String,
     tags: Option[Seq[Tag]],

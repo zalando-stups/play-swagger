@@ -29,9 +29,9 @@ object SwaggerCompiler {
     val playTask = RoutesCompilerTask(task.definitionFile, routesImport,
       forwardsRouter = true, reverseRouter, namespaceReverseRouter = true)
 
-    val namespace = Some(task.definitionFile.getName.takeWhile(_ != '.'))
+    val namespace = task.definitionFile.getName.takeWhile(_ != '.')
 
-    val generated = task.generator.generate(playTask, namespace, playRules)
+    val generated = task.generator.generate(playTask, Some(namespace), playRules)
 
     val routesFiles = generated map writeToFile(outputDir).tupled
 
@@ -41,7 +41,7 @@ object SwaggerCompiler {
 
     val modelFileName = "model/" + task.definitionFile.getName + ".scala"
 
-    val modelFile = writeToFile(outputDir)(modelFileName, model)
+    val modelFile = writeToFile(outputDir)(modelFileName, model.head._2)
 
     SwaggerCompilationResult(routesFiles, Seq(modelFile))
   }
