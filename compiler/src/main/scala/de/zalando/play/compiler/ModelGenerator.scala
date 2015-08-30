@@ -10,9 +10,7 @@ import scala.language.postfixOps
 /**
  * @since 16.08.2015
  */
-object ModelGenerator {
-
-  val PAD = "  "
+object ModelGenerator extends ClassGenerator {
 
   def generate(packageName: Option[String],
                namespace: String = "definitions")(implicit model: ModelDefinition) = {
@@ -55,30 +53,34 @@ object ModelGenerator {
     (imports, endResult)
   }
 
-  private def traitsToGenerate(implicit model: ModelDefinition): Set[Reference] =
-    model flatMap {
-      case TypeDef(_, _, extend, meta) => extend
-      case _ => Nil
-    } toSet
+  protected val nowFormat = "dd.MM.yyyy HH:mm:ss"
 
-  protected def generateTraits(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] =
-    traitsToGenerate flatMap { reference =>
-      reference.resolve map { typeDef =>
-        val code = traitCode(typeDef)
-        (typeDef.imports, code)
-      }
-    }
+  protected[compiler] val mainTemplate =
+    s"""#PACKAGE#
+       |
+       |#IMPORT#
+       |
+       |/** @since #NOW# */
+       |""".stripMargin
 
-  private def traitName(name: TypeName) = TypeName.escape {
-    TypeName(name.namespace, name.asSimpleType + "Def").simpleName
-  }
 
-  protected def generateClasses(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
+  protected[compiler] val namespaceTemplate =
+    s"""
+       |object #NAMESPACE# {#NESTED#
+       |#TRAITS#
+       |#CLASSES#
+       |}""".stripMargin
+
+}
+
+trait ClassGenerator extends TraitGenerator {
+
+  def generateClasses(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
     val namedClasses = model map generateSingleTypeDef(namespace, Set.empty)
     namedClasses.flatten.toSet
   }
 
-  def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)(implicit model: ModelDefinition): Option[(Set[String], String)] = {
+  private def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)(implicit model: ModelDefinition): Option[(Set[String], String)] = {
     typeDef match {
       case t@TypeDef(typeName, fields, extend, meta) =>
         Some((t.imports ++ imports, classCode(typeName, t)))
@@ -99,21 +101,10 @@ object ModelGenerator {
     }
   }
 
-  private def traitCode(typeDef: TypeDef)(implicit model: ModelDefinition) = {
-    s"""|${comment(typeDef.meta, "")}
-        |trait ${traitName(typeDef.name).asSimpleType}${extendClause(typeDef, selfExtend = false)} {
-        |${traitFields(typeDef).mkString("\n")}
-        |}""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
-  }
-
-  private def traitFields(typeDef: TypeDef) = typeDef.fields map { f =>
-    s"""${comment(f.meta)}
-        |${PAD}def ${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(f.name)}""".stripMargin
-  }
   private def classCode(name: TypeName, typeDef: TypeDef)(implicit model: ModelDefinition) = {
     s"""${comment(typeDef.meta, "")}
         |case class ${TypeName.escape(name.asSimpleType)}(
-        |${classFields(typeDef).mkString(",\n")}
+                                                           |${classFields(typeDef).mkString(",\n")}
         |)${extendClause(typeDef, selfExtend = true)}
         | """.stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
@@ -122,6 +113,17 @@ object ModelGenerator {
     typeDef.allFields map { f =>
       s"""${comment(f.meta)}
           |$PAD${TypeName.escape(f.name.simpleName)}: ${TypeName.escapeName(f.kind.name.relativeTo(typeDef.name))}""".stripMargin
+    }
+}
+
+trait TraitGenerator extends GeneratorBase {
+
+  def generateTraits(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] =
+    traitsToGenerate flatMap { reference =>
+      reference.resolve map { typeDef =>
+        val code = traitCode(typeDef)
+        (typeDef.imports, code)
+      }
     }
 
   def extendClause(typeDef: TypeDef, selfExtend: Boolean)(implicit model: ModelDefinition): String = {
@@ -133,26 +135,35 @@ object ModelGenerator {
     (if (extendClause.nonEmpty) " extends " else "") + extendClause
   }
 
-  private def comment(meta: TypeMeta, pad: String = PAD) = meta.comment.map {
+  private def traitCode(typeDef: TypeDef)(implicit model: ModelDefinition) = {
+    s"""|${comment(typeDef.meta, "")}
+        |trait ${traitName(typeDef.name).asSimpleType}${extendClause(typeDef, selfExtend = false)} {
+                                                                                                    |${traitFields(typeDef).mkString("\n")}
+        |}""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
+  }
+
+  private def traitFields(typeDef: TypeDef) = typeDef.fields map { f =>
+    s"""${comment(f.meta)}
+        |${PAD}def ${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(f.name)}""".stripMargin
+  }
+
+  private def traitsToGenerate(implicit model: ModelDefinition): Set[Reference] =
+    model flatMap {
+      case TypeDef(_, _, extend, meta) => extend
+      case _ => Nil
+    } toSet
+
+  private def traitName(name: TypeName) = TypeName.escape {
+    TypeName(name.namespace, name.asSimpleType + "Def").simpleName
+  }
+}
+
+trait GeneratorBase {
+
+  val PAD = "  "
+
+  def comment(meta: TypeMeta, pad: String = PAD) = meta.comment.map {
     _.split("\n").map(c => pad + "// " + c).mkString("\n")
   } getOrElse ""
-
-  protected val nowFormat = "dd.MM.yyyy HH:mm:ss"
-
-  protected[compiler] val mainTemplate =
-    s"""#PACKAGE#
-       |
-       |#IMPORT#
-       |
-       |/** @since #NOW# */
-       |""".stripMargin
-
-
-  protected[compiler] val namespaceTemplate =
-    s"""
-       |object #NAMESPACE# {#NESTED#
-       |#TRAITS#
-       |#CLASSES#
-       |}""".stripMargin
 
 }

@@ -29,6 +29,6 @@ trait ExpectedResults {
       ""
   }
 
-  private def target(file:File, suffix: String) =
+  def target(file:File, suffix: String) =
     new File(file.getParentFile.getParent + "/expected_results/" + file.getName + "." + suffix)
 }
