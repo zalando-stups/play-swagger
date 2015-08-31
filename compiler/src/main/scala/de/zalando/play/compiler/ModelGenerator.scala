@@ -11,23 +11,25 @@ import scala.language.postfixOps
  * @since 16.08.2015
  */
 object ModelGenerator extends ChainedGenerator {
-  override def generators = new TraitGenerator :: new ClassGenerator :: new EmptyGenerator("#HELPERS#") :: Nil
+  override def generators = new TraitGenerator :: new ClassGenerator :: Nil
 }
 
 trait ChainedGenerator extends GeneratorBase {
 
   def generators: List[GeneratorBase]
 
+  def defaultNamespace = "definitions"
+
   override val placeHolder = "#IMPORT#"
 
   def generate(namespace: String)(implicit model: ModelDefinition) = {
-    val (imports, result) = generateNamespace("definitions", generators)
+    val (imports, result) = generateNamespace(defaultNamespace, generators)
     if (result.nonEmpty) {
       val now = new SimpleDateFormat(nowFormat).format(new Date())
       val pkgName = s"package $namespace"
 
       val prefix = mainTemplate.
-        replace(placeHolder, imports.toSeq.sorted.map { i: String => "import " + i }.mkString("\n")).
+        replace(placeHolder, imports.map { i: String => "import " + i }.mkString("\n")).
         replace("#PACKAGE#", pkgName).
         replace("#NOW#", now)
       Seq((imports, prefix + result))
@@ -36,7 +38,7 @@ trait ChainedGenerator extends GeneratorBase {
 
   def generateNamespace(namespace: String, generators: Seq[GeneratorBase])(implicit model: ModelDefinition): (Set[String], String) = {
 
-    val thisNamespace = model.flatMap(_.nestedTypes)
+    val thisNamespace = model.flatMap(_.nestedTypes).filterNot(_.isInstanceOf[Reference])
 
     val template =
       if (thisNamespace.nonEmpty) {
@@ -81,7 +83,6 @@ trait ChainedGenerator extends GeneratorBase {
        |object #NAMESPACE# {#NESTED#
        |#TRAITS#
        |#CLASSES#
-       |#HELPERS#
        |}""".stripMargin
 
 }
