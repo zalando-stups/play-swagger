@@ -10,12 +10,18 @@ import scala.language.postfixOps
 /**
  * @since 16.08.2015
  */
-object ModelGenerator extends GeneratorBase {
+object ModelGenerator extends ChainedGenerator {
+  override def generators = new TraitGenerator :: new ClassGenerator :: new EmptyGenerator("#HELPERS#") :: Nil
+}
+
+trait ChainedGenerator extends GeneratorBase {
+
+  def generators: List[GeneratorBase]
 
   override val placeHolder = "#IMPORT#"
 
   def generate(namespace: String)(implicit model: ModelDefinition) = {
-    val (imports, result) = generateNamespace("definitions", new TraitGenerator :: new ClassGenerator :: Nil)
+    val (imports, result) = generateNamespace("definitions", generators)
     if (result.nonEmpty) {
       val now = new SimpleDateFormat(nowFormat).format(new Date())
       val pkgName = s"package $namespace"
@@ -75,20 +81,28 @@ object ModelGenerator extends GeneratorBase {
        |object #NAMESPACE# {#NESTED#
        |#TRAITS#
        |#CLASSES#
+       |#HELPERS#
        |}""".stripMargin
 
+}
+
+class EmptyGenerator(override val placeHolder: String) extends GeneratorBase {
+  override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = Nil
 }
 
 class ClassGenerator extends TraitGenerator {
 
   override val placeHolder = "#CLASSES#"
 
+  val defaultImports = Set.empty[String]
+
   override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
-    val namedClasses = model map generateSingleTypeDef(namespace, Set.empty)
+    val namedClasses = model map generateSingleTypeDef(namespace, defaultImports)
     namedClasses.flatten.toSet
   }
 
-  private def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)(implicit model: ModelDefinition): Option[(Set[String], String)] = {
+  protected def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
+                                     (implicit model: ModelDefinition): Option[(Set[String], String)] = {
     typeDef match {
       case t@TypeDef(typeName, fields, extend, meta) =>
         Some((t.imports ++ imports, classCode(typeName, t)))
