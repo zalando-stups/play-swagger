@@ -1,6 +1,6 @@
 package full.petstore.api.yaml
-import java.util.Date
 import scala.Option
+import java.util.Date
 import scala.collection.Seq
 object definitions {
   case class Pet(

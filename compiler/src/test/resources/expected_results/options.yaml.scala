@@ -1,6 +1,6 @@
 package options.yaml
-import scala.Option
 import scala.collection.Seq
+import scala.Option
 object definitions {
   case class Basic(
     id: Long,
