@@ -43,7 +43,13 @@ object SwaggerCompiler {
 
     val modelFile = writeToFile(outputDir)(modelFileName, model.head._2)
 
-    SwaggerCompilationResult(routesFiles, Seq(modelFile))
+    val generators = ModelFactoryGenerator.generate(namespace)
+
+    val generatorFileName = "generators/" + task.definitionFile.getName + ".scala"
+
+    val generatorFile = writeToFile(outputDir)(generatorFileName, generators.head._2)
+
+    SwaggerCompilationResult(routesFiles, Seq(modelFile, generatorFile))
   }
 
   def writeToFile(outputDir: File) = (filename: String, content: String) => {

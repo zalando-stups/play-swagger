@@ -310,7 +310,7 @@ object model {
   ) with TypeInfo
 
   case class SecurityDefinition(
-    @JsonProperty("type") kind: String,
+    `type`: String,
     description: String,
     name: String,
     in: String,

@@ -7,7 +7,8 @@ lazy val api = (project in file("api"))
   .settings(
     name := "play-swagger-api",
     libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "play" % PlayVersion % Provided
+      "com.typesafe.play" %% "play" % PlayVersion % Provided,
+      "org.scalacheck" %% "scalacheck" % "1.12.4"
     ),
     scalaVersion := "2.11.7",
     crossScalaVersions := Seq(scalaVersion.value, "2.10.5")
@@ -25,7 +26,7 @@ lazy val compiler = (project in file("compiler"))
     libraryDependencies ++= Seq(
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.5.3",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
       "org.scalatest" %% "scalatest" % "2.2.3" % "test",
       "com.typesafe.play" %% "routes-compiler" % PlayVersion % Provided,
       "org.scala-lang" % "scala-compiler" % "2.10.5",
@@ -33,6 +34,7 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-reflect" % "2.10.5",
       "org.scalacheck" %% "scalacheck" % "1.12.4" % "test"
     )
+
   )
 
 // This is the sbt plugin
@@ -72,6 +74,8 @@ lazy val root = (project in file("."))
   .aggregate(api, compiler, plugin)
 
 def common: Seq[Setting[_]] = Seq(
-  organization := "de.zalando"
+  organization := "de.zalando",
+  fork in ( Test, run ) := true,
+  autoScalaLibrary := true
 )
 
