@@ -55,17 +55,19 @@ object Domain {
   case class TypeName(fullName: String) {
     import TypeName.SL
     val simpleName = fullName.trim.takeRight(fullName.length - fullName.lastIndexOf(SL) - 1)
+    val nestedNamespace = "_" + simpleName
     val asSimpleType = camelize(simpleName)
     val namespace = fullName.trim.take(fullName.lastIndexOf(SL)).toLowerCase
     val oneUp = {
       val space = Option(namespace).flatMap(_.split(SL).filter(_.nonEmpty).drop(1).lastOption).getOrElse("")
-      (if (space.nonEmpty) space + "." else "") + asSimpleType
+      (if (space.nonEmpty) "_" + space + "." else "") + asSimpleType
     }
 
     def nestedIn(t: TypeName) = namespace.nonEmpty && t.fullName.toLowerCase.startsWith(namespace)
     def relativeTo(t: TypeName) = {
-      val newSpace = namespace.replace(t.namespace,"").dropWhile(_ == SL).replace(SL, '.')
-      if (newSpace.nonEmpty) newSpace + '.' + asSimpleType else asSimpleType
+      val newSpace = namespace.replace(t.namespace,"").dropWhile(_ == SL).replaceAll(SL.toString, "._")
+      val prefix = if (t.namespace.isEmpty) "" else "_"
+      if (newSpace.nonEmpty) prefix + newSpace + '.' + asSimpleType else asSimpleType
     }
     def nest(name: String) = TypeName(fullName + SL + name)
     private def camelize(s: String) = if (s.isEmpty) s else s.head.toUpper + s.tail

@@ -15,18 +15,11 @@ class TestClassGeneratorTest extends FunSpec with MustMatchers with ExpectedResu
     s.split("\n").filterNot(_.trim.isEmpty).filterNot(_.contains("@since")).mkString("\n")
 
   describe("TestClassGenerator standalone") {
-    it("should convert empty model") {
-      val template = ModelGenerator.mainTemplate + ModelGenerator.namespaceTemplate
-      val expected = ""
+    it("should convert an empty model") {
       implicit val emptyModel = Seq.empty[Domain.Type]
       val result = removeNoise(ModelGenerator.generate("pkg").head._2)
-      result mustBe expected
+      result mustBe ""
     }
-    /*
-        it ("should escape package name if it contains reserved words") {
-          fail("Not implemented yet") TODO
-        }
-    */
   }
 
   describe("Model Generator standard tests") {
@@ -34,12 +27,10 @@ class TestClassGeneratorTest extends FunSpec with MustMatchers with ExpectedResu
     testFixture(fixtures)
   }
 
-/*
   describe("Model Generator special cases") {
     val fixtures = new File("compiler/src/test/resources/model").listFiles
     testFixture(fixtures)
   }
-*/
 
   def testFixture(fixtures: Array[File]): Unit = {
     fixtures.filter(_.getName.endsWith(".yaml")) foreach { file =>
@@ -47,11 +38,8 @@ class TestClassGeneratorTest extends FunSpec with MustMatchers with ExpectedResu
         val swaggerModel = YamlParser.parse(file)
         implicit val definitions = Swagger2Ast.convertDefinitions(swaggerModel)
         val fullResult = ModelFactoryGenerator.generate(file.getName)
-        println(fullResult.head._2)
-/*
         val result = removeNoise(fullResult.head._2)
-        result mustBe  asInFile(file, "scala")
-*/
+        result mustBe asInFile(file, "generators.scala")
       }
     }
   }

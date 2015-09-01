@@ -43,7 +43,7 @@ trait ChainedGenerator extends GeneratorBase {
     val template =
       if (thisNamespace.nonEmpty) {
         val nested = thisNamespace groupBy (_.name.namespace) map { case (space, typeDefs) =>
-          generateNamespace(space.simpleName, generators)(typeDefs)
+          generateNamespace(space.nestedNamespace, generators)(typeDefs)
         }
         val nestedStr = nested.values map pad mkString "\n"
         namespaceTemplate.
@@ -87,6 +87,10 @@ trait ChainedGenerator extends GeneratorBase {
 
 }
 
+/**
+ * Dummy implementation to remove given placeHolder from the template
+ * @param placeHolder the placeholder to remove
+ */
 class EmptyGenerator(override val placeHolder: String) extends GeneratorBase {
   override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = Nil
 }
