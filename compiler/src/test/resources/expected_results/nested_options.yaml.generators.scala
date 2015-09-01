@@ -6,7 +6,7 @@ object generatorDefinitions {
   import definitions.Basic
   object _basic {
     import definitions._basic.Optional
-    def genOptional = _generate(OptionalGenerator)
+    def createOptional = _generate(OptionalGenerator)
     // test data generator for /definitions/Basic/optional
     val OptionalGenerator =
       for {
@@ -14,7 +14,7 @@ object generatorDefinitions {
       } yield Optional(nested_optional)
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
   }
-  def genBasic = _generate(BasicGenerator)
+  def createBasic = _generate(BasicGenerator)
   // test data generator for /definitions/Basic
   val BasicGenerator =
     for {

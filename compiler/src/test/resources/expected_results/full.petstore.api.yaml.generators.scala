@@ -10,11 +10,11 @@ object generatorDefinitions {
   import definitions.Tag
   import definitions.User
   import definitions.Order
-  def genUser = _generate(UserGenerator)
-  def genTag = _generate(TagGenerator)
-  def genCategory = _generate(CategoryGenerator)
-  def genPet = _generate(PetGenerator)
-  def genOrder = _generate(OrderGenerator)
+  def createOrder = _generate(OrderGenerator)
+  def createPet = _generate(PetGenerator)
+  def createCategory = _generate(CategoryGenerator)
+  def createUser = _generate(UserGenerator)
+  def createTag = _generate(TagGenerator)
   // test data generator for /definitions/Order
   val OrderGenerator =
     for {

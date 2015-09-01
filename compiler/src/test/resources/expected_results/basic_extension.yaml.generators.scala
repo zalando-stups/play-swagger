@@ -5,8 +5,8 @@ import scala.Option
 object generatorDefinitions {
   import definitions.ErrorModel
   import definitions.ExtendedErrorModel
-  def genErrorModel = _generate(ErrorModelGenerator)
-  def genExtendedErrorModel = _generate(ExtendedErrorModelGenerator)
+  def createErrorModel = _generate(ErrorModelGenerator)
+  def createExtendedErrorModel = _generate(ExtendedErrorModelGenerator)
   // test data generator for /definitions/ErrorModel
   val ErrorModelGenerator =
     for {

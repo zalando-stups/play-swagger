@@ -72,7 +72,7 @@ class MethodsGenerator(val targetNamespace: String, val defaultNamespace: String
                                     (implicit model: ModelDefinition): Option[(Set[String], String)] = {
     typeDef match {
       case t@TypeDef(typeName, fields, extend, meta) =>
-        Some((Set.empty[String], s"""def ${TypeName.escape("gen"+ typeName.asSimpleType)} = _generate(${generatorName(t)})"""))
+        Some((Set.empty[String], s"""def ${TypeName.escape("create"+ typeName.asSimpleType)} = _generate(${generatorName(t)})"""))
       case _ => None
     }
   }

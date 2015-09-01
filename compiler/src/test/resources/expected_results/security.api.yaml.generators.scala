@@ -5,8 +5,8 @@ import org.scalacheck.Arbitrary._
 object generatorDefinitions {
   import definitions.Pet
   import definitions.ErrorModel
-  def genPet = _generate(PetGenerator)
-  def genErrorModel = _generate(ErrorModelGenerator)
+  def createPet = _generate(PetGenerator)
+  def createErrorModel = _generate(ErrorModelGenerator)
   // test data generator for /definitions/Pet
   val PetGenerator =
     for {

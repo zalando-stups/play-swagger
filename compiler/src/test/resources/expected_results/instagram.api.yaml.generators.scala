@@ -14,7 +14,7 @@ object generatorDefinitions {
   import definitions.Comment
   object _user {
     import definitions._user.Counts
-    def genCounts = _generate(CountsGenerator)
+    def createCounts = _generate(CountsGenerator)
     // test data generator for /definitions/User/counts
     val CountsGenerator =
       for {
@@ -29,10 +29,10 @@ object generatorDefinitions {
     import definitions._media.Likes
     import definitions._media.Videos
     import definitions._media.Images
-    def `genComments:` = _generate(`Comments:Generator`)
-    def genLikes = _generate(LikesGenerator)
-    def genVideos = _generate(VideosGenerator)
-    def genImages = _generate(ImagesGenerator)
+    def `createComments:` = _generate(`Comments:Generator`)
+    def createLikes = _generate(LikesGenerator)
+    def createVideos = _generate(VideosGenerator)
+    def createImages = _generate(ImagesGenerator)
     // test data generator for /definitions/Media/comments:
     val `Comments:Generator` =
       for {
@@ -60,14 +60,14 @@ object generatorDefinitions {
       } yield Images(low_resolution, thumbnail, standard_resolution)
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
   }
-  def genComment = _generate(CommentGenerator)
-  def genMedia = _generate(MediaGenerator)
-  def genLocation = _generate(LocationGenerator)
-  def genLike = _generate(LikeGenerator)
-  def genImage = _generate(ImageGenerator)
-  def genMiniProfile = _generate(MiniProfileGenerator)
-  def genUser = _generate(UserGenerator)
-  def genTag = _generate(TagGenerator)
+  def createLocation = _generate(LocationGenerator)
+  def createLike = _generate(LikeGenerator)
+  def createMedia = _generate(MediaGenerator)
+  def createImage = _generate(ImageGenerator)
+  def createComment = _generate(CommentGenerator)
+  def createMiniProfile = _generate(MiniProfileGenerator)
+  def createUser = _generate(UserGenerator)
+  def createTag = _generate(TagGenerator)
   // test data generator for /definitions/User
   val UserGenerator =
     for {

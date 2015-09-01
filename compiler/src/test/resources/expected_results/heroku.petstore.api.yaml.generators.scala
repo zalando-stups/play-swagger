@@ -4,7 +4,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 object generatorDefinitions {
   import definitions.Pet
-  def genPet = _generate(PetGenerator)
+  def createPet = _generate(PetGenerator)
   // test data generator for /definitions/Pet
   val PetGenerator =
     for {

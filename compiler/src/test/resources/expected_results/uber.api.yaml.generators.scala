@@ -10,12 +10,12 @@ object generatorDefinitions {
   import definitions.Profile
   import definitions.Activities
   import definitions.Product
-  def genActivities = _generate(ActivitiesGenerator)
-  def genPriceEstimate = _generate(PriceEstimateGenerator)
-  def genActivity = _generate(ActivityGenerator)
-  def genProduct = _generate(ProductGenerator)
-  def genProfile = _generate(ProfileGenerator)
-  def genError = _generate(ErrorGenerator)
+  def createPriceEstimate = _generate(PriceEstimateGenerator)
+  def createProfile = _generate(ProfileGenerator)
+  def createActivities = _generate(ActivitiesGenerator)
+  def createError = _generate(ErrorGenerator)
+  def createProduct = _generate(ProductGenerator)
+  def createActivity = _generate(ActivityGenerator)
   // test data generator for /definitions/Error
   val ErrorGenerator =
     for {

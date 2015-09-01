@@ -4,7 +4,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 object generatorDefinitions {
   import definitions.KeyedArrays
-  def genKeyedArrays = _generate(KeyedArraysGenerator)
+  def createKeyedArrays = _generate(KeyedArraysGenerator)
   // test data generator for /definitions/KeyedArrays
   val KeyedArraysGenerator =
     for {

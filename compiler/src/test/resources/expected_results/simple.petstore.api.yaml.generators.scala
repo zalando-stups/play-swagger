@@ -6,9 +6,9 @@ object generatorDefinitions {
   import definitions.Pet
   import definitions.NewPet
   import definitions.ErrorModel
-  def genPet = _generate(PetGenerator)
-  def genNewPet = _generate(NewPetGenerator)
-  def genErrorModel = _generate(ErrorModelGenerator)
+  def createPet = _generate(PetGenerator)
+  def createNewPet = _generate(NewPetGenerator)
+  def createErrorModel = _generate(ErrorModelGenerator)
   // test data generator for /definitions/pet
   val PetGenerator =
     for {

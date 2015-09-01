@@ -5,7 +5,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 object generatorDefinitions {
   import definitions.Basic
-  def genBasic = _generate(BasicGenerator)
+  def createBasic = _generate(BasicGenerator)
   // test data generator for /definitions/Basic
   val BasicGenerator =
     for {

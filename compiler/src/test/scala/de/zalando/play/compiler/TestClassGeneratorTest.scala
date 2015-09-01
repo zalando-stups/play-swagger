@@ -39,6 +39,7 @@ class TestClassGeneratorTest extends FunSpec with MustMatchers with ExpectedResu
         implicit val definitions = Swagger2Ast.convertDefinitions(swaggerModel)
         val fullResult = ModelFactoryGenerator.generate(file.getName)
         val result = removeNoise(fullResult.head._2)
+        dump(result, file, "generators.scala")
         result mustBe asInFile(file, "generators.scala")
       }
     }

@@ -7,10 +7,10 @@ object generatorDefinitions {
   import definitions.Cat
   import definitions.Dog
   import definitions.Labrador
-  def genPet = _generate(PetGenerator)
-  def genCat = _generate(CatGenerator)
-  def genDog = _generate(DogGenerator)
-  def genLabrador = _generate(LabradorGenerator)
+  def createPet = _generate(PetGenerator)
+  def createCat = _generate(CatGenerator)
+  def createDog = _generate(DogGenerator)
+  def createLabrador = _generate(LabradorGenerator)
   // test data generator for /definitions/Pet
   val PetGenerator =
     for {
