@@ -19,7 +19,7 @@ object Swagger2Ast extends HandlerParser {
     Model(convertCalls(keyPrefix), convertDefinitions)
 
   def convertCalls(keyPrefix: String)(implicit swaggerModel: SwaggerModel) =
-    swaggerModel.paths.flatMap(toCall(keyPrefix) _).toList
+    swaggerModel.paths.flatMap(toCall(keyPrefix)).toList
 
   def convertDefinitions(implicit swaggerModel: SwaggerModel) =
     Option(swaggerModel.definitions).map { d =>
@@ -31,8 +31,8 @@ object Swagger2Ast extends HandlerParser {
   def toDefinition(namespace: String)(definition: (String, model.Schema))(implicit swaggerModel: SwaggerModel) =
     SchemaConverter.schema2Type(definition._2, namespace + definition._1)
 
-  def toCall(keyPrefix: String)(path: (String, model.Path))(implicit swaggerModel: SwaggerModel): Option[ApiCall] = {
-    val call = operation(path) flatMap { case (operation: Operation, signature: String) =>
+  def toCall(keyPrefix: String)(path: (String, model.Path))(implicit swaggerModel: SwaggerModel): Seq[ApiCall] = {
+    val call = operations(path) flatMap { case (operation: Operation, signature: String) =>
       for {
         verb <- string2verb(signature)
         pathParams = pathParameters(operation)
@@ -46,7 +46,7 @@ object Swagger2Ast extends HandlerParser {
     case _ =>
       None
     }
-    call.flatten
+    call.toSeq.flatten
   }
 
   import model.parameterOrReference2Parameter
@@ -74,12 +74,21 @@ object Swagger2Ast extends HandlerParser {
     Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
 
-  private def operation(path: (String, Path)) = {
-    import scala.reflect.runtime.universe._
-
-    val signatures = typeOf[Path].members.filter(_.typeSignature =:= typeOf[Operation]).iterator.toSeq.reverseIterator
-    val ops = path._2.productIterator.zip(signatures.map(_.name.decoded)).filter(_._1 != null).toList
-    ops.headOption
+  /**
+   * Converts a pair of method name and path definition to the operation
+   * @param path
+   * @return
+   */
+  private def operations(path: (String, Path)) = {
+    val fields = path._2.getClass.getMethods filter {
+      _.getReturnType == classOf[Operation]
+    } filterNot {
+      _.getName.contains("$")
+    }
+    val pairs = fields flatMap { f =>
+      Option(f.invoke(path._2)) map { _.asInstanceOf[Operation] -> f.getName }
+    }
+    pairs
   }
 
 }
@@ -102,11 +111,11 @@ object SchemaConverter {
   }
 
   def schema2Type(p: model.TypeInfo, name: TypeName): Domain.Type = p match {
-    case s: model.Schema if propsPartialFunction.isDefinedAt(p.`type`, p.format) =>
-      wrap(s, propsPartialFunction(p.`type`, p.format)(p))
+    case s: model.Schema if propsPartialFunction.isDefinedAt(p.`type`, p.format, null) =>
+      wrap(s, propsPartialFunction(p.`type`, p.format, null)(p))
 
-    case _ if propsPartialFunction.isDefinedAt(p.`type`, p.format) =>
-      propsPartialFunction(p.`type`, p.format)(p)
+    case _ if propsPartialFunction.isDefinedAt(p.`type`, p.format, null) =>
+      propsPartialFunction(p.`type`, p.format, null)(p)
 
     case s: model.Schema if s.allOf != null =>
       val (toExtend, types) = s.allOf.partition(_.isRef)
@@ -165,26 +174,29 @@ object SchemaConverter {
 
   // format: OFF
 
-  protected[swagger] def swaggerType2Type(p: model.Parameter): Domain.Type = propsPartialFunction(p.`type`, p.format)(p)
+  protected[swagger] def swaggerType2Type(p: model.Parameter): Domain.Type = propsPartialFunction(p.`type`, p.format, p.items)(p)
 
-  protected def propsPartialFunction: PartialFunction[(PrimitiveType.Value, String), TypeMeta => Domain.Type] = {
-    case (INTEGER, "int64")     => Domain.Lng
-    case (INTEGER, "int32")     => Domain.Int
-    case (INTEGER, _)           => Domain.Int
+  protected def propsPartialFunction: PartialFunction[(PrimitiveType.Value, String, Items), TypeMeta => Domain.Type] = {
+    case (INTEGER, "int64", _)     => Domain.Lng
+    case (INTEGER, "int32", _)     => Domain.Int
+    case (INTEGER, _, _)           => Domain.Int
 
-    case (NUMBER, "float")      => Domain.Flt
-    case (NUMBER, "double")     => Domain.Dbl
-    case (NUMBER, _)            => Domain.Dbl
+    case (NUMBER, "float", _)      => Domain.Flt
+    case (NUMBER, "double", _)     => Domain.Dbl
+    case (NUMBER, _, _)            => Domain.Dbl
 
-    case (BOOLEAN, _)           => Domain.Bool
+    case (BOOLEAN, _, _)           => Domain.Bool
 
-    case (STRING, "byte")       => Domain.Byt
-    case (STRING, "date")       => Domain.Date
-    case (STRING, "date-time")  => Domain.DateTime
-    case (STRING, "password")   => Domain.Password
-    case (STRING, format)       => Domain.Str.curried(Option(format))
+    case (STRING, "byte", _)       => Domain.Byt
+    case (STRING, "date", _)       => Domain.Date
+    case (STRING, "date-time", _)  => Domain.DateTime
+    case (STRING, "password", _)   => Domain.Password
+    case (STRING, format, _)       => Domain.Str.curried(Option(format))
 
-    case (FILE, _)              => Domain.File
+    case (FILE, _, _)              => Domain.File
+
+    case (ARRAY, _, items) if items != null => Domain.Null // FIXME this sould be converted to the Domain.Arr
+
 
 //    case other                      => println(other); Domain.Unknown // TODO custom types ? check specs
   }
