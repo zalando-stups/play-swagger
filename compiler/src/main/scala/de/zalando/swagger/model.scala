@@ -127,7 +127,7 @@ object model {
     @JsonScalaEnumeration(classOf[SchemeType]) schemes: Schemes
   ) extends VendorExtensions with API
 
-  trait ParameterOrReference extends API
+  sealed trait ParameterOrReference extends API
 
   class Parameter(
     override val format:                String,

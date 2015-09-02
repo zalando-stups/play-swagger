@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
-import de.zalando.apifirst.Domain.{TypeMeta, Field}
+import de.zalando.apifirst.Domain.{TypeName, TypeMeta, Field}
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Application, Domain, Http}
 import de.zalando.swagger.model.PrimitiveType._
@@ -55,7 +55,7 @@ object Swagger2Ast extends HandlerParser {
     Option(operation.parameters).map(_.filter(_.pathParameter) map pathParameter).toSeq.flatten
 
   private def queryParameters(operation: model.Operation)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
-    Option(operation.parameters).map(_.filter(_.queryParameter) map queryParameter).toSeq.flatten
+    Option(operation.parameters).map(_.filter(_.queryParameter) map queryParameter(TypeName.apply(operation.operationId))).toSeq.flatten
 
   private def pathParameter(p: model.ParameterOrReference)(implicit swaggerModel: SwaggerModel): Application.Parameter = {
     val fixed = None
@@ -64,12 +64,14 @@ object Swagger2Ast extends HandlerParser {
     Application.Parameter(p.name, typeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
 
-  private def queryParameter(p: model.ParameterOrReference)(implicit swaggerModel: SwaggerModel): Application.Parameter = {
+  private def queryParameter(typeName: TypeName)
+                            (p: model.ParameterOrReference)
+                            (implicit swaggerModel: SwaggerModel): Application.Parameter = {
     val fixed = None // There is no way to define fixed parameters in swagger spec
     val default = if (p.required && p.default != null) Some(p.default) else None
-    val typeName = SchemaConverter.swaggerType2Type(p)
+    val name = SchemaConverter.parameter2Type(p, typeName)
     import Domain.paramOrRefInfo2TypeMeta
-    val fullTypeName = if (p.required) typeName else Domain.Opt(Field(typeName.name.simpleName, typeName, TypeMeta(Option(p.description))), p)
+    val fullTypeName = if (p.required) name else Domain.Opt(Field(name.name.simpleName, name, TypeMeta(Option(p.description))), p)
     // TODO don't use InPathParameter in the next line
     Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
   }
@@ -108,6 +110,19 @@ object SchemaConverter {
       }
       td.copy(fields = wrapped)
     case _ => t
+  }
+
+  def parameter2Type(p: model.ParameterOrReference, name: TypeName): Domain.Type = p match {
+    case p: Parameter if propsPartialFunction.isDefinedAt(p.`type`, p.format, p.items) =>
+      propsPartialFunction(p.`type`, p.format, null)(p) // TODO maybe wrap the parameter as well?
+    case p: Parameter if p.`type` == ARRAY =>
+      val field = Field(name.simpleName, schema2Type(p.items, name), TypeMeta(Option(p.description)))
+      Domain.Arr(field, p) // TODO maybe {{{ wrap(p, Domain.Arr(field, p)) }}} ?
+    case r: ParameterReference =>
+      Domain.Reference(r.$ref, r)
+    case _ =>
+      // this one is a complex type. later we could support them using URLEncode
+      Domain.Null(TypeMeta(Some("URL Encoded complex types are not supported yet")))
   }
 
   def schema2Type(p: model.TypeInfo, name: TypeName): Domain.Type = p match {
@@ -194,9 +209,6 @@ object SchemaConverter {
     case (STRING, format, _)       => Domain.Str.curried(Option(format))
 
     case (FILE, _, _)              => Domain.File
-
-    case (ARRAY, _, items) if items != null => Domain.Null // FIXME this sould be converted to the Domain.Arr
-
 
 //    case other                      => println(other); Domain.Unknown // TODO custom types ? check specs
   }
