@@ -68,7 +68,7 @@ object model {
     securityDefinitions:  SecurityDefinitions,
     security:             SecurityRequirements,
     tags:                 Tags
-    ) extends API
+    ) extends VendorExtensions with API
 
   private[swagger] class SchemeType extends TypeReference[Scheme.type]
 
@@ -341,12 +341,25 @@ object model {
 
   trait VendorExtensions { self =>
     private[this] val extensions = new mutable.HashMap[String, String]
+    private[this] val errorMappings = new mutable.HashMap[String, Seq[Class[Exception]]]
 
     @JsonAnySetter
     def handleUnknown(key: String, value: Any) {
       value match {
         case str: String if key.startsWith("x-") =>
           extensions += key -> str
+        case mapping: Map[_, _] =>
+          import scala.util.control.Exception._
+          handling(classOf[ClassNotFoundException]) by { e =>
+            throw new IllegalArgumentException(s"Could not find exception class $e for error code")
+          } apply {
+            val errors = mapping filter {_._2.isInstanceOf[Array[_]] } map { case (k, l) =>
+              k.toString -> l.asInstanceOf[Array[_]].map { e =>
+                Class.forName(e.toString).asInstanceOf[Class[Exception]]
+              }.toSeq
+            }
+            errorMappings ++= errors
+          }
         case _ =>
           throw new UnrecognizedPropertyException(
             s"Unknown property: $key",

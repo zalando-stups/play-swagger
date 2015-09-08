@@ -2,7 +2,8 @@ package de.zalando.swagger
 
 import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
-import de.zalando.apifirst.Domain.{TypeName, TypeMeta, Field}
+import de.zalando.apifirst.Domain.{Reference, TypeName, TypeMeta, Field}
+import de.zalando.apifirst.Http.Verb
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Application, Domain, Http}
 import de.zalando.swagger.model.PrimitiveType._
@@ -36,7 +37,7 @@ object Swagger2Ast extends HandlerParser {
       for {
         verb <- string2verb(signature)
         pathParams = pathParameters(operation)
-        queryParams = queryParameters(operation)
+        queryParams = queryParameters(operation, verb, path._1)
         allParams = pathParams ++ queryParams
         astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
         handlerText <- operation.vendorExtensions.get(s"$keyPrefix-handler")
@@ -54,8 +55,17 @@ object Swagger2Ast extends HandlerParser {
   private def pathParameters(operation: model.Operation)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
     Option(operation.parameters).map(_.filter(_.pathParameter) map pathParameter).toSeq.flatten
 
-  private def queryParameters(operation: model.Operation)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
-    Option(operation.parameters).map(_.filter(_.queryParameter) map queryParameter(TypeName.apply(operation.operationId))).toSeq.flatten
+  // FIXME: these "inline" definitions (except reference) should be added to the type map
+  private def nameForInlineParameter(pr: ParameterOrReference, op: Operation, verb: Verb, path: String): TypeName = pr match {
+    case r: Reference => r.name
+    case p: Parameter if p.name != null && p.name.trim.nonEmpty => path + "_" + verb.name + "_" + p.name
+    case p: Parameter => path + "_" + verb.name + "_" + "inline" + p.hashCode()
+  }
+
+  private def queryParameters(operation: model.Operation, verb: Verb, path: String)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
+    Option(operation.parameters).map(_.filter(_.queryParameter) map { p =>
+      queryParameter(nameForInlineParameter(p, operation, verb, path))(p)
+    }).toSeq.flatten
 
   private def pathParameter(p: model.ParameterOrReference)(implicit swaggerModel: SwaggerModel): Application.Parameter = {
     val fixed = None
