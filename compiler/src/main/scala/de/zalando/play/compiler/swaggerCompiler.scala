@@ -34,15 +34,15 @@ object SwaggerCompiler {
 
     val generated = task.generator.generate(playTask, Some(namespace), playRules)
 
-    val routesFiles = generated map writeToFile(outputDir).tupled
+    val routesFiles = generated map writeToFile(outputDir, true).tupled
 
     val generateFiles = generate(namespace, task, outputDir) _
 
-    val model = generateFiles(ModelGenerator, "model/")
+    val model = generateFiles(ModelGenerator, "model/", true)
 
-    val generators = generateFiles(ModelFactoryGenerator, "generators/")
+    val generators = generateFiles(ModelFactoryGenerator, "generators/", true)
 
-    val controllerFiles = generateFiles(ControllersGenerator, "controllers/")
+    val controllerFiles = generateFiles(ControllersGenerator, "../../../../../app/controllers/", false)
 
     // FIXME generate others as well
     SwaggerCompilationResult(routesFiles, model, generators, Nil, controllerFiles, Nil)
@@ -50,16 +50,17 @@ object SwaggerCompiler {
 
 
   def generate(namespace: String, task: SwaggerCompilationTask, outputDir: File)
-      (generator: GeneratorBase, directory: String)(implicit ast: Model) = {
+      (generator: GeneratorBase, directory: String, writeOver: Boolean)(implicit ast: Model) = {
     val generatedContent = generator.generate(namespace)
     val modelFileName = directory + task.definitionFile.getName + ".scala"
-    val result = writeToFile(outputDir)(modelFileName, generatedContent.head._2)
+    val result = writeToFile(outputDir, writeOver)(modelFileName, generatedContent.head._2)
     Seq(result)
   }
 
-  def writeToFile(outputDir: File) = (filename: String, content: String) => {
+  def writeToFile(outputDir: File, writeOver: Boolean) = (filename: String, content: String) => {
     val file = new File(outputDir, filename)
-    FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
+    if (writeOver || !file.exists())
+      FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
     file
   }
 }
