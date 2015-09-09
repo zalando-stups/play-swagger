@@ -1,30 +1,28 @@
-package heroku.petstore.api.yaml
+package heroku.petstore.api.yaml.controllers
 
 import scala.Option
-import definitions.Pet
+import heroku.petstore.api.yaml.definitions.Pet
 
-object controllers {
-  class ApiYaml extends ApplicationBase {
+class ApiYaml extends ApplicationBase {
 
-    // handler for GET /
-    def allPets = allPetsAction { (limit: Option[Int]) =>
-      ???
-    }
-
-    // handler for PUT /
-    def updatePet = updatePetAction { (pet: Pet) =>
-      ???
-    }
-
-    // handler for POST /
-    def createPet = createPetAction { (pet: Pet) =>
-      ???
-    }
-
-    // handler for GET /{petId}
-    def getPet = getPetAction { (petId: String) =>
-      ???
-    }
-
+  // handler for GET /
+  def allPets = allPetsAction { (limit: Option[Int]) =>
+    ???
   }
+
+  // handler for PUT /
+  def updatePet = updatePetAction { (pet: Pet) =>
+    ???
+  }
+
+  // handler for POST /
+  def createPet = createPetAction { (pet: Pet) =>
+    ???
+  }
+
+  // handler for GET /{petId}
+  def getPet = getPetAction { (petId: String) =>
+    ???
+  }
+
 }

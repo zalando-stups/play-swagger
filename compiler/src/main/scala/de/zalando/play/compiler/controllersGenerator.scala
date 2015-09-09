@@ -19,21 +19,19 @@ object ControllersGenerator extends GeneratorBase  {
       (controller, calls) <- pkgFiles
     } yield {
       val params = calls.flatMap(_.handler.parameters)
-      val imports = params.flatMap { p =>  p.typeName.imports }.toSet // TODO these are wrong imports!!!
-      val typeImports = ImportsGenerator.importStatements(ast, "definitions")
+      val imports = params.flatMap { _.typeName.imports }.toSet
+      val typeImports = ImportsGenerator.importStatements(ast, "definitions", Some(namespace))
       val methods = calls map toMethod map {
-        _.trim.split("\n").map(PAD + PAD + _).mkString("\n", "\n", "\n")
+        _.trim.split("\n").map(PAD + _).mkString("\n", "\n", "\n")
       } mkString ""
 
-      val fileContent = s"""package $namespace
+      val fileContent = s"""package $namespace.$pkg
          |
          |${imports.map{i => "import " + i }.mkString("\n")}
          |$typeImports
          |
-         |object $pkg {
-         |${PAD}class $controller extends ApplicationBase {
+         |class $controller extends ApplicationBase {
          |$methods
-         |${PAD}}
          |}""".stripMargin
 
       (Set(pkg + "." + controller), fileContent)

@@ -43,10 +43,10 @@ class ImportsGenerator(targetNamespace: String, defaultNamespace: String) extend
 }
 
 object ImportsGenerator {
-  def importStatements(ast: Model, lookupName: String): String = {
+  def importStatements(ast: Model, lookupName: String, namespace: Option[String] = None): String = {
     val imports =
       ast.definitions.filter(_.name.namespace.endsWith(lookupName.replace("_", ""))).map { tpe =>
-        tpe.name.relativeTo(TypeName(""))
+        namespace.map(_ + ".").getOrElse("") + tpe.name.relativeTo(TypeName(""))
       }
     val code = imports map { i => s"import ${TypeName.escapeName(i)}" } mkString "\n"
     code
