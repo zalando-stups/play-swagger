@@ -89,9 +89,11 @@ case class SwaggerCompilationResult(
   controllerFiles: Seq[File],
   testFiles: Seq[File]
 ) {
+  // for incremental sync we do not include controller files
+  // because they should be generated only once
   def allFiles: Set[File] = (
     routesFiles ++ modelFiles ++
       testDataGeneratorFiles ++ testFiles ++
-      controllerFiles ++ controllerBaseFiles
+      controllerBaseFiles
     ).toSet
 }

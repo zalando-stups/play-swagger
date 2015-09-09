@@ -30,7 +30,7 @@ object ControllersGenerator extends GeneratorBase  {
          |${imports.map{i => "import " + i }.mkString("\n")}
          |$typeImports
          |
-         |class $controller extends ApplicationBase {
+         |object $controller extends ApplicationBase {
          |$methods
          |}""".stripMargin
 

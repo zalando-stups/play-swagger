@@ -319,9 +319,8 @@ object Application {
                        fixed: Option[String], default: Option[String],
                        constraint: String, encode: Boolean) extends Expr with Positional
 
-  // Play definition
   case class HandlerCall(packageName: String, controller: String, instantiate: Boolean,
-                         method: String, parameters: Seq[Parameter])
+                         method: String, parameters: Seq[Parameter], bodyParameters: Seq[Parameter])
 
   case class ApiCall(
                       verb: Http.Verb,
