@@ -35,16 +35,23 @@ object ModelFactoryGenerator extends ChainedGenerator {
 class ImportsGenerator(targetNamespace: String, defaultNamespace: String) extends GeneratorBase {
   override def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] = {
     val lookupName = if (namespace == defaultNamespace) targetNamespace else namespace
-    val imports =
-      ast.definitions.filter(_.name.namespace.endsWith(lookupName.replace("_",""))).map { tpe =>
-        tpe.name.relativeTo(TypeName(""))
-      }
-    val code = imports map { i => s"import ${TypeName.escapeName(i)}" } mkString "\n"
+    val code: String = ImportsGenerator.importStatements(ast, lookupName)
     Seq((Set.empty[String], code))
   }
+
   override val placeHolder = "#NESTED_IMPORTS#"
 }
 
+object ImportsGenerator {
+  def importStatements(ast: Model, lookupName: String): String = {
+    val imports =
+      ast.definitions.filter(_.name.namespace.endsWith(lookupName.replace("_", ""))).map { tpe =>
+        tpe.name.relativeTo(TypeName(""))
+      }
+    val code = imports map { i => s"import ${TypeName.escapeName(i)}" } mkString "\n"
+    code
+  }
+}
 /**
  * Generates simple helper method for every namespace
  */

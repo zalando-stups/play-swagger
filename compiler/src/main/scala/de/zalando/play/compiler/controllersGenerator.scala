@@ -1,30 +1,60 @@
 package de.zalando.play.compiler
 
+import de.zalando.apifirst.Application.{ApiCall, Model}
+import de.zalando.apifirst.Domain.TypeDef
+
 /**
  * @since 09.09.2015
  */
-object ControllersGenerator extends ChainedGenerator {
+object ControllersGenerator extends GeneratorBase  {
 
-  override def generators = Nil
-  override val defaultNamespace = "controllerDefinitions"
-  override protected[compiler] val namespaceTemplate =
+  def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] = {
+    val groupedByController = ast.calls.groupBy { call =>
+      call.handler.packageName
+    } map { case ((pkg, calls)) =>
+      pkg -> calls.groupBy(_.handler.controller)
+    }
+    for {
+      (pkg, pkgFiles) <- groupedByController
+      (controller, calls) <- pkgFiles
+    } yield {
+      val params = calls.flatMap(_.handler.parameters)
+      val imports = params.flatMap { p =>  p.typeName.imports }.toSet // TODO these are wrong imports!!!
+      val typeImports = ImportsGenerator.importStatements(ast, "definitions")
+      val methods = calls map toMethod map {
+        _.trim.split("\n").map(PAD + PAD + _).mkString("\n", "\n", "\n")
+      } mkString ""
+
+      val fileContent = s"""package $namespace
+         |
+         |${imports.map{i => "import " + i }.mkString("\n")}
+         |$typeImports
+         |
+         |object $pkg {
+         |${PAD}class $controller extends ApplicationBase {
+         |$methods
+         |${PAD}}
+         |}""".stripMargin
+
+      (Set(pkg + "." + controller), fileContent)
+    }
+  }
+
+  def toMethod(call: ApiCall) =
     s"""
-       |package #PACKAGE#
-       |#IMPORTS#
-       |/** @since #NOW# */
-       |class #CLASS_NAME# extends ApplicationBase {
-       |#METHODS#
-       |}""".stripMargin
+       |// handler for ${call.verb.name} ${call.path}
+       |def ${call.handler.method} = ${call.handler.method}Action { (${params(call)}) =>
+       |$PAD???
+       |}
+       |
+     """.stripMargin
 
+  def params(call: ApiCall) = {
+    call.handler.parameters.map { p =>
+      s"""${p.name}: ${p.typeName.name.asSimpleType}"""
+    }.mkString(", ")
 
-  val method = """  def helloPet = helloPetAction { pet: Pet =>
-                 |    ???
-                 |  }"""
+  }
 
-  val imports = """import api.definitions.Pet"""
-
-  val pgk = """api.controllers"""
-
-  val className = """ApiYaml"""
+  override def placeHolder: String = ""
 }
-

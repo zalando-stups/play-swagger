@@ -267,6 +267,18 @@ object Path {
       case Root :: segments => true
       case _ => false
     }
+    override def toString = {
+      value match {
+        case Nil => ""
+        case Root :: Nil => "/"
+        case other => other map {
+          case Root => ""
+          case Segment(v) => v
+          case InPathParameter(p, _, _) => "{" + p + "}"
+        } mkString "/"
+      }
+
+    }
   }
 
   object FullPath {

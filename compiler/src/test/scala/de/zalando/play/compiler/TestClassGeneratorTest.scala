@@ -4,7 +4,6 @@ import java.io.File
 
 import de.zalando.ExpectedResults
 import de.zalando.apifirst.Application.Model
-import de.zalando.apifirst.Domain
 import de.zalando.swagger.{Swagger2Ast, YamlParser}
 import org.scalatest.{FunSpec, MustMatchers}
 

@@ -20,7 +20,7 @@ object RuleGenerator {
     Route(verb, path, handlerCall, comments)
   }
 
-  private def packageName(call: ApiCall) = call.handler.packageName
+  def packageName(call: ApiCall) = call.handler.packageName
 
   private def parameters2parameters(call: ApiCall): Seq[Parameter] = {
     call.handler.parameters map { p =>
@@ -28,7 +28,7 @@ object RuleGenerator {
     }
   }
 
-  private def path2path(call: ApiCall): Seq[PathPart] =
+  def path2path(call: ApiCall): Seq[PathPart] =
     call.path.value flatMap {
       case Root => None
       case s : Segment => Some(StaticPart(s.value + Root.value))

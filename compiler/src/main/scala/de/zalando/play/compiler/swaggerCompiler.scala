@@ -39,7 +39,9 @@ object SwaggerCompiler {
     val generateFiles = generate(namespace, task, outputDir) _
 
     val model = generateFiles(ModelGenerator, "model/")
+
     val generators = generateFiles(ModelFactoryGenerator, "generators/")
+
     val controllerFiles = generateFiles(ControllersGenerator, "controllers/")
 
     // FIXME generate others as well

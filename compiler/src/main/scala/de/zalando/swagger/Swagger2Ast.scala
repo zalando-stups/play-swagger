@@ -43,13 +43,15 @@ object Swagger2Ast extends HandlerParser {
 
     val queryParameters = nonBodyParameters(defaultValue, _.queryParameter) _
     val pathParameters = nonBodyParameters(_ => None,  _.pathParameter) _
+    val bodyParameters = nonBodyParameters(_ => None,  _.bodyParameter) _ // TODO FIXME this should be BODY parameter
 
     val call = operations(path) flatMap { case (operation: Operation, signature: String) =>
       for {
         verb <- string2verb(signature)
         pathParams = pathParameters(operation, verb, path._1)
         queryParams = queryParameters(operation, verb, path._1)
-        allParams = pathParams ++ queryParams
+        bodyParams = bodyParameters(operation, verb, path._1)
+        allParams = pathParams ++ queryParams ++ bodyParams
         astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
         handlerText <- operation.vendorExtensions.get(s"$keyPrefix-handler")
         parseResult = parse(handlerText)
@@ -131,7 +133,10 @@ object SchemaConverter {
       Domain.Arr(field, p) // TODO maybe {{{ wrap(p, Domain.Arr(field, p)) }}} ?
     case r: ParameterReference =>
       Domain.Reference(r.$ref, r)
-    case _ =>
+    case s: Parameter if s.schema != null =>
+      schema2Type(s.schema, name)
+    case other =>
+      println("ignoring!!!!: " + other)
       // this one is a complex type. later we could support them using URLEncode
       Domain.Null(TypeMeta(Some("URL Encoded complex types are not supported yet")))
   }
