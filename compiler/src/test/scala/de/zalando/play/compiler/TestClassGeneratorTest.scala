@@ -3,6 +3,7 @@ package de.zalando.play.compiler
 import java.io.File
 
 import de.zalando.ExpectedResults
+import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain
 import de.zalando.swagger.{Swagger2Ast, YamlParser}
 import org.scalatest.{FunSpec, MustMatchers}
@@ -16,7 +17,7 @@ class TestClassGeneratorTest extends FunSpec with MustMatchers with ExpectedResu
 
   describe("TestClassGenerator standalone") {
     it("should convert an empty model") {
-      implicit val emptyModel = Seq.empty[Domain.Type]
+      implicit val emptyModel = Model(Nil, Nil)
       val result = removeNoise(ModelGenerator.generate("pkg").head._2)
       result mustBe ""
     }
@@ -35,11 +36,10 @@ class TestClassGeneratorTest extends FunSpec with MustMatchers with ExpectedResu
   def testFixture(fixtures: Array[File]): Unit = {
     fixtures.filter(_.getName.endsWith(".yaml")) foreach { file =>
       it(s"should parse the yaml swagger file ${file.getName} with expected definitions result") {
-        val swaggerModel = YamlParser.parse(file)
-        implicit val definitions = Swagger2Ast.convertDefinitions(swaggerModel)
+        implicit val swaggerModel = YamlParser.parse(file)
+        implicit val definitions = Swagger2Ast.convert("")
         val fullResult = ModelFactoryGenerator.generate(file.getName)
         val result = removeNoise(fullResult.head._2)
-        dump(result, file, "generators.scala")
         result mustBe asInFile(file, "generators.scala")
       }
     }

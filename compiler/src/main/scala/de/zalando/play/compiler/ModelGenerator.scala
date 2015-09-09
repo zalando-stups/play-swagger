@@ -3,6 +3,7 @@ package de.zalando.play.compiler
 import java.text.SimpleDateFormat
 import java.util.Date
 
+import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain._
 
 import scala.language.postfixOps
@@ -22,7 +23,7 @@ trait ChainedGenerator extends GeneratorBase {
 
   override val placeHolder = "#IMPORT#"
 
-  def generate(namespace: String)(implicit model: ModelDefinition) = {
+  def generate(namespace: String)(implicit ast: Model) = {
     val (imports, result) = generateNamespace(defaultNamespace, generators)
     if (result.nonEmpty) {
       val now = new SimpleDateFormat(nowFormat).format(new Date())
@@ -36,30 +37,33 @@ trait ChainedGenerator extends GeneratorBase {
     } else Seq((imports, result))
   }
 
-  def generateNamespace(namespace: String, generators: Seq[GeneratorBase])(implicit model: ModelDefinition): (Set[String], String) = {
+  def generateNamespace(namespace: String, generators: Seq[GeneratorBase])(implicit ast: Model): (Set[String], String) =
+    generateNamespace0(namespace, generators)(ast, ast.definitions)
+
+  def generateNamespace0(namespace: String, generators: Seq[GeneratorBase])(ast: Model, model: ModelDefinition): (Set[String], String) = {
 
     val thisNamespace = model.flatMap(_.nestedTypes).filterNot(_.isInstanceOf[Reference])
 
     val template =
       if (thisNamespace.nonEmpty) {
         val nested = thisNamespace groupBy (_.name.namespace) map { case (space, typeDefs) =>
-          generateNamespace(space.nestedNamespace, generators)(typeDefs)
+          generateNamespace0(space.nestedNamespace, generators)(ast, typeDefs)
         }
         val nestedStr = nested.values map pad mkString "\n"
         namespaceTemplate.
           replace("#NAMESPACE#", namespace).
           replace("#NESTED#", nestedStr)
       } else
-        if (model.exists(!_.isInstanceOf[Reference])) {
-          namespaceTemplate.
-            replace("#NAMESPACE#", namespace).
-            replace("#NESTED#", "")
-        }
+      if (model.exists(!_.isInstanceOf[Reference])) {
+        namespaceTemplate.
+          replace("#NAMESPACE#", namespace).
+          replace("#NESTED#", "")
+      }
       else
         ""
 
     val endResult = generators.foldLeft((Set.empty[String], template)) { case (result, generator) =>
-      val info = generator.generate(namespace)
+      val info = generator.generate(namespace)(ast.copy(definitions = model))
       val imports = info.map(_._1)
       val code = info map (_._2) map pad mkString "\n"
       (imports.flatten.toSet ++ result._1, result._2.replace(generator.placeHolder, code))
@@ -92,7 +96,7 @@ trait ChainedGenerator extends GeneratorBase {
  * @param placeHolder the placeholder to remove
  */
 class EmptyGenerator(override val placeHolder: String) extends GeneratorBase {
-  override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = Nil
+  override def generate(namespace: String)(implicit model: Model): Iterable[(Set[String], String)] = Nil
 }
 
 class ClassGenerator extends TraitGenerator {
@@ -101,19 +105,18 @@ class ClassGenerator extends TraitGenerator {
 
   val defaultImports = Set.empty[String]
 
-  override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
-    val namedClasses = model map generateSingleTypeDef(namespace, defaultImports)
+  override def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] = {
+    val namedClasses = ast.definitions map generateSingleTypeDef(namespace, defaultImports)
     namedClasses.flatten.toSet
   }
 
   protected def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
-                                     (implicit model: ModelDefinition): Option[(Set[String], String)] = {
+      (implicit ast: Model): Option[(Set[String], String)] = {
     typeDef match {
       case t@TypeDef(typeName, fields, extend, meta) =>
         Some((t.imports ++ imports, classCode(typeName, t)))
       // TODO add support for anonymous Objects (example instagram)
       // TODO add support for enums
-      // TODO add support for catch-all property
       case c: Container =>
         generateSingleTypeDef(namespace, c.imports ++ imports)(c.field.kind)
       case r: ReferenceObject =>
@@ -128,7 +131,7 @@ class ClassGenerator extends TraitGenerator {
     }
   }
 
-  private def classCode(name: TypeName, typeDef: TypeDef)(implicit model: ModelDefinition) = {
+  private def classCode(name: TypeName, typeDef: TypeDef)(implicit ast: Model) = {
     s"""${comment(typeDef.meta, "")}
         |case class ${TypeName.escape(name.asSimpleType)}(
         |${classFields(typeDef).mkString(",\n")}
@@ -136,7 +139,7 @@ class ClassGenerator extends TraitGenerator {
         | """.stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
 
-  private def classFields(typeDef: TypeDef)(implicit model: ModelDefinition) =
+  private def classFields(typeDef: TypeDef)(implicit ast: Model) =
     typeDef.allFields map { f =>
       s"""${comment(f.meta)}
           |$PAD${TypeName.escape(f.name.simpleName)}: ${TypeName.escapeName(f.kind.name.relativeTo(typeDef.name))}""".stripMargin
@@ -147,7 +150,7 @@ class TraitGenerator extends GeneratorBase {
 
   override val placeHolder = "#TRAITS#"
 
-  override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] =
+  override def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] =
     traitsToGenerate flatMap { reference =>
       reference.resolve map { typeDef =>
         val code = traitCode(typeDef)
@@ -155,7 +158,7 @@ class TraitGenerator extends GeneratorBase {
       }
     }
 
-  def extendClause(typeDef: TypeDef, selfExtend: Boolean)(implicit model: ModelDefinition): String = {
+  def extendClause(typeDef: TypeDef, selfExtend: Boolean)(implicit ast: Model): String = {
     val selfExtending = traitsToGenerate find (typeDef.name == _.name && selfExtend)
     val extend = typeDef.extend ++ selfExtending.toSeq
     val extendClause = extend map {
@@ -164,10 +167,10 @@ class TraitGenerator extends GeneratorBase {
     (if (extendClause.nonEmpty) " extends " else "") + extendClause
   }
 
-  private def traitCode(typeDef: TypeDef)(implicit model: ModelDefinition) = {
+  private def traitCode(typeDef: TypeDef)(implicit ast: Model) = {
     s"""|${comment(typeDef.meta, "")}
         |trait ${traitName(typeDef.name).asSimpleType}${extendClause(typeDef, selfExtend = false)} {
-        |${traitFields(typeDef).mkString("\n")}
+          |${traitFields(typeDef).mkString("\n")}
         |}""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
 
@@ -176,8 +179,8 @@ class TraitGenerator extends GeneratorBase {
         |${PAD}def ${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(f.name)}""".stripMargin
   }
 
-  private def traitsToGenerate(implicit model: ModelDefinition): Set[Reference] =
-    model flatMap {
+  private def traitsToGenerate(implicit ast: Model): Set[Reference] =
+    ast.definitions flatMap {
       case TypeDef(_, _, extend, meta) => extend
       case _ => Nil
     } toSet
@@ -191,7 +194,7 @@ trait GeneratorBase {
 
   def pad(s: String) = s split "\n" map { l => if (l.trim.nonEmpty) PAD + l else l } mkString "\n"
 
-  def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)]
+  def generate(namespace: String)(implicit model: Model): Iterable[(Set[String], String)]
 
   def placeHolder: String
 

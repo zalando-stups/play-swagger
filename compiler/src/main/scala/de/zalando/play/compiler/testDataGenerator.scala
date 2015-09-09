@@ -1,5 +1,6 @@
 package de.zalando.play.compiler
 
+import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain._
 
 import scala.language.postfixOps
@@ -32,10 +33,10 @@ object ModelFactoryGenerator extends ChainedGenerator {
  * @param defaultNamespace the root namespace of the model
  */
 class ImportsGenerator(targetNamespace: String, defaultNamespace: String) extends GeneratorBase {
-  override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] = {
+  override def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] = {
     val lookupName = if (namespace == defaultNamespace) targetNamespace else namespace
     val imports =
-      model.filter(_.name.namespace.endsWith(lookupName.replace("_",""))).map { tpe =>
+      ast.definitions.filter(_.name.namespace.endsWith(lookupName.replace("_",""))).map { tpe =>
         tpe.name.relativeTo(TypeName(""))
       }
     val code = imports map { i => s"import ${TypeName.escapeName(i)}" } mkString "\n"
@@ -48,7 +49,7 @@ class ImportsGenerator(targetNamespace: String, defaultNamespace: String) extend
  * Generates simple helper method for every namespace
  */
 class HelpersGenerator extends GeneratorBase {
-  override def generate(namespace: String)(implicit model: ModelDefinition): Iterable[(Set[String], String)] =
+  override def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] =
     Seq((Set.empty[String], "def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample"))
   override val placeHolder = "#HELPERS#"
 }
@@ -69,7 +70,7 @@ class MethodsGenerator(val targetNamespace: String, val defaultNamespace: String
   override val placeHolder = "#METHODS#"
 
   override def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
-                                    (implicit model: ModelDefinition): Option[(Set[String], String)] = {
+                                    (implicit ast: Model): Option[(Set[String], String)] = {
     typeDef match {
       case t@TypeDef(typeName, fields, extend, meta) =>
         Some((Set.empty[String], s"""def ${TypeName.escape("create"+ typeName.asSimpleType)} = _generate(${generatorName(t)})"""))
@@ -91,7 +92,7 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
   override val defaultImports = Set("org.scalacheck.Gen", "org.scalacheck.Arbitrary._")
 
   override def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
-                                    (implicit model: ModelDefinition): Option[(Set[String], String)] = {
+                                    (implicit ast: Model): Option[(Set[String], String)] = {
     typeDef match {
       case t@TypeDef(typeName, fields, extend, meta) =>
         Some((t.imports ++ imports, typeDefType(namespace, imports)(t)))
@@ -107,7 +108,7 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
     }
   }
 
-  private def typeDefType(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit model: ModelDefinition) = {
+  private def typeDefType(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit ast: Model) = {
     s"""
         |// test data generator for ${typeDef.name.fullName}
         |val ${generatorName(typeDef)} =
@@ -117,17 +118,17 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
         |""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
 
-  private def classConstructor(typeDef: TypeDef)(implicit model: ModelDefinition) =
+  private def classConstructor(typeDef: TypeDef)(implicit ast: Model) =
     s"""${TypeName.escape(typeDef.name.asSimpleType)}(${typeDef.allFields.map{ n => TypeName.escape(n.name.simpleName)}.mkString(", ")})"""
 
-  private def classFields(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit model: ModelDefinition) =
+  private def classFields(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit ast: Model) =
     typeDef.allFields map { f =>
       s"""$PAD$PAD${TypeName.escape(f.name.simpleName)} <- ${generatorNameForType(f.kind, typeDef)(namespace, imports)}""".stripMargin
     }
 
   private def simpleType(other: Type) = s"arbitrary[${other.name.asSimpleType}]"
 
-  private def containerType(namespace: String, imports: Set[String])(c: Container)(implicit model: ModelDefinition): String = c match {
+  private def containerType(namespace: String, imports: Set[String])(c: Container)(implicit ast: Model): String = c match {
     case Opt(field, _) =>
       val innerGenerator = generatorNameForType(field.kind, c)(namespace, imports)
       s"Gen.option($innerGenerator)"
@@ -139,7 +140,7 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
       s"Gen.const(${ca.name.asSimpleType})".replace("Map[", "Map.empty[")
   }
 
-  private def generatorNameForType(tpe: Type, thisType: Type)(namespace: String, imports: Set[String])(implicit model: ModelDefinition) = tpe match {
+  private def generatorNameForType(tpe: Type, thisType: Type)(namespace: String, imports: Set[String])(implicit ast: Model) = tpe match {
     case t @ TypeDef(_, _, _, _) => relativeGeneratorName(t, thisType)
     case r: Reference => relativeGeneratorName(r, thisType)
     case c : Container => containerType(namespace, imports)(c)

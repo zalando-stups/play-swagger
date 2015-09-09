@@ -20,7 +20,9 @@ object Swagger2Ast extends HandlerParser {
     Model(convertCalls(keyPrefix), convertDefinitions)
 
   def convertCalls(keyPrefix: String)(implicit swaggerModel: SwaggerModel) =
-    swaggerModel.paths.flatMap(toCall(keyPrefix)).toList
+    Option(swaggerModel.paths).map { paths: Paths =>
+      paths.flatMap(toCall(keyPrefix))
+    }.toSeq.flatten
 
   def convertDefinitions(implicit swaggerModel: SwaggerModel) =
     Option(swaggerModel.definitions).map { d =>
@@ -33,10 +35,19 @@ object Swagger2Ast extends HandlerParser {
     SchemaConverter.schema2Type(definition._2, namespace + definition._1)
 
   def toCall(keyPrefix: String)(path: (String, model.Path))(implicit swaggerModel: SwaggerModel): Seq[ApiCall] = {
+    import model.parameterOrReference2Parameter
+
+    def defaultValue = { p: ParameterOrReference =>
+      if (p.required && p.default != null) Some(p.default) else None
+    }
+
+    val queryParameters = nonBodyParameters(defaultValue, _.queryParameter) _
+    val pathParameters = nonBodyParameters(_ => None,  _.pathParameter) _
+
     val call = operations(path) flatMap { case (operation: Operation, signature: String) =>
       for {
         verb <- string2verb(signature)
-        pathParams = pathParameters(operation)
+        pathParams = pathParameters(operation, verb, path._1)
         queryParams = queryParameters(operation, verb, path._1)
         allParams = pathParams ++ queryParams
         astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
@@ -50,11 +61,6 @@ object Swagger2Ast extends HandlerParser {
     call.toSeq.flatten
   }
 
-  import model.parameterOrReference2Parameter
-
-  private def pathParameters(operation: model.Operation)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
-    Option(operation.parameters).map(_.filter(_.pathParameter) map pathParameter).toSeq.flatten
-
   // FIXME: these "inline" definitions (except reference) should be added to the type map
   private def nameForInlineParameter(pr: ParameterOrReference, op: Operation, verb: Verb, path: String): TypeName = pr match {
     case r: Reference => r.name
@@ -62,21 +68,16 @@ object Swagger2Ast extends HandlerParser {
     case p: Parameter => path + "_" + verb.name + "_" + "inline" + p.hashCode()
   }
 
-  private def queryParameters(operation: model.Operation, verb: Verb, path: String)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
-    Option(operation.parameters).map(_.filter(_.queryParameter) map { p =>
-      queryParameter(nameForInlineParameter(p, operation, verb, path))(p)
-    }).toSeq.flatten
+  private def nonBodyParameters(default: ParameterOrReference => Option[String],
+    filter: ParameterOrReference => Boolean)(operation: model.Operation, verb: Verb, path: String)(implicit swaggerModel: SwaggerModel): Seq[Application.Parameter] =
+    Option(operation.parameters).map { _.filter(filter).map { p =>
+      nonBodyParameter(default)(nameForInlineParameter(p, operation, verb, path))(p)
+    }}.toSeq.flatten
 
-  private def pathParameter(p: model.ParameterOrReference)(implicit swaggerModel: SwaggerModel): Application.Parameter = {
-    val fixed = None
-    val default = None
-    val typeName = SchemaConverter.swaggerType2Type(p)
-    Application.Parameter(p.name, typeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
-  }
-
-  private def queryParameter(typeName: TypeName)
-                            (p: model.ParameterOrReference)
-                            (implicit swaggerModel: SwaggerModel): Application.Parameter = {
+  private def nonBodyParameter(default: ParameterOrReference => Option[String])
+      (typeName: TypeName)
+      (p: model.ParameterOrReference)
+      (implicit swaggerModel: SwaggerModel): Application.Parameter = {
     val fixed = None // There is no way to define fixed parameters in swagger spec
     val default = if (p.required && p.default != null) Some(p.default) else None
     val name = SchemaConverter.parameter2Type(p, typeName)

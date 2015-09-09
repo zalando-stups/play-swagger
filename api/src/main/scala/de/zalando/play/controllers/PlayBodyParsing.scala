@@ -31,7 +31,7 @@ object PlayBodyParsing extends PlayBodyParsing {
    */
   lazy val factories = Map(
     "application/json" -> jsonFactory,
-    "application/yaml" -> new YAMLFactory() // TODO implement workaround for bug in yaml parser
+    "text/x-yaml" -> new YAMLFactory() // TODO implement workaround for bug in yaml parser
   ).withDefaultValue(jsonFactory)
 
   /**
@@ -65,12 +65,14 @@ object PlayBodyParsing extends PlayBodyParsing {
   /**
    * Converts parsing errors to Writeable
    */
-  implicit def parsingErrors2Writable(mimeType: String): Writeable[Seq[ParsingError]] = Writeable(parsingErrors2Bytes(mimeType), Some(mimeType))
+  def parsingErrors2Writable(mimeType: String): Writeable[Seq[ParsingError]] =
+    Writeable(parsingErrors2Bytes(mimeType), Some(mimeType))
 
   /**
    * Converts anything of type Either[Throwable, T] to Writeable
    */
-  def anyToWritable[T](mimeType: String): Writeable[Either[Throwable, T]] = Writeable(eitherToT(mimeType), Some(mimeType))
+  def anyToWritable[T](mimeType: String): Writeable[Either[Throwable, T]] =
+    Writeable(eitherToT(mimeType), Some(mimeType))
 
   private def eitherToT[T](mimeType: String): (Either[Throwable, T]) => Array[Byte] =
     (t: Either[Throwable, T]) => {
@@ -129,10 +131,10 @@ trait PlayBodyParsing extends BodyParsers {
   private def checkForEof[A](request: RequestHeader): A => Iteratee[Array[Byte], Either[Result, A]] = { eofValue: A =>
     import play.api.libs.iteratee.Execution.Implicits.trampoline
     def cont: Iteratee[Array[Byte], Either[Result, A]] = Cont {
-      case in @ Input.El(e) =>
+      case in@Input.El(e) =>
         val badResult: Future[Result] = createBadResult("Request Entity Too Large", REQUEST_ENTITY_TOO_LARGE)(request)
         Iteratee.flatten(badResult.map(r => Done(Left(r), in)))
-      case in @ Input.EOF =>
+      case in@Input.EOF =>
         Done(Right(eofValue), in)
       case Input.Empty =>
         cont

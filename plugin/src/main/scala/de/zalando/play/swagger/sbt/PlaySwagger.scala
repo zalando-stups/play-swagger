@@ -116,7 +116,7 @@ object PlaySwagger extends AutoPlugin {
       // Collect the results into a map of task to OpResult for syncIncremental
       val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
         case (task, Success(result)) =>
-          task -> OpSuccess(Set(task.definitionFile), (result.modelFiles ++ result.routesFiles).toSet)
+          task -> OpSuccess(Set(task.definitionFile), result.allFiles)
         case (op, Failure(_)) => op -> OpFailure
       }.toMap
 

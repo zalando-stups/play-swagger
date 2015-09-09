@@ -1,5 +1,6 @@
 package de.zalando.apifirst
 
+import de.zalando.apifirst.Application.Model
 import de.zalando.swagger.model._
 
 import scala.language.{postfixOps, implicitConversions}
@@ -200,28 +201,28 @@ object Domain {
                      override val meta: TypeMeta) extends Entity(name, meta) {
     override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
 
-    def imports(implicit model: ModelDefinition): Set[String] = {
+    def imports(implicit ast: Model): Set[String] = {
       val fromFields = fields.flatMap(_.imports)
-      val transient = extend.flatMap(_.resolve(model).toSeq.flatMap(_.imports))
+      val transient = extend.flatMap(_.resolve(ast).toSeq.flatMap(_.imports))
       (fromFields ++ transient).filter(_.trim.nonEmpty).toSet
     }
 
-    def allFields(implicit model: ModelDefinition): Seq[Field] =
+    def allFields(implicit ast: Model): Seq[Field] =
       fields ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allFields))
 
-    def allExtends(implicit model: ModelDefinition): Seq[Reference] =
+    def allExtends(implicit ast: Model): Seq[Reference] =
       extend ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allExtends))
 
     override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.nestedIn(name) } distinct
   }
 
   abstract class Reference(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta) {
-    def resolve(implicit model: ModelDefinition): Option[TypeDef] = ???
+    def resolve(implicit ast: Model): Option[TypeDef] = ???
   }
 
   case class ReferenceObject(override val name: TypeName, override val meta: TypeMeta) extends Reference(name, meta) {
     override def toString = s"""ReferenceObject("$name", $meta)"""
-    override def resolve(implicit model: ModelDefinition): Option[TypeDef] = model.find(_.name == name) match {
+    override def resolve(implicit ast: Model): Option[TypeDef] = ast.definitions.find(_.name == name) match {
       case Some(t: TypeDef) => Some(t)
       case _ => None
     }
