@@ -42,7 +42,7 @@ object SwaggerCompiler {
 
     val generators = generateFiles(ModelFactoryGenerator, "generators/", true)
 
-    val controllerFiles = generateFiles(ControllersGenerator, "../../../../../app/controllers/", false)
+    val controllerFiles = generateFiles(ControllersGenerator, "../../../../app/controllers/", false)
 
     // FIXME generate others as well
     SwaggerCompilationResult(routesFiles, model, generators, Nil, controllerFiles, Nil)
