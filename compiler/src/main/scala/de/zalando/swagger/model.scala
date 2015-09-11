@@ -371,6 +371,7 @@ object model {
       }
     }
     lazy val vendorExtensions = extensions.toMap
+    lazy val vendorErrorMappings = errorMappings.toMap
   }
 
   type Version                = String

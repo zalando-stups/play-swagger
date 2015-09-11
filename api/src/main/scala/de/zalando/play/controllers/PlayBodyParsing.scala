@@ -8,6 +8,7 @@ import play.api.Logger
 import play.api.http.Status._
 import play.api.http.{LazyHttpErrorHandler, Writeable}
 import play.api.libs.iteratee._
+import play.api.mvc.Results.Status
 import play.api.mvc.{BodyParser, BodyParsers, RequestHeader, Result}
 
 import scala.concurrent.Future
@@ -19,7 +20,6 @@ import scala.util.control.NonFatal
  * @since 02.09.2015
  */
 object PlayBodyParsing extends PlayBodyParsing {
-
 
   import play.api.libs.iteratee.Execution.Implicits.trampoline
 
@@ -91,6 +91,11 @@ object PlayBodyParsing extends PlayBodyParsing {
 trait PlayBodyParsing extends BodyParsers {
   val logger = Logger.logger
 
+  def defaultErrorMapping: PartialFunction[Throwable, Status] = {
+    case _: IllegalArgumentException => Status(BAD_REQUEST)
+    case _: IndexOutOfBoundsException => Status(NOT_FOUND)
+    case _ => Status(INTERNAL_SERVER_ERROR)
+  }
   /**
    * This is private in play codebase. Copy-pasted it.
    */

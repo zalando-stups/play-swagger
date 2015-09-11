@@ -1,6 +1,8 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Application.Model
+import de.zalando.apifirst.Domain.{Type, TypeName}
+import de.zalando.apifirst.Http.MimeType
 import de.zalando.swagger.model._
 
 import scala.language.{postfixOps, implicitConversions}
@@ -34,7 +36,9 @@ object Http {
     _.name == name.trim.toUpperCase
   }
 
-  abstract class MimeType(name: String) extends Expr
+
+  // TODO flesh out this hierarchy
+  class MimeType(val name: String) extends Expr
 
   case object ApplicationJson extends MimeType(name = "application/json")
 
@@ -164,6 +168,8 @@ object Domain {
   case class Password(override val meta: TypeMeta) extends Type("Password", meta)
 
   case class Null(override val meta: TypeMeta) extends Type("null", meta)
+
+  case class Any(override val meta: TypeMeta) extends Type("Any", meta)
 
   abstract class Container(override val name: TypeName, val field: Field, override val meta: TypeMeta, override val imports: Set[String])
     extends Type(name, meta) {
@@ -320,19 +326,24 @@ object Application {
                        constraint: String, encode: Boolean) extends Expr with Positional
 
   case class HandlerCall(packageName: String, controller: String, instantiate: Boolean,
-                         method: String, parameters: Seq[Parameter], bodyParameters: Seq[Parameter])
+                         method: String, parameters: Seq[Parameter], bodyParameters: Seq[Parameter]) {
+    val allParameters = parameters ++ bodyParameters
+  }
 
   case class ApiCall(
                       verb: Http.Verb,
                       path: Path.FullPath,
-                      handler: HandlerCall
+                      handler: HandlerCall,
+                      mimeIn: MimeType,
+                      mimeOut: MimeType,
+                      errorMapping: Map[String, Seq[Class[Exception]]],
+                      resultType: Type,
+                      successStatus: Int
                       )
 
   /*
     query: Query.FullQuery,
     body: Http.Body,
-    mimeIn: MimeType,
-    mimeOut: MimeType
   */
 
   case class Model(calls: Seq[ApiCall], definitions: Iterable[Domain.Type])

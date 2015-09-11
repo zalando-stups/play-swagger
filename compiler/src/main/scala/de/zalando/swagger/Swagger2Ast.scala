@@ -3,11 +3,12 @@ package de.zalando.swagger
 import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
 import de.zalando.apifirst.Domain.{Reference, TypeName, TypeMeta, Field}
-import de.zalando.apifirst.Http.Verb
+import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Application, Domain, Http}
 import de.zalando.swagger.model.PrimitiveType._
 import de.zalando.swagger.model.{PrimitiveType, _}
+import play.routes.compiler.HttpVerb
 
 import scala.language.{implicitConversions, postfixOps, reflectiveCalls}
 
@@ -43,7 +44,7 @@ object Swagger2Ast extends HandlerParser {
 
     val queryParameters = nonBodyParameters(defaultValue, _.queryParameter) _
     val pathParameters = nonBodyParameters(_ => None,  _.pathParameter) _
-    val bodyParameters = nonBodyParameters(_ => None,  _.bodyParameter) _ // TODO FIXME this should be BODY parameter
+    val bodyParameters = nonBodyParameters(_ => None,  _.bodyParameter) _
 
     val call = operations(path) flatMap { case (operation: Operation, signature: String) =>
       for {
@@ -56,12 +57,32 @@ object Swagger2Ast extends HandlerParser {
         handlerText <- operation.vendorExtensions.get(s"$keyPrefix-handler")
         parseResult = parse(handlerText)
         handler <- if (parseResult.successful) Some(parseResult.get.copy(parameters = allParams, bodyParameters = bodyParams)) else None
-      } yield Some(ApiCall(verb, astPath, handler))
+        (mimeIn, mimeOut) = mimeTypes(operation)
+        errorMapping = swaggerModel.vendorErrorMappings // FIXME should be possible to override on path and method level
+        (resultType, successStatus) = responseInfo(operation, verb, path._1)
+      } yield Some(ApiCall(verb, astPath, handler, mimeIn, mimeOut, errorMapping, resultType, successStatus))
     case _ =>
       None
     }
     call.toSeq.flatten
   }
+
+  // FIXME
+  def mimeTypes(operation: Operation) = {
+    val mimeIn = new MimeType(Option(operation.consumes).flatMap(_.headOption).getOrElse("application/json"))
+    val mimeOut = new MimeType(Option(operation.produces).flatMap(_.headOption).getOrElse("application/json"))
+    (mimeIn, mimeOut)
+  }
+  // FIXME
+  def responseInfo(operation: Operation, verb: Http.Verb, path: String) =
+    operation.responses.filter(r => r._1.forall(_.isDigit) && r._1.toInt < 400).map { r =>
+      val status = r._1.toInt
+      val typeName = TypeName("What is this name all about?")
+      val name = Option(r._2.schema).map { schema =>
+        SchemaConverter.schema2Type(schema, typeName)
+      }.getOrElse(Domain.Any(TypeMeta(Option(r._2.description))))
+      (name, status)
+    }.headOption.getOrElse((Domain.Null(TypeMeta(None)), 200))
 
   // FIXME: these "inline" definitions (except reference) should be added to the type map
   private def nameForInlineParameter(pr: ParameterOrReference, op: Operation, verb: Verb, path: String): TypeName = pr match {

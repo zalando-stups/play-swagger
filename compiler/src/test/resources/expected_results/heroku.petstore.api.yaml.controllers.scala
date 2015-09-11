@@ -3,7 +3,7 @@ package heroku.petstore.api.yaml.controllers
 import scala.Option
 import heroku.petstore.api.yaml.definitions.Pet
 
-class ApiYaml extends ApplicationBase {
+class ApiYaml extends ApiYamlBase {
 
   // handler for GET /
   def allPets = allPetsAction { (limit: Option[Int]) =>

@@ -25,27 +25,35 @@ object SwaggerCompiler {
 
     implicit val ast = Swagger2Ast.convert(keyPrefix)(swaggerModel)
 
+    val namespace = task.definitionFile.getName.takeWhile(_ != '.')
+
+    val generateFiles = generate(namespace, task, outputDir) _
+
+    // controllers has to be generated first
+    // because it's outside of the syncIncremental cycle of the plugin
+    val controllerFiles = generateFiles(ControllersGenerator, "../../../../app/controllers/", false)
+
     val playRules = RuleGenerator.apiCalls2PlayRules(ast.calls: _*).toList
 
     val playTask = RoutesCompilerTask(task.definitionFile, routesImport,
       forwardsRouter = true, reverseRouter, namespaceReverseRouter = true)
 
-    val namespace = task.definitionFile.getName.takeWhile(_ != '.')
-
     val generated = task.generator.generate(playTask, Some(namespace), playRules)
 
     val routesFiles = generated map writeToFile(outputDir, true).tupled
-
-    val generateFiles = generate(namespace, task, outputDir) _
 
     val model = generateFiles(ModelGenerator, "model/", true)
 
     val generators = generateFiles(ModelFactoryGenerator, "generators/", true)
 
-    val controllerFiles = generateFiles(ControllersGenerator, "../../../../app/controllers/", false)
+    val baseControllers = generateFiles(BaseControllersGenerator, "controllers/", true)
 
-    // FIXME generate others as well
-    SwaggerCompilationResult(routesFiles, model, generators, Nil, controllerFiles, Nil)
+    val validators = generateFiles(ValidatorsGenerator, "validators/", true)
+
+    // FIXME generate tests
+    val tests = Nil
+
+    SwaggerCompilationResult(routesFiles, model, generators, baseControllers, controllerFiles, validators, tests)
   }
 
 
@@ -87,6 +95,7 @@ case class SwaggerCompilationResult(
   testDataGeneratorFiles: Seq[File],
   controllerBaseFiles: Seq[File],
   controllerFiles: Seq[File],
+  validatorFiles: Seq[File],
   testFiles: Seq[File]
 ) {
   // for incremental sync we do not include controller files
@@ -94,6 +103,6 @@ case class SwaggerCompilationResult(
   def allFiles: Set[File] = (
     routesFiles ++ modelFiles ++
       testDataGeneratorFiles ++ testFiles ++
-      controllerBaseFiles
+      validatorFiles ++ controllerBaseFiles
     ).toSet
 }

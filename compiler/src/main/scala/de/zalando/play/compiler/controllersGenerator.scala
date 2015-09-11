@@ -1,21 +1,24 @@
 package de.zalando.play.compiler
 
 import de.zalando.apifirst.Application.{ApiCall, Model}
-import de.zalando.apifirst.Domain.TypeDef
 
 /**
  * @since 09.09.2015
  */
 object ControllersGenerator extends GeneratorBase  {
 
-  def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] = {
+  def groupByFile(ast: Model): Map[String, Map[String, Seq[ApiCall]]] = {
     val groupedByController = ast.calls.groupBy { call =>
       call.handler.packageName
     } map { case ((pkg, calls)) =>
       pkg -> calls.groupBy(_.handler.controller)
     }
+    groupedByController
+  }
+
+  def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] = {
     for {
-      (pkg, pkgFiles) <- groupedByController
+      (pkg, pkgFiles) <- groupByFile(ast)
       (controller, calls) <- pkgFiles
     } yield {
       val params = calls.flatMap(_.handler.parameters)
@@ -30,7 +33,7 @@ object ControllersGenerator extends GeneratorBase  {
          |${imports.map{i => "import " + i }.mkString("\n")}
          |$typeImports
          |
-         |object $controller extends ApplicationBase {
+         |class $controller extends ${controller}Base {
          |$methods
          |}""".stripMargin
 
@@ -48,10 +51,9 @@ object ControllersGenerator extends GeneratorBase  {
      """.stripMargin
 
   def params(call: ApiCall) = {
-    call.handler.parameters.map { p =>
+    (call.handler.allParameters).map { p =>
       s"""${p.name}: ${p.typeName.name.asSimpleType}"""
     }.mkString(", ")
-
   }
 
   override def placeHolder: String = ""
