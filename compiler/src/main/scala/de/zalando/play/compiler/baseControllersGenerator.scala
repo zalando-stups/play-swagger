@@ -51,7 +51,7 @@ class SingleBaseControllerGenerator extends GeneratorBase {
       |  private def processValid#CALL#Request(f: #CALL#ActionType)(request: #CALL#ActionRequestType) = {
       |    val callerResult = f(request)
       |    val status = callerResult match {
-      |      case Left(error) => (errorToStatus orElse defaultErrorMapping)(error)
+      |      case Left(error) => (errorToStatus#CALL# orElse defaultErrorMapping)(error)
       |      case Right(result) => #CALL#ActionSuccessStatus
       |    }
       |    implicit val #CALL#WritableJson = anyToWritable[#CALL#ActionResultType](#CALL#ResponseMimeType)
@@ -67,7 +67,7 @@ class SingleBaseControllerGenerator extends GeneratorBase {
     }
     val pf = if (lines.isEmpty) "PartialFunction.empty[Throwable, Status]" else s"{\n$lines\n}"
 
-    s"""private def errorToStatus: PartialFunction[Throwable, Status] = $pf"""
+    s"""private def errorToStatus#CALL#: PartialFunction[Throwable, Status] = $pf"""
   }
 
   def parameterList(parameters: Seq[Parameter]) =

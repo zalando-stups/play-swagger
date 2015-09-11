@@ -13,7 +13,7 @@ import scala.Option
     private type allPetsActionRequestType = (Option[Int])
     private type allPetsActionResultType = Seq[Pet]
     private type allPetsActionType = allPetsActionRequestType => Either[Throwable, allPetsActionResultType]
-    private def errorToStatus: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private def errorToStatusallPets: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
     def allPetsAction = (f: allPetsActionType) => (limit: Option[Int]) => Action {
       val result = new ValidationForApiYamlallPets(limit).result.right.map {
         processValidallPetsRequest(f)
@@ -25,7 +25,7 @@ import scala.Option
     private def processValidallPetsRequest(f: allPetsActionType)(request: allPetsActionRequestType) = {
       val callerResult = f(request)
       val status = callerResult match {
-        case Left(error) => (errorToStatus orElse defaultErrorMapping)(error)
+        case Left(error) => (errorToStatusallPets orElse defaultErrorMapping)(error)
         case Right(result) => allPetsActionSuccessStatus
       }
       implicit val allPetsWritableJson = anyToWritable[allPetsActionResultType](allPetsResponseMimeType)
@@ -36,7 +36,7 @@ import scala.Option
     private type updatePetActionRequestType = (Pet)
     private type updatePetActionResultType = Any
     private type updatePetActionType = updatePetActionRequestType => Either[Throwable, updatePetActionResultType]
-    private def errorToStatus: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private def errorToStatusupdatePet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
     private def updatePetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[updatePetActionRequestType]("(Pet)", "Invalid (Pet)", maxLength)
     def updatePetAction = (f: updatePetActionType) => Action(updatePetParser()) { request =>
     val pet = request.body
@@ -50,7 +50,7 @@ import scala.Option
     private def processValidupdatePetRequest(f: updatePetActionType)(request: updatePetActionRequestType) = {
       val callerResult = f(request)
       val status = callerResult match {
-        case Left(error) => (errorToStatus orElse defaultErrorMapping)(error)
+        case Left(error) => (errorToStatusupdatePet orElse defaultErrorMapping)(error)
         case Right(result) => updatePetActionSuccessStatus
       }
       implicit val updatePetWritableJson = anyToWritable[updatePetActionResultType](updatePetResponseMimeType)
@@ -61,7 +61,7 @@ import scala.Option
     private type createPetActionRequestType = (Pet)
     private type createPetActionResultType = Any
     private type createPetActionType = createPetActionRequestType => Either[Throwable, createPetActionResultType]
-    private def errorToStatus: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private def errorToStatuscreatePet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
     private def createPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[createPetActionRequestType]("(Pet)", "Invalid (Pet)", maxLength)
     def createPetAction = (f: createPetActionType) => Action(createPetParser()) { request =>
     val pet = request.body
@@ -75,7 +75,7 @@ import scala.Option
     private def processValidcreatePetRequest(f: createPetActionType)(request: createPetActionRequestType) = {
       val callerResult = f(request)
       val status = callerResult match {
-        case Left(error) => (errorToStatus orElse defaultErrorMapping)(error)
+        case Left(error) => (errorToStatuscreatePet orElse defaultErrorMapping)(error)
         case Right(result) => createPetActionSuccessStatus
       }
       implicit val createPetWritableJson = anyToWritable[createPetActionResultType](createPetResponseMimeType)
@@ -86,7 +86,7 @@ import scala.Option
     private type getPetActionRequestType = (String)
     private type getPetActionResultType = Any
     private type getPetActionType = getPetActionRequestType => Either[Throwable, getPetActionResultType]
-    private def errorToStatus: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private def errorToStatusgetPet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
     def getPetAction = (f: getPetActionType) => (petId: String) => Action {
       val result = new ValidationForApiYamlgetPet(petId).result.right.map {
         processValidgetPetRequest(f)
@@ -98,7 +98,7 @@ import scala.Option
     private def processValidgetPetRequest(f: getPetActionType)(request: getPetActionRequestType) = {
       val callerResult = f(request)
       val status = callerResult match {
-        case Left(error) => (errorToStatus orElse defaultErrorMapping)(error)
+        case Left(error) => (errorToStatusgetPet orElse defaultErrorMapping)(error)
         case Right(result) => getPetActionSuccessStatus
       }
       implicit val getPetWritableJson = anyToWritable[getPetActionResultType](getPetResponseMimeType)
