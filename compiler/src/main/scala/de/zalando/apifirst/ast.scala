@@ -1,7 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Application.Model
-import de.zalando.apifirst.Domain.{Type, TypeName}
+import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.swagger.model._
 
@@ -111,8 +111,7 @@ object Domain {
   }
 
 
-  // First comments, then everything else
-  case class TypeMeta(comment: Option[String]) {
+  case class TypeMeta(comment: Option[String], constraints: Seq[String]) {
     override def toString = s"""TypeMeta(${
       comment match {
         case None => "None"
@@ -121,15 +120,23 @@ object Domain {
     })"""
   }
 
+  object TypeMeta {
+    def apply(comment: Option[String]):TypeMeta = TypeMeta(comment, Seq.empty[String])
+  }
+
   implicit def option2TypeMeta(o: Option[String]): TypeMeta = TypeMeta(o)
 
-  implicit def schema2TypeMeta(s: Schema): TypeMeta = Option(s.description)
+  implicit def schema2TypeMeta(s: Schema): TypeMeta = {
+    new TypeMeta(Option(s.description), ValidationConverter.toValidations(s))
+  }
 
   implicit def typeInfo2TypeMeta(s: TypeInfo): TypeMeta = Option(s.format)
 
   implicit def paramOrRefInfo2TypeMeta(s: ParameterOrReference): TypeMeta = s match {
-    case s: Parameter => Option(s.description)
-    case s: ParameterReference => Option(s.$ref)
+    case s: Parameter =>
+      new TypeMeta(Option(s.description), ValidationConverter.toValidations(s))
+    case s: ParameterReference =>
+      Option(s.$ref)
   }
 
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
@@ -139,15 +146,17 @@ object Domain {
 
   implicit def string2TypeName(s: String): TypeName = TypeName(s)
 
-  case class Int(override val meta: TypeMeta) extends Type("Int", meta)
+  class Nmbr(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta)
 
-  case class Lng(override val meta: TypeMeta) extends Type("Long", meta)
+  case class Int(override val meta: TypeMeta) extends Nmbr("Int", meta)
 
-  case class Flt(override val meta: TypeMeta) extends Type("Float", meta)
+  case class Lng(override val meta: TypeMeta) extends Nmbr("Long", meta)
 
-  case class Dbl(override val meta: TypeMeta) extends Type("Double", meta)
+  case class Flt(override val meta: TypeMeta) extends Nmbr("Float", meta)
 
-  case class Byt(override val meta: TypeMeta) extends Type("Byte", meta)
+  case class Dbl(override val meta: TypeMeta) extends Nmbr("Double", meta)
+
+  case class Byt(override val meta: TypeMeta) extends Nmbr("Byte", meta)
 
   case class Str(format: Option[String] = None, override val meta: TypeMeta) extends Type("String", meta)
 
@@ -341,13 +350,43 @@ object Application {
                       successStatus: Int
                       )
 
-  /*
-    query: Query.FullQuery,
-    body: Http.Body,
-  */
-
   case class Model(calls: Seq[ApiCall], definitions: Iterable[Domain.Type])
 
 }
 
 
+// TODO probably additional parameters will be needed for definitions and inline objects
+object ValidationConverter {
+  def toValidations(p: CommonProperties):Seq[String] = p.`type` match {
+    case PrimitiveType.STRING =>
+      val emailConstraint: Option[String] = if ("email" == p.format) Some("emailAddress") else None
+      val stringConstraints: Seq[String] = Seq(
+        ifNot0(p.maxLength, s"maxLength(${p.maxLength})"),
+        ifNot0(p.minLength, s"minLength(${p.minLength})"),
+        Option(p.pattern) map { p => s"pattern($p.r)" },
+        emailConstraint
+      ).flatten
+      stringConstraints
+    case PrimitiveType.NUMBER | PrimitiveType.INTEGER =>
+      val strictMax = Option(p.exclusiveMaximum).getOrElse(false)
+      val strictMin = Option(p.exclusiveMinimum).getOrElse(false)
+      val numberConstraints = Seq(
+        ifNot0(p.maximum.toInt, s"max(${p.maximum.toInt}, $strictMax)"),
+        ifNot0(p.minimum.toInt, s"min(${p.minimum.toInt}, $strictMin)"),
+        ifNot0(p.multipleOf, s"multipleOf(${p.multipleOf})")
+      ).flatten
+      numberConstraints
+    case PrimitiveType.ARRAY =>
+      // TODO these are not implemented in PlayValidations yet
+      val arrayConstraints = Seq(
+        Option(p.maxItems).map { p => s"maxItems($p)" },
+        Option(p.minItems).map { p => s"minItems($p)" },
+        Option(p.uniqueItems)map { p => s"uniqueItems($p)" }
+      ).flatten
+      Seq.empty[String]
+    // TODO implement objects and other types
+    case _ => Seq.empty[String]
+  }
+
+  def ifNot0(check:Int, result: String): Option[String] = if (check != 0) Some(result) else None
+}

@@ -23,6 +23,7 @@ lazy val api = (project in file("api"))
 lazy val compiler = (project in file("compiler"))
   .enablePlugins(SbtTwirl)
   .settings(common: _*)
+  .dependsOn(api)
   .settings(
     name := "play-swagger-compiler",
     scalaVersion := "2.10.5",
@@ -32,6 +33,7 @@ lazy val compiler = (project in file("compiler"))
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
       "org.scalatest" %% "scalatest" % "2.2.3" % "test",
       "com.typesafe.play" %% "routes-compiler" % PlayVersion % Provided,
+      "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "org.scala-lang" % "scala-compiler" % "2.10.5",
       "org.scala-lang" % "scala-library" % "2.10.5",
       "org.scala-lang" % "scala-reflect" % "2.10.5",

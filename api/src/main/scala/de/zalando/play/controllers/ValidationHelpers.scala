@@ -27,6 +27,7 @@ trait ValidationBase[T] {
 }
 
 object PlayValidations extends Constraints {
+
   /**
    * Defines a ‘lowerCase’ constraint for `String` values, i.e. one in which string
    * should be non-empty and lowercase. Has no direct relationship with swagger,
@@ -38,5 +39,17 @@ object PlayValidations extends Constraints {
   def lowerCase: Constraint[String] = Constraint[String]("constraint.lowerCase") { o =>
     if (o == null) Invalid(ValidationError("error.required"))
     else if (o.trim.isEmpty) Invalid(ValidationError("error.lowerCase")) else Valid
+  }
+  /**
+   * Defines a ‘multipleOf’ constraint for `Number` values, i.e. one in which a number
+   * valid against "multipleOf" if the result of the division of the instance by
+   * this keyword's value is an integer
+   *
+   * '''name'''[constraint.multipleOf]
+   * '''error'''[error.multipleOf]
+   */
+  def multipleOf[T](mOf: T)(implicit integral: scala.math.Integral[T]): Constraint[T] = Constraint[T]("constraint.multipleOf") { o =>
+    if (o == null) Invalid(ValidationError("error.required"))
+    else if (integral.rem(o, mOf) != 0) Invalid(ValidationError("error.multipleOf")) else Valid
   }
 }

@@ -18,7 +18,7 @@ class ValidatorsGeneratorTest extends FunSpec with MustMatchers with ExpectedRes
     val fixtures = new File("compiler/src/test/resources/controllers").listFiles
     testFixture(fixtures) { (file, fullResult) =>
       val result = fullResult.head._2
-      removeNoise(result) mustBe asInFile(file, "validators.base.scala")
+      removeNoise(result) mustBe asInFile(file, "validators.scala")
     }
   }
 

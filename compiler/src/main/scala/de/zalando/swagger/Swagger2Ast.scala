@@ -2,13 +2,12 @@ package de.zalando.swagger
 
 import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
-import de.zalando.apifirst.Domain.{Reference, TypeName, TypeMeta, Field}
+import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{Application, Domain, Http}
 import de.zalando.swagger.model.PrimitiveType._
 import de.zalando.swagger.model.{PrimitiveType, _}
-import play.routes.compiler.HttpVerb
 
 import scala.language.{implicitConversions, postfixOps, reflectiveCalls}
 
@@ -252,4 +251,3 @@ object SchemaConverter {
 
   // format: ON
 }
-
