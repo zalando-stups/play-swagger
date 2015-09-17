@@ -14,7 +14,6 @@ class TestsGenerator(basePath: String) extends ChainedGenerator {
   override val mainTemplate = s"""
                                  |#PACKAGE#
                                  |
-                                 |import api.controllers._
                                  |import de.zalando.play.controllers.PlayBodyParsing
                                  |
                                  |import org.scalacheck._
