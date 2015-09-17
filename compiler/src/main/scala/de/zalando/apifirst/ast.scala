@@ -312,12 +312,12 @@ object Path {
           parameters.find(_.name == name) map { p => InPathParameter(name, p.constraint, p.encode) }
         case seg if seg.nonEmpty =>
           Some(Segment(seg))
-        case seg =>
-          None
+        case seg if seg.isEmpty =>
+          Some(Root)
       }
     }
     val segments = path2segments(path, parameters).toList.flatten
-    val elements = if (path.startsWith("/")) Root :: segments else segments
+    val elements = if (path.endsWith("/")) segments :+ Root else segments
     FullPath(elements)
   }
 

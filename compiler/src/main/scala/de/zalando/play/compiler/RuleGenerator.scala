@@ -28,11 +28,16 @@ object RuleGenerator {
     }
   }
 
-  def path2path(call: ApiCall): Seq[PathPart] =
-    call.path.value flatMap {
-      case Root => None
-      case s : Segment => Some(StaticPart(s.value + Root.value))
+  def path2path(call: ApiCall): Seq[PathPart] = {
+    val result = call.path.value.flatMap {
+      case Root => Some(StaticPart(Root.value))
+      case s : Segment => Some(StaticPart(Root.value + s.value))
       case p : InPathParameter => Some(DynamicPart(p.value, p.constraint, p.encode))
+    }.dropWhile(_ == StaticPart(Root.value))
+    result match {
+      case StaticPart(name) :: tail if name.nonEmpty => StaticPart(name.tail) :: tail
+      case _ => result
     }
+  }
 
 }

@@ -15,6 +15,8 @@ class AstPath2PathTest extends FunSpec with MustMatchers {
     val parm = Path.path2path("/{a}", List(Parameter("a", null, null, null, "[0-9]+", true)))
     val ignr = Path.path2path("/a", List(Parameter("a", null, null, null, null, true)))
 
+    val rend = Path.path2path("/a/b/c/", List())
+
     it("should convert the root path") {
       root mustBe FullPath.is(Root)
     }
@@ -37,5 +39,9 @@ class AstPath2PathTest extends FunSpec with MustMatchers {
       aasb.isAbsolute mustBe true
       rasb.isAbsolute mustBe false
     }
+    it("should convert the root end path") {
+      rend mustBe FullPath.is(Root, Segment("a"), Segment("b"), Segment("c"), Root)
+    }
+
   }
 }

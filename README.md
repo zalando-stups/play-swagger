@@ -45,7 +45,10 @@ To use the plugin in a play project:
 - Put the handler specification for the HTTP method in the swagger specification, for example:
   ```"x-api-first-handler": "controllers.PetstoreYaml.findPets"```
  
-
+- Link newly added specification to central play routes by adding new line to the ```rotes``` file, for example:
+  ```-> 	      /api                  petstore.Routes```. The prefix should correspond to the basePath 
+  set in the specification
+  
 ## Structure
 
 There are 3 sub projects:

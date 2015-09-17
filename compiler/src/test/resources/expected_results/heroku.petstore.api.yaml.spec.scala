@@ -1,5 +1,4 @@
 package heroku.petstore.api.yaml
-import api.controllers._
 import de.zalando.play.controllers.PlayBodyParsing
 import org.scalacheck._
 import org.scalacheck.Arbitrary._
