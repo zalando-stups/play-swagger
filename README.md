@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/zalando/play-swagger.svg)](https://travis-ci.org/zalando/play-swagger)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/zalando/play-swagger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+## Warning
+
 This is an end-to-end prototype with the intention to demonstrate the possibility to generate 
 following components from the swagger specification:
 * Play route files
@@ -16,6 +18,35 @@ missing corner- and special cases and should not be treated as a production code
 of this branch will be refactored or rewritten almost completely in the near future.
 The intent of putting this version of the codebase into the public domain is to benefit 
 from community feedback during the mentioned refactoring.
+
+## Building and using
+
+To build a plugin, do the following:
+
+- Clone the repository to your local filesystem
+- run ```sbt +publishLocal``` in the play-swagger directory, this will publish the plugin into your local ivy repository
+
+To use the plugin in a play project:
+
+- Create a new play project for example using activator, for example: ``activator new hello-world play-scala``` 
+- Edit the project/plugins.sbt by adding following: 
+  ```addSbtPlugin("de.zalando" % "sbt-play-swagger" % "0.1-SNAPSHOT")```
+- Edit the build.sbt in the new project directory by adding following:
+  - ```, PlaySwagger``` in the list of plugins
+  - change the scope of the ```spec2``` dependency by removing ```% Test```
+  - ```"org.scalacheck" %% "scalacheck" % "1.12.4",
+       "org.specs2" %% "specs2-scalacheck" % "3.6"
+    ``` to the list of the libraryDependencies
+
+- Start ```sbt```
+- Run play ```run```
+- Navigate to the "http://localhost:9000 in the browser
+- Put a swagger specification with a ```.yaml``` or ```.json``` extension into the ```conf``` directory
+- Put the handler specification for the HTTP method in the swagger specification, for example:
+  ```"x-api-first-handler": "controllers.PetstoreYaml.findPets"```
+ 
+
+## Structure
 
 There are 3 sub projects:
 
