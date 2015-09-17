@@ -14,6 +14,7 @@ class AstPath2PathTest extends FunSpec with MustMatchers {
     val nasb = Path.path2path("a/b", List())
     val parm = Path.path2path("/{a}", List(Parameter("a", null, null, null, "[0-9]+", true)))
     val ignr = Path.path2path("/a", List(Parameter("a", null, null, null, null, true)))
+    val pabm = Path.path2path("/a/{a}", List(Parameter("a", null, null, null, "[0-9]+", true)))
 
     val rend = Path.path2path("/a/b/c/", List())
 
@@ -31,6 +32,9 @@ class AstPath2PathTest extends FunSpec with MustMatchers {
     }
     it("should convert in-path parameters") {
       parm mustBe FullPath.is(Root, InPathParameter("a", "[0-9]+", true))
+    }
+    it("should convert in-path parameters after static parts") {
+      pabm mustBe FullPath.is(Root, Segment("a"), InPathParameter("a", "[0-9]+", true))
     }
     it("should ignore non-in-path parameters") {
       ignr mustBe FullPath.is(Root, Segment("a"))

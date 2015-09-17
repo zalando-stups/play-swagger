@@ -31,11 +31,19 @@ object RuleGenerator {
   def path2path(call: ApiCall): Seq[PathPart] = {
     val result = call.path.value.flatMap {
       case Root => Some(StaticPart(Root.value))
-      case s : Segment => Some(StaticPart(Root.value + s.value))
+      case s : Segment => Some(StaticPart(s.value + Root.value))
       case p : InPathParameter => Some(DynamicPart(p.value, p.constraint, p.encode))
     }.dropWhile(_ == StaticPart(Root.value))
+    // oh my
     result match {
-      case StaticPart(name) :: tail if name.nonEmpty => StaticPart(name.tail) :: tail
+      case head :: StaticPart(name) :: StaticPart(Root.value) :: Nil  =>
+        head :: StaticPart(name) :: Nil
+      case head :: StaticPart(name) :: Nil if name.nonEmpty =>
+        head :: StaticPart(name.init) :: Nil
+      case StaticPart(name) :: StaticPart(Root.value) :: Nil  =>
+        StaticPart(name) :: Nil
+      case StaticPart(name) :: Nil if name.nonEmpty =>
+        StaticPart(name.init) :: Nil
       case _ => result
     }
   }
