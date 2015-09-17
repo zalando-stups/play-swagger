@@ -36,7 +36,7 @@ class TestClassGeneratorTest extends FunSpec with MustMatchers with ExpectedResu
     fixtures.filter(_.getName.endsWith(".yaml")) foreach { file =>
       it(s"should parse the yaml swagger file ${file.getName} with expected definitions result") {
         implicit val swaggerModel = YamlParser.parse(file)
-        implicit val definitions = Swagger2Ast.convert("")
+        implicit val definitions = Swagger2Ast.convert("", file)
         val fullResult = ModelFactoryGenerator.generate(file.getName)
         val result = removeNoise(fullResult.head._2)
         result mustBe asInFile(file, "generators.scala")

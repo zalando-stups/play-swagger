@@ -13,6 +13,7 @@ import java.net.URLEncoder
 import controllers._
 /**
 */
+  package controllers {
   import scala.Option
   import definitions.Pet
   @RunWith(classOf[JUnitRunner])
@@ -192,4 +193,5 @@ import controllers._
           checkResult(props)
         }
     }
+  }
   }

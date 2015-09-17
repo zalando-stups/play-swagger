@@ -25,7 +25,7 @@ class SpecGeneratorTest extends FunSpec with MustMatchers with ExpectedResults {
     fixtures.filter(_.getName.endsWith(".yaml")) foreach { file =>
       it(s"should parse the yaml swagger file ${file.getName} with empty result") {
         implicit val swaggerModel = YamlParser.parse(file)
-        implicit val model = Swagger2Ast.convert("x-api-first")(swaggerModel)
+        implicit val model = Swagger2Ast.convert("x-api-first", file)(swaggerModel)
         val fullResult = new TestsGenerator("/api").generate(file.getName)
         test(file, fullResult)
       }

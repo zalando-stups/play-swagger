@@ -4,7 +4,6 @@ import de.zalando.apifirst.{Domain, Application}
 import de.zalando.apifirst.Application.{ApiCall, Model}
 import de.zalando.apifirst.Domain.{CatchAll, TypeName}
 import de.zalando.apifirst.Path.InPathParameter
-import de.zalando.swagger.model.Parameter
 
 /**
  * @since 10.09.2015
@@ -55,8 +54,9 @@ class SingleTestGenerator(basePath: String) extends CallsGeneratorBase with Test
           _.trim.split("\n").map(PAD + _).mkString("\n", "\n", "\n")
         } mkString ""
 
-        // package $namespace.$pkg
         val fileContent = s"""
+            |
+            |package $pkg {
             |${imports.map {i => "import " + i }.mkString("\n")}
             |$typeImports
             |
@@ -70,6 +70,7 @@ class SingleTestGenerator(basePath: String) extends CallsGeneratorBase with Test
             |      case PropException(_, _, labels) => failure(labels.mkString("\\n"))
             |    }
             |$methods
+            |}
             |}""".stripMargin
 
         (Set(pkg + "." + controller), fileContent)

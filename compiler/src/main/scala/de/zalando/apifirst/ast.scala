@@ -286,6 +286,10 @@ object Path {
     }
     override val toString = string { p: InPathParameter => "{" + p.value + "}" }
 
+    val camelize = string("by/" + _.value).split("/") map { p =>
+      if (p.nonEmpty) p.head.toUpper +: p.tail else p
+    } mkString ""
+
     def string(inPath2Str: InPathParameter => String) = {
       value match {
         case Nil => ""

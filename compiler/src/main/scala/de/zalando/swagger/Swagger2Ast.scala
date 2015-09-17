@@ -4,7 +4,7 @@ import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.Http.{MimeType, Verb}
-import de.zalando.apifirst.Path.InPathParameter
+import de.zalando.apifirst.Path.{FullPath, InPathParameter}
 import de.zalando.apifirst.{Application, Domain, Http}
 import de.zalando.swagger.model.PrimitiveType._
 import de.zalando.swagger.model.{PrimitiveType, _}
@@ -16,12 +16,12 @@ import scala.language.{implicitConversions, postfixOps, reflectiveCalls}
  */
 object Swagger2Ast extends HandlerParser {
 
-  implicit def convert(keyPrefix: String)(implicit swaggerModel: SwaggerModel): Model =
-    Model(convertCalls(keyPrefix), convertDefinitions)
+  implicit def convert(keyPrefix: String, definitionFile: java.io.File)(implicit swaggerModel: SwaggerModel): Model =
+    Model(convertCalls(keyPrefix, definitionFile.getName), convertDefinitions)
 
-  def convertCalls(keyPrefix: String)(implicit swaggerModel: SwaggerModel) =
+  def convertCalls(keyPrefix: String, fileName: String)(implicit swaggerModel: SwaggerModel) =
     Option(swaggerModel.paths).map { paths: Paths =>
-      paths.flatMap(toCall(keyPrefix))
+      paths.flatMap(toCall(keyPrefix, fileName))
     }.toSeq.flatten
 
   def convertDefinitions(implicit swaggerModel: SwaggerModel) =
@@ -34,7 +34,7 @@ object Swagger2Ast extends HandlerParser {
   def toDefinition(namespace: String)(definition: (String, model.Schema))(implicit swaggerModel: SwaggerModel) =
     SchemaConverter.schema2Type(definition._2, namespace + definition._1)
 
-  def toCall(keyPrefix: String)(path: (String, model.Path))(implicit swaggerModel: SwaggerModel): Seq[ApiCall] = {
+  def toCall(keyPrefix: String, fileName: String)(path: (String, model.Path))(implicit swaggerModel: SwaggerModel): Seq[ApiCall] = {
     import model.parameterOrReference2Parameter
 
     def defaultValue = { p: ParameterOrReference =>
@@ -52,7 +52,7 @@ object Swagger2Ast extends HandlerParser {
         queryParams = queryParameters(operation, verb, path._1)
         bodyParams = bodyParameters(operation, verb, path._1)
         astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
-        handlerText <- operation.vendorExtensions.get(s"$keyPrefix-handler")
+        handlerText <- getOrGenerateHandlerLine(operation, keyPrefix, signature, astPath, fileName)
         parseResult = parse(handlerText)
         handler <- if (parseResult.successful) Some(parseResult.get.copy(pathParameters = pathParams, queryParameters = queryParams, bodyParameters = bodyParams)) else None
         (mimeIn, mimeOut) = mimeTypes(operation)
@@ -63,6 +63,24 @@ object Swagger2Ast extends HandlerParser {
       None
     }
     call.toSeq.flatten
+  }
+
+  def getOrGenerateHandlerLine(operation: Operation, keyPrefix: String, verb: String, path: FullPath, fileName: String)
+      (implicit model: SwaggerModel): Option[String] =
+    operation.vendorExtensions.get(s"$keyPrefix-handler") orElse
+      model.vendorExtensions.get(s"$keyPrefix-package").map { pkg =>
+        val method = Option(operation.operationId).map(camelize(" ", _)).getOrElse(verb.toLowerCase + capitalize("/",path.string("by/" + _.value)))
+        val controller = capitalize("\\.", fileName)
+        s"$pkg.$controller.$method"
+      }
+
+  def capitalize(separator: String, str: String) = {
+    assert(str != null)
+    str.split(separator).map { p => if (p.nonEmpty) p.head.toUpper +: p.tail else p }.mkString("")
+  }
+  def camelize(separator: String, str: String) = capitalize(separator, str) match {
+    case p if p.isEmpty => ""
+    case p => p.head.toLower +: p.tail
   }
 
   // FIXME
@@ -100,7 +118,7 @@ object Swagger2Ast extends HandlerParser {
       (p: model.ParameterOrReference)
       (implicit swaggerModel: SwaggerModel): Application.Parameter = {
     val fixed = None // There is no way to define fixed parameters in swagger spec
-    val default = if (p.required && p.default != null) Some(p.default) else None
+    val default = if (p.required) Option(p.default) else None
     val name = SchemaConverter.parameter2Type(p, typeName)
     import Domain.paramOrRefInfo2TypeMeta
     val fullTypeName = if (p.required) name else Domain.Opt(Field(name.name.simpleName, name, TypeMeta(Option(p.description))), p)
@@ -164,7 +182,7 @@ object SchemaConverter {
     case s: model.Schema if propsPartialFunction.isDefinedAt(p.`type`, p.format, null) =>
       wrap(s, propsPartialFunction(p.`type`, p.format, null)(p))
 
-    case _ if propsPartialFunction.isDefinedAt(p.`type`, p.format, null) =>
+    case _ if p != null && propsPartialFunction.isDefinedAt(p.`type`, p.format, null) =>
       propsPartialFunction(p.`type`, p.format, null)(p)
 
     case s: model.Schema if s.allOf != null =>
@@ -179,9 +197,17 @@ object SchemaConverter {
       val field = Field(name.simpleName, schema2Type(s.items, name), TypeMeta(Option(s.description)))
       wrap(s, Domain.Arr(field, s))
 
-    case i: Items if i.`type` == ARRAY =>
+    case i: Items if i.`type` == ARRAY || i.items != null =>
       val field = Field(name.simpleName, schema2Type(i.items, name), TypeMeta(Option(i.format)))
       Domain.Arr(field, i)
+
+    case s: Items if s.allOf != null =>
+      val toExtend = s.allOf.filter(_.isInstanceOf[ParameterReference]).map(_.asInstanceOf[ParameterReference])
+      // TODO extract properties
+      val fields = Seq.empty[Field] //
+      val extensions = toExtend map { s => Domain.Reference(s.asInstanceOf[ParameterReference].$ref, s) }
+      val field = Field(name.simpleName, Domain.TypeDef(name, fields, extensions, s), TypeMeta(Option(s.format)))
+      Domain.Arr(field, s)
 
     case s: Schema if s.$ref != null =>
       wrap(s, Domain.Reference(s.$ref, s))
@@ -189,11 +215,14 @@ object SchemaConverter {
     case s: model.Schema if s.`type` == OBJECT || s.`type` == null =>
       wrap(s, fieldsToTypeDef(name, s))
 
-    case s if s.$ref != null =>
+    case s if s != null && s.$ref != null =>
       Domain.Reference(s.$ref, s)
 
-    case p: Property if p.items != null =>
+    case p: Property if p != null && p.items != null =>
       schema2Type(p.items, name)
+
+    case o if o == null =>
+      Domain.Null(TypeMeta(Some("Got null to convert to the type")))
 
     case other =>
       println("Don't know what to do with " + other)

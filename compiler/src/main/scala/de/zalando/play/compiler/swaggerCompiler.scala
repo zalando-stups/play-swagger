@@ -24,7 +24,7 @@ object SwaggerCompiler {
 
     val swaggerModel = parser.parse(task.definitionFile)
 
-    implicit val ast = Swagger2Ast.convert(keyPrefix)(swaggerModel)
+    implicit val ast = Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
 
     val basePath = Option(swaggerModel.basePath).getOrElse("/")
 

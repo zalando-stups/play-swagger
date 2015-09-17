@@ -16,8 +16,9 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
 
   describe("Swagger2Ast Converter") {
 
-    val simple = YamlParser.parse(new File("compiler/src/test/resources/examples/simple.petstore.api.yaml"))
-    val model = Swagger2Ast.convert("x-api-first")(simple)
+    val spec = new File("compiler/src/test/resources/examples/simple.petstore.api.yaml")
+    val simple = YamlParser.parse(spec)
+    val model = Swagger2Ast.convert("x-api-first", spec)(simple)
 
     // | TODO | this whole test should break after we implement handler
     // | TODO | inheritance inside of swagger spec from path to the method
