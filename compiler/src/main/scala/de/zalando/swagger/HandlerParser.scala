@@ -94,7 +94,7 @@ trait HandlerParser extends JavaTokenParsers {
       val className = classAndMethod.head
       val methodName = classAndMethod(1)
       val dynamic = instantiate.isDefined
-      HandlerCall(packageName, className, dynamic, methodName, Nil, Nil)
+      HandlerCall(packageName, className, dynamic, methodName, Nil, Nil, Nil)
     }
   }
 

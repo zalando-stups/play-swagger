@@ -1,6 +1,7 @@
 package de.zalando.play.compiler
 
 import java.io.File
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TestGenerator
 import de.zalando.apifirst.Application.Model
 import de.zalando.swagger.{Swagger2Ast, JsonParser, YamlParser}
 import org.apache.commons.io.FileUtils
@@ -24,6 +25,8 @@ object SwaggerCompiler {
     val swaggerModel = parser.parse(task.definitionFile)
 
     implicit val ast = Swagger2Ast.convert(keyPrefix)(swaggerModel)
+
+    val basePath = Option(swaggerModel.basePath).getOrElse("/")
 
     val namespace = task.definitionFile.getName.takeWhile(_ != '.')
 
@@ -50,8 +53,7 @@ object SwaggerCompiler {
 
     val validators = generateFiles(ValidatorsGenerator, "validators/", true)
 
-    // FIXME generate tests
-    val tests = Nil
+    val tests = generateFiles(new TestsGenerator(basePath), "../../../..//test/", true)
 
     SwaggerCompilationResult(routesFiles, model, generators, baseControllers, controllerFiles, validators, tests)
   }
@@ -61,8 +63,9 @@ object SwaggerCompiler {
       (generator: GeneratorBase, directory: String, writeOver: Boolean)(implicit ast: Model) = {
     val generatedContent = generator.generate(namespace)
     val modelFileName = directory + task.definitionFile.getName + ".scala"
-    val result = writeToFile(outputDir, writeOver)(modelFileName, generatedContent.head._2)
-    Seq(result)
+    generatedContent.headOption.map(_._2).map { content =>
+      writeToFile(outputDir, writeOver)(modelFileName, content)
+    }.toSeq
   }
 
   def writeToFile(outputDir: File, writeOver: Boolean) = (filename: String, content: String) => {

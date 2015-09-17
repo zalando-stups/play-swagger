@@ -37,7 +37,7 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-compiler" % "2.10.5",
       "org.scala-lang" % "scala-library" % "2.10.5",
       "org.scala-lang" % "scala-reflect" % "2.10.5",
-      "org.scalacheck" %% "scalacheck" % "1.12.4" % "test"
+      "org.scalacheck" %% "scalacheck" % "1.12.4"
     )
 
   )

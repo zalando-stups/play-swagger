@@ -1,20 +1,14 @@
 package de.zalando.play.compiler
 
 import de.zalando.apifirst.Application.{ApiCall, Model}
+import de.zalando.apifirst.Domain.TypeName
 
 /**
  * @since 09.09.2015
  */
-object ControllersGenerator extends GeneratorBase  {
+object ControllersGenerator extends ControllersGenerator
 
-  def groupByFile(ast: Model): Map[String, Map[String, Seq[ApiCall]]] = {
-    val groupedByController = ast.calls.groupBy { call =>
-      call.handler.packageName
-    } map { case ((pkg, calls)) =>
-      pkg -> calls.groupBy(_.handler.controller)
-    }
-    groupedByController
-  }
+trait ControllersGenerator extends CallsGeneratorBase {
 
   def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] = {
     for {
@@ -44,16 +38,21 @@ object ControllersGenerator extends GeneratorBase  {
   def toMethod(call: ApiCall) =
     s"""
        |// handler for ${call.verb.name} ${call.path}
-       |def ${call.handler.method} = ${call.handler.method}Action { (${params(call)}) =>
+       |def ${call.handler.method} = ${call.handler.method}Action { in : (${parameterTypes(call)}) =>
+       | val (${parameterNames(call)}) = in
        |$PAD???
        |}
        |
      """.stripMargin
 
-  def params(call: ApiCall) = {
-    (call.handler.allParameters).map { p =>
-      s"""${p.name}: ${p.typeName.name.asSimpleType}"""
-    }.mkString(", ")
+  def parameterNames(call: ApiCall) = {
+    if (call.handler.allParameters.isEmpty) ""
+    else call.handler.allParameters.map { p => s"${p.name}"}.mkString(", ")
+  }
+
+  def parameterTypes(call: ApiCall) = {
+    if (call.handler.allParameters.isEmpty) ""
+    else call.handler.allParameters.map { p => TypeName.escapeName(p.typeName.name.asSimpleType) } mkString ", "
   }
 
   override def placeHolder: String = ""

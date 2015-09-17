@@ -112,7 +112,7 @@ trait PlayBodyParsing extends BodyParsers {
               parser(request, bytes)
             }.left.map {
               case NonFatal(e) =>
-                logger.debug(errorMessage, e)
+                // logger.debug(errorMessage, e)
                 createBadResult(errorMessage + ": " + e.getMessage)(request)
               case t => throw t
             }

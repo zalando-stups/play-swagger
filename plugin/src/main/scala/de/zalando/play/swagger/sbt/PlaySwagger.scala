@@ -47,7 +47,13 @@ object PlaySwagger extends AutoPlugin {
 
   override def projectSettings = Seq(
     swaggerPackageName := "swagger",
-    libraryDependencies += "de.zalando" %% "play-swagger-api" % BuildInfo.version
+    libraryDependencies ++= Seq(
+      "de.zalando" %% "play-swagger-api" % BuildInfo.version,
+      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
+      "org.scalacheck" %% "scalacheck" % "1.12.4" % Test,
+      "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Test
+    )
   ) ++ inConfig(Compile)(unscopedSwaggerSettings)
 
   /**

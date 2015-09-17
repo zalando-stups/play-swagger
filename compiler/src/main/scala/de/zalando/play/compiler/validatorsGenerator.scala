@@ -2,7 +2,6 @@ package de.zalando.play.compiler
 
 import de.zalando.apifirst.Application.{Parameter, ApiCall, Model}
 import de.zalando.apifirst.Domain._
-import de.zalando.swagger.model.CommonProperties
 
 /**
  * @since 10.09.2015
@@ -17,6 +16,8 @@ object ValidatorsGenerator extends ChainedGenerator {
                                  |import de.zalando.play.controllers._
                                  |import PlayBodyParsing._
                                  |import PlayValidations._
+                                 |
+                                 |import definitions._
                                  |
                                  |#IMPORT#
                                  |
@@ -33,15 +34,17 @@ object ValidatorsGenerator extends ChainedGenerator {
       Nil
 }
 
-class InlineValidatorsGenerator extends GeneratorBase {
+trait EmptyValidations {
+  val emptyValidations = ".empty[scala.Either[scala.Seq[ParsingError], String]]"
+}
+class InlineValidatorsGenerator extends CallsGeneratorBase with EmptyValidations {
   override val placeHolder = "#INLINE_VALIDATORS#"
 
-  val emptyValidations = ".empty[scala.Either[scala.Seq[ParsingError], String]]"
 
   val template =
     """
-      | class ValidationFor#CONTROLLER##CALL#(#VALIDATOR_PARAMS#) {
-      |
+      | class ValidationFor#CONTROLLER##CALL#(in: (#VALIDATOR_PARAMS#)) {
+      |   val (#PARAM_NAMES#) = in
       |   #CONSTRAINTS#
       |   val normalValidations = Seq#NORMAL_VALIDATIONS#
       |
@@ -63,6 +66,14 @@ class InlineValidatorsGenerator extends GeneratorBase {
     else parameters.map { p =>
       s"${p.name}: ${TypeName.escapeName(p.typeName.name.asSimpleType)}"
     } mkString ", "
+
+  def validatorParameterNames(parameters: Seq[Parameter]) =
+    if (parameters.isEmpty) ""
+    else parameters.map { _.name } mkString ", "
+
+  def validatorParameterTypes(parameters: Seq[Parameter]) =
+    if (parameters.isEmpty) ""
+    else parameters.map { p => TypeName.escapeName(p.typeName.name.asSimpleType) } mkString ", "
 
   def validatorResult(parameters: Seq[Parameter]) =
     if (parameters.isEmpty) ""
@@ -102,7 +113,7 @@ class InlineValidatorsGenerator extends GeneratorBase {
 
   override def generate(namespace: String)(implicit ast: Model): Iterable[(Set[String], String)] = {
     val result = for {
-      (pkg, pkgFiles) <- ControllersGenerator.groupByFile(ast)
+      (pkg, pkgFiles) <- groupByFile(ast)
       (controller, calls) <- pkgFiles
     } yield {
         val params = calls.flatMap(_.handler.parameters)
@@ -113,7 +124,8 @@ class InlineValidatorsGenerator extends GeneratorBase {
           // TODO they need to be recursive for nested containers!
           val nestedValidations = if (containerParams.isEmpty) emptyValidations else containerValidations(containerParams)
           template.
-            replaceAll("#VALIDATOR_PARAMS#", validatorParameters(call.handler.allParameters)).
+            replaceAll("#VALIDATOR_PARAMS#", validatorParameterTypes(call.handler.allParameters)).
+            replaceAll("#PARAM_NAMES#", validatorParameterNames(call.handler.allParameters)).
             replaceAll("#VALIDATOR_RESULT#", validatorResult(call.handler.allParameters)).
             replaceAll("#NORMAL_VALIDATIONS#", flatValidations).
             replaceAll("#CONTAINER_VALIDATIONS#", nestedValidations).
@@ -123,9 +135,9 @@ class InlineValidatorsGenerator extends GeneratorBase {
         val typeImports = ImportsGenerator.importStatements(ast, "definitions", None)
 
         val body = s"""
-                      |#TYPE_IMPORTS#
-                      |package $pkg {
-                                     |${methods.mkString("\n")}
+            |#TYPE_IMPORTS#
+            |package $pkg {
+            |${methods.mkString("\n")}
             |}""".stripMargin.
           replaceAll("#CONTROLLER#", controller).
           replaceAll("#TYPE_IMPORTS#", typeImports)
@@ -137,10 +149,11 @@ class InlineValidatorsGenerator extends GeneratorBase {
 }
 
 // TODO this should actually generate something useful
-class DefinitionValidatorGenerator extends InlineValidatorsGenerator {
+// TODO BUT we will get this for free if we refactor the AST in the right way
+class DefinitionValidatorGenerator extends GeneratorBase with EmptyValidations {
   override val placeHolder = "#DEFINITION_VALIDATORS#"
 
-  override val template =
+  val template =
     s"""
       |class #TYPE_NAME#Validation(instance: #TYPE_NAME#) {
       |  import de.zalando.play.controllers.PlayValidations._

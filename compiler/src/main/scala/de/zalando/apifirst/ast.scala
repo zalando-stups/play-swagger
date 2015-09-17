@@ -1,5 +1,7 @@
 package de.zalando.apifirst
 
+import java.net.URLEncoder
+
 import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst.Http.MimeType
@@ -282,18 +284,20 @@ object Path {
       case Root :: segments => true
       case _ => false
     }
-    override def toString = {
+    override val toString = string { p: InPathParameter => "{" + p.value + "}" }
+
+    def string(inPath2Str: InPathParameter => String) = {
       value match {
         case Nil => ""
         case Root :: Nil => "/"
         case other => other map {
           case Root => ""
           case Segment(v) => v
-          case InPathParameter(p, _, _) => "{" + p + "}"
+          case i: InPathParameter => inPath2Str(i)
         } mkString "/"
       }
-
     }
+
   }
 
   object FullPath {
@@ -334,8 +338,9 @@ object Application {
                        fixed: Option[String], default: Option[String],
                        constraint: String, encode: Boolean) extends Expr with Positional
 
-  case class HandlerCall(packageName: String, controller: String, instantiate: Boolean,
-                         method: String, parameters: Seq[Parameter], bodyParameters: Seq[Parameter]) {
+  case class HandlerCall(packageName: String, controller: String, instantiate: Boolean, method: String,
+    queryParameters: Seq[Parameter], pathParameters: Seq[Parameter], bodyParameters: Seq[Parameter]) {
+    val parameters = queryParameters ++ pathParameters
     val allParameters = parameters ++ bodyParameters
   }
 

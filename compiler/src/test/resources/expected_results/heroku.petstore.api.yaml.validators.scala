@@ -4,12 +4,14 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+import definitions._
 import scala.Option
 /**
 */
   import definitions.Pet
   package controllers {
-   class ValidationForApiYamlallPets(limit: Option[Int]) {
+   class ValidationForApiYamlallPets(in: (Option[Int])) {
+     val (limit) = in
   val limitConstraints = new ValidationBase[Int] {
       override def constraints: Seq[Constraint[Int]] = Seq(
        max(10000, false),
@@ -25,7 +27,8 @@ import scala.Option
       if (errors.nonEmpty) Left(errors) else rightResult
      }
     }
-   class ValidationForApiYamlupdatePet(pet: Pet) {
+   class ValidationForApiYamlupdatePet(in: (Pet)) {
+     val (pet) = in
      val normalValidations = Seq(new PetValidation(pet).result)
      val containerValidations = Seq.empty[scala.Either[scala.Seq[ParsingError], String]]
      val rightResult = Right((pet))
@@ -35,7 +38,8 @@ import scala.Option
       if (errors.nonEmpty) Left(errors) else rightResult
      }
     }
-   class ValidationForApiYamlcreatePet(pet: Pet) {
+   class ValidationForApiYamlcreatePet(in: (Pet)) {
+     val (pet) = in
      val normalValidations = Seq(new PetValidation(pet).result)
      val containerValidations = Seq.empty[scala.Either[scala.Seq[ParsingError], String]]
      val rightResult = Right((pet))
@@ -45,7 +49,8 @@ import scala.Option
       if (errors.nonEmpty) Left(errors) else rightResult
      }
     }
-   class ValidationForApiYamlgetPet(petId: String) {
+   class ValidationForApiYamlgetPet(in: (String)) {
+     val (petId) = in
   val petIdConstraints = new ValidationBase[String] {
       override def constraints: Seq[Constraint[String]] = Seq(
       )

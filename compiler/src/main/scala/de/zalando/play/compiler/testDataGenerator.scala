@@ -115,7 +115,7 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
     }
   }
 
-  private def typeDefType(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit ast: Model) = {
+  def typeDefType(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit ast: Model) = {
     s"""
         |// test data generator for ${typeDef.name.fullName}
         |val ${generatorName(typeDef)} =
@@ -125,46 +125,47 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
         |""".stripMargin.split("\n").filter(_.trim.nonEmpty).mkString("\n")
   }
 
-  private def classConstructor(typeDef: TypeDef)(implicit ast: Model) =
+  def classConstructor(typeDef: TypeDef)(implicit ast: Model) =
     s"""${TypeName.escape(typeDef.name.asSimpleType)}(${typeDef.allFields.map{ n => TypeName.escape(n.name.simpleName)}.mkString(", ")})"""
 
-  private def classFields(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit ast: Model) =
+}
+
+/**
+ * Common stuff for all test data generators
+ */
+trait TestClassGeneratorBase extends GeneratorBase {
+  def targetNamespace: String
+  def defaultNamespace: String
+  val GEN = "Generator"
+
+  def classFields(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit ast: Model) =
     typeDef.allFields map { f =>
-      s"""$PAD$PAD${TypeName.escape(f.name.simpleName)} <- ${generatorNameForType(f.kind, typeDef)(namespace, imports)}""".stripMargin
+      s"""$PAD$PAD${TypeName.escape(f.name.simpleName)} <- ${generatorNameForType(f.kind, typeDef.name)(namespace, imports)}""".stripMargin
     }
 
-  private def simpleType(other: Type) = s"arbitrary[${other.name.asSimpleType}]"
+  def generatorNameForType(tpe: Type, thisType: TypeName)(namespace: String, imports: Set[String])(implicit ast: Model) = tpe match {
+    case t @ TypeDef(_, _, _, _) => relativeGeneratorName(t, thisType)
+    case r: Reference => relativeGeneratorName(r, thisType)
+    case c : Container => containerType(namespace, imports)(c)
+    case _ => simpleType(tpe)
+  }
 
-  private def containerType(namespace: String, imports: Set[String])(c: Container)(implicit ast: Model): String = c match {
+  def containerType(namespace: String, imports: Set[String])(c: Container)(implicit ast: Model): String = c match {
     case Opt(field, _) =>
-      val innerGenerator = generatorNameForType(field.kind, c)(namespace, imports)
+      val innerGenerator = generatorNameForType(field.kind, c.name)(namespace, imports)
       s"Gen.option($innerGenerator)"
     case a@Arr(field, _) =>
-      val innerGenerator = generatorNameForType(field.kind, c)(namespace, imports)
+      val innerGenerator = generatorNameForType(field.kind, c.name)(namespace, imports)
       s"Gen.containerOf[List,${field.kind.name.asSimpleType}]($innerGenerator)"
     case ca@CatchAll(_, _) =>
       // TODO generate non-empty map
       s"Gen.const(${ca.name.asSimpleType})".replace("Map[", "Map.empty[")
   }
 
-  private def generatorNameForType(tpe: Type, thisType: Type)(namespace: String, imports: Set[String])(implicit ast: Model) = tpe match {
-    case t @ TypeDef(_, _, _, _) => relativeGeneratorName(t, thisType)
-    case r: Reference => relativeGeneratorName(r, thisType)
-    case c : Container => containerType(namespace, imports)(c)
-    case _ => simpleType(tpe)
-  }
-}
-
-/**
- * Common stuff for all test data generators
- */
-trait TestClassGeneratorBase {
-  def targetNamespace: String
-  def defaultNamespace: String
-  val GEN = "Generator"
+  def simpleType(other: Type) = s"arbitrary[${other.name.asSimpleType}]"
 
   def generatorName(typeDef: Type): String = TypeName.escapeName(typeDef.name.asSimpleType + GEN)
 
-  def relativeGeneratorName(typeDef: Type, thisType: Type)
-    = TypeName.escapeName(typeDef.name.relativeTo(thisType.name).replace(targetNamespace, defaultNamespace) + GEN)
+  def relativeGeneratorName(typeDef: Type, thisType: TypeName)
+    = TypeName.escapeName(typeDef.name.relativeTo(thisType).replace(targetNamespace, defaultNamespace) + GEN)
 }

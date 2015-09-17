@@ -51,11 +51,10 @@ object Swagger2Ast extends HandlerParser {
         pathParams = pathParameters(operation, verb, path._1)
         queryParams = queryParameters(operation, verb, path._1)
         bodyParams = bodyParameters(operation, verb, path._1)
-        allParams = pathParams ++ queryParams
         astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
         handlerText <- operation.vendorExtensions.get(s"$keyPrefix-handler")
         parseResult = parse(handlerText)
-        handler <- if (parseResult.successful) Some(parseResult.get.copy(parameters = allParams, bodyParameters = bodyParams)) else None
+        handler <- if (parseResult.successful) Some(parseResult.get.copy(pathParameters = pathParams, queryParameters = queryParams, bodyParameters = bodyParams)) else None
         (mimeIn, mimeOut) = mimeTypes(operation)
         errorMapping = swaggerModel.vendorErrorMappings // FIXME should be possible to override on path and method level
         (resultType, successStatus) = responseInfo(operation, verb, path._1)
