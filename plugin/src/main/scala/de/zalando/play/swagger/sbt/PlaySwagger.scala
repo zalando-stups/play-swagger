@@ -90,7 +90,11 @@ object PlaySwagger extends AutoPlugin {
 
     watchSources in Defaults.ConfigGlobal <++= sources in swagger,
 
-    managedSources ++= swagger.value.filter(_.getName.endsWith(".scala")),
+    unmanagedSources ++= swagger.value.filter(_.getName.endsWith(".scala")).filter(unManaged),
+
+    managedSources in Compile ++= swagger.value.filter(_.getName.endsWith(".scala")).filterNot(unManaged).filterNot(test),
+
+    managedSources in Test ++= swagger.value.filter(_.getName.endsWith(".scala")).filterNot(unManaged).filter(test),
 
     managedSourceDirectories <+= target in swagger,
 
@@ -98,6 +102,10 @@ object PlaySwagger extends AutoPlugin {
 
     keyPrefix :=  "x-api-first"
   )
+
+  // TODO this is a hack, we should have different tasks
+  def unManaged(file: File) = file.getName.contains("app/controllers")
+  def test(file: File) = file.getName.contains("/test/")
 
   def swaggerCompile = Def.task {
     val tasks = swaggerCompilationTasks.value

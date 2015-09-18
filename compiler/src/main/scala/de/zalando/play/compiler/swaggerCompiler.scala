@@ -32,10 +32,6 @@ object SwaggerCompiler {
 
     val generateFiles = generate(namespace, task, outputDir) _
 
-    // controllers has to be generated first
-    // because it's outside of the syncIncremental cycle of the plugin
-    val controllerFiles = generateFiles(ControllersGenerator, "../../../../app/controllers/", false)
-
     val playRules = RuleGenerator.apiCalls2PlayRules(ast.calls: _*).toList
 
     val playTask = RoutesCompilerTask(task.definitionFile, routesImport,
@@ -54,6 +50,8 @@ object SwaggerCompiler {
     val validators = generateFiles(ValidatorsGenerator, "validators/", true)
 
     val tests = generateFiles(new TestsGenerator(basePath), "../../../..//test/", true)
+
+    val controllerFiles = generateFiles(ControllersGenerator, "../../../../controller_skeletons/", false)
 
     SwaggerCompilationResult(routesFiles, model, generators, baseControllers, controllerFiles, validators, tests)
   }
@@ -106,6 +104,7 @@ case class SwaggerCompilationResult(
   def allFiles: Set[File] = (
     routesFiles ++ modelFiles ++
       testDataGeneratorFiles ++ testFiles ++
-      validatorFiles ++ controllerBaseFiles
+      validatorFiles ++ controllerBaseFiles ++
+      controllerFiles
     ).toSet
 }
