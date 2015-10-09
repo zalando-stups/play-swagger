@@ -617,43 +617,43 @@ object strictModel {
   ) extends API with VendorExtensions
 
   /********* security definitions *********/
-  sealed trait SecurityDefinition
+  sealed trait SecurityDefinition extends VendorExtensions
 
   case class BasicAuthenticationSecurity(
-    @JsonProperty(required = true) `type`: String, // TODO "enum": basic
+    @JsonProperty(required = true) `type`: String, // "enum": basic
     description: Description
-  ) extends SecurityDefinition with VendorExtensions
+  ) extends SecurityDefinition
 
   case class ApiKeySecurity(
-    @JsonProperty(required = true) `type`: String,  // TODO "enum": apiKey
+    @JsonProperty(required = true) `type`: String,  // "enum": apiKey
     @JsonProperty(required = true) name: String,
-    @JsonProperty(required = true) in: String,      // TODO "enum": header, query
+    @JsonProperty(required = true) in: String,      // "enum": header, query
     description: Description
-  ) extends SecurityDefinition with VendorExtensions
+  ) extends SecurityDefinition
 
   case class Oauth2ImplicitSecurity(
-    @JsonProperty(required = true) `type`: String,  // TODO "enum": oauth2
-    @JsonProperty(required = true) flow: String,    // TODO "enum": implicit
+    @JsonProperty(required = true) `type`: String,  // "enum": oauth2
+    @JsonProperty(required = true) flow: String,    // "enum": implicit
     @JsonProperty(required = true) authorizationUrl: URI,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with VendorExtensions
+  ) extends SecurityDefinition
 
   case class Oauth2PasswordSecurity(
-    @JsonProperty(required = true) `type`: String,  // TODO "enum": oauth2
-    @JsonProperty(required = true) flow: String,    // TODO "enum": password
+    @JsonProperty(required = true) `type`: String,  // "enum": oauth2
+    @JsonProperty(required = true) flow: String,    // "enum": password
     @JsonProperty(required = true) tokenUrl: URI,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with VendorExtensions
+  ) extends SecurityDefinition
 
   case class Oauth2ApplicationSecurity(
-    @JsonProperty(required = true) `type`: String,  // TODO "enum": oauth2
-    @JsonProperty(required = true) flow: String,    // TODO "enum": application
+    @JsonProperty(required = true) `type`: String,  // "enum": oauth2
+    @JsonProperty(required = true) flow: String,    // "enum": application
     @JsonProperty(required = true) tokenUrl: URI,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with VendorExtensions
+  ) extends SecurityDefinition
 
   case class Oauth2AccessCodeSecurity(
     @JsonProperty(required = true) `type`: String,  // TODO "enum": oauth2
@@ -662,7 +662,7 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: URI,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with VendorExtensions
+  ) extends SecurityDefinition
 
 
   trait VendorExtensions { self =>
@@ -710,8 +710,8 @@ object strictModel {
   type BasePath               = String  // "pattern": "^/", TODO
   type Format                 = String
   type SimpleTag              = String
-  type URI                    = String  // TODO
-  type Email                  = String  // TODO
+  type URI                    = String  // TODO check pattern
+  type Email                  = String  // TODO check pattern
   type Ref                    = String
   type MimeType               = String // The MIME type of the HTTP message.
   type Title                  = String
@@ -736,6 +736,8 @@ object strictModel {
   type Responses              = AdditionalProperties[ResponseValue] // TODO name pattern: "^([0-9]{3})$|^(default)$", minProperties: 1
   type Examples               = AdditionalProperties[Any]
   type SchemaProperties       = AdditionalProperties[Schema]
+
+  // -------------------------- Validations --------------------------
 
   // validations for Int, Long, Double, Float
   type MultipleOf             = Double  // TODO must be > 0
