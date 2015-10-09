@@ -1,4 +1,5 @@
 val PlayVersion = "2.4.2"
+val ScalaVersion = "2.11.7"
 
 // This is the API project, it gets added to the runtime dependencies of any
 // project using play-swagger
@@ -14,8 +15,8 @@ lazy val api = (project in file("api"))
       "org.scalacheck" %% "scalacheck" % "1.12.4",
       "org.specs2" %% "specs2-scalacheck" % "3.6"
     ),
-    scalaVersion := "2.11.7",
-    crossScalaVersions := Seq(scalaVersion.value, "2.10.5")
+    scalaVersion :=  "2.10.5",
+    crossScalaVersions := Seq(scalaVersion.value, ScalaVersion)
   )
 
 // This is the compiler, it does compilation of swagger definitions,
@@ -35,9 +36,9 @@ lazy val compiler = (project in file("compiler"))
       "org.scalatest" %% "scalatest" % "2.2.3" % "test",
       "com.typesafe.play" %% "routes-compiler" % PlayVersion % Provided,
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
-      "org.scala-lang" % "scala-compiler" % "2.10.5",
-      "org.scala-lang" % "scala-library" % "2.10.5",
-      "org.scala-lang" % "scala-reflect" % "2.10.5",
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+      "org.scala-lang" % "scala-library" % scalaVersion.value,
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalacheck" %% "scalacheck" % "1.12.4"
     )
 

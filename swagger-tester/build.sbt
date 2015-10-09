@@ -9,6 +9,6 @@ lazy val swaggerApi = ProjectRef(Path.fileProperty("user.dir").getParentFile, "a
 
 lazy val swaggerPlugin = ProjectRef(Path.fileProperty("user.dir").getParentFile, "plugin")
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.10.5"
 
 routesGenerator := InjectedRoutesGenerator

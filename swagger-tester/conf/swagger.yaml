@@ -1,12 +1,12 @@
 ---
 swagger: '2.0'
+x-api-first-package: test
 info:
   version: 0.0.0
   title: Simple API
 paths:
   /{username}/{password}:
     post:
-      "x-api-first-handler": "admin.Dashboard.index"
       parameters:
         - in: path
           name: username
@@ -14,14 +14,12 @@ paths:
           required: true
           type: string
         - in: path
-          default: slava
           name: password
           required: true
           type: string
         - in: query
           name: developer
           type: string
-          default: bam
           required: true
       responses:
         200:
