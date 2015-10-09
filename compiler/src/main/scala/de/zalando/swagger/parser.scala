@@ -41,6 +41,9 @@ private[swagger] abstract class SwaggerParser extends Parser {
     val module = new SimpleModule("PolymorphicParameterOrReferenceDeserializerModule", new Version(1, 0, 0, null, "", ""))
     module.addDeserializer(classOf[ParameterOrReference], deserializer)
     mapper.registerModule(module)
+
+    mapper.registerModule(deserializers.securityModule)
+
     mapper
   }
 

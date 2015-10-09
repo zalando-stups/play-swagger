@@ -402,7 +402,7 @@ object model {
   type Responses              = Map[String, Response]
   type Headers                = Map[String, Header]
   type Paths                  = Map[String, Path]  // TODO add VendorExtensions
-  type SecurityDefinitions    = Map[String, SecurityDefinition]
+  type SecurityDefinitions    = Map[String, strictModel.SecurityDefinition]
   type SecurityRequirement    = Map[String, List[String]]
   type Definitions            = Map[String, Schema]
   type Example                = Map[String, AnyRef]
