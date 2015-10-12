@@ -20,7 +20,10 @@ tags:
   - name: A tag 
     x-tag-extension: tag-extension
 securityDefinitions:
-  security:
+  internalApiKey:
+    type: apiKey
+    in: header
+    name: api_key
     x-security-extension: security-extension
     
     

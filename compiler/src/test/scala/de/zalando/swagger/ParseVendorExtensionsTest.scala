@@ -19,7 +19,7 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
       swagger.paths("/").get.parameters.head.vendorExtensions contains "x-parameter-extension"
       swagger.paths("/").get.responses("200").vendorExtensions contains "x-response-extension"
       swagger.tags.head.vendorExtensions contains "x-tag-extension"
-      swagger.securityDefinitions("security").vendorExtensions contains "x-security-extension"
+      swagger.securityDefinitions("internalApiKey").vendorExtensions contains "x-security-extension"
     }
     it("should reject invalid vendor extensions") {
       intercept[JsonMappingException] {
