@@ -1,3 +1,8 @@
+swagger: '2.0'
+info:
+  version: "1.0.0"
+  title: "1.0.0"
+paths:
 definitions:
   ErrorModel:
     description: Basic error model

@@ -37,6 +37,7 @@ paths:
           in: path
           description: ID
           type: string
+          required: true
       responses:
         200:
           description: Echo test-path
