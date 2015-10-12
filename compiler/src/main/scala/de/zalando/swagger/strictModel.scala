@@ -6,12 +6,18 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
 
 import scala.collection.mutable
+import scala.util.Try
 
 /**
  * @author  slasch
  * @since   09.10.2015.
  */
 object strictModel {
+
+  import NumberValidation._
+  import StringValidation._
+  import ArrayValidation._
+  import ObjectValidation._
 
   sealed trait API
 
@@ -67,6 +73,7 @@ object strictModel {
     val WSS   = Value("wss")
   }
 
+  private[swagger] class CollectionFormatReference extends TypeReference[CollectionFormat.type]
   case object CollectionFormat extends Enumeration {
     type CollectionFormat = Value
     val CSV     = Value("csv")
@@ -74,8 +81,10 @@ object strictModel {
     val TSV     = Value("tsv")
     val PIPES   = Value("pipes")
   }
+
+  private[swagger] class CollectionFormatWithMultiReference extends TypeReference[CollectionFormatWithMulti.type]
   case object CollectionFormatWithMulti extends Enumeration {
-    type CollectionFormat = Value
+    type CollectionFormatWithMulti = Value
     val CSV     = Value("csv")
     val SSV     = Value("ssv")
     val TSV     = Value("tsv")
@@ -83,6 +92,25 @@ object strictModel {
     val MULTI   = Value("multi")
   }
 
+  private[swagger] class PrimitiveTypeReference extends TypeReference[PrimitiveType.type]
+  case object PrimitiveType extends Enumeration {
+    type PrimitiveType = Value
+    val ARRAY   = Value("array")
+    val BOOLEAN = Value("boolean")
+    val INTEGER = Value("integer")
+    val NUMBER  = Value("number")
+    val STRING  = Value("string")
+  }
+  private[swagger] class ParameterTypeReference extends TypeReference[ParameterType.type]
+  case object ParameterType extends Enumeration {
+    type ParameterType = Value
+    val ARRAY   = Value("array")
+    val BOOLEAN = Value("boolean")
+    val INTEGER = Value("integer")
+    val NUMBER  = Value("number")
+    val STRING  = Value("string")
+    val FILE    = Value("file") // only for formData
+  }
   /**
    * Single value available for swagger version 2.0
    */
@@ -188,13 +216,15 @@ object strictModel {
 
   case class JsonReference(
     @JsonProperty(value = "$ref", required = true) $ref: Ref
-  ) extends ParametersListItem with ResponseValue
+  ) extends ParametersListItem with ResponseValue with SchemaOrFileSchema
 
-  sealed trait Parameter extends ParametersListItem
+  sealed trait Parameter[T] extends ParametersListItem
 
-  abstract class NonBodyParameter(
-    // TODO required: name, in, type
-  ) extends Parameter
+  abstract class NonBodyParameter[T] extends Parameter[T] {
+    @JsonProperty(required = true) def name:    String
+    @JsonProperty(required = true) def in:      String
+    @JsonScalaEnumeration(classOf[ParameterTypeReference]) @JsonProperty(required = true) def `type`: ParameterType.Value
+  }
 
   /**
    *
@@ -204,13 +234,13 @@ object strictModel {
    * @param description   A brief description of the parameter. This could contain examples of use.  GitHub Flavored Markdown is allowed.
    * @param required      Determines whether or not this parameter is required or optional.
    */
-  case class BodyParameter(
-    @JsonProperty(required = true) name: String,
-    @JsonProperty(required = true) in: String, // TODO enum: Body
-    @JsonProperty(required = true) schema: Schema,
-    description: String,
-    required: Boolean = false
-  ) extends Parameter with VendorExtensions
+  case class BodyParameter[T](
+    @JsonProperty(required = true) name:    String,
+    @JsonProperty(required = true) in:      String,
+    @JsonProperty(required = true) schema:  SchemaOrReference,
+    description:                            String,
+    required:                               Boolean = false
+  ) extends Parameter[T] with VendorExtensions
 
   /**
    *
@@ -236,16 +266,16 @@ object strictModel {
    * @param enum
    * @param multipleOf
    */
-  case class PathParameter(
-    @JsonProperty(required = true) required: Boolean = true, // TODO enum, can only be true
+  case class PathParameter[T](
+    @JsonProperty(required = true) required: Boolean = true,
     name:                   String,
-    in:                     String, // TODO enum: Body
+    in:                     String,
     description:            String,
-    `type`:                 String, // TODO "enum": [  "string", "number",  "boolean",  "integer", "array" ]
+    @JsonScalaEnumeration(classOf[ParameterTypeReference]) `type`: ParameterType.Value,
     format:                 String,
-    items:                  PrimitivesItems,
-    collectionFormat:       CollectionFormat.Value,
-    default:                Default[_],
+    items:                  PrimitivesItems[T],
+    @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
+    default:                Default[T],
     maximum:                Maximum,
     exclusiveMaximum:       ExclusiveMaximum,
     minimum:                Minimum,
@@ -256,9 +286,9 @@ object strictModel {
     maxItems:               MaxItems,
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
-    enum:                   Enum[_],
+    enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends NonBodyParameter with VendorExtensions
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
 
   /**
    *
@@ -285,16 +315,16 @@ object strictModel {
    * @param multipleOf
    * @param allowEmptyValue allows sending a parameter by name only or with an empty value.
    */
-  case class FormDataParameter(
+  case class FormDataParameter[T](
     required:               Boolean = false,
     name:                   String,
-    in:                     String, // TODO enum: formData
+    in:                     String,
     description:            String,
-    `type`:                 String, // TODO "enum": [  "string", "number",  "boolean",  "integer", "array" ] + "file" - for form
+    @JsonScalaEnumeration(classOf[ParameterTypeReference]) `type`: ParameterType.Value,
     format:                 String,
-    items:                  PrimitivesItems,
-    collectionFormat:       CollectionFormat.Value,
-    default:                Default[_],
+    items:                  PrimitivesItems[T],
+    @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
+    default:                Default[T],
     maximum:                Maximum,
     exclusiveMaximum:       ExclusiveMaximum,
     minimum:                Minimum,
@@ -305,10 +335,10 @@ object strictModel {
     maxItems:               MaxItems,
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
-    enum:                   Enum[_],
+    enum:                   Enum[T],
     multipleOf:             MultipleOf,
     allowEmptyValue:        Boolean = false // unique for form
-  ) extends NonBodyParameter with VendorExtensions
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
 
   /**
    *
@@ -335,16 +365,16 @@ object strictModel {
    * @param multipleOf
    * @param allowEmptyValue allows sending a parameter by name only or with an empty value.
    */
-  case class QueryParameter(
+  case class QueryParameter[T](
     required:               Boolean = false,
     name:                   String,
-    in:                     String, // TODO enum: query
+    in:                     String,
     description:            String,
-    `type`:                 String, // TODO "enum": [  "string", "number",  "boolean",  "integer", "array" ]
+    @JsonScalaEnumeration(classOf[ParameterTypeReference]) `type`: ParameterType.Value,
     format:                 String,
-    items:                  PrimitivesItems,
-    collectionFormat:       CollectionFormatWithMulti.Value,
-    default:                Default[_],
+    items:                  PrimitivesItems[T],
+    @JsonScalaEnumeration(classOf[CollectionFormatWithMultiReference]) collectionFormat: CollectionFormatWithMulti.Value,
+    default:                Default[T],
     maximum:                Maximum,
     exclusiveMaximum:       ExclusiveMaximum,
     minimum:                Minimum,
@@ -355,10 +385,10 @@ object strictModel {
     maxItems:               MaxItems,
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
-    enum:                   Enum[_],
+    enum:                   Enum[T],
     multipleOf:             MultipleOf,
     allowEmptyValue:        Boolean = false // unique for query and form
-  ) extends NonBodyParameter with VendorExtensions
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
 
   /**
    *
@@ -384,16 +414,16 @@ object strictModel {
    * @param enum
    * @param multipleOf
    */
-  case class HeaderParameter(
+  case class HeaderParameter[T](
     required:               Boolean = false,
     name:                   String,
-    in:                     String, // TODO enum: header
+    in:                     String,
     description:            String,
-    `type`:                 String, // TODO "enum": [  "string", "number",  "boolean",  "integer", "array" ]
+    @JsonScalaEnumeration(classOf[ParameterTypeReference]) `type`: ParameterType.Value,
     format:                 String,
-    items:                  PrimitivesItems,
-    collectionFormat:       CollectionFormat.Value,
-    default:                Default[_],
+    items:                  PrimitivesItems[T],
+    @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
+    default:                Default[T],
     maximum:                Maximum,
     exclusiveMaximum:       ExclusiveMaximum,
     minimum:                Minimum,
@@ -404,14 +434,14 @@ object strictModel {
     maxItems:               MaxItems,
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
-    enum:                   Enum[_],
+    enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends NonBodyParameter with VendorExtensions
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
 
 
   sealed trait ResponseValue
 
-  case class Response(
+  case class Response[T](
     @JsonProperty(required = true) description: String,
     schema: SchemaOrFileSchema,
     headers: Headers,
@@ -419,7 +449,9 @@ object strictModel {
   ) extends ResponseValue with VendorExtensions
 
 
-  sealed trait SchemaOrFileSchema
+  sealed trait SchemaOrReference
+
+  sealed trait SchemaOrFileSchema extends SchemaOrReference
 
 
   /**
@@ -455,9 +487,6 @@ object strictModel {
 
   /**
    *
-   * @param required          Determines whether or not this parameter is required or optional.
-   * @param name              The name of the parameter.
-   * @param in                Determines the location of the parameter.
    * @param description       A brief description of the parameter. This could contain examples of use.  GitHub Flavored Markdown is allowed.
    * @param `type`
    * @param format
@@ -477,16 +506,13 @@ object strictModel {
    * @param enum
    * @param multipleOf
    */
-  //noinspection ScalaDocUnknownParameter
-  case class Header(
-    @JsonProperty(required = true) `type`: String, // TODO "enum": [  "string", "number",  "boolean",  "integer", "array" ]
-
+  case class Header[T](
+    @JsonProperty(required = true) @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) `type`: PrimitiveType.Value,
     description:            String,
-
     format:                 String,
-    items:                  PrimitivesItems,
-    collectionFormat:       CollectionFormat.Value,
-    default:                Default[_],
+    items:                  PrimitivesItems[T],
+    @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
+    default:                Default[T],
     maximum:                Maximum,
     exclusiveMaximum:       ExclusiveMaximum,
     minimum:                Minimum,
@@ -497,9 +523,9 @@ object strictModel {
     maxItems:               MaxItems,
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
-    enum:                   Enum[_],
+    enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends VendorExtensions
+  ) extends VendorExtensions with AllValidations[T]
 
   /**
    * A deterministic version of a JSON Schema object.
@@ -514,51 +540,50 @@ object strictModel {
    * @param externalDocs
    * @param example
    */
-  case class FileSchema(
-    @JsonProperty(required = true) `type`: String, // TODO enum: file
+  case class FileSchema[T](
+    @JsonProperty(required = true) `type`: String,
     format:                 String,
     title:                  Title,
     description:            Description,
-    default:                Default[_],
+    default:                Default[T],
     required:               StringArray,
     readOnly:               Boolean = false,
     externalDocs:           ExternalDocs,
-    example:                Example[_]
+    example:                Example[T]
   ) extends VendorExtensions with SchemaOrFileSchema
 
 
-  class Schema(
-    @JsonProperty("$ref") $ref: String, // WTF this is String in the spec!!!
-    format:                 String,
-    title:                  Title,
-    description:            Description,
-    default:                Default[_],
-    maximum:                Maximum,
-    exclusiveMaximum:       ExclusiveMaximum,
-    minimum:                Minimum,
-    exclusiveMinimum:       ExclusiveMinimum,
-    maxLength:              MaxLength,
-    minLength:              MinLength,
-    pattern:                Pattern,
-    maxItems:               MaxItems,
-    minItems:               MinItems,
-    uniqueItems:            UniqueItems,
-    enum:                   Enum[_],
-    multipleOf:             MultipleOf,
-    maxProperties:          MaxProperties,
-    minProperties:          MinProperties,
-    required:               StringArray,
-    additionalProperties:   SchemaOrBoolean,
-    @JsonProperty(required = true) `type`: JsonSchemaType,
-    properties:             SchemaProperties,
-    allOf:                  SchemaArray,
-    items:                  SchemaOrSchemaArray,
-    discriminator:          String,
-    xml:                    Xml,
-    readOnly:               Boolean = false,
-    externalDocs:           ExternalDocs,
-    example:                Example[_]
-  ) extends VendorExtensions with SchemaOrFileSchema
+  class Schema[T](
+    val format:                 String,
+    val title:                  Title,
+    val description:            Description,
+    val default:                Default[T],
+    val maximum:                Maximum,
+    val exclusiveMaximum:       ExclusiveMaximum,
+    val minimum:                Minimum,
+    val exclusiveMinimum:       ExclusiveMinimum,
+    val maxLength:              MaxLength,
+    val minLength:              MinLength,
+    val pattern:                Pattern,
+    val maxItems:               MaxItems,
+    val minItems:               MinItems,
+    val uniqueItems:            UniqueItems,
+    val enum:                   Enum[T],
+    val multipleOf:             MultipleOf,
+    val maxProperties:          MaxProperties,
+    val minProperties:          MinProperties,
+    val required:               StringArray,
+    val additionalProperties:   SchemaOrBoolean,
+    val `type`:                 JsonSchemaType,
+    val properties:             SchemaProperties,
+    val allOf:                  SchemaArray,
+    val items:                  SchemaOrSchemaArray,
+    val discriminator:          String,
+    val xml:                    Xml,
+    val readOnly:               Boolean = false,
+    val externalDocs:           ExternalDocs,
+    val example:                Example[T]
+  ) extends VendorExtensions with SchemaOrFileSchema with AllValidations[T] with ObjectValidation
 
   /**
    *
@@ -580,12 +605,12 @@ object strictModel {
    * @param enum
    * @param multipleOf
    */
-  case class PrimitivesItems(
-    @JsonProperty(required = true) `type`: String, // TODO "enum": [  "string", "number",  "boolean",  "integer", "array" ]
+  case class PrimitivesItems[T](
+    @JsonProperty(required = true) @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) `type`: PrimitiveType.Value,
     format:                 String,
-    items:                  PrimitivesItems,
+    items:                  PrimitivesItems[T],
     collectionFormat:       CollectionFormat.Value,
-    default:                Default[_],
+    default:                Default[T],
     maximum:                Maximum,
     exclusiveMaximum:       ExclusiveMaximum,
     minimum:                Minimum,
@@ -596,9 +621,9 @@ object strictModel {
     maxItems:               MaxItems,
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
-    enum:                   Enum[_],
+    enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends VendorExtensions
+  ) extends VendorExtensions with AllValidations[T]
 
   /**
    *
@@ -656,8 +681,8 @@ object strictModel {
   ) extends SecurityDefinition
 
   case class Oauth2AccessCodeSecurity(
-    @JsonProperty(required = true) `type`: String,  // TODO "enum": oauth2
-    @JsonProperty(required = true) flow: String,    // TODO "enum": accessCode
+    @JsonProperty(required = true) `type`: String,  // "enum": oauth2
+    @JsonProperty(required = true) flow: String,    // "enum": accessCode
     @JsonProperty(required = true) authorizationUrl: URI,
     @JsonProperty(required = true) tokenUrl: URI,
     scopes: Oauth2Scopes,
@@ -710,9 +735,9 @@ object strictModel {
   type BasePath               = String  // "pattern": "^/", TODO
   type Format                 = String
   type SimpleTag              = String
-  type URI                    = String  // TODO check pattern
-  type Email                  = String  // TODO check pattern
-  type Ref                    = String
+  type URI                    = String // TODO check pattern
+  type Email                  = String // TODO check pattern
+  type Ref                    = String // TODO may be check pattern?
   type MimeType               = String // The MIME type of the HTTP message.
   type Title                  = String
   type Description            = String
@@ -724,51 +749,95 @@ object strictModel {
   type ParametersList         = ManyUnique[ParametersListItem]
   type SimpleTags             = ManyUnique[SimpleTag]
   type StringArray            = Many[String]
-  type SchemaArray            = Many[Schema] // TODO minItems: 1
+  type SchemaArray            = Many[SchemaOrReference] // TODO minItems: 1
 
-
-  type ParameterDefinitions   = AdditionalProperties[Parameter]
-  type ResponseDefinitions    = AdditionalProperties[Response]
-  type Definitions            = AdditionalProperties[Schema]
+  type ParameterDefinitions   = AdditionalProperties[Parameter[_]]
+  type ResponseDefinitions    = AdditionalProperties[Response[_]]
+  type Definitions            = AdditionalProperties[Schema[_]]
   type SecurityRequirement    = AdditionalProperties[ManyUnique[String]]
   type SecurityDefinitions    = AdditionalProperties[SecurityDefinition]
-  type Headers                = AdditionalProperties[Header]
-  type Responses              = AdditionalProperties[ResponseValue] // TODO name pattern: "^([0-9]{3})$|^(default)$", minProperties: 1
+  type Headers                = AdditionalProperties[Header[_]]
+  type Responses              = AdditionalProperties[Response[_]] // TODO name pattern: "^([0-9]{3})$|^(default)$", minProperties: 1
   type Examples               = AdditionalProperties[Any]
-  type SchemaProperties       = AdditionalProperties[Schema]
-
-  // -------------------------- Validations --------------------------
-
-  // validations for Int, Long, Double, Float
-  type MultipleOf             = Double  // TODO must be > 0
-  type Maximum                = Double  // TODO must be present if ExclusiveMaximum is present
-  type ExclusiveMaximum       = Boolean
-  type Minimum                = Double  // TODO must be present if ExclusiveMinimum is present
-  type ExclusiveMinimum       = Boolean
-
-  // validations for String
-  type MaxLength              = Int // length <= // TODO must be >= 0
-  type MinLength              = Int // length >= // TODO must be >= 0
-  type Pattern                = String // TODO must be valid regexp
-
-  // validations for arrays
-  type MaxItems               = Int // TODO must be >= 0
-  type MinItems               = Int // TODO must be >= 0
-  type UniqueItems            = Boolean
-  type Enum[T]                = ManyUnique[T]
-
-  // validations for objects
-  type MaxProperties          = Int // TODO must be >=0
-  type MinProperties          = Int // TODO must be >=0
-
-  // validations WTF
-  type JsonSchemaType         = String // TODO The value of this keyword MUST be either a string or an array. If it is an array, elements of the array MUST be strings and MUST be unique. String values MUST be one of the seven primitive types defined by the core specification.
-
+  type SchemaProperties       = AdditionalProperties[SchemaOrReference]
   type Paths                  = AdditionalProperties[PathItem]  // TODO add VendorExtensions and pathItem for props starting with "/"
   type Oauth2Scopes           = AdditionalProperties[String]
 
+  // -------------------------- Validations --------------------------
 
-  // TODO how to implement these ???
+  /**
+   * validations for Int, Long, Double, Float
+   */
+  object NumberValidation {
+    type MultipleOf             = Option[Double]
+    type Maximum                = Option[Double]
+    type ExclusiveMaximum       = Option[Boolean]
+    type Minimum                = Option[Double]
+    type ExclusiveMinimum       = Option[Boolean]
+  }
+  trait NumberValidation {
+    import NumberValidation._
+    def multipleOf:             MultipleOf
+    def maximum:                Maximum
+    def exclusiveMaximum:       ExclusiveMaximum
+    def minimum:                Minimum
+    def exclusiveMinimum:       ExclusiveMinimum
+    require(multipleOf.forall(_ > 0))
+    require(exclusiveMaximum.isEmpty || maximum.isDefined)
+    require(exclusiveMinimum.isEmpty || minimum.isDefined)
+  }
+  object StringValidation {
+    type MaxLength              = Option[Int] // length <=
+    type MinLength              = Option[Int] // length >=
+    type Pattern                = Option[String]
+  }
+  trait StringValidation {
+    import StringValidation._
+    def maxLength: MaxLength
+    def minLength: MinLength
+    def pattern: Pattern
+    require(maxLength.forall(_>=0))
+    require(minLength.forall(_>=0))
+    require(pattern.forall(p => Try(p.r).isSuccess))
+  }
+
+  object ArrayValidation {
+    type MaxItems               = Option[Int]
+    type MinItems               = Option[Int]
+    type UniqueItems            = Option[Boolean]
+    type Enum[T]                = Option[ManyUnique[T]]
+  }
+  trait ArrayValidation[T] {
+    import ArrayValidation._
+    def maxItems:               MaxItems
+    def minItems:               MinItems
+    def uniqueItems:            UniqueItems
+    def enum:                   Enum[T]
+    require(maxItems.forall(_>=0))
+    require(minItems.forall(_>=0))
+  }
+  object ObjectValidation {
+    type MaxProperties          = Option[Int]
+    type MinProperties          = Option[Int]
+  }
+  trait ObjectValidation {
+    import ObjectValidation._
+    def maxProperties:          MaxProperties
+    def minProperties:          MinProperties
+    require(maxProperties.forall(_>=0))
+    require(minProperties.forall(_>=0))
+  }
+  trait AllValidations[T] extends NumberValidation with StringValidation with ArrayValidation[T]
+
+
+  // Validations TODO
+
+  // The value of this keyword MUST be either a string or an array.
+  // If it is an array, elements of the array MUST be strings and MUST be unique.
+  // String values MUST be one of the seven primitive types defined by the core specification.
+  type JsonSchemaType         = String
+
+  // how to implement these ???
   type SchemaOrBoolean      = Any
   type SchemaOrSchemaArray  = Any
 }
