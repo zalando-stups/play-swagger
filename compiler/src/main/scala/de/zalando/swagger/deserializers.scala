@@ -179,6 +179,37 @@ object deserializers {
     }
   }
 
+  private class SchemaOrSchemaArrayDeserializer extends StdDeserializer[SchemaOrSchemaArray](classOf[SchemaOrSchemaArray]) {
+
+    @Override
+    def deserialize(jp: JParser, ctxt: DeserializationContext): SchemaOrSchemaArray = {
+      val mapper = jp.getCodec.asInstanceOf[ObjectMapper]
+      val root = mapper.readTree(jp).asInstanceOf[BaseJsonNode]
+
+      if (root == null || root == NullNode.instance) null
+      else if (root.isArray) mapper.convertValue(root, classOf[Many[SchemaOrReference]]).asInstanceOf[SchemaOrSchemaArray]
+      else mapper.convertValue(root, classOf[SchemaOrFileSchema]).asInstanceOf[SchemaOrSchemaArray]
+    }
+  }
+
+  private class JsonSchemaTypeDeserializer extends StdDeserializer[JsonSchemaType](classOf[JsonSchemaType]) {
+
+    @Override
+    def deserialize(jp: JParser, ctxt: DeserializationContext): JsonSchemaType = {
+      val mapper = jp.getCodec.asInstanceOf[ObjectMapper]
+      val root = mapper.readTree(jp).asInstanceOf[BaseJsonNode]
+
+      if (root == null || root == NullNode.instance) null
+      else if (root.isTextual) PrimitiveType.withName(root.asText()).asInstanceOf[JsonSchemaType]
+      else if (root.isArray) {
+        val array = mapper.convertValue(root, classOf[Array[String]])
+        if (array.distinct.size == array.size) array.toSet.asInstanceOf[JsonSchemaType]
+        else throw new JsonParseException(s"'JsonSchemaType array must contain unique values", jp.getTokenLocation)
+      } else
+        throw new JsonParseException(s"'JsonSchemaType must be array or primitive type", jp.getTokenLocation)
+    }
+  }
+
   private def checkTypeIsNotFile(fields: Seq[Entry[SimpleTag, JsonNode]], jp: JParser): Unit =
     if ("File".equalsIgnoreCase(getFieldValue(fields, "type")))
       throw new JsonParseException(s"'File' type is not allowed here", jp.getTokenLocation)
@@ -197,6 +228,12 @@ object deserializers {
 
   private val parameterDeserializer = new ParametersListItemDeserializer[Parameter[_]]
   parametersListItemModule.addDeserializer(classOf[Parameter[_]], parameterDeserializer)
+
+  private val arrayJsonSchemaDeserializer = new JsonSchemaTypeDeserializer
+  parametersListItemModule.addDeserializer(classOf[JsonSchemaType], arrayJsonSchemaDeserializer)
+
+  private val schemaOrSchemaArrayDeserializer = new SchemaOrSchemaArrayDeserializer
+  parametersListItemModule.addDeserializer(classOf[SchemaOrSchemaArray], schemaOrSchemaArrayDeserializer)
 
   private val schemaOrFileSchemaDeserializer = new SchemaOrFileSchemaDeserializer
   parametersListItemModule.addDeserializer(classOf[SchemaOrReference], schemaOrFileSchemaDeserializer)

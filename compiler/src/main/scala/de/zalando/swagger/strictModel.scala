@@ -1,5 +1,7 @@
 package de.zalando.swagger
 
+import java.net.URL
+
 import com.fasterxml.jackson.annotation.{JsonProperty, JsonAnySetter}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
@@ -20,6 +22,33 @@ object strictModel {
   import ObjectValidation._
 
   sealed trait API
+
+  /**
+   * As there is no easy way to validate some properties by defining type constraints,
+   * These traits will be used as a mixin to perform runtime validation
+   */
+  trait PatternChecker {
+    def matches(pattern: String, value: String): Boolean =
+      value == null || pattern.r.unapplySeq(value).nonEmpty
+  }
+  trait UriChecker {
+    def url: URI
+    require(url == null || Try(new URL(url)).isSuccess, s"Valid URI was expected, but got $url")
+  }
+  trait EmailChecker extends PatternChecker {
+    def email: Email
+    private val pattern = """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"""
+    require(matches(pattern, email))
+  }
+
+  /**
+   * For now, we only support object references
+   */
+  trait RefChecker extends PatternChecker {
+    def $ref: Ref
+    private val pattern = """#/.*"""
+    require(matches(pattern, $ref))
+  }
 
   // format: OFF
   /**
@@ -56,7 +85,11 @@ object strictModel {
     securityDefinitions:  SecurityDefinitions,
     security:             Security,
     tags:                 Tags
-  ) extends VendorExtensions with API
+  ) extends VendorExtensions with API with PatternChecker {
+    require(matches("^/.*", basePath), "Base path should start with a slash (/)")
+    require(matches("^[^{}/ :\\\\]+(?::\\d+)?$", host), s"Host name is expected, but got $host")
+    require(paths == null || paths.keySet.forall(matches("^/.*", _)), "Paths should start with a slash (/)")
+  }
 
   private[swagger] class SchemeType extends TypeReference[Scheme.type]
 
@@ -93,13 +126,17 @@ object strictModel {
   }
 
   private[swagger] class PrimitiveTypeReference extends TypeReference[PrimitiveType.type]
-  case object PrimitiveType extends Enumeration {
+  case object PrimitiveType extends Enumeration with JsonSchemaType {
+    abstract class Value extends super.Value with JsonSchemaType
+    class Val(i: Int, name: String) extends super.Val(i, name) with JsonSchemaType
     type PrimitiveType = Value
-    val ARRAY   = Value("array")
-    val BOOLEAN = Value("boolean")
-    val INTEGER = Value("integer")
-    val NUMBER  = Value("number")
-    val STRING  = Value("string")
+    val ARRAY   = new Val(1, "array")
+    val BOOLEAN = new Val(2, "boolean")
+    val INTEGER = new Val(3, "integer")
+    val NUMBER  = new Val(4, "number")
+    val STRING  = new Val(5, "string")
+    val OBJECT  = new Val(6, "object")
+    val NULL  = new Val(0, "null")
   }
   private[swagger] class ParameterTypeReference extends TypeReference[ParameterType.type]
   case object ParameterType extends Enumeration {
@@ -119,6 +156,13 @@ object strictModel {
     val v2_0  = Value("2.0")
   }
 
+  // The value of this keyword MUST be either a string or an array.
+  // If it is an array, elements of the array MUST be strings and MUST be unique.
+  // String values MUST be one of the seven primitive types defined by the core specification.
+  sealed trait JsonSchemaType
+  // type JsonSchemaType         = String
+
+  type ArrayJsonSchemaType = ManyUnique[String] with JsonSchemaType
   /**
    *
    *
@@ -141,7 +185,7 @@ object strictModel {
   case class ExternalDocs(
     @JsonProperty(required = true) url: URI,
     description: String
-  ) extends VendorExtensions with API
+  ) extends VendorExtensions with API with UriChecker
 
 
   /**
@@ -175,7 +219,7 @@ object strictModel {
     name:                 String,
     url:                  URI,
     email:                Email
-  ) extends VendorExtensions with API
+  ) extends VendorExtensions with API with UriChecker with EmailChecker
 
   /**
    *
@@ -185,7 +229,7 @@ object strictModel {
   case class License(
     name:                 String,
     url:                  URI
-  ) extends API
+  ) extends API with UriChecker
 
   /**
    *
@@ -209,14 +253,14 @@ object strictModel {
     patch:                Operation,
     parameters:           ParametersList,
     @JsonProperty("$ref") $ref: Ref
-  ) extends VendorExtensions with API
+  ) extends VendorExtensions with API with RefChecker
 
 
   sealed trait ParametersListItem
 
   case class JsonReference(
     @JsonProperty(value = "$ref", required = true) $ref: Ref
-  ) extends ParametersListItem with ResponseValue with SchemaOrFileSchema
+  ) extends ParametersListItem with ResponseValue with SchemaOrFileSchema with SchemaOrSchemaArray with RefChecker
 
   sealed trait Parameter[T] extends ParametersListItem
 
@@ -453,7 +497,7 @@ object strictModel {
 
   sealed trait SchemaOrFileSchema extends SchemaOrReference
 
-
+  sealed trait SchemaOrSchemaArray extends SchemaOrFileSchema
   /**
    *
    * @param responses     Response objects names can either be any valid HTTP status code or 'default'.
@@ -482,7 +526,10 @@ object strictModel {
     @JsonScalaEnumeration(classOf[SchemeType]) schemes: SchemesList,
     deprecated:           Boolean = false,
     security:             Security
-  ) extends VendorExtensions with API
+  ) extends VendorExtensions with API with PatternChecker {
+    require(responses.nonEmpty)
+    require(responses.keySet.forall(matches("^([0-9]{3})$|^(default)$", _)))
+  }
 
 
   /**
@@ -552,7 +599,6 @@ object strictModel {
     example:                Example[T]
   ) extends VendorExtensions with SchemaOrFileSchema
 
-
   class Schema[T](
     val format:                 String,
     val title:                  Title,
@@ -576,14 +622,21 @@ object strictModel {
     val additionalProperties:   SchemaOrBoolean,
     val `type`:                 JsonSchemaType,
     val properties:             SchemaProperties,
-    val allOf:                  SchemaArray,
-    val items:                  SchemaOrSchemaArray,
+    val allOf:                  Option[SchemaArray],
+    val items:                  Option[SchemaOrSchemaArray],
     val discriminator:          String,
     val xml:                    Xml,
     val readOnly:               Boolean = false,
     val externalDocs:           ExternalDocs,
     val example:                Example[T]
-  ) extends VendorExtensions with SchemaOrFileSchema with AllValidations[T] with ObjectValidation
+  ) extends VendorExtensions with SchemaOrSchemaArray with AllValidations[T] with ObjectValidation {
+    require(allOf.forall(_.nonEmpty))
+    validateSchemaArray(items)
+    validateSchemaArray(allOf)
+    // TODO for this validation, we need a test case
+    private def validateSchemaArray(a: Option[_]) =
+      a.isEmpty || (a.get.isInstanceOf[SchemaArray] && a.get.asInstanceOf[SchemaArray].nonEmpty)
+  }
 
   /**
    *
@@ -606,7 +659,7 @@ object strictModel {
    * @param multipleOf
    */
   case class PrimitivesItems[T](
-    @JsonProperty(required = true) @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) `type`: PrimitiveType.Value,
+    @JsonProperty(required = true) @JsonScalaEnumeration(classOf[PrimitiveTypeReference]) `type`: PrimitiveType.Val,
     format:                 String,
     items:                  PrimitivesItems[T],
     collectionFormat:       CollectionFormat.Value,
@@ -662,7 +715,9 @@ object strictModel {
     @JsonProperty(required = true) authorizationUrl: URI,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition
+  ) extends SecurityDefinition with UriChecker {
+    val url = authorizationUrl
+  }
 
   case class Oauth2PasswordSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
@@ -670,7 +725,9 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: URI,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition
+  ) extends SecurityDefinition with UriChecker {
+    val url = tokenUrl
+  }
 
   case class Oauth2ApplicationSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
@@ -678,7 +735,9 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: URI,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition
+  ) extends SecurityDefinition with UriChecker {
+    val url = tokenUrl
+  }
 
   case class Oauth2AccessCodeSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
@@ -687,8 +746,9 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: URI,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition
-
+  ) extends SecurityDefinition with UriChecker {
+    val url = tokenUrl
+  }
 
   trait VendorExtensions { self =>
     private[this] val extensions = new mutable.HashMap[String, String]
@@ -704,7 +764,7 @@ object strictModel {
           handling(classOf[ClassNotFoundException]) by { e =>
             throw new IllegalArgumentException(s"Could not find exception class $e for error code")
           } apply {
-            val errors = mapping filter {_._2.isInstanceOf[Array[_]] } map { case (k, l) =>
+            val errors = mapping filter { _._2.isInstanceOf[Array[_]] } map { case (k, l) =>
               k.toString -> l.asInstanceOf[Array[_]].map { e =>
                 Class.forName(e.toString).asInstanceOf[Class[Exception]]
               }.toSeq
@@ -731,13 +791,13 @@ object strictModel {
   type Default[T]             = T
   type Example[T]             = T
 
-  type Host                   = String  // "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$", TODO
-  type BasePath               = String  // "pattern": "^/", TODO
+  type Host                   = String
+  type BasePath               = String
   type Format                 = String
   type SimpleTag              = String
-  type URI                    = String // TODO check pattern
-  type Email                  = String // TODO check pattern
-  type Ref                    = String // TODO may be check pattern?
+  type URI                    = String
+  type Email                  = String
+  type Ref                    = String
   type MimeType               = String // The MIME type of the HTTP message.
   type Title                  = String
   type Description            = String
@@ -749,7 +809,7 @@ object strictModel {
   type ParametersList         = ManyUnique[ParametersListItem]
   type SimpleTags             = ManyUnique[SimpleTag]
   type StringArray            = Many[String]
-  type SchemaArray            = Many[SchemaOrReference] // TODO minItems: 1
+  type SchemaArray            = Many[SchemaOrReference] with SchemaOrSchemaArray
 
   type ParameterDefinitions   = AdditionalProperties[Parameter[_]]
   type ResponseDefinitions    = AdditionalProperties[Response[_]]
@@ -757,10 +817,10 @@ object strictModel {
   type SecurityRequirement    = AdditionalProperties[ManyUnique[String]]
   type SecurityDefinitions    = AdditionalProperties[SecurityDefinition]
   type Headers                = AdditionalProperties[Header[_]]
-  type Responses              = AdditionalProperties[Response[_]] // TODO name pattern: "^([0-9]{3})$|^(default)$", minProperties: 1
+  type Responses              = AdditionalProperties[Response[_]]
   type Examples               = AdditionalProperties[Any]
   type SchemaProperties       = AdditionalProperties[SchemaOrReference]
-  type Paths                  = AdditionalProperties[PathItem]  // TODO add VendorExtensions and pathItem for props starting with "/"
+  type Paths                  = AdditionalProperties[PathItem] with VendorExtensions
   type Oauth2Scopes           = AdditionalProperties[String]
 
   // -------------------------- Validations --------------------------
@@ -819,25 +879,17 @@ object strictModel {
   object ObjectValidation {
     type MaxProperties          = Option[Int]
     type MinProperties          = Option[Int]
+    type SchemaOrBoolean      = Any
   }
   trait ObjectValidation {
     import ObjectValidation._
     def maxProperties:          MaxProperties
     def minProperties:          MinProperties
+    def additionalProperties:   SchemaOrBoolean
     require(maxProperties.forall(_>=0))
     require(minProperties.forall(_>=0))
   }
+
   trait AllValidations[T] extends NumberValidation with StringValidation with ArrayValidation[T]
 
-
-  // Validations TODO
-
-  // The value of this keyword MUST be either a string or an array.
-  // If it is an array, elements of the array MUST be strings and MUST be unique.
-  // String values MUST be one of the seven primitive types defined by the core specification.
-  type JsonSchemaType         = String
-
-  // how to implement these ???
-  type SchemaOrBoolean      = Any
-  type SchemaOrSchemaArray  = Any
 }
