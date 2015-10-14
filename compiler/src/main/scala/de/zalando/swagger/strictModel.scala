@@ -760,7 +760,7 @@ object strictModel {
       value match {
         case str: String if key.startsWith("x-") =>
           extensions += key -> str
-        case mapping: Map[_, _] =>
+        case mapping: Map[_, _] if key.startsWith("x-") =>
           import scala.util.control.Exception._
           handling(classOf[ClassNotFoundException]) by { e =>
             throw new IllegalArgumentException(s"Could not find exception class $e for error code")
