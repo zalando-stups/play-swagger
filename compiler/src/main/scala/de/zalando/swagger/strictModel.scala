@@ -635,7 +635,8 @@ object strictModel {
     validateSchemaArray(allOf)
     // TODO for this validation, we need a test case
     private def validateSchemaArray(a: Option[_]) =
-      a.isEmpty || (a.get.isInstanceOf[SchemaArray] && a.get.asInstanceOf[SchemaArray].nonEmpty)
+      a.isEmpty || a.get.isInstanceOf[SchemaOrFileSchema] ||
+        (a.get.isInstanceOf[SchemaArray] && a.get.asInstanceOf[SchemaArray].nonEmpty)
   }
 
   /**
