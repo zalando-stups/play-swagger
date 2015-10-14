@@ -1,7 +1,5 @@
 package de.zalando.apifirst
 
-import java.net.URLEncoder
-
 import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst.Http.MimeType
@@ -16,33 +14,23 @@ object Http {
 
   abstract class Verb(val name: String) extends Expr
 
-  case object GET extends Verb("GET")
-
-  case object POST extends Verb("POST")
-
-  case object PUT extends Verb("PUT")
-
-  case object DELETE extends Verb("DELETE")
-
-  case object HEAD extends Verb("HEAD")
-
+  case object GET     extends Verb("GET")
+  case object POST    extends Verb("POST")
+  case object PUT     extends Verb("PUT")
+  case object DELETE  extends Verb("DELETE")
+  case object HEAD    extends Verb("HEAD")
   case object OPTIONS extends Verb("OPTIONS")
-
-  case object TRACE extends Verb("TRACE")
-
-  case object PATCH extends Verb("PATCH")
+  case object TRACE   extends Verb("TRACE")
+  case object PATCH   extends Verb("PATCH")
 
   private val verbs = GET :: POST :: PUT :: DELETE :: HEAD :: OPTIONS :: TRACE :: PATCH :: Nil
 
-  def string2verb(name: String): Option[Verb] = verbs find {
-    _.name == name.trim.toUpperCase
-  }
-
+  def string2verb(name: String): Option[Verb] = verbs find { _.name == name.trim.toUpperCase }
 
   // TODO flesh out this hierarchy
   class MimeType(val name: String) extends Expr
 
-  case object ApplicationJson extends MimeType(name = "application/json")
+  case object ApplicationJson extends MimeType("application/json")
 
   case class Body(value: Option[String]) extends Expr
 
@@ -338,28 +326,43 @@ object Query {
 object Application {
 
   // Play definition
-  case class Parameter(name: String, typeName: Domain.Type,
-                       fixed: Option[String], default: Option[String],
-                       constraint: String, encode: Boolean) extends Expr with Positional
+  case class Parameter(
+    name:             String,
+    typeName:         Domain.Type,
+    fixed:            Option[String],
+    default:          Option[String],
+    constraint:       String,
+    encode:           Boolean
+  ) extends Expr with Positional
 
-  case class HandlerCall(packageName: String, controller: String, instantiate: Boolean, method: String,
-    queryParameters: Seq[Parameter], pathParameters: Seq[Parameter], bodyParameters: Seq[Parameter]) {
-    val parameters = queryParameters ++ pathParameters
+  case class HandlerCall(
+    packageName:      String,
+    controller:       String,
+    instantiate:      Boolean,
+    method:           String,
+    queryParameters:  Seq[Parameter],
+    pathParameters:   Seq[Parameter],
+    bodyParameters:   Seq[Parameter]
+  ) {
+    val parameters    = queryParameters ++ pathParameters
     val allParameters = parameters ++ bodyParameters
   }
 
   case class ApiCall(
-                      verb: Http.Verb,
-                      path: Path.FullPath,
-                      handler: HandlerCall,
-                      mimeIn: MimeType,
-                      mimeOut: MimeType,
-                      errorMapping: Map[String, Seq[Class[Exception]]],
-                      resultType: Type,
-                      successStatus: Int
-                      )
+    verb:             Http.Verb,
+    path:             Path.FullPath,
+    handler:          HandlerCall,
+    mimeIn:           MimeType,
+    mimeOut:          MimeType,
+    errorMapping:     Map[String, Seq[Class[Exception]]],
+    resultType:       Type,
+    successStatus:    Int
+  )
 
-  case class Model(calls: Seq[ApiCall], definitions: Iterable[Domain.Type])
+  case class Model(
+    calls:            Seq[ApiCall],
+    definitions:      Iterable[Domain.Type]
+  )
 
 }
 

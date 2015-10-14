@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
 
+import scala.language.implicitConversions
 import scala.collection.mutable
 
 /**

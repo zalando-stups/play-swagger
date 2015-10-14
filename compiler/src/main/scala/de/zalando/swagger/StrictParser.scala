@@ -55,3 +55,7 @@ object StrictYamlParser extends StrictSwaggerParser {
     mapper.writeValueAsString(normalized)
   }
 }
+
+object StrictJsonParser extends StrictSwaggerParser {
+  val factory = new JsonFactory()
+}
