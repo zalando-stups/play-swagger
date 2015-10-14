@@ -1,8 +1,7 @@
----
 swagger: '2.0'
 info:
-  version: 0.0.0
-  title: API
+  version: "1.0.0"
+  title: "1.0.0"
 paths:
   /api:
     post:
@@ -16,8 +15,17 @@ paths:
           description: response
 definitions:
   foo:
-    type: object
+    discriminator: footype
     properties:
-      bar:
+      name:
         type: string
-
+      footype:
+        type: string
+  bar:
+    allOf:
+    - $ref: '#/definitions/foo'
+    - properties:
+        baz:
+          $ref: '#/definitions/baz'
+  baz:
+    type: string

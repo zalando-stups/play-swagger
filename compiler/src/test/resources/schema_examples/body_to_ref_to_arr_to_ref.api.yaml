@@ -8,9 +8,9 @@ paths:
     post:
       parameters:
         - in: body
-          name: foo body
+          name: foo
           schema:
-            $ref: #/definitions/foo
+            $ref: '#/definitions/foo'
       responses:
         200:
           description: response
@@ -18,7 +18,7 @@ definitions:
   foo:
     type: array
     items:
-      $ref: #/definitions/bar
+      $ref: '#/definitions/bar'
   bar:
     type: string
 

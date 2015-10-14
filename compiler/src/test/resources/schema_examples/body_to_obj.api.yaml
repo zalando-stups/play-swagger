@@ -8,7 +8,7 @@ paths:
     post:
       parameters:
         - in: body
-          name: foo body
+          name: foo
           schema:
             type: object
             properties:
