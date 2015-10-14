@@ -25,7 +25,7 @@ object strictModel {
 
   /**
    * As there is no easy way to validate some properties by defining type constraints,
-   * These traits will be used as a mixin to perform runtime validation
+   * These traits will be used as a mixin to perform runtime validation of the specification itself
    */
   trait PatternChecker {
     def matches(pattern: String, value: String): Boolean =
@@ -861,7 +861,6 @@ object strictModel {
     require(minLength.forall(_>=0))
     require(pattern.forall(p => Try(p.r).isSuccess))
   }
-
   object ArrayValidation {
     type MaxItems               = Option[Int]
     type MinItems               = Option[Int]
