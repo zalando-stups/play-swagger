@@ -16,7 +16,7 @@ trait ControllersGenerator extends CallsGeneratorBase {
       (controller, calls) <- pkgFiles
     } yield {
       val params = calls.flatMap(_.handler.parameters)
-      val imports = params.flatMap { _.typeName.imports }.toSet
+      val imports = params.flatMap { p => p.typeName.imports ++ p.typeName.nestedTypes.flatMap(_.imports) }.toSet
       val typeImports = ImportsGenerator.importStatements(ast, "definitions", Some(namespace))
       val methods = calls map toMethod map {
         _.trim.split("\n").map(PAD + _).mkString("\n", "\n", "\n")

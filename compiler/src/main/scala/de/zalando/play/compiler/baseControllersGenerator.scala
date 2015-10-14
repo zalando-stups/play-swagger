@@ -65,7 +65,7 @@ class SingleBaseControllerGenerator extends GeneratorBase {
         s"""case _: ${e.getCanonicalName} => Status($code)"""
       } mkString "\n"
     }
-    val pf = if (lines.isEmpty) "PartialFunction.empty[Throwable, Status]" else s"{\n$lines\n}"
+    val pf = if (lines.isEmpty) "PartialFunction.empty[Throwable, Status]" else s"{\n${lines.mkString("\n")}\n}"
 
     s"""private def errorToStatus#CALL#: PartialFunction[Throwable, Status] = $pf"""
   }
@@ -129,6 +129,7 @@ class SingleBaseControllerGenerator extends GeneratorBase {
       val typeImports = ImportsGenerator.importStatements(ast, "definitions", None)
 
       val body = s"""
+      |import definitions._
       |#TYPE_IMPORTS#
       |package $pkg {
       |trait #CONTROLLER#Base extends Controller with PlayBodyParsing {

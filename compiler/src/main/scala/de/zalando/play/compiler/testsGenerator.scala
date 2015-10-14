@@ -28,6 +28,7 @@ class TestsGenerator(basePath: String) extends ChainedGenerator {
                                  |import java.net.URLEncoder
                                  |
                                  |import controllers._
+                                 |import generatorDefinitions._
                                  |
                                  |/**
                                  |* @since #NOW#

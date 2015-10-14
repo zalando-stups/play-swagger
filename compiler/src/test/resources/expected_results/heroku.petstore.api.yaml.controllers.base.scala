@@ -5,6 +5,7 @@ import PlayBodyParsing._
 import scala.Option
 /**
  */
+  import definitions._
   import definitions.Pet
   package controllers {
   trait ApiYamlBase extends Controller with PlayBodyParsing {

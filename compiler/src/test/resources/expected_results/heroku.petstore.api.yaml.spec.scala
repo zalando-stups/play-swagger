@@ -11,6 +11,7 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
 import controllers._
+import generatorDefinitions._
 /**
 */
   package controllers {

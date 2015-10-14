@@ -372,7 +372,7 @@ object ValidationConverter {
       val stringConstraints: Seq[String] = Seq(
         ifNot0(p.maxLength, s"maxLength(${p.maxLength})"),
         ifNot0(p.minLength, s"minLength(${p.minLength})"),
-        Option(p.pattern) map { p => s"pattern($p.r)" },
+        Option(p.pattern) map { p => s"""pattern("$p".r)""" },
         emailConstraint
       ).flatten
       stringConstraints

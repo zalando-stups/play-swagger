@@ -31,7 +31,8 @@ class ClassGenerator extends TraitGenerator {
       // TODO add support for anonymous Objects (example instagram)
       // TODO add support for enums
       case c: Container =>
-        generateSingleTypeDef(namespace, c.imports ++ imports)(c.field.kind)
+        Some((c.imports ++ imports, aliasCode(c.field.name, c)))
+        // generateSingleTypeDef(namespace, c.imports ++ imports)(c.field.kind)
       case r: ReferenceObject =>
         // some validation could be added here
         None
@@ -57,6 +58,12 @@ class ClassGenerator extends TraitGenerator {
       s"""${comment(f.meta)}
           |$PAD${TypeName.escape(f.name.simpleName)}: ${TypeName.escapeName(f.kind.name.relativeTo(typeDef.name))}""".stripMargin
     }
+
+  private def aliasCode(name: TypeName, typeDef: Type)(implicit ast: Model) = {
+    s"""${comment(typeDef.meta, "")}
+       |type ${TypeName.escape(name.asSimpleType)} = ${TypeName.escapeName(typeDef.name.relativeTo(typeDef.name))}""".stripMargin
+  }
+
 }
 
 class TraitGenerator extends GeneratorBase {

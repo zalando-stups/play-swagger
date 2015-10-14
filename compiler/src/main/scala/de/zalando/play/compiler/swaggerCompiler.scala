@@ -49,7 +49,7 @@ object SwaggerCompiler {
 
     val validators = generateFiles(ValidatorsGenerator, "validators/", true)
 
-    val tests = generateFiles(new TestsGenerator(basePath), "../../../..//test/", true)
+    val tests = generateFiles(new TestsGenerator(basePath), "../../../../test/", true)
 
     val controllerFiles = generateFiles(ControllersGenerator, "../../../../controller_skeletons/", false)
 
