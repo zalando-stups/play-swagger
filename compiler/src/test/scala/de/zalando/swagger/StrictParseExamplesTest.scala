@@ -7,7 +7,7 @@ import org.scalatest.{FunSpec, MustMatchers}
 
 class StrictParseExamplesTest extends FunSpec with MustMatchers {
 
-  val fixtures = new File("compiler/src/test/resources/examples").listFiles
+  val fixtures = new File("compiler/src/test/resources/examples").listFiles ++ new File("compiler/src/test/resources/schema_examples").listFiles
 
   describe("Strict Swagger Parser") {
     fixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>

@@ -136,7 +136,7 @@ object strictModel {
     val NUMBER  = new Val(4, "number")
     val STRING  = new Val(5, "string")
     val OBJECT  = new Val(6, "object")
-    val NULL  = new Val(0, "null")
+    val NULL    = new Val(0, "null")
   }
   private[swagger] class ParameterTypeReference extends TypeReference[ParameterType.type]
   case object ParameterType extends Enumeration {
@@ -160,7 +160,6 @@ object strictModel {
   // If it is an array, elements of the array MUST be strings and MUST be unique.
   // String values MUST be one of the seven primitive types defined by the core specification.
   sealed trait JsonSchemaType
-  // type JsonSchemaType         = String
 
   type ArrayJsonSchemaType = ManyUnique[String] with JsonSchemaType
   /**
@@ -633,10 +632,9 @@ object strictModel {
     require(allOf.forall(_.nonEmpty))
     validateSchemaArray(items)
     validateSchemaArray(allOf)
-    // TODO for this validation, we need a test case
     private def validateSchemaArray(a: Option[_]) =
       a.isEmpty || a.get.isInstanceOf[SchemaOrFileSchema] ||
-        (a.get.isInstanceOf[SchemaArray] && a.get.asInstanceOf[SchemaArray].nonEmpty)
+        ( a.get.isInstanceOf[PlainSchemaArray] && a.get.asInstanceOf[PlainSchemaArray].nonEmpty)
   }
 
   /**
@@ -810,7 +808,8 @@ object strictModel {
   type ParametersList         = ManyUnique[ParametersListItem]
   type SimpleTags             = ManyUnique[SimpleTag]
   type StringArray            = Many[String]
-  type SchemaArray            = Many[SchemaOrReference] with SchemaOrSchemaArray
+  type PlainSchemaArray       = Many[SchemaOrReference]
+  type SchemaArray            = PlainSchemaArray with SchemaOrSchemaArray
 
   type ParameterDefinitions   = AdditionalProperties[Parameter[_]]
   type ResponseDefinitions    = AdditionalProperties[Response[_]]
