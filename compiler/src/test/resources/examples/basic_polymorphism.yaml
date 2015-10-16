@@ -56,3 +56,8 @@ definitions:
           minimum: 0
       required:
       - cuteness
+  CatNDog:
+    description: Both dog and cat at the same time
+    allOf:
+    - $ref: '#/definitions/Dog'
+    - $ref: '#/definitions/Cat'

@@ -26,7 +26,7 @@ class ClassGenerator extends TraitGenerator {
   protected def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
       (implicit ast: Model): Option[(Set[String], String)] = {
     typeDef match {
-      case t@TypeDef(typeName, fields, extend, meta) =>
+      case t@TypeDef(typeName, fields, extend, meta, _) =>
         Some((t.imports ++ imports, classCode(typeName, t)))
       // TODO add support for anonymous Objects (example instagram)
       // TODO add support for enums
@@ -101,7 +101,7 @@ class TraitGenerator extends GeneratorBase {
 
   private def traitsToGenerate(implicit ast: Model): Set[Reference] =
     ast.definitions flatMap {
-      case TypeDef(_, _, extend, meta) => extend
+      case TypeDef(_, _, extend, meta, _) => extend
       case _ => Nil
     } toSet
 

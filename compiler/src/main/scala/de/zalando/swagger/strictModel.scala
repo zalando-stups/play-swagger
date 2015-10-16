@@ -126,10 +126,9 @@ object strictModel {
   }
 
   private[swagger] class PrimitiveTypeReference extends TypeReference[PrimitiveType.type]
-  case object PrimitiveType extends Enumeration with JsonSchemaType {
-    abstract class Value extends super.Value with JsonSchemaType
+  case object PrimitiveType extends Enumeration {
     class Val(i: Int, name: String) extends super.Val(i, name) with JsonSchemaType
-    type PrimitiveType = Value
+    type PrimitiveType = Val
     val ARRAY   = new Val(1, "array")
     val BOOLEAN = new Val(2, "boolean")
     val INTEGER = new Val(3, "integer")
@@ -137,6 +136,15 @@ object strictModel {
     val STRING  = new Val(5, "string")
     val OBJECT  = new Val(6, "object")
     val NULL  = new Val(0, "null")
+    def fromString(name: String) = name match {
+      case "array"    => ARRAY
+      case "boolean"  => BOOLEAN
+      case "integer"  => INTEGER
+      case "number"   => NUMBER
+      case "string"   => STRING
+      case "object"   => OBJECT
+      case "null"     => NULL
+    }
   }
   private[swagger] class ParameterTypeReference extends TypeReference[ParameterType.type]
   case object ParameterType extends Enumeration {
@@ -160,7 +168,6 @@ object strictModel {
   // If it is an array, elements of the array MUST be strings and MUST be unique.
   // String values MUST be one of the seven primitive types defined by the core specification.
   sealed trait JsonSchemaType
-  // type JsonSchemaType         = String
 
   type ArrayJsonSchemaType = ManyUnique[String] with JsonSchemaType
   /**
@@ -252,8 +259,16 @@ object strictModel {
     head:                 Operation,
     patch:                Operation,
     parameters:           ParametersList,
-    @JsonProperty("$ref") $ref: Ref
-  ) extends VendorExtensions with API with RefChecker
+    @JsonProperty("$ref") $ref: Ref         // TODO $ref is currently not supported
+  ) extends VendorExtensions with API with RefChecker {
+    def param(name: String, op: Operation) = Option(op) map { name -> _.parameters } toList
+    def params(prefix: String) = (("" -> parameters) :: param("get", get) :::
+      param("get", get) ::: param("put", put) ::: param("post", post) :::
+      param("delete", delete) ::: param("options", options) ::: param("head", head) :::
+      param("patch", patch)) flatMap { p =>
+        Option(p._2).toSeq.flatten map { pl => (prefix + p._1) -> pl }
+      }
+  }
 
 
   sealed trait ParametersListItem
@@ -268,6 +283,20 @@ object strictModel {
     @JsonProperty(required = true) def name:    String
     @JsonProperty(required = true) def in:      String
     @JsonScalaEnumeration(classOf[ParameterTypeReference]) @JsonProperty(required = true) def `type`: ParameterType.Value
+  }
+
+  trait NonBodyParameterCommons[T, CF] {
+    def `type`: ParameterType.Value
+    def items: PrimitivesItems[T]
+    def default: Default[T]
+    def format: String
+    def isArray = `type`== ParameterType.ARRAY
+    def required: Boolean
+    def collectionFormat: CF
+    def name: String
+    if (collectionFormat != null) require(`type` == ParameterType.ARRAY)
+    if (default != null) require(!required)
+    if (`type` == ParameterType.ARRAY) require(items != null)
   }
 
   /**
@@ -332,7 +361,7 @@ object strictModel {
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
   /**
    *
@@ -382,7 +411,7 @@ object strictModel {
     enum:                   Enum[T],
     multipleOf:             MultipleOf,
     allowEmptyValue:        Boolean = false // unique for form
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
   /**
    *
@@ -432,7 +461,7 @@ object strictModel {
     enum:                   Enum[T],
     multipleOf:             MultipleOf,
     allowEmptyValue:        Boolean = false // unique for query and form
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormatWithMulti.Value]
 
   /**
    *
@@ -480,8 +509,7 @@ object strictModel {
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
-
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
   sealed trait ResponseValue
 
@@ -633,7 +661,6 @@ object strictModel {
     require(allOf.forall(_.nonEmpty))
     validateSchemaArray(items)
     validateSchemaArray(allOf)
-    // TODO for this validation, we need a test case
     private def validateSchemaArray(a: Option[_]) =
       a.isEmpty || a.get.isInstanceOf[SchemaOrFileSchema] ||
         (a.get.isInstanceOf[SchemaArray] && a.get.asInstanceOf[SchemaArray].nonEmpty)
@@ -677,7 +704,13 @@ object strictModel {
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends VendorExtensions with AllValidations[T]
+  ) extends VendorExtensions with AllValidations[T] {
+    require(`type` != PrimitiveType.NULL)
+    require(`type` != PrimitiveType.OBJECT)
+    if (isArray) require(items != null)
+    if (collectionFormat != null) require(isArray)
+    def isArray = `type` == PrimitiveType.ARRAY
+  }
 
   /**
    *
@@ -879,7 +912,7 @@ object strictModel {
   object ObjectValidation {
     type MaxProperties          = Option[Int]
     type MinProperties          = Option[Int]
-    type SchemaOrBoolean      = Any
+    type SchemaOrBoolean        = Any // How can this be described more precisely
   }
   trait ObjectValidation {
     import ObjectValidation._

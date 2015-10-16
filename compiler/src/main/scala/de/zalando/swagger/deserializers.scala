@@ -4,7 +4,7 @@ import java.util.Map.Entry
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.{NullNode, BaseJsonNode}
-import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper, DeserializationContext}
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import de.zalando.swagger.strictModel._
 import com.fasterxml.jackson.core.{JsonParser => JParser, _}
@@ -203,7 +203,7 @@ object deserializers {
       else if (root.isTextual) PrimitiveType.withName(root.asText()).asInstanceOf[JsonSchemaType]
       else if (root.isArray) {
         val array = mapper.convertValue(root, classOf[Array[String]])
-        if (array.distinct.size == array.size) array.toSet.asInstanceOf[JsonSchemaType]
+        if (array.distinct.length == array.length) array.toSet.asInstanceOf[JsonSchemaType]
         else throw new JsonParseException(s"'JsonSchemaType array must contain unique values", jp.getTokenLocation)
       } else
         throw new JsonParseException(s"'JsonSchemaType must be array or primitive type", jp.getTokenLocation)

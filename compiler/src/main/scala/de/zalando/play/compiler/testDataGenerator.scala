@@ -79,7 +79,7 @@ class MethodsGenerator(val targetNamespace: String, val defaultNamespace: String
   override def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
                                     (implicit ast: Model): Option[(Set[String], String)] = {
     typeDef match {
-      case t@TypeDef(typeName, fields, extend, meta) =>
+      case t@TypeDef(typeName, fields, extend, meta, _) =>
         Some((Set.empty[String], s"""def ${TypeName.escape("create"+ typeName.asSimpleType)} = _generate(${generatorName(t)})"""))
       case _ => None
     }
@@ -101,7 +101,7 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
   override def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
                                     (implicit ast: Model): Option[(Set[String], String)] = {
     typeDef match {
-      case t@TypeDef(typeName, fields, extend, meta) =>
+      case t@TypeDef(typeName, fields, extend, meta, _) =>
         Some((t.imports ++ imports, typeDefType(namespace, imports)(t)))
       case c: Container =>
         Some((c.imports ++ imports, containerType(namespace, imports)(c)))
@@ -144,7 +144,7 @@ trait TestClassGeneratorBase extends GeneratorBase {
     }
 
   def generatorNameForType(tpe: Type, thisType: TypeName)(namespace: String, imports: Set[String])(implicit ast: Model) = tpe match {
-    case t @ TypeDef(_, _, _, _) => relativeGeneratorName(t, thisType)
+    case t @ TypeDef(_, _, _, _, _) => relativeGeneratorName(t, thisType)
     case r: Reference => relativeGeneratorName(r, thisType)
     case c : Container => containerType(namespace, imports)(c)
     case _ => simpleType(tpe)
@@ -152,11 +152,11 @@ trait TestClassGeneratorBase extends GeneratorBase {
 
   def containerType(namespace: String, imports: Set[String])(c: Container)(implicit ast: Model): String = c match {
     case Opt(field, _) =>
-      val innerGenerator = generatorNameForType(field.kind, c.name)(namespace, imports)
+      val innerGenerator = generatorNameForType(field, c.name)(namespace, imports)
       s"Gen.option($innerGenerator)"
     case a@Arr(field, _) =>
-      val innerGenerator = generatorNameForType(field.kind, c.name)(namespace, imports)
-      s"Gen.containerOf[List,${field.kind.name.asSimpleType}]($innerGenerator)"
+      val innerGenerator = generatorNameForType(field, c.name)(namespace, imports)
+      s"Gen.containerOf[List,${field.name.asSimpleType}]($innerGenerator)"
     case ca@CatchAll(_, _) =>
       // TODO generate non-empty map
       s"Gen.const(${ca.name.asSimpleType})".replace("Map[", "Map.empty[")
