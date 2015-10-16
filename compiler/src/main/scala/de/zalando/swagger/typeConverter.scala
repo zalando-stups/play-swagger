@@ -88,7 +88,7 @@ object typeConverter {
   implicit def fromParamListItem[T](nameAndParam: (String, ParametersListItem)): NamedTypes = {
     val (name, param) = nameAndParam
     param match {
-      case r @ JsonReference(ref)             => fromSchemaOrReference(name, r, Nil)
+      case r @ JsonReference(ref)             => fromReference(name, ref)
       case nb: NonBodyParameterCommons[_, _]  => fromNonBodyParameter(name, nb)
       case bp: BodyParameter[_]               => fromBodyParameter(bp)
     }
@@ -109,10 +109,13 @@ object typeConverter {
 
   implicit def fromSchemaOrReference(name: String, param: SchemaOrReference, required: Seq[String]): NamedTypes =
     param match {
-      case p@JsonReference(ref) => Seq(name -> Domain.Reference(ref, TypeMeta(Option(ref))))
+      case p@JsonReference(ref) => fromReference(name, ref)
       case s: Schema[_]         => fromSchema(name, s, required)
       case f: FileSchema[_]     => fromFileSchema(f, required)
     }
+
+  implicit def fromReference(name: String, ref: Ref): NamedTypes =
+    Seq(name -> Domain.Reference(ref, TypeMeta(Option(ref))))
 
   implicit def fromPrimitivesItems[T](name: String, items: PrimitivesItems[T]): NamedType = {
     val meta = TypeMeta(Option(items.format))
