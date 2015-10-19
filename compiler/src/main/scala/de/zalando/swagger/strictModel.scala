@@ -279,13 +279,13 @@ object strictModel {
 
   sealed trait Parameter[T] extends ParametersListItem
 
-  abstract class NonBodyParameter[T] extends Parameter[T] {
+  abstract class NonBodyParameter[T] extends Parameter[T] with ValidationBase {
     @JsonProperty(required = true) def name:    String
     @JsonProperty(required = true) def in:      String
     @JsonScalaEnumeration(classOf[ParameterTypeReference]) @JsonProperty(required = true) def `type`: ParameterType.Value
   }
 
-  trait NonBodyParameterCommons[T, CF] {
+  trait NonBodyParameterCommons[T, CF] extends ValidationBase {
     def `type`: ParameterType.Value
     def items: PrimitivesItems[T]
     def default: Default[T]
@@ -313,7 +313,7 @@ object strictModel {
     @JsonProperty(required = true) schema:  SchemaOrReference,
     description:                            String,
     required:                               Boolean = false
-  ) extends Parameter[T] with VendorExtensions
+  ) extends Parameter[T] with VendorExtensions with ValidationBase
 
   /**
    *
@@ -859,6 +859,7 @@ object strictModel {
 
   // -------------------------- Validations --------------------------
 
+  sealed trait ValidationBase
   /**
    * validations for Int, Long, Double, Float
    */
@@ -869,7 +870,7 @@ object strictModel {
     type Minimum                = Option[Double]
     type ExclusiveMinimum       = Option[Boolean]
   }
-  trait NumberValidation {
+  trait NumberValidation extends ValidationBase {
     import NumberValidation._
     def multipleOf:             MultipleOf
     def maximum:                Maximum
@@ -880,12 +881,13 @@ object strictModel {
     require(exclusiveMaximum.isEmpty || maximum.isDefined)
     require(exclusiveMinimum.isEmpty || minimum.isDefined)
   }
+
   object StringValidation {
     type MaxLength              = Option[Int] // length <=
     type MinLength              = Option[Int] // length >=
     type Pattern                = Option[String]
   }
-  trait StringValidation {
+  trait StringValidation extends ValidationBase {
     import StringValidation._
     def maxLength: MaxLength
     def minLength: MinLength
@@ -894,13 +896,14 @@ object strictModel {
     require(minLength.forall(_>=0))
     require(pattern.forall(p => Try(p.r).isSuccess))
   }
+
   object ArrayValidation {
     type MaxItems               = Option[Int]
     type MinItems               = Option[Int]
     type UniqueItems            = Option[Boolean]
     type Enum[T]                = Option[ManyUnique[T]]
   }
-  trait ArrayValidation[T] {
+  trait ArrayValidation[T] extends ValidationBase {
     import ArrayValidation._
     def maxItems:               MaxItems
     def minItems:               MinItems
@@ -912,9 +915,9 @@ object strictModel {
   object ObjectValidation {
     type MaxProperties          = Option[Int]
     type MinProperties          = Option[Int]
-    type SchemaOrBoolean        = Any // How can this be described more precisely
+    type SchemaOrBoolean        = Any // How can this be described more precisely ?
   }
-  trait ObjectValidation {
+  trait ObjectValidation extends ValidationBase {
     import ObjectValidation._
     def maxProperties:          MaxProperties
     def minProperties:          MinProperties

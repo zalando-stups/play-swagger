@@ -154,7 +154,7 @@ trait TestClassGeneratorBase extends GeneratorBase {
     case Opt(field, _) =>
       val innerGenerator = generatorNameForType(field, c.name)(namespace, imports)
       s"Gen.option($innerGenerator)"
-    case a@Arr(field, _) =>
+    case a@Arr(field, _, _) =>
       val innerGenerator = generatorNameForType(field, c.name)(namespace, imports)
       s"Gen.containerOf[List,${field.name.asSimpleType}]($innerGenerator)"
     case ca@CatchAll(_, _) =>

@@ -9,10 +9,10 @@ import de.zalando.swagger.strictModel._
  */
 object typeMetaConverter {
   implicit def arrayTypeMeta[T](comment: String, items: ArrayValidation[T]): TypeMeta =
-    TypeMeta(Option(comment), ValidationConverter.toValidations(items))
+    TypeMeta(Option(comment), ValidationConverter.toArrayValidations(items))
 
   implicit def schemaTypeMeta[T](param: Schema[_]) =
-    TypeMeta(Option(param.description).orElse(Option(param.format)))
+    TypeMeta(Option(param.description).orElse(Option(param.format)), ValidationConverter.toValidations(param))
 
   implicit def parametersListItemMeta(item:ParametersListItem): TypeMeta =
     item match {
@@ -21,5 +21,8 @@ object typeMetaConverter {
         TypeMeta(Option(nb.format), ValidationConverter.toValidations(nb))
       case bp: BodyParameter[_] =>
         TypeMeta(Option(bp.description), ValidationConverter.toValidations(bp))
+      case nbp: NonBodyParameter[_] =>
+        TypeMeta(Option(nbp.name), ValidationConverter.toValidations(nbp))
+
     }
 }

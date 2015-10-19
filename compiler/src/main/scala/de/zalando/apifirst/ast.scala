@@ -178,7 +178,7 @@ object Domain {
     override def nestedTypes = field.nestedTypes :+ field
   }
 
-  case class Arr(override val field: Type, override val meta: TypeMeta)
+  case class Arr(override val field: Type, override val meta: TypeMeta, format: Option[String] = None)
     extends Container(s"Seq[${field.name.oneUp}]", field, meta, Set("scala.collection.Seq"))
 
   case class Opt(override val field: Type, override val meta: TypeMeta)

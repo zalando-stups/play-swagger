@@ -13,9 +13,6 @@ import scala.language.{postfixOps, implicitConversions}
  * @since   14.10.2015.
  */
 /*
-  TODOs:
-
-  - collectionFormat is ignored, but it's needed at runtime for parsing
   - No validation information
  */
 object typeConverter {
@@ -65,7 +62,8 @@ object typeConverter {
       // TODO object, array
     }
 
-  private def wrapInArray(t: NamedType): NamedType = t._1 -> Domain.Arr(t._2, t._2.meta)
+  private def wrapInArray(t: NamedType, collectionFormat: Option[String]): NamedType =
+    t._1 -> Domain.Arr(t._2, t._2.meta, collectionFormat.map(_.toString))
 
   private def wrapInOption(t: NamedType): NamedType = t._1 -> Domain.Opt(t._2, t._2.meta)
 
@@ -97,7 +95,7 @@ object typeConverter {
   implicit def fromNonBodyParameter[T, CF](name: String, param: NonBodyParameterCommons[T, CF]): NamedTypes = {
     val meta = TypeMeta(Option(param.format))
     val fullName = name + PATH_SEPARATOR + param.name
-    val result = if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items))
+    val result = if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items), Option(param.collectionFormat).map(_.toString))
     else if (!param.required) wrapInOption(fullName -> (param.`type`, param.format)(meta))
     else fullName -> (param.`type`, param.format)(meta)
     Seq(result)
@@ -120,7 +118,7 @@ object typeConverter {
   implicit def fromPrimitivesItems[T](name: String, items: PrimitivesItems[T]): NamedType = {
     val meta = TypeMeta(Option(items.format))
     if (items.isArray)
-      wrapInArray(fromPrimitivesItems(name, items.items))
+      wrapInArray(fromPrimitivesItems(name, items.items), Option(items.collectionFormat).map(_.toString))
     else
       name -> (items.`type`, items.format)(meta)
   }
@@ -146,7 +144,7 @@ object typeConverter {
     case PrimitiveType.ARRAY =>
       require(param.items.nonEmpty)
       val types = fromSchemaOrSchemaArray(name, param.items.get)
-      wrapInArray(types.head) +: types.tail
+      wrapInArray(types.head, None) +: types.tail
     case PrimitiveType.OBJECT =>
       param.allOf map {
         extensionType(name)
@@ -186,6 +184,7 @@ object typeConverter {
   }
 
   implicit def fromFileSchema[T](schema: FileSchema[T], required: Seq[String]): NamedTypes = {
+    // TODO
     ???
   }
 
