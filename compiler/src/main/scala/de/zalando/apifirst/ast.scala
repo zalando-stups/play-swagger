@@ -352,7 +352,6 @@ object Application {
     val nonBodyParameters     = parameters.filterNot(_.place == ParameterPlace.BODY)
     val bodyParameters        = parameters.filter(_.place == ParameterPlace.BODY)
     val queryParameters       = parameters.filter(_.place == ParameterPlace.QUERY)
-    val allParameters         = parameters
   }
 
   case class ApiCall(

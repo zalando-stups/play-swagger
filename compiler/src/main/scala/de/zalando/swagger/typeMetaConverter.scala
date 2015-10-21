@@ -13,7 +13,7 @@ object TypeMetaConverter {
   implicit def arrayTypeMeta[T](comment: String, items: ArrayValidation[T]): TypeMeta =
     TypeMeta(Option(comment), toArrayValidations(items))
 
-  implicit def schemaTypeMeta[T](param: Schema[_]) =
+  implicit def schemaTypeMeta[T](param: Schema[_]): TypeMeta =
     TypeMeta(Option(param.description).orElse(Option(param.format)), toValidations(param))
 
   implicit def parametersListItemMeta(item:ParametersListItem): TypeMeta =
@@ -25,6 +25,5 @@ object TypeMetaConverter {
         TypeMeta(Option(bp.description), toValidations(bp))
       case nbp: NonBodyParameter[_] =>
         TypeMeta(Option(nbp.name), toValidations(nbp))
-
     }
 }

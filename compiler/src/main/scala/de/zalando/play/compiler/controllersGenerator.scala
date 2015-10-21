@@ -46,13 +46,13 @@ trait ControllersGenerator extends CallsGeneratorBase {
      """.stripMargin
 
   def parameterNames(call: ApiCall) = {
-    if (call.handler.allParameters.isEmpty) ""
-    else call.handler.allParameters.map { p => s"${p.name}"}.mkString(", ")
+    if (call.handler.parameters.isEmpty) ""
+    else call.handler.parameters.map { p => s"${p.name}"}.mkString(", ")
   }
 
   def parameterTypes(call: ApiCall) = {
-    if (call.handler.allParameters.isEmpty) ""
-    else call.handler.allParameters.map { p => TypeName.escapeName(p.typeName.name.asSimpleType) } mkString ", "
+    if (call.handler.parameters.isEmpty) ""
+    else call.handler.parameters.map { p => TypeName.escapeName(p.typeName.name.asSimpleType) } mkString ", "
   }
 
   override def placeHolder: String = ""

@@ -89,7 +89,7 @@ class SingleBaseControllerGenerator extends GeneratorBase {
     else " {"
 
   def typeDefinitions(call: ApiCall) = {
-    val requestType = call.handler.allParameters.map { _.typeName.name.asSimpleType }.mkString("(", ", ", ")") // FIXME
+    val requestType = call.handler.parameters.map { _.typeName.name.asSimpleType }.mkString("(", ", ", ")") // FIXME
     val resultType = call.resultType.head._2.name.asSimpleType
     val definitions =
       s"""private type #CALL#ActionRequestType = $requestType
@@ -123,7 +123,7 @@ class SingleBaseControllerGenerator extends GeneratorBase {
           replaceAll("#PARSER#", parserCode).
           replaceAll("#PARSER_DEF#", parserDefinition(parserCode, requestType)).
           replaceAll("#PARAMETER_LIST#", parameterList(call.handler.parameters)).
-          replaceAll("#VALIDATOR_PARAMS#", validatorParameters(call.handler.allParameters)).
+          replaceAll("#VALIDATOR_PARAMS#", validatorParameters(call.handler.parameters)).
           replaceAll("#CALL#", callName) // should be the last replacement
       }
       val typeImports = ImportsGenerator.importStatements(ast, "definitions", None)

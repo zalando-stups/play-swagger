@@ -1,8 +1,8 @@
 package de.zalando.play.compiler
 
-import de.zalando.apifirst.{Domain, Application}
 import de.zalando.apifirst.Application.{ApiCall, Model}
-import de.zalando.apifirst.Domain.{CatchAll, TypeName}
+import de.zalando.apifirst.Domain
+import de.zalando.apifirst.Domain.TypeName
 import de.zalando.apifirst.Path.InPathParameter
 
 /**
@@ -142,26 +142,26 @@ class SingleTestGenerator(basePath: String) extends CallsGeneratorBase with Test
      """.stripMargin
 
   // TODO should be generated into the TestData code, not here
-    def inputGenerators(call: ApiCall)(implicit ast: Model) = call.handler.allParameters map { param =>
+    def inputGenerators(call: ApiCall)(implicit ast: Model) = call.handler.parameters map { param =>
       val relativeType = TypeName("", param.typeName.name.simpleName)
       val generatorName = generatorNameForType(param.typeName, relativeType)("", Set.empty[String])
       s"""${TypeName.escape(param.name)} <- $generatorName"""
     } mkString "\n"
 
     def parameters(call: ApiCall) = {
-      call.handler.allParameters.map { p =>
+      call.handler.parameters.map { p =>
         s"""${p.name}: ${p.typeName.name.asSimpleType}"""
       }.mkString(", ")
     }
 
     def parameterNames(call: ApiCall) = {
-      if (call.handler.allParameters.isEmpty) ""
-      else call.handler.allParameters.map { p => s"${p.name}"}.mkString(", ")
+      if (call.handler.parameters.isEmpty) ""
+      else call.handler.parameters.map { p => s"${p.name}"}.mkString(", ")
     }
 
     def parameterTypes(call: ApiCall) = {
-      if (call.handler.allParameters.isEmpty) ""
-      else call.handler.allParameters.map { p => TypeName.escapeName(p.typeName.name.asSimpleType) } mkString ", "
+      if (call.handler.parameters.isEmpty) ""
+      else call.handler.parameters.map { p => TypeName.escapeName(p.typeName.name.asSimpleType) } mkString ", "
     }
 
     def fullUrl(namespace: String, call: ApiCall) = {

@@ -57,9 +57,11 @@ object TypeConverter extends ParameterNaming {
   private def wrapInArray(t: NamedType, collectionFormat: Option[String]): NamedType =
     t._1 -> Domain.Arr(t._2, t._2.meta, collectionFormat.map(_.toString))
 
-  private def wrapInOption(t: NamedType): NamedType = t._1 -> Domain.Opt(t._2, t._2.meta)
+  private def wrapInOption(t: NamedType): NamedType =
+    t._1 -> Domain.Opt(t._2, t._2.meta)
 
-  private def wrapInCatchAll(t: NamedTypes): NamedTypes = (t.head._1 -> Domain.CatchAll(t.head._2, t.head._2.meta)) +: t.tail
+  private def wrapInCatchAll(t: NamedTypes): NamedTypes =
+    (t.head._1 -> Domain.CatchAll(t.head._2, t.head._2.meta)) +: t.tail
 
   def fromModel(model: strictModel.SwaggerModel): NamedTypes =
     fromDefinitions(model.definitions) ++
@@ -74,19 +76,23 @@ object TypeConverter extends ParameterNaming {
     Option(definitions).toSeq.flatten flatMap { d => fromSchema(append("definitions", d._1), d._2, Nil) }
 
   def fromPaths(paths: Paths): NamedTypes =
-    fromPathParameters("", paths) ++ fromResponses(paths) ++ fromOperationParameters(paths).toSeq.flatten
+    fromPathParameters("", paths) ++ fromResponses(paths).flatten ++ fromOperationParameters(paths).toSeq.flatten
 
   private def fromPathParameters(prefix: String, paths: Paths): NamedTypes =
     allPathItems(paths) flatMap fromParamListItem
 
-  private def fromOperationParameters(paths: Paths): Iterable[NamedTypes] =
+  private def forAllOperations[T](paths: Paths, logic: (String, Operation) => T) =
     for {
-      (prefix, path) <- paths
+      (prefix, path) <- Option(paths).toSeq.flatten
       operationName <- path.operationNames
       operation = path.operation(operationName)
-    } yield fromOperation(append(prefix, operationName), operation)
+      name = append(prefix, operationName)
+    } yield logic(name, operation)
 
-  private def fromOperation(name: String, operation: Operation): NamedTypes =
+  private def fromOperationParameters(paths: Paths): Iterable[NamedTypes] =
+    forAllOperations(paths, parametersCollector)
+
+  private def parametersCollector(name: String, operation: Operation): NamedTypes =
     operation.parameters.flatMap { p: ParametersListItem =>
       fromParamListItem((name, p))
     }.toSeq
@@ -96,25 +102,16 @@ object TypeConverter extends ParameterNaming {
       pathItem.params(append(name, ""))
     }
 
-  // TODO refactor
-  private def fromResponses(paths: Paths): NamedTypes = {
-    val responses = Option(paths).toSeq.flatten flatMap { case (name, pathItem: PathItem) =>
-      pathItem.operationNames map { opName =>
-        val typeName = append(name, opName)
-        typeName -> pathItem.operation(opName).responses
-      }
-    }
-    val result = responses flatMap { response =>
-      response._2 flatMap { rsp =>
-        val fullName = append(response._1, rsp._1)
-        if (rsp._2.schema == null)
-          Seq(fullName -> Null(TypeMeta(None)))
-        else
-          fromSchemaOrReference(fullName, rsp._2.schema, Nil)
-      }
-    }
-    result
-  }
+  private def responseCollector: (String, Operation) => (String, Responses) = (name, op) => name -> op.responses
+
+  private def fromResponses(paths: Paths): Seq[NamedTypes] =
+    for {
+      (prefix, responses) <- forAllOperations(paths, responseCollector)
+      (suffix, response) <- responses
+      fullName = append(prefix, suffix)
+    } yield fromSchemaOrReference(fullName, response.schema, Nil)
+
+  private def fromNull(name: String): NamedTypes = Seq(name -> Null(TypeMeta(None)))
 
   implicit def fromParamListItem[T](nameAndParam: (String, ParametersListItem)): NamedTypes = {
     val (name, param) = nameAndParam
@@ -140,6 +137,7 @@ object TypeConverter extends ParameterNaming {
 
   implicit def fromSchemaOrReference(name: String, param: SchemaOrReference, required: Seq[String]): NamedTypes =
     param match {
+      case any if any == null   => fromNull(name)
       case p@JsonReference(ref) => fromReference(name, ref)
       case s: Schema[_]         => fromSchema(name, s, required)
       case f: FileSchema[_]     => fromFileSchema(f, required)

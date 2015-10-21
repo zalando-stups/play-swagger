@@ -91,7 +91,7 @@ class InlineValidatorsGenerator extends CallsGeneratorBase with EmptyValidations
     case s => s"${s.name} map ${s.name}Constraints.applyConstraints"
   } mkString("(", ",\n", ").flatten")
 
-  def constraints(call: ApiCall) = call.handler.allParameters filterNot {
+  def constraints(call: ApiCall) = call.handler.parameters filterNot {
     _.typeName.isInstanceOf[Reference]
   } map constraint mkString "\n"
 
@@ -119,14 +119,14 @@ class InlineValidatorsGenerator extends CallsGeneratorBase with EmptyValidations
         val params = calls.flatMap(_.handler.parameters)
         val imports = params.flatMap {_.typeName.imports}.toSet
         val methods = calls map { call =>
-          val (containerParams, normalParams) = call.handler.allParameters.partition {_.typeName.isInstanceOf[Container]}
+          val (containerParams, normalParams) = call.handler.parameters.partition {_.typeName.isInstanceOf[Container]}
           val flatValidations = if (normalParams.isEmpty) emptyValidations else normalValidations(normalParams)
           // TODO they need to be recursive for nested containers!
           val nestedValidations = if (containerParams.isEmpty) emptyValidations else containerValidations(containerParams)
           template.
-            replaceAll("#VALIDATOR_PARAMS#", validatorParameterTypes(call.handler.allParameters)).
-            replaceAll("#PARAM_NAMES#", validatorParameterNames(call.handler.allParameters)).
-            replaceAll("#VALIDATOR_RESULT#", validatorResult(call.handler.allParameters)).
+            replaceAll("#VALIDATOR_PARAMS#", validatorParameterTypes(call.handler.parameters)).
+            replaceAll("#PARAM_NAMES#", validatorParameterNames(call.handler.parameters)).
+            replaceAll("#VALIDATOR_RESULT#", validatorResult(call.handler.parameters)).
             replaceAll("#NORMAL_VALIDATIONS#", flatValidations).
             replaceAll("#CONTAINER_VALIDATIONS#", nestedValidations).
             replaceAll("#CONSTRAINTS#", constraints(call)).
