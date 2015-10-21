@@ -11,7 +11,7 @@ import org.scalatest.{MustMatchers, FunSpec}
  */
 class SecurityDefinitionDeserializerTest extends FunSpec with MustMatchers {
 
-  val file = new File("compiler/src/test/resources/examples/security.api.yaml")
+  val file = new File("compiler/src/test/resources/examples/todo/security.api.yaml")
 
   describe("SecurityDefinitionDeserializer") {
       it(s"should parse security definitions in the ${file.getName}") {
