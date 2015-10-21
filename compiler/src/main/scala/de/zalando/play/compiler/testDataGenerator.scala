@@ -107,9 +107,6 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
         Some((c.imports ++ imports, containerType(namespace, imports)(c)))
       case r: ReferenceObject =>
         Some((imports, generatorName(r)))
-      case other: Entity =>
-        println("Not generating class for entity " + other) // TODO
-        None
       case other =>
         Some((imports, simpleType(other)))
     }

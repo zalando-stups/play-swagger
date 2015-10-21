@@ -186,8 +186,6 @@ object Domain {
   case class CatchAll(override val field: Type, override val meta: TypeMeta)
     extends Container(s"Map[String, ${field.name.oneUp}]", field, meta, Set("scala.collection.immutable.Map"))
 
-  abstract class Entity(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta)
-
   case class Field(override val name: TypeName, kind: Type, override val meta: TypeMeta) extends Type(name, meta) {
     override def toString = s"""Field("$name", $kind, $meta)"""
 
@@ -205,7 +203,7 @@ object Domain {
                      fields: Seq[Field],
                      extend: Seq[Reference] = Nil,
                      override val meta: TypeMeta,
-                     discriminator: Option[String] = None) extends Entity(name, meta) {
+                     discriminator: Option[String] = None) extends Type(name, meta) {
     override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
 
     def imports(implicit ast: Model): Set[String] = {

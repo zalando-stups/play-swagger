@@ -36,9 +36,6 @@ class ClassGenerator extends TraitGenerator {
       case r: ReferenceObject =>
         // some validation could be added here
         None
-      case other: Entity =>
-        println("Not generating class for entity " + other) // TODO
-        None
       case _ =>
         // probably just simple type
         None
