@@ -101,18 +101,24 @@ object Domain {
     }
   }
 
+  // represents `x-apifirst-model` extension for inherited types
+  object ModelKind extends Enumeration {
+    type ModelKind = Value
+    val Concrete, Abstract, Mixin = Value
+  }
 
-  case class TypeMeta(comment: Option[String], constraints: Seq[String]) {
-    override def toString = s"""TypeMeta(${
-      comment match {
-        case None => "None"
-        case Some(s) => "Some(\"" + s.replaceAll("\"", "\\\"") + "\")"
-      }
-    })"""
+  import ModelKind._
+  case class TypeMeta(comment: Option[String], constraints: Seq[String], kind: ModelKind = Concrete) {
+    override def toString = s"""TypeMeta(${escapedComment}, ${constraints}, ${kind})"""
+
+    val escapedComment = comment match {
+      case None => "None"
+      case Some(s) => "Some(\"" + s.replaceAll("\"", "\\\"") + "\")"
+    }
   }
 
   object TypeMeta {
-    def apply(comment: Option[String]):TypeMeta = TypeMeta(comment, Seq.empty[String])
+    def apply(comment: Option[String]): TypeMeta = TypeMeta(comment, Seq.empty[String])
   }
 
   implicit def option2TypeMeta(o: Option[String]): TypeMeta = TypeMeta(o)
@@ -186,7 +192,7 @@ object Domain {
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
     extends Container(s"Map[String, ${tpe.name.oneUp}]", tpe, meta, Set("scala.collection.immutable.Map"))
 
-  case class Field( val name: TypeName, tpe: Type, val meta: TypeMeta){
+  case class Field( val name: TypeName, val tpe: Type, val meta: TypeMeta){
     override def toString = s"""Field("$name", $tpe, $meta)"""
 
     def imports = tpe match {
@@ -200,8 +206,7 @@ object Domain {
   case class TypeDef(override val name: TypeName,
                      fields: Seq[Field],
                      extend: Seq[Reference] = Nil,
-                     override val meta: TypeMeta,
-                     discriminator: Option[String] = None) extends Type(name, meta) {
+                     override val meta: TypeMeta) extends Type(name, meta) {
     override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
 
     def imports(implicit ast: Model): Set[String] = {

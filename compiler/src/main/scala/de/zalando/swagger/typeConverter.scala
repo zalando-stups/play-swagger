@@ -1,5 +1,7 @@
 package de.zalando.swagger
 
+import javax.lang.model.`type`.TypeKind
+
 import de.zalando.apifirst.Domain
 import Domain._
 import TypeMetaConverter._
@@ -212,7 +214,10 @@ object TypeConverter extends ParameterNaming {
   implicit def fromTypes(name: String, types: NamedTypes, discriminator: Option[String]): NamedTypes = {
     val extend = Nil // FIXME
     val fields = types map { t => Field(TypeName(t._1), t._2, TypeMeta(None)) }
-    Seq(name -> Domain.TypeDef(TypeName(name), fields, extend, TypeMeta(None), discriminator))
+
+    // FIXME if discriminator is set then `x-apifirst-model` should be one of the possible TypeKinds
+    val meta = TypeMeta(None, Nil, ModelKind.Concrete)
+    Seq(name -> Domain.TypeDef(TypeName(name), fields, extend, TypeMeta(None)))
   }
 
   implicit def fromFileSchema[T](schema: FileSchema[T], required: Seq[String]): NamedTypes = {

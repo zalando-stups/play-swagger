@@ -152,7 +152,7 @@ object SchemaConverter {
   import Domain._
 
   def wrap[T <: Type](s: Schema, t: T): Type = t match {
-    case td @ TypeDef(name, fields, extend, meta, _) =>
+    case td @ TypeDef(name, fields, extend, meta) =>
       val wrapped = fields map { f =>
         if (s.required != null && s.required.contains(f.name.simpleName) ||
           requiredProperties.contains(f.name.simpleName)) f
