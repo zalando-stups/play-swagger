@@ -171,32 +171,30 @@ object Domain {
 
   case class Any(override val meta: TypeMeta) extends Type("Any", meta)
 
-  abstract class Container(override val name: TypeName, val field: Type, override val meta: TypeMeta, override val imports: Set[String])
+  abstract class Container(override val name: TypeName, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
     extends Type(name, meta) {
-    def allImports: Set[String] = imports ++ field.imports
-    override def nestedTypes = field.nestedTypes :+ field
+    def allImports: Set[String] = imports ++ tpe.imports
+    override def nestedTypes = tpe.nestedTypes :+ tpe
   }
 
-  case class Arr(override val field: Type, override val meta: TypeMeta, format: Option[String] = None)
-    extends Container(s"Seq[${field.name.oneUp}]", field, meta, Set("scala.collection.Seq"))
+  case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
+    extends Container(s"Seq[${tpe.name.oneUp}]", tpe, meta, Set("scala.collection.Seq"))
 
-  case class Opt(override val field: Type, override val meta: TypeMeta)
-    extends Container(s"Option[${field.name.oneUp}]", field, meta, Set("scala.Option"))
+  case class Opt(override val tpe: Type, override val meta: TypeMeta)
+    extends Container(s"Option[${tpe.name.oneUp}]", tpe, meta, Set("scala.Option"))
 
-  case class CatchAll(override val field: Type, override val meta: TypeMeta)
-    extends Container(s"Map[String, ${field.name.oneUp}]", field, meta, Set("scala.collection.immutable.Map"))
+  case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
+    extends Container(s"Map[String, ${tpe.name.oneUp}]", tpe, meta, Set("scala.collection.immutable.Map"))
 
-  case class Field(override val name: TypeName, kind: Type, override val meta: TypeMeta) extends Type(name, meta) {
-    override def toString = s"""Field("$name", $kind, $meta)"""
+  case class Field( val name: TypeName, tpe: Type, val meta: TypeMeta){
+    override def toString = s"""Field("$name", $tpe, $meta)"""
 
-    def asCode(prefix: String = "") = s"$name: ${kind.name}"
-
-    override def imports = kind match {
+    def imports = tpe match {
       case c: Container => c.allImports
       case o => o.imports
     }
 
-    override def nestedTypes = kind.nestedTypes :+ kind
+    def nestedTypes = tpe.nestedTypes :+ tpe
   }
 
   case class TypeDef(override val name: TypeName,

@@ -119,11 +119,11 @@ object Swagger2Ast extends HandlerParser {
       (implicit swaggerModel: SwaggerModel): Application.Parameter = {
     val fixed = None // There is no way to define fixed parameters in swagger spec
     val default = if (p.required) Option(p.default) else None
-    val name = SchemaConverter.parameter2Type(p, typeName)
+    val tpe = SchemaConverter.parameter2Type(p, typeName)
     import Domain.paramOrRefInfo2TypeMeta
-    val fullTypeName = if (p.required) name else Domain.Opt(Field(name.name.simpleName, name, TypeMeta(Option(p.description))), p)
+    val wrappedType = if (p.required) tpe else Domain.Opt(tpe, p)
     val (constraint, encode) = Constraints(p.in.toString)
-    Application.Parameter(p.name, fullTypeName, fixed, default, constraint, encode, ParameterPlace.BODY)
+    Application.Parameter(p.name, wrappedType, fixed, default, constraint, encode, ParameterPlace.BODY)
   }
 
   /**
@@ -156,7 +156,7 @@ object SchemaConverter {
       val wrapped = fields map { f =>
         if (s.required != null && s.required.contains(f.name.simpleName) ||
           requiredProperties.contains(f.name.simpleName)) f
-        else f.copy(kind = Domain.Opt(f, f.meta))
+        else f.copy(tpe = Domain.Opt(f.tpe, f.meta))
       }
       td.copy(fields = wrapped)
     case _ => t
@@ -167,7 +167,7 @@ object SchemaConverter {
       propsPartialFunction(p.`type`, p.format, null)(p) // TODO maybe wrap the parameter as well?
     case p: Parameter if p.`type` == ARRAY =>
       val field = Field(name.simpleName, schema2Type(p.items, name), TypeMeta(Option(p.description)))
-      Domain.Arr(field, p) // TODO maybe {{{ wrap(p, Domain.Arr(field, p)) }}} ?
+      Domain.Arr(field.tpe, p) // TODO maybe {{{ wrap(p, Domain.Arr(field, p)) }}} ?
     case r: ParameterReference =>
       Domain.Reference(r.$ref, r)
     case s: Parameter if s.schema != null =>
@@ -195,11 +195,11 @@ object SchemaConverter {
 
     case s: model.Schema if s.`type` == ARRAY =>
       val field = Field(name.simpleName, schema2Type(s.items, name), TypeMeta(Option(s.description)))
-      wrap(s, Domain.Arr(field, s))
+      wrap(s, Domain.Arr(field.tpe, s))
 
     case i: Items if i.`type` == ARRAY || i.items != null =>
       val field = Field(name.simpleName, schema2Type(i.items, name), TypeMeta(Option(i.format)))
-      Domain.Arr(field, i)
+      Domain.Arr(field.tpe, i)
 
     case s: Items if s.allOf != null =>
       val toExtend = s.allOf.filter(_.isInstanceOf[ParameterReference]).map(_.asInstanceOf[ParameterReference])
@@ -207,7 +207,7 @@ object SchemaConverter {
       val fields = Seq.empty[Field] //
       val extensions = toExtend map { s => Domain.Reference(s.asInstanceOf[ParameterReference].$ref, s) }
       val field = Field(name.simpleName, Domain.TypeDef(name, fields, extensions, s), TypeMeta(Option(s.format)))
-      Domain.Arr(field, s)
+      Domain.Arr(field.tpe, s)
 
     case s: Schema if s.$ref != null =>
       wrap(s, Domain.Reference(s.$ref, s))
@@ -235,7 +235,7 @@ object SchemaConverter {
       val fieldName = name.nest(ADDITIONAL_PROPS)
       val field = Field(fieldName, schema2Type(s.additionalProperties, fieldName), s)
       val mainField =
-        Field(fieldName, Domain.CatchAll(field, s), TypeMeta(Some("Catch-All property")))
+        Field(fieldName, Domain.CatchAll(field.tpe, s), TypeMeta(Some("Catch-All property")))
       Seq(mainField)
     } else Nil
     TypeDef(name, catchAll ++ fields, Nil, s)

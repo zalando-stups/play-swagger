@@ -137,7 +137,7 @@ trait TestClassGeneratorBase extends GeneratorBase {
 
   def classFields(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit ast: Model) =
     typeDef.allFields map { f =>
-      s"""$PAD$PAD${TypeName.escape(f.name.simpleName)} <- ${generatorNameForType(f.kind, typeDef.name)(namespace, imports)}""".stripMargin
+      s"""$PAD$PAD${TypeName.escape(f.name.simpleName)} <- ${generatorNameForType(f.tpe, typeDef.name)(namespace, imports)}""".stripMargin
     }
 
   def generatorNameForType(tpe: Type, thisType: TypeName)(namespace: String, imports: Set[String])(implicit ast: Model) = tpe match {

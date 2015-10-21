@@ -31,7 +31,7 @@ class ClassGenerator extends TraitGenerator {
       // TODO add support for anonymous Objects (example instagram)
       // TODO add support for enums
       case c: Container =>
-        Some((c.imports ++ imports, aliasCode(c.field.name, c)))
+        Some((c.imports ++ imports, aliasCode(c.tpe.name, c)))
         // generateSingleTypeDef(namespace, c.imports ++ imports)(c.field.kind)
       case r: ReferenceObject =>
         // some validation could be added here
@@ -53,7 +53,7 @@ class ClassGenerator extends TraitGenerator {
   private def classFields(typeDef: TypeDef)(implicit ast: Model) =
     typeDef.allFields map { f =>
       s"""${comment(f.meta)}
-          |$PAD${TypeName.escape(f.name.simpleName)}: ${TypeName.escapeName(f.kind.name.relativeTo(typeDef.name))}""".stripMargin
+          |$PAD${TypeName.escape(f.name.simpleName)}: ${TypeName.escapeName(f.tpe.name.relativeTo(typeDef.name))}""".stripMargin
     }
 
   private def aliasCode(name: TypeName, typeDef: Type)(implicit ast: Model) = {
@@ -93,7 +93,7 @@ class TraitGenerator extends GeneratorBase {
 
   private def traitFields(typeDef: TypeDef) = typeDef.fields map { f =>
     s"""${comment(f.meta)}
-        |${PAD}def ${TypeName.escape(f.name.simpleName)}: ${f.kind.name.relativeTo(f.name)}""".stripMargin
+        |${PAD}def ${TypeName.escape(f.name.simpleName)}: ${f.tpe.name.relativeTo(f.name)}""".stripMargin
   }
 
   private def traitsToGenerate(implicit ast: Model): Set[Reference] =

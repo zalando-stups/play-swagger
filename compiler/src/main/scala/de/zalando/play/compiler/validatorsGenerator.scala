@@ -98,7 +98,7 @@ class InlineValidatorsGenerator extends CallsGeneratorBase with EmptyValidations
   def constraint(p: Parameter) = {
     // FIXME this validation should be recursive
     val tpe = p.typeName match {
-      case c: Container => c.field.name.asSimpleType
+      case c: Container => c.tpe.name.asSimpleType
       case _ => p.typeName.name.asSimpleType
     }
     val constraints = p.typeName.meta.constraints.mkString(",\n")
