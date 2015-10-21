@@ -2,28 +2,20 @@ package de.zalando.swagger
 
 import de.zalando.apifirst.Domain
 import Domain._
-import de.zalando.swagger.strictModel.ObjectValidation.SchemaOrBoolean
-import de.zalando.swagger.strictModel._
-import typeMetaConverter._
+import TypeMetaConverter._
+import strictModel._
+import ObjectValidation.SchemaOrBoolean
 
-import scala.language.{postfixOps, implicitConversions}
+import scala.language.{implicitConversions, postfixOps}
 
 /**
  * @author  slasch 
  * @since   14.10.2015.
  */
-/*
-  - No validation information
- */
-object typeConverter {
-
-  val PATH_SEPARATOR = "/"
+object TypeConverter extends ParameterNaming {
 
   private type TypeConstructor = TypeMeta => Type
   private type TypeConstructors = Seq[TypeConstructor]
-  type Types = Seq[Type]
-  type NamedType = (String, Type)
-  type NamedTypes = Seq[NamedType]
 
   @throws[MatchError]
   private implicit def fromParameterType(tpe: (ParameterType.Value, String)): TypeConstructor =
@@ -70,40 +62,81 @@ object typeConverter {
   private def wrapInCatchAll(t: NamedTypes): NamedTypes = (t.head._1 -> Domain.CatchAll(t.head._2, t.head._2.meta)) +: t.tail
 
   def fromModel(model: strictModel.SwaggerModel): NamedTypes =
-    fromDefinitions(model.definitions) ++ fromPaths(model.paths) ++ fromParameters(model.parameters)
+    fromDefinitions(model.definitions) ++
+      fromPaths(model.paths) ++
+      fromParameters(model.parameters)
+
 
   def fromParameters(parameters: ParameterDefinitions): NamedTypes =
-    Option(parameters).toSeq.flatten flatMap {  p => fromParamListItem("parameters" + PATH_SEPARATOR + p._1, p._2) }
+    Option(parameters).toSeq.flatten flatMap {  p => fromParamListItem(append("parameters", p._1), p._2) }
 
   def fromDefinitions(definitions: Definitions): NamedTypes =
-    Option(definitions).toSeq.flatten flatMap { d => fromSchema("definitions" + PATH_SEPARATOR + d._1, d._2, Nil) }
+    Option(definitions).toSeq.flatten flatMap { d => fromSchema(append("definitions", d._1), d._2, Nil) }
 
   def fromPaths(paths: Paths): NamedTypes =
+    fromPathParameters("", paths) ++ fromResponses(paths) ++ fromOperationParameters(paths).toSeq.flatten
+
+  private def fromPathParameters(prefix: String, paths: Paths): NamedTypes =
+    allPathItems(paths) flatMap fromParamListItem
+
+  private def fromOperationParameters(paths: Paths): Iterable[NamedTypes] =
+    for {
+      (prefix, path) <- paths
+      operationName <- path.operationNames
+      operation = path.operation(operationName)
+    } yield fromOperation(append(prefix, operationName), operation)
+
+  private def fromOperation(name: String, operation: Operation): NamedTypes =
+    operation.parameters.flatMap { p: ParametersListItem =>
+      fromParamListItem((name, p))
+    }.toSeq
+
+  private def allPathItems(paths: Paths): Seq[(String, ParametersListItem)] =
     Option(paths).toSeq.flatten flatMap { case (name, pathItem) =>
-      pathItem.params(name + "/")
-    } flatMap fromParamListItem
+      pathItem.params(append(name, ""))
+    }
+
+  // TODO refactor
+  private def fromResponses(paths: Paths): NamedTypes = {
+    val responses = Option(paths).toSeq.flatten flatMap { case (name, pathItem: PathItem) =>
+      pathItem.operationNames map { opName =>
+        val typeName = append(name, opName)
+        typeName -> pathItem.operation(opName).responses
+      }
+    }
+    val result = responses flatMap { response =>
+      response._2 flatMap { rsp =>
+        val fullName = append(response._1, rsp._1)
+        if (rsp._2.schema == null)
+          Seq(fullName -> Null(TypeMeta(None)))
+        else
+          fromSchemaOrReference(fullName, rsp._2.schema, Nil)
+      }
+    }
+    result
+  }
 
   implicit def fromParamListItem[T](nameAndParam: (String, ParametersListItem)): NamedTypes = {
     val (name, param) = nameAndParam
     param match {
       case r @ JsonReference(ref)             => fromReference(name, ref)
       case nb: NonBodyParameterCommons[_, _]  => fromNonBodyParameter(name, nb)
-      case bp: BodyParameter[_]               => fromBodyParameter(bp)
+      case bp: BodyParameter[_]               => fromBodyParameter(name, bp)
+      case other => ??? // FIXME
     }
   }
 
   implicit def fromNonBodyParameter[T, CF](name: String, param: NonBodyParameterCommons[T, CF]): NamedTypes = {
     val meta = TypeMeta(Option(param.format))
-    val fullName = name + PATH_SEPARATOR + param.name
+    val fullName = append(name, param.name)
     val result = if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items), Option(param.collectionFormat).map(_.toString))
     else if (!param.required) wrapInOption(fullName -> (param.`type`, param.format)(meta))
     else fullName -> (param.`type`, param.format)(meta)
     Seq(result)
   }
 
-  implicit def fromBodyParameter[T](param: BodyParameter[T]): NamedTypes = {
-    fromSchemaOrReference(param.name, param.schema, if (param.required) Seq(param.name) else Nil)
-  }
+  implicit def fromBodyParameter[T](name: String, param: BodyParameter[T]): NamedTypes =
+    fromSchemaOrReference(append(name, param.name), param.schema, if (param.required) Seq(param.name) else Nil)
 
   implicit def fromSchemaOrReference(name: String, param: SchemaOrReference, required: Seq[String]): NamedTypes =
     param match {
@@ -172,6 +205,7 @@ object typeConverter {
     Option(param) map {
       case b: Boolean => wrapInCatchAll(Seq("additionalProperties" -> Str(None, meta)))
       case s: SchemaOrReference => wrapInCatchAll(fromSchemaOrReference("additionalProperties", s, Nil))
+      case sp: ParameterDefinitions => wrapInCatchAll(fromParameters(sp))
     }
 
   implicit def extensionType[T](name: String)(schema: SchemaArray): NamedTypes =
@@ -188,9 +222,7 @@ object typeConverter {
     ???
   }
 
-  private def isRequired[T](name: String, required: Seq[String]): Boolean = {
-    val isRequired = required != null && name.split(PATH_SEPARATOR).lastOption.exists(required.contains)
-    isRequired
-  }
+  private def isRequired[T](name: String, required: Seq[String]): Boolean =
+    required != null && simple(name).exists(required.contains)
 
 }

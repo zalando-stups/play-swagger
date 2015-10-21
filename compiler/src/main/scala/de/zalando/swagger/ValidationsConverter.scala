@@ -8,7 +8,7 @@ import de.zalando.swagger.strictModel._
   * @since   16.10.2015.
   */
 
-object ValidationConverter {
+object ValidationsConverter {
 
   def toValidations(s: Schema[_]): Seq[String] = validationsPF(s)
 

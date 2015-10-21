@@ -7,22 +7,24 @@ import de.zalando.swagger.strictModel._
  * @author  slasch 
  * @since   15.10.2015.
  */
-object typeMetaConverter {
+object TypeMetaConverter {
+  import ValidationsConverter._
+
   implicit def arrayTypeMeta[T](comment: String, items: ArrayValidation[T]): TypeMeta =
-    TypeMeta(Option(comment), ValidationConverter.toArrayValidations(items))
+    TypeMeta(Option(comment), toArrayValidations(items))
 
   implicit def schemaTypeMeta[T](param: Schema[_]) =
-    TypeMeta(Option(param.description).orElse(Option(param.format)), ValidationConverter.toValidations(param))
+    TypeMeta(Option(param.description).orElse(Option(param.format)), toValidations(param))
 
   implicit def parametersListItemMeta(item:ParametersListItem): TypeMeta =
     item match {
       case r @ JsonReference(ref) => TypeMeta(Some(ref))
       case nb: NonBodyParameterCommons[_, _] =>
-        TypeMeta(Option(nb.format), ValidationConverter.toValidations(nb))
+        TypeMeta(Option(nb.format), toValidations(nb))
       case bp: BodyParameter[_] =>
-        TypeMeta(Option(bp.description), ValidationConverter.toValidations(bp))
+        TypeMeta(Option(bp.description), toValidations(bp))
       case nbp: NonBodyParameter[_] =>
-        TypeMeta(Option(nbp.name), ValidationConverter.toValidations(nbp))
+        TypeMeta(Option(nbp.name), toValidations(nbp))
 
     }
 }

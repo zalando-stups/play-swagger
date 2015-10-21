@@ -90,9 +90,9 @@ class SingleTestGenerator(basePath: String) extends CallsGeneratorBase with Test
   // TODO there is a lot of repetition here, especially in namings
   def testInvalidInput(namespace: String, call: ApiCall)(implicit ast: Model) = {
     val method = call.verb.name.toUpperCase
-    val expectedRequestType = "\"" + call.mimeIn.name.toLowerCase + "\""
+    val expectedRequestType = "\"" + call.mimeIn.head.name.toLowerCase + "\""
     val expectedCode = "BAD_REQUEST" // default validation error code
-    val expectedContentType = "\"" + call.mimeOut.name.toLowerCase + "\""
+    val expectedContentType = "\"" + call.mimeOut.head.name.toLowerCase + "\""
     val validatorName = s"""ValidationFor${call.handler.controller}${call.handler.method}"""
     val url = fullUrl(namespace, call)
     val (body, withBody, andBody) = call.handler.bodyParameters.headOption.map { p =>

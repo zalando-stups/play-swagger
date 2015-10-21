@@ -3,11 +3,10 @@ package de.zalando.apifirst
 import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.swagger.ValidationConverter
+import de.zalando.swagger.ValidationsConverter
 import de.zalando.swagger.model._
-import de.zalando.swagger.strictModel.{BodyParameter, NonBodyParameterCommons, ParametersListItem, ArrayValidation}
 
-import scala.language.{postfixOps, implicitConversions}
+import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
 
 sealed trait Expr
@@ -119,14 +118,14 @@ object Domain {
   implicit def option2TypeMeta(o: Option[String]): TypeMeta = TypeMeta(o)
 
   implicit def schema2TypeMeta(s: Schema): TypeMeta = {
-    new TypeMeta(Option(s.description), ValidationConverter.toValidations(s))
+    new TypeMeta(Option(s.description), ValidationsConverter.toValidations(s))
   }
 
   implicit def typeInfo2TypeMeta(s: TypeInfo): TypeMeta = Option(s.format)
 
   implicit def paramOrRefInfo2TypeMeta(s: ParameterOrReference): TypeMeta = s match {
     case s: Parameter =>
-      new TypeMeta(Option(s.description), ValidationConverter.toValidations(s))
+      new TypeMeta(Option(s.description), ValidationsConverter.toValidations(s))
     case s: ParameterReference =>
       Option(s.$ref)
   }
@@ -265,11 +264,6 @@ object Path {
   // swagger in version 2.0 only supports Play's singleComponentPathPart - should be encoded for constraint,
   case class InPathParameter(override val value: String, constraint: String, encode: Boolean = true) extends PathElem(value)
 
-  object InPathParameter {
-    val encode = true
-    val constraint = """[^/]+"""
-  }
-
   case class FullPath(value: Seq[PathElem]) extends Expr {
     def isAbsolute = value match {
       case Root :: segments => true
@@ -326,6 +320,15 @@ object Query {
 
 }
 
+case object ParameterPlace extends Enumeration {
+  type ParameterPlace = Value
+  val PATH    = Value("path")
+  val BODY    = Value("body")
+  val FORM    = Value("formData")
+  val QUERY   = Value("query")
+  val HEADER  = Value("header")
+}
+
 object Application {
 
   // Play definition
@@ -335,7 +338,8 @@ object Application {
     fixed:            Option[String],
     default:          Option[String],
     constraint:       String,
-    encode:           Boolean
+    encode:           Boolean,
+    place:            ParameterPlace.Value
   ) extends Expr with Positional
 
   case class HandlerCall(
@@ -343,29 +347,29 @@ object Application {
     controller:       String,
     instantiate:      Boolean,
     method:           String,
-    queryParameters:  Seq[Parameter],
-    pathParameters:   Seq[Parameter],
-    bodyParameters:   Seq[Parameter]
+    parameters:       Seq[Parameter]
   ) {
-    val parameters    = queryParameters ++ pathParameters
-    val allParameters = parameters ++ bodyParameters
+    val nonBodyParameters     = parameters.filterNot(_.place == ParameterPlace.BODY)
+    val bodyParameters        = parameters.filter(_.place == ParameterPlace.BODY)
+    val queryParameters       = parameters.filter(_.place == ParameterPlace.QUERY)
+    val allParameters         = parameters
   }
 
   case class ApiCall(
     verb:             Http.Verb,
     path:             Path.FullPath,
     handler:          HandlerCall,
-    mimeIn:           MimeType,
-    mimeOut:          MimeType,
+    mimeIn:           Set[MimeType],
+    mimeOut:          Set[MimeType],
     errorMapping:     Map[String, Seq[Class[Exception]]],
-    resultType:       Type,
-    successStatus:    Int
+    resultType:       Map[Int, Type]
   )
 
   case class Model(
     calls:            Seq[ApiCall],
     definitions:      Iterable[Domain.Type]
   )
+  case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type])
 
 }
 

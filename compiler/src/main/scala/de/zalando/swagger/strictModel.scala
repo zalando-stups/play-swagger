@@ -268,6 +268,13 @@ object strictModel {
       param("patch", patch)) flatMap { p =>
         Option(p._2).toSeq.flatten map { pl => (prefix + p._1) -> pl }
       }
+    def operationNames: Set[String] =
+      getClass.getDeclaredFields.
+      filter(_.getType == classOf[Operation]).
+      filter { f => f.setAccessible(true); f.get(this) != null }.
+        map(_.getName).toSet
+    def operation(name: String): Operation =
+      getClass.getDeclaredField(name).get(this).asInstanceOf[Operation]
   }
 
 
@@ -294,9 +301,10 @@ object strictModel {
     def required: Boolean
     def collectionFormat: CF
     def name: String
-    if (collectionFormat != null) require(`type` == ParameterType.ARRAY)
+    def in: String
+    if (collectionFormat != null) require(isArray)
     if (default != null) require(!required)
-    if (`type` == ParameterType.ARRAY) require(items != null)
+    if (isArray) require(items != null)
   }
 
   /**

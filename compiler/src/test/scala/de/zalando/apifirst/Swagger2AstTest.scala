@@ -39,8 +39,8 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
       it("has correct handler") {
         val expectedParams =
           List(
-            Parameter("tags", Opt(Field("Seq[String]", Domain.Arr(Field("pets_GET_tags", Domain.Str(None,TypeMeta(None)), TypeMeta(Some("tags to filter by"))),TypeMeta(Some("tags to filter by"))), TypeMeta(Some("tags to filter by"))),TypeMeta(Some("tags to filter by"))),None,None,"[^/]+",true),
-            Parameter("limit",Opt(Field("Int", Domain.Int(TypeMeta(Some("maximum number of results to return"))), TypeMeta(Some("maximum number of results to return"))),TypeMeta(Some("maximum number of results to return"))),None,None,"[^/]+",true)
+            Parameter("tags", Opt(Field("Seq[String]", Domain.Arr(Field("pets_GET_tags", Domain.Str(None,TypeMeta(None)), TypeMeta(Some("tags to filter by"))),TypeMeta(Some("tags to filter by"))), TypeMeta(Some("tags to filter by"))),TypeMeta(Some("tags to filter by"))),None,None,"[^/]+",true, ParameterPlace.QUERY),
+            Parameter("limit",Opt(Field("Int", Domain.Int(TypeMeta(Some("maximum number of results to return"))), TypeMeta(Some("maximum number of results to return"))),TypeMeta(Some("maximum number of results to return"))),None,None,"[^/]+",true, ParameterPlace.QUERY)
           )
         call.handler.packageName mustBe "admin"
         call.handler.controller mustBe "Dashboard"

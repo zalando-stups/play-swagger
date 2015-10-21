@@ -8,6 +8,7 @@ import scala.util.parsing.input.CharSequenceReader
 /**
  * @since 17.07.2015
  */
+object HandlerParser extends HandlerParser
 // handler related part of the play's parser
 // we can use it if we won't change handler definition syntax
 trait HandlerParser extends JavaTokenParsers {
@@ -94,7 +95,7 @@ trait HandlerParser extends JavaTokenParsers {
       val className = classAndMethod.head
       val methodName = classAndMethod(1)
       val dynamic = instantiate.isDefined
-      HandlerCall(packageName, className, dynamic, methodName, Nil, Nil, Nil)
+      HandlerCall(packageName, className, dynamic, methodName, Nil)
     }
   }
 

@@ -90,7 +90,7 @@ class SingleBaseControllerGenerator extends GeneratorBase {
 
   def typeDefinitions(call: ApiCall) = {
     val requestType = call.handler.allParameters.map { _.typeName.name.asSimpleType }.mkString("(", ", ", ")") // FIXME
-    val resultType = call.resultType.name.asSimpleType
+    val resultType = call.resultType.head._2.name.asSimpleType
     val definitions =
       s"""private type #CALL#ActionRequestType = $requestType
         |  private type #CALL#ActionResultType = $resultType
@@ -116,10 +116,10 @@ class SingleBaseControllerGenerator extends GeneratorBase {
         val (definitions, requestType, resultType) = typeDefinitions(call)
         val parserCode = parser(call)
         template.
-          replaceAll("#RESPONSE_MIME_TYPE#", call.mimeOut.name).
+          replaceAll("#RESPONSE_MIME_TYPE#", call.mimeOut.head.name).
           replaceAll("#ERROR_MAPPING#", errorMapping(call)).
           replaceAll("#TYPE_DEFINITIONS#", definitions).
-          replaceAll("#SUCCESS_STATUS#", call.successStatus.toString).
+          replaceAll("#SUCCESS_STATUS#", call.resultType.head._1.toString).
           replaceAll("#PARSER#", parserCode).
           replaceAll("#PARSER_DEF#", parserDefinition(parserCode, requestType)).
           replaceAll("#PARAMETER_LIST#", parameterList(call.handler.parameters)).

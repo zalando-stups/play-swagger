@@ -5,7 +5,7 @@ import de.zalando.apifirst.Application.{ApiCall, Model}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst.Path.{FullPath, InPathParameter}
-import de.zalando.apifirst.{Application, Domain, Http}
+import de.zalando.apifirst.{ParameterPlace, Application, Domain, Http}
 import de.zalando.swagger.model.PrimitiveType._
 import de.zalando.swagger.model.{PrimitiveType, _}
 
@@ -54,11 +54,11 @@ object Swagger2Ast extends HandlerParser {
         astPath = apifirst.Path.path2path(path._1, pathParams ++ queryParams)
         handlerText <- getOrGenerateHandlerLine(operation, keyPrefix, signature, astPath, fileName)
         parseResult = parse(handlerText)
-        handler <- if (parseResult.successful) Some(parseResult.get.copy(pathParameters = pathParams, queryParameters = queryParams, bodyParameters = bodyParams)) else None
+        handler <- if (parseResult.successful) Some(parseResult.get.copy(parameters = pathParams ++ queryParams ++ bodyParams)) else None
         (mimeIn, mimeOut) = mimeTypes(operation)
         errorMapping = swaggerModel.vendorErrorMappings // FIXME should be possible to override on path and method level
         (resultType, successStatus) = responseInfo(operation, verb, path._1)
-      } yield Some(ApiCall(verb, astPath, handler, mimeIn, mimeOut, errorMapping, resultType, successStatus))
+      } yield Some(ApiCall(verb, astPath, handler, Set(mimeIn), Set(mimeOut), errorMapping, Map(successStatus -> resultType)))
     case _ =>
       None
     }
@@ -122,8 +122,8 @@ object Swagger2Ast extends HandlerParser {
     val name = SchemaConverter.parameter2Type(p, typeName)
     import Domain.paramOrRefInfo2TypeMeta
     val fullTypeName = if (p.required) name else Domain.Opt(Field(name.name.simpleName, name, TypeMeta(Option(p.description))), p)
-    // TODO don't use InPathParameter in the next line
-    Application.Parameter(p.name, fullTypeName, fixed, default, InPathParameter.constraint, InPathParameter.encode)
+    val (constraint, encode) = Constraints(p.in.toString)
+    Application.Parameter(p.name, fullTypeName, fixed, default, constraint, encode, ParameterPlace.BODY)
   }
 
   /**
