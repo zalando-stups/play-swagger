@@ -359,10 +359,10 @@ object Application {
     verb:             Http.Verb,
     path:             Path.FullPath,
     handler:          HandlerCall,
-    mimeIn:           Set[MimeType],
-    mimeOut:          Set[MimeType],
-    errorMapping:     Map[String, Seq[Class[Exception]]],
-    resultType:       Map[Int, Type]
+    mimeIn:           Set[MimeType],  // can be empty for swagger specification
+    mimeOut:          Set[MimeType],  // can be empty for swagger specification
+    errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
+    resultType:       Map[String, Type]
   )
 
   case class Model(

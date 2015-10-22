@@ -98,7 +98,7 @@ object TypeConverter extends ParameterNaming {
 
   private def allPathItems(paths: Paths): Seq[(String, ParametersListItem)] =
     Option(paths).toSeq.flatten flatMap { case (name, pathItem) =>
-      pathItem.params(append(name, ""))
+      pathItem.params(name)
     }
 
   private def responseCollector: (String, Operation) => (String, Responses) = (name, op) => name -> op.responses

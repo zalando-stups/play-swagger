@@ -92,13 +92,13 @@ object Swagger2Ast extends HandlerParser {
   // FIXME
   def responseInfo(operation: Operation, verb: Http.Verb, path: String) =
     operation.responses.filter(r => r._1.forall(_.isDigit) && r._1.toInt < 400).map { r =>
-      val status = r._1.toInt
+      val status = r._1
       val typeName = TypeName("What is this name all about?")
       val name = Option(r._2.schema).map { schema =>
         SchemaConverter.schema2Type(schema, typeName)
       }.getOrElse(Domain.Any(TypeMeta(Option(r._2.description))))
       (name, status)
-    }.headOption.getOrElse((Domain.Null(TypeMeta(None)), 200))
+    }.headOption.getOrElse((Domain.Null(TypeMeta(None)), "200"))
 
   // FIXME: these "inline" definitions (except reference) should be added to the type map
   private def nameForInlineParameter(pr: ParameterOrReference, op: Operation, verb: Verb, path: String): TypeName = pr match {

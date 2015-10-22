@@ -37,10 +37,10 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
-  private def resultTypes(prefix: String, operation: Operation): Map[Int, Type] =
+  private def resultTypes(prefix: String, operation: Operation): Map[String, Type] =
     operation.responses map {
-      case (code, definition) if code.forall(_.isDigit) => code.toInt -> findType(prefix, code)._2
-      case ("default", definition)  => ??? // FIXME
+      case (code, definition) if code.forall(_.isDigit) => code -> findType(prefix, code)._2
+      case ("default", definition)  => "default" -> findType(prefix, "default")._2
       case (other, _)               => throw new IllegalArgumentException(s"Expected numeric error code or 'default', but was $other")
     }
 
@@ -51,7 +51,7 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
   }
 
   private def fromParameterList(parameters: ParametersList, parameterNamePrefix: SimpleTag): Seq[Application.Parameter] = {
-    Option(parameters).toSeq.flatten map fromParametersListItem(parameterNamePrefix)
+    Option(parameters).toSeq.flatten flatMap fromParametersListItem(parameterNamePrefix)
   }
 
   private def verbFromOperationName(operationName: String): Seq[Verb] =
@@ -66,8 +66,6 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
   private def mimeTypes(operation: Operation) = {
     val mimeIn = orderedMediaTypeList(operation.consumes, model.consumes)
     val mimeOut = orderedMediaTypeList(operation.produces, model.produces)
-    require(mimeIn.nonEmpty)
-    require(mimeOut.nonEmpty)
     (mimeIn, mimeOut)
   }
 
@@ -78,10 +76,10 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
   }
 
   @throws[MatchError]
-  private def fromParametersListItem(prefix: String)(li: ParametersListItem): Application.Parameter = li match {
-    case jr @ JsonReference(ref) => ??? // TODO this probably can only be a parameter reference ?
-    case bp: BodyParameter[_] => fromBodyParameter(prefix, bp)
-    case nbp: NonBodyParameterCommons[_, _] => fromNonBodyParameter(prefix, nbp)
+  private def fromParametersListItem(prefix: String)(li: ParametersListItem): Seq[Application.Parameter] = li match {
+    case jr @ JsonReference(ref) => Nil // a parameter reference, probably can be ignored
+    case bp: BodyParameter[_] => Seq(fromBodyParameter(prefix, bp))
+    case nbp: NonBodyParameterCommons[_, _] => Seq(fromNonBodyParameter(prefix, nbp))
   }
 
   private def fromBodyParameter(prefix: String, p: BodyParameter[_]): Application.Parameter = {
@@ -101,11 +99,20 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
 
   private def findType(prefix: String, bp: String): (String, Type) = {
     val name = append(prefix, bp)
-    val typeDef = typeDefs.find(_._1 == name).map(_._2).getOrElse {
+    val typeDef = typeDefByName(name) orElse findTypeByPath(prefix, bp) getOrElse {
+      println(typeDefs.mkString("\n"))
       throw new IllegalStateException(s"Could not find type definition with a name $name")
     }
     (name, typeDef)
   }
+
+  private def findTypeByPath(fullPath: String, name: String): Option[Type] = {
+    val (path, operation) = pathPrefix(fullPath)
+    Http.string2verb(operation) flatMap { _ => typeDefByName(append(path, name)) }
+  }
+
+  private def typeDefByName(name: String): Option[Type] =
+    typeDefs.find(_._1 == name).map(_._2)
 
 }
 
