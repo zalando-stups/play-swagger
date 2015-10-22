@@ -46,6 +46,40 @@ object Hypermedia {
 
 object Domain {
 
+  object naming {
+    object dsl {
+      import scala.language.implicitConversions
+      implicit def nameToNameOps(name: Name) = new NameDsl(name)
+      implicit def stringToName(s: String) = Name(s)
+      class NameDsl(val name: Name) {
+        def /(pp: String) = name.copy(parts = name.parts :+ pp)
+        def /(other: Name) = merge(other)
+        private def merge(other: Name) = name.copy(parts = name.parts ++ other.parts)
+      }
+    }
+
+    case class Name(parts: List[String]) {
+      import Name._
+      val qualified = if (parts.isEmpty) delimiter else delimiter + parts.mkString(delimiter)
+      val simple = if (parts.isEmpty) delimiter else parts.last
+      val namespace = if (parts.isEmpty) root else Name(parts.init)
+      override def toString = qualified
+    }
+
+    object Name {
+      val delimiter = "/"
+      val root: Name = Name(List.empty)
+      def apply(s: String): Name = parse(s)
+      def apply()         : Name = Name.root
+      private def parse(s: String) = {
+        val normalized = s.dropWhile(_.toString == delimiter).split(delimiter, -1).toList
+        val parts = if (normalized.length == 1 && normalized(0).isEmpty) List.empty else normalized
+        require(parts.filter(_.isEmpty).isEmpty, "empty names are not allowed: " + parts.mkString("[", ",", "]"))
+        Name(parts)
+      }
+    }
+  }
+
   type ModelDefinition = Iterable[Domain.Type]
 
   case class TypeName(fullName: String) {

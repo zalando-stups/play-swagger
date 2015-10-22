@@ -221,7 +221,7 @@ object TypeConverter extends ParameterNaming {
 
     // FIXME if discriminator is set then `x-apifirst-model` should be one of the possible TypeKinds
     val meta = TypeMeta(None, Nil, ModelKind.Concrete)
-    Seq(name -> Domain.TypeDef(TypeName(name), fields, extend, TypeMeta(None)))
+    Seq(name -> Domain.TypeDef(TypeName(name), fields, extend, meta))
   }
 
   implicit def fromFileSchema[T](schema: FileSchema[T], required: Seq[String]): NamedTypes = {
