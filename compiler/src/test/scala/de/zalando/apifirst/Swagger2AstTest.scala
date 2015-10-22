@@ -16,7 +16,7 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
 
   describe("Swagger2Ast Converter") {
 
-    val spec = new File("compiler/src/test/resources/examples/simple.petstore.api.yaml")
+    val spec = new File("compiler/src/test/resources/examples/todo/simple.petstore.api.yaml")
     val simple = YamlParser.parse(spec)
     val model = Swagger2Ast.convert("x-api-first", spec)(simple)
 
@@ -36,18 +36,19 @@ class Swagger2AstTest extends FunSpec with MustMatchers {
         call.verb mustBe GET
       }
 
-      it("has correct handler") {
-        val expectedParams =
-          List(
-            Parameter("tags", Opt(Field("Seq[String]", Domain.Arr(Field("pets_GET_tags", Domain.Str(None,TypeMeta(None)), TypeMeta(Some("tags to filter by"))),TypeMeta(Some("tags to filter by"))), TypeMeta(Some("tags to filter by"))),TypeMeta(Some("tags to filter by"))),None,None,"[^/]+",true, ParameterPlace.QUERY),
-            Parameter("limit",Opt(Field("Int", Domain.Int(TypeMeta(Some("maximum number of results to return"))), TypeMeta(Some("maximum number of results to return"))),TypeMeta(Some("maximum number of results to return"))),None,None,"[^/]+",true, ParameterPlace.QUERY)
-          )
-        call.handler.packageName mustBe "admin"
-        call.handler.controller mustBe "Dashboard"
-        call.handler.instantiate mustBe false
-        call.handler.method mustBe "methodLevel"
-        call.handler.parameters mustBe expectedParams
-      }
+// TODO Commented out prior to AST refactoring as part of #14
+//      it("has correct handler") {
+//        val expectedParams =
+//          List(
+//            Parameter("tags", Opt(Field("Seq[String]", Domain.Arr(Field("pets_GET_tags", Domain.Str(None,TypeMeta(None)), TypeMeta(Some("tags to filter by"))),TypeMeta(Some("tags to filter by"))), TypeMeta(Some("tags to filter by"))),TypeMeta(Some("tags to filter by"))),None,None,"[^/]+",true, ParameterPlace.QUERY),
+//            Parameter("limit",Opt(Field("Int", Domain.Int(TypeMeta(Some("maximum number of results to return"))), TypeMeta(Some("maximum number of results to return"))),TypeMeta(Some("maximum number of results to return"))),None,None,"[^/]+",true, ParameterPlace.QUERY)
+//          )
+//        call.handler.packageName mustBe "admin"
+//        call.handler.controller mustBe "Dashboard"
+//        call.handler.instantiate mustBe false
+//        call.handler.method mustBe "methodLevel"
+//        call.handler.parameters mustBe expectedParams
+//      }
     }
   }
 

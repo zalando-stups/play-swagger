@@ -79,7 +79,7 @@ class MethodsGenerator(val targetNamespace: String, val defaultNamespace: String
   override def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
                                     (implicit ast: Model): Option[(Set[String], String)] = {
     typeDef match {
-      case t@TypeDef(typeName, fields, extend, meta, _) =>
+      case t@TypeDef(typeName, fields, extend, meta) =>
         Some((Set.empty[String], s"""def ${TypeName.escape("create"+ typeName.asSimpleType)} = _generate(${generatorName(t)})"""))
       case _ => None
     }
@@ -101,15 +101,12 @@ class TestClassGenerator(val targetNamespace: String, val defaultNamespace: Stri
   override def generateSingleTypeDef(namespace: String, imports: Set[String])(typeDef: Type)
                                     (implicit ast: Model): Option[(Set[String], String)] = {
     typeDef match {
-      case t@TypeDef(typeName, fields, extend, meta, _) =>
+      case t@TypeDef(typeName, fields, extend, meta) =>
         Some((t.imports ++ imports, typeDefType(namespace, imports)(t)))
       case c: Container =>
         Some((c.imports ++ imports, containerType(namespace, imports)(c)))
       case r: ReferenceObject =>
         Some((imports, generatorName(r)))
-      case other: Entity =>
-        println("Not generating class for entity " + other) // TODO
-        None
       case other =>
         Some((imports, simpleType(other)))
     }
@@ -140,11 +137,11 @@ trait TestClassGeneratorBase extends GeneratorBase {
 
   def classFields(namespace: String, imports: Set[String])(typeDef: TypeDef)(implicit ast: Model) =
     typeDef.allFields map { f =>
-      s"""$PAD$PAD${TypeName.escape(f.name.simpleName)} <- ${generatorNameForType(f.kind, typeDef.name)(namespace, imports)}""".stripMargin
+      s"""$PAD$PAD${TypeName.escape(f.name.simpleName)} <- ${generatorNameForType(f.tpe, typeDef.name)(namespace, imports)}""".stripMargin
     }
 
   def generatorNameForType(tpe: Type, thisType: TypeName)(namespace: String, imports: Set[String])(implicit ast: Model) = tpe match {
-    case t @ TypeDef(_, _, _, _, _) => relativeGeneratorName(t, thisType)
+    case t @ TypeDef(_, _, _, _) => relativeGeneratorName(t, thisType)
     case r: Reference => relativeGeneratorName(r, thisType)
     case c : Container => containerType(namespace, imports)(c)
     case _ => simpleType(tpe)
