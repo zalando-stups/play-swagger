@@ -63,10 +63,8 @@ object ValidationsConverter {
   private def toObjectValidations(p: ObjectValidation): Seq[String] =
     Seq(
       ifDefined(p.maxProperties, s"maxProperties(${p.maxProperties.get})"),
-      ifDefined(p.minProperties, s"minProperties(${p.minProperties.get})"),
-      ifDefined(Option(p.additionalProperties), s"additionalProperties(${p.additionalProperties})")
+      ifDefined(p.minProperties, s"minProperties(${p.minProperties.get})")
     ).flatten
-
 
   def toValidations(p: CommonProperties):Seq[String] = p.`type` match {
     case PrimitiveType.STRING =>

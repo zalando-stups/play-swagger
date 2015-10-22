@@ -282,7 +282,7 @@ object strictModel {
 
   case class JsonReference(
     @JsonProperty(value = "$ref", required = true) $ref: Ref
-  ) extends ParametersListItem with ResponseValue with SchemaOrFileSchema with SchemaOrSchemaArray with RefChecker
+  ) extends ParametersListItem with ResponseValue with RefChecker
 
   sealed trait Parameter[T] extends ParametersListItem
 
@@ -298,6 +298,7 @@ object strictModel {
     def default: Default[T]
     def format: String
     def isArray = `type`== ParameterType.ARRAY
+    def inPath = in == "path"
     def required: Boolean
     def collectionFormat: CF
     def name: String
@@ -318,7 +319,7 @@ object strictModel {
   case class BodyParameter[T](
     @JsonProperty(required = true) name:    String,
     @JsonProperty(required = true) in:      String,
-    @JsonProperty(required = true) schema:  SchemaOrReference,
+    @JsonProperty(required = true) schema:  SchemaOrFileSchema[T],
     description:                            String,
     required:                               Boolean = false
   ) extends Parameter[T] with VendorExtensions with ValidationBase
@@ -523,17 +524,12 @@ object strictModel {
 
   case class Response[T](
     @JsonProperty(required = true) description: String,
-    schema: SchemaOrFileSchema,
+    schema: SchemaOrFileSchema[T],
     headers: Headers,
     examples: Examples
   ) extends ResponseValue with VendorExtensions
 
 
-  sealed trait SchemaOrReference
-
-  sealed trait SchemaOrFileSchema extends SchemaOrReference
-
-  sealed trait SchemaOrSchemaArray extends SchemaOrFileSchema
   /**
    *
    * @param responses     Response objects names can either be any valid HTTP status code or 'default'.
@@ -633,7 +629,7 @@ object strictModel {
     readOnly:               Boolean = false,
     externalDocs:           ExternalDocs,
     example:                Example[T]
-  ) extends VendorExtensions with SchemaOrFileSchema
+  ) extends VendorExtensions
 
   class Schema[T](
     val format:                 String,
@@ -655,22 +651,22 @@ object strictModel {
     val maxProperties:          MaxProperties,
     val minProperties:          MinProperties,
     val required:               StringArray,
-    val additionalProperties:   SchemaOrBoolean,
+    val additionalProperties:   SchemaOrBoolean[T],
     val `type`:                 JsonSchemaType,
     val properties:             SchemaProperties,
     val allOf:                  Option[SchemaArray],
-    val items:                  Option[SchemaOrSchemaArray],
+    val items:                  Option[SchemaOrSchemaArray[_]],
     val discriminator:          String,
     val xml:                    Xml,
     val readOnly:               Boolean = false,
     val externalDocs:           ExternalDocs,
     val example:                Example[T]
-  ) extends VendorExtensions with SchemaOrSchemaArray with AllValidations[T] with ObjectValidation {
+  ) extends VendorExtensions with AllValidations[T] with ObjectValidation {
     require(allOf.forall(_.nonEmpty))
     validateSchemaArray(items)
     validateSchemaArray(allOf)
     private def validateSchemaArray(a: Option[_]) =
-      a.isEmpty || a.get.isInstanceOf[SchemaOrFileSchema] ||
+      a.isEmpty || a.get.isInstanceOf[SchemaOrFileSchema[_]] ||
         (a.get.isInstanceOf[SchemaArray] && a.get.asInstanceOf[SchemaArray].nonEmpty)
   }
 
@@ -851,7 +847,7 @@ object strictModel {
   type ParametersList         = ManyUnique[ParametersListItem]
   type SimpleTags             = ManyUnique[SimpleTag]
   type StringArray            = Many[String]
-  type SchemaArray            = Many[SchemaOrReference] with SchemaOrSchemaArray
+  type SchemaArray            = Many[SchemaOrFileSchema[_]]
 
   type ParameterDefinitions   = AdditionalProperties[Parameter[_]]
   type ResponseDefinitions    = AdditionalProperties[Response[_]]
@@ -861,9 +857,14 @@ object strictModel {
   type Headers                = AdditionalProperties[Header[_]]
   type Responses              = AdditionalProperties[Response[_]]
   type Examples               = AdditionalProperties[Any]
-  type SchemaProperties       = AdditionalProperties[SchemaOrReference]
+  type SchemaProperties       = AdditionalProperties[SchemaOrFileSchema[_]]
   type Paths                  = AdditionalProperties[PathItem] with VendorExtensions
   type Oauth2Scopes           = AdditionalProperties[String]
+
+  type SchemaOrReference[T]   = Either[Schema[T], JsonReference]
+  type SchemaOrBoolean[T]     = Either[SchemaOrReference[T], Boolean]
+  type SchemaOrFileSchema[T]  = Either[SchemaOrReference[T], FileSchema[T]]
+  type SchemaOrSchemaArray[T] = Either[SchemaOrReference[T], SchemaArray]
 
   // -------------------------- Validations --------------------------
 
@@ -923,13 +924,11 @@ object strictModel {
   object ObjectValidation {
     type MaxProperties          = Option[Int]
     type MinProperties          = Option[Int]
-    type SchemaOrBoolean        = Any // How can this be described more precisely ?
   }
   trait ObjectValidation extends ValidationBase {
     import ObjectValidation._
     def maxProperties:          MaxProperties
     def minProperties:          MinProperties
-    def additionalProperties:   SchemaOrBoolean
     require(maxProperties.forall(_>=0))
     require(minProperties.forall(_>=0))
   }

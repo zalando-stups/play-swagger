@@ -38,8 +38,10 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
   private def resultTypes(prefix: String, operation: Operation): Map[Int, Type] =
-    operation.responses map { resp =>
-      resp._1.toInt -> findType(prefix, resp._1)._2
+    operation.responses map {
+      case (code, definition) if code.forall(_.isDigit) => code.toInt -> findType(prefix, code)._2
+      case ("default", definition)  => ??? // FIXME
+      case (other, _)               => throw new IllegalArgumentException(s"Expected numeric error code or 'default', but was $other")
     }
 
   private def parameters(path: PathItem, operation: Operation, namePrefix: String) = {

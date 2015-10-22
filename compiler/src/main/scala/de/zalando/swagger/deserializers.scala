@@ -10,10 +10,11 @@ import de.zalando.swagger.strictModel._
 import com.fasterxml.jackson.core.{JsonParser => JParser, _}
 
 /**
- * @author  slasch 
- * @since   09.10.2015.
- */
+  * @author  slasch
+  * @since   09.10.2015.
+  */
 object deserializers {
+  import scala.collection.JavaConversions._
 
   /*
     TODO: the error location is pointing to the wrong line and column because we are not working with the original file,
@@ -21,13 +22,11 @@ object deserializers {
  */
 
   /**
-   * Deserializer class for SecurityDefinitions
-   * Creates right instance based on the data included in the specification
-   *
-   */
+    * Deserializer class for SecurityDefinitions
+    * Creates right instance based on the data included in the specification
+    *
+    */
   private class SecurityDefinitionDeserializer extends StdDeserializer[SecurityDefinition](classOf[SecurityDefinition]) {
-
-    import scala.collection.JavaConversions._
 
     @Override
     def deserialize(jp: JParser, ctxt: DeserializationContext): SecurityDefinition = {
@@ -95,21 +94,19 @@ object deserializers {
   }
 
   /**
-   * Deserializer class for ParametersListItem
-   *
-   * Creates right instance based on the data included in the specification for one of following parameter list items:
-   *
-   * - JsonRef($ref)
-   * - BodyParameter(in: body)
-   * - PathParameter(in: path)
-   * - FormDataParameter(in: formData)
-   * - QueryParameter(in: query)
-   * - HeaderParameter(in: header)
-   *
-   */
+    * Deserializer class for ParametersListItem
+    *
+    * Creates right instance based on the data included in the specification for one of following parameter list items:
+    *
+    * - JsonRef($ref)
+    * - BodyParameter(in: body)
+    * - PathParameter(in: path)
+    * - FormDataParameter(in: formData)
+    * - QueryParameter(in: query)
+    * - HeaderParameter(in: header)
+    *
+    */
   private class ParametersListItemDeserializer[ParamType <: ParametersListItem] extends StdDeserializer[ParamType](classOf[ParametersListItem]) {
-
-    import scala.collection.JavaConversions._
 
     @Override
     def deserialize(jp: JParser, ctxt: DeserializationContext): ParamType = {
@@ -152,12 +149,11 @@ object deserializers {
     }
   }
 
-  private class SchemaOrFileSchemaDeserializer extends StdDeserializer[SchemaOrFileSchema](classOf[SchemaOrFileSchema]) {
 
-    import scala.collection.JavaConversions._
+  private class SchemaOrFileSchemaDeserializer[T] extends StdDeserializer[SchemaOrFileSchema[T]](classOf[SchemaOrFileSchema[T]]) {
 
     @Override
-    def deserialize(jp: JParser, ctxt: DeserializationContext): SchemaOrFileSchema = {
+    def deserialize(jp: JParser, ctxt: DeserializationContext): SchemaOrFileSchema[T] = {
       val mapper = jp.getCodec.asInstanceOf[ObjectMapper]
       val root = mapper.readTree(jp).asInstanceOf[BaseJsonNode]
 
@@ -167,29 +163,46 @@ object deserializers {
         val typeField = getFieldValue(fields, "type")
         typeField match {
           case "file" =>
-            mapper.convertValue(root, classOf[FileSchema[_]])
+            Right(mapper.convertValue(root, classOf[FileSchema[T]]))
           case other =>
-            val ref = getFieldValue(fields, "$ref")
-            if (ref == null || ref.trim.isEmpty)
-              mapper.convertValue(root, classOf[Schema[_]])
-            else
-              mapper.convertValue(root, classOf[JsonReference])
+            Left(schemaOrReference(mapper, root))
         }
       }
     }
   }
 
-  private class SchemaOrSchemaArrayDeserializer extends StdDeserializer[SchemaOrSchemaArray](classOf[SchemaOrSchemaArray]) {
+  private class AnySchemaDeserializer extends StdDeserializer[SchemaOrSchemaArray[_]](classOf[SchemaOrSchemaArray[_]]) {
 
     @Override
-    def deserialize(jp: JParser, ctxt: DeserializationContext): SchemaOrSchemaArray = {
+    def deserialize(jp: JParser, ctxt: DeserializationContext): SchemaOrSchemaArray[_] = {
       val mapper = jp.getCodec.asInstanceOf[ObjectMapper]
       val root = mapper.readTree(jp).asInstanceOf[BaseJsonNode]
 
       if (root == null || root == NullNode.instance) null
-      else if (root.isArray) mapper.convertValue(root, classOf[Many[SchemaOrReference]]).asInstanceOf[SchemaOrSchemaArray]
-      else mapper.convertValue(root, classOf[SchemaOrFileSchema]).asInstanceOf[SchemaOrSchemaArray]
+      else if (root.isArray) Right(mapper.convertValue(root, classOf[SchemaArray]))
+      else Left(schemaOrReference(mapper, root))
     }
+  }
+
+  private class SchemaOrReferenceDeserializer extends StdDeserializer[SchemaOrReference[_]](classOf[SchemaOrReference[_]]) {
+
+    @Override
+    def deserialize(jp: JParser, ctxt: DeserializationContext): SchemaOrReference[_] = {
+      val mapper = jp.getCodec.asInstanceOf[ObjectMapper]
+      val root = mapper.readTree(jp).asInstanceOf[BaseJsonNode]
+
+      if (root == null || root == NullNode.instance) null
+      else schemaOrReference(mapper, root)
+    }
+  }
+
+  def schemaOrReference[T](mapper: ObjectMapper, root: BaseJsonNode): SchemaOrReference[T] = {
+    val fields = root.fields.toSeq
+    val ref = getFieldValue(fields, "$ref")
+    if (ref == null || ref.trim.isEmpty)
+      Left(mapper.convertValue(root, classOf[Schema[T]]))
+    else
+      Right(mapper.convertValue(root, classOf[JsonReference]))
   }
 
   private class JsonSchemaTypeDeserializer extends StdDeserializer[JsonSchemaType](classOf[JsonSchemaType]) {
@@ -209,6 +222,21 @@ object deserializers {
         throw new JsonParseException(s"'JsonSchemaType must be array or primitive type", jp.getTokenLocation)
     }
   }
+
+  private class SchemaOrBooleanDeserializer extends StdDeserializer[SchemaOrBoolean[_]](classOf[SchemaOrBoolean[_]]) {
+
+    @Override
+    def deserialize(jp: JParser, ctxt: DeserializationContext): SchemaOrBoolean[_] = {
+      val mapper = jp.getCodec.asInstanceOf[ObjectMapper]
+      val root = mapper.readTree(jp).asInstanceOf[BaseJsonNode]
+
+      if (root == null || root == NullNode.instance) null
+      else if (root.isBoolean) Right(root.asBoolean())
+      else if (root.isObject) Left(schemaOrReference(mapper, root))
+      else throw new JsonParseException(s"'Could not recognize boolean or Schema", jp.getTokenLocation)
+    }
+  }
+
 
   private def checkTypeIsNotFile(fields: Seq[Entry[SimpleTag, JsonNode]], jp: JParser): Unit =
     if ("File".equalsIgnoreCase(getFieldValue(fields, "type")))
@@ -232,11 +260,16 @@ object deserializers {
   private val arrayJsonSchemaDeserializer = new JsonSchemaTypeDeserializer
   parametersListItemModule.addDeserializer(classOf[JsonSchemaType], arrayJsonSchemaDeserializer)
 
-  private val schemaOrSchemaArrayDeserializer = new SchemaOrSchemaArrayDeserializer
-  parametersListItemModule.addDeserializer(classOf[SchemaOrSchemaArray], schemaOrSchemaArrayDeserializer)
+  private val schemaOrBooleanDeserializer = new SchemaOrBooleanDeserializer
+  parametersListItemModule.addDeserializer(classOf[SchemaOrBoolean[_]], schemaOrBooleanDeserializer)
 
   private val schemaOrFileSchemaDeserializer = new SchemaOrFileSchemaDeserializer
-  parametersListItemModule.addDeserializer(classOf[SchemaOrReference], schemaOrFileSchemaDeserializer)
-  parametersListItemModule.addDeserializer(classOf[SchemaOrFileSchema], schemaOrFileSchemaDeserializer)
+  parametersListItemModule.addDeserializer(classOf[SchemaOrFileSchema[_]], schemaOrFileSchemaDeserializer)
+
+  private val schemaOrReferenceDeserializer = new SchemaOrReferenceDeserializer
+  parametersListItemModule.addDeserializer(classOf[SchemaOrReference[_]], schemaOrReferenceDeserializer)
+
+  private val anySchemaDeserializer = new AnySchemaDeserializer
+  parametersListItemModule.addDeserializer(classOf[SchemaOrSchemaArray[_]], anySchemaDeserializer)
 
 }

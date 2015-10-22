@@ -368,6 +368,7 @@ object Application {
     calls:            Seq[ApiCall],
     definitions:      Iterable[Domain.Type]
   )
+
   case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type])
 
 }

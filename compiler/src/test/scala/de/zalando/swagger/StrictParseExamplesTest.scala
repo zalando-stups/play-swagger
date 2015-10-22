@@ -9,8 +9,7 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers {
 
   val modelFixtures = new File("compiler/src/test/resources/model").listFiles
 
-  val callsFixtures = new File("compiler/src/test/resources/controllers").listFiles
-/*
+  val callsFixtures = new File("compiler/src/test/resources/examples").listFiles
 
   describe("Strict Swagger Parser model") {
     modelFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
@@ -21,7 +20,7 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers {
       }
     }
   }
-*/
+
 
   describe("Strict Swagger Parser calls") {
     callsFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
