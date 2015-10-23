@@ -2,6 +2,8 @@ package de.zalando.apifirst
 
 import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain.Type
+import de.zalando.apifirst.Domain.naming.Name
+import de.zalando.apifirst.Domain.relations.ClassRelation
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.swagger.ValidationsConverter
 import de.zalando.swagger.model._
@@ -80,6 +82,23 @@ object Domain {
     }
   }
 
+  object relations {
+    object InheritanceStrategy extends Enumeration {
+      type InheritanceStrategy = Value
+      val Concrete, Mixin, Abstract = Value
+    }
+
+    import InheritanceStrategy._
+
+    sealed trait ClassRelation
+
+    case class HierarchyRoot(inheritanceStrategy: InheritanceStrategy, tpe: TypeDef) extends ClassRelation
+
+    case class HierarchyDescendant(root: HierarchyRoot, tpe: TypeDef) extends ClassRelation
+
+    case class Composition(parts: Seq[TypeDef]) extends ClassRelation
+  }
+
   type ModelDefinition = Iterable[Domain.Type]
 
   case class TypeName(fullName: String) {
@@ -135,15 +154,8 @@ object Domain {
     }
   }
 
-  // represents `x-apifirst-model` extension for inherited types
-  object ModelKind extends Enumeration {
-    type ModelKind = Value
-    val Concrete, Abstract, Mixin = Value
-  }
-
-  import ModelKind._
-  case class TypeMeta(comment: Option[String], constraints: Seq[String], kind: ModelKind = Concrete) {
-    override def toString = s"""TypeMeta(${escapedComment}, ${constraints}, ${kind})"""
+  case class TypeMeta(comment: Option[String], constraints: Seq[String]) {
+    override def toString = s"""TypeMeta(${escapedComment}, ${constraints}"""
 
     val escapedComment = comment match {
       case None => "None"
@@ -405,6 +417,7 @@ object Application {
   )
 
   case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type])
+//  case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type], relations: Map[Name, ClassRelation])
 
 }
 
