@@ -218,9 +218,7 @@ object TypeConverter extends ParameterNaming {
   implicit def fromTypes(name: Name, types: NamedTypes, discriminator: Option[String]): NamedTypes = {
     val extend = Nil // FIXME
     val fields = types map { t => Field(TypeName(t._1.simple), t._2, TypeMeta(None)) }
-
-    // FIXME if discriminator is set then `x-apifirst-model` should be one of the possible TypeKinds
-    val meta = TypeMeta(None, Nil, ModelKind.Concrete)
+    val meta = TypeMeta(None, Nil)
     Seq(name -> Domain.TypeDef(TypeName(name.simple), fields, extend, meta))
   }
 

@@ -8,11 +8,13 @@ class NameTest extends FunSpec with MustMatchers {
     import Domain.naming._
     import Domain.naming.dsl._
 
-    val n1 = Name("foo") / "bar"
-    val n2 = Name("baz")
-    val n3 = n1 / n2 / "qux"
+
 
     it("should correctly compose") {
+      val n1 = Name("foo") / "bar"
+      val n2 = Name("baz")
+      val n3 = n1 / n2 / "qux"
+
       n1.toString mustBe "/foo/bar"
       n2.toString mustBe "/baz"
       n3.toString mustBe "/foo/bar/baz/qux"
@@ -22,7 +24,18 @@ class NameTest extends FunSpec with MustMatchers {
       ((n1 / n2) / (n2 / n1)).toString mustBe "/foo/bar/baz/baz/foo/bar"
     }
 
+    it("should have correct qualified name representations") {
+      val n1 = Name("foo") / "bar"
+      val n2 = Name("baz")
+      val n3 = n1 / n2 / "qux"
+
+      n1.qualified mustBe "/foo/bar"
+      n2.qualified mustBe "/baz"
+      n3.qualified mustBe "/foo/bar/baz/qux"
+    }
+
     it("should have correct simple name representations") {
+      Name.root.simple mustBe "/"
       Name().simple mustBe "/"
       Name("/foo").simple mustBe "foo"
       Name("/foo/bar").simple mustBe "bar"
@@ -30,13 +43,7 @@ class NameTest extends FunSpec with MustMatchers {
       Name("/foo/bar/baz/qux").simple mustBe "qux"
     }
 
-    it("should have correct qualified name representations") {
-      n1.qualified mustBe "/foo/bar"
-      n2.qualified mustBe "/baz"
-      n3.qualified mustBe "/foo/bar/baz/qux"
-    }
-
-    it("should have correct namespaces") {
+    it("should know its correct namespace") {
       Name("/foo").namespace mustBe Name("/")
       Name("/foo/bar").namespace mustBe Name("/foo")
       Name("/foo/bar/baz").namespace mustBe Name("/foo/bar")
