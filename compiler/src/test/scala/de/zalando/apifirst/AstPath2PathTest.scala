@@ -1,6 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Application.Parameter
+import de.zalando.apifirst.Domain.naming.Name
 import de.zalando.apifirst.Path._
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -12,9 +13,9 @@ class AstPath2PathTest extends FunSpec with MustMatchers {
     val aasb = Path.path2path("/a", List())
     val rasb = Path.path2path("a", List())
     val nasb = Path.path2path("a/b", List())
-    val parm = Path.path2path("/{a}", List(Parameter("a", null, null, null, "[0-9]+", true, ParameterPlace.PATH)))
-    val ignr = Path.path2path("/a", List(Parameter("a", null, null, null, null, true, ParameterPlace.QUERY)))
-    val pabm = Path.path2path("/a/{a}", List(Parameter("a", null, null, null, "[0-9]+", true, ParameterPlace.PATH)))
+    val parm = Path.path2path("/{a}", List(Parameter(Name("a"), null, null, null, "[0-9]+", true, ParameterPlace.PATH)))
+    val ignr = Path.path2path("/a", List(Parameter(Name("a"), null, null, null, null, true, ParameterPlace.QUERY)))
+    val pabm = Path.path2path("/a/{a}", List(Parameter(Name("a"), null, null, null, "[0-9]+", true, ParameterPlace.PATH)))
 
     val rend = Path.path2path("/a/b/c/", List())
 

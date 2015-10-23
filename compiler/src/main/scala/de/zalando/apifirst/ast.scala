@@ -2,6 +2,7 @@ package de.zalando.apifirst
 
 import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain.Type
+import de.zalando.apifirst.Domain.naming.Name
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.swagger.ValidationsConverter
 import de.zalando.swagger.model._
@@ -49,8 +50,9 @@ object Domain {
   object naming {
     object dsl {
       import scala.language.implicitConversions
-      implicit def nameToNameOps(name: Name) = new NameDsl(name)
-      implicit def stringToName(s: String) = Name(s)
+      implicit def stringToNameOps(s: String): NameDsl = new NameDsl(Name(s))
+      implicit def nameToNameOps(name: Name): NameDsl = new NameDsl(name)
+      implicit def stringToName(s: String): Name = Name(s)
       class NameDsl(val name: Name) {
         def /(pp: String) = name.copy(parts = name.parts :+ pp)
         def /(other: Name) = merge(other)
@@ -73,8 +75,8 @@ object Domain {
       def apply()         : Name = Name.root
       private def parse(s: String) = {
         val normalized = s.dropWhile(_.toString == delimiter).split(delimiter, -1).toList
-        val parts = if (normalized.length == 1 && normalized(0).isEmpty) List.empty else normalized
-        require(parts.filter(_.isEmpty).isEmpty, "empty names are not allowed: " + parts.mkString("[", ",", "]"))
+        val parts = if (normalized.length == 1 && normalized.head.isEmpty) List.empty else normalized
+        require(!parts.exists(_.isEmpty), "empty names are not allowed: " + parts.mkString("[", ",", "]"))
         Name(parts)
       }
     }
@@ -226,7 +228,7 @@ object Domain {
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
     extends Container(s"Map[String, ${tpe.name.oneUp}]", tpe, meta, Set("scala.collection.immutable.Map"))
 
-  case class Field( val name: TypeName, val tpe: Type, val meta: TypeMeta){
+  case class Field(name: TypeName, tpe: Type, meta: TypeMeta){
     override def toString = s"""Field("$name", $tpe, $meta)"""
 
     def imports = tpe match {
@@ -368,7 +370,7 @@ object Application {
 
   // Play definition
   case class Parameter(
-    name:             String,
+    name:             Name,
     typeName:         Domain.Type,
     fixed:            Option[String],
     default:          Option[String],
@@ -404,7 +406,7 @@ object Application {
     definitions:      Iterable[Domain.Type]
   )
 
-  case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type])
+  case class StrictModel(calls: Seq[ApiCall], definitions: Map[Name, Domain.Type])
 
 }
 

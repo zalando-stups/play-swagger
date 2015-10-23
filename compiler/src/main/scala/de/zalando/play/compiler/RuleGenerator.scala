@@ -24,7 +24,7 @@ object RuleGenerator {
 
   private def parameters2parameters(call: ApiCall): Seq[Parameter] = {
     call.handler.parameters.toSeq map { p =>
-      Parameter(p.name, p.typeName.name.asSimpleType, p.fixed, p.default)
+      Parameter(p.name.simple, p.typeName.name.asSimpleType, p.fixed, p.default)
     }
   }
 

@@ -3,6 +3,7 @@ package de.zalando.swagger
 import de.zalando.apifirst
 import de.zalando.apifirst.Application.{ApiCall, Model}
 import de.zalando.apifirst.Domain._
+import de.zalando.apifirst.Domain.naming.Name
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst.Path.{FullPath, InPathParameter}
 import de.zalando.apifirst.{ParameterPlace, Application, Domain, Http}
@@ -123,7 +124,7 @@ object Swagger2Ast extends HandlerParser {
     import Domain.paramOrRefInfo2TypeMeta
     val wrappedType = if (p.required) tpe else Domain.Opt(tpe, p)
     val (constraint, encode) = Constraints(p.in.toString)
-    Application.Parameter(p.name, wrappedType, fixed, default, constraint, encode, ParameterPlace.BODY)
+    Application.Parameter(Name(p.name), wrappedType, fixed, default, constraint, encode, ParameterPlace.BODY)
   }
 
   /**

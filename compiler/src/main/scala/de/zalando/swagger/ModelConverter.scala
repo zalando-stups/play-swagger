@@ -2,6 +2,7 @@ package de.zalando.swagger
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Domain.Type
+import de.zalando.apifirst.Domain.naming.Name
 import de.zalando.swagger.strictModel.SwaggerModel
 
 /**
@@ -9,15 +10,8 @@ import de.zalando.swagger.strictModel.SwaggerModel
   * @since   20.10.2015.
   */
 trait ParameterNaming {
-  val PATH_SEPARATOR = "/"
-  def append(prefix: String, suffix: String) = prefix + PATH_SEPARATOR + suffix
-  def pathPrefix(name: String) = {
-    val parts = name.split(PATH_SEPARATOR)
-    (parts.init.mkString("/"), parts.last)
-  }
-  def simple(name: String) = name.split(PATH_SEPARATOR).lastOption
   type Types = Seq[Type]
-  type NamedType = (String, Type)
+  type NamedType = (Name, Type)
   type NamedTypes = Seq[NamedType]
 }
 trait StringUtil {

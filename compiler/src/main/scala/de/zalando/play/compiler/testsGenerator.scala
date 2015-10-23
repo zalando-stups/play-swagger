@@ -145,7 +145,7 @@ class SingleTestGenerator(basePath: String) extends CallsGeneratorBase with Test
     def inputGenerators(call: ApiCall)(implicit ast: Model) = call.handler.parameters map { param =>
       val relativeType = TypeName("", param.typeName.name.simpleName)
       val generatorName = generatorNameForType(param.typeName, relativeType)("", Set.empty[String])
-      s"""${TypeName.escape(param.name)} <- $generatorName"""
+      s"""${TypeName.escape(param.name.simple)} <- $generatorName"""
     } mkString "\n"
 
     def parameters(call: ApiCall) = {
@@ -168,7 +168,7 @@ class SingleTestGenerator(basePath: String) extends CallsGeneratorBase with Test
       val pathSuffix = call.path.string { p: InPathParameter => "${" + p.value + "}" }
       // TODO this won't work for Containers
       val query = call.handler.queryParameters map { p =>
-        singleQueryParam(p.name, p.typeName)
+        singleQueryParam(p.name.simple, p.typeName)
       }
       val fullQuery = if (query.isEmpty) "" else query.mkString("?", "&", "")
       "s\"\"\"" +  fullPath(namespace, pathSuffix) + fullQuery + "\"\"\""

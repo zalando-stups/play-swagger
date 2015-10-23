@@ -84,7 +84,7 @@ class SingleBaseControllerGenerator extends GeneratorBase {
   def parser(call: ApiCall) =
     if (call.handler.bodyParameters.nonEmpty)
       s"""(#CALL#Parser()) { request =>
-        |${PAD}val ${TypeName.escapeComplexName(call.handler.bodyParameters.head.name)} = request.body
+        |${PAD}val ${TypeName.escapeComplexName(call.handler.bodyParameters.head.name.simple)} = request.body
       """.stripMargin
     else " {"
 
