@@ -5,80 +5,80 @@ import org.scalatest.{FunSpec, MustMatchers}
 class NameTest extends FunSpec with MustMatchers {
   describe("Name") {
 
-    import Domain.naming._
-    import Domain.naming.dsl._
+    import Domain.newnaming._
 
-
-
-    it("should correctly compose") {
-      val n1 = Name("foo") / "bar"
-      val n2 = Name("baz")
-      val n3 = n1 / n2 / "qux"
-
-      n1.toString mustBe "/foo/bar"
-      n2.toString mustBe "/baz"
-      n3.toString mustBe "/foo/bar/baz/qux"
-
-      (n1 / n2).toString mustBe "/foo/bar/baz"
-      (n2 / n1).toString mustBe "/baz/foo/bar"
-      ((n1 / n2) / (n2 / n1)).toString mustBe "/foo/bar/baz/baz/foo/bar"
+    it("should have a default apply method for path names") {
+      PathName("/") mustBe PathName("/")
+      PathName("/foo") mustBe PathName("/foo")
     }
 
-    it("should have correct qualified name representations") {
-      val n1 = Name("foo") / "bar"
-      val n2 = Name("baz")
-      val n3 = n1 / n2 / "qux"
-
-      n1.qualified mustBe "/foo/bar"
-      n2.qualified mustBe "/baz"
-      n3.qualified mustBe "/foo/bar/baz/qux"
+    it("should have default apply method for verb names") {
+      VerbName("get", PathName("/foo")) mustBe VerbName("get", PathName("/foo"))
     }
 
-    it("should have correct simple name representations") {
-      Name.root.simple mustBe "/"
-      Name().simple mustBe "/"
-      Name("/foo").simple mustBe "foo"
-      Name("/foo/bar").simple mustBe "bar"
-      Name("/foo/bar/baz").simple mustBe "baz"
-      Name("/foo/bar/baz/qux").simple mustBe "qux"
+    it("should have overwritten apply methods for different parameter parents") {
+      ParmName("limit", PathName("/")) mustBe ParmName("limit", Some(PathName("/")))
+      ParmName("limit", VerbName("get", PathName("/foo"))) mustBe ParmName("limit", Some(VerbName("get", PathName("/foo"))))
     }
 
-    it("should know its correct namespace") {
-      Name("/foo").namespace mustBe Name("/")
-      Name("/foo/bar").namespace mustBe Name("/foo")
-      Name("/foo/bar/baz").namespace mustBe Name("/foo/bar")
+    it("should have overwritten apply methods for type names") {
+      DomainName("Car") mustBe DomainName("Car", None)
+      DomainName("Car", DomainName("Wheel")) mustBe DomainName("Car", Some(DomainName("Wheel", None)))
     }
 
-    it("always starts with root") {
-      Name().toString mustBe "/"
-      Name("/foo").toString mustBe "/foo"
-      Name("/foo/bar").toString mustBe "/foo/bar"
+    it("should represent paths as a strings correctly") {
+      PathName("/").qualified mustBe "/"
+      PathName("/foo").qualified mustBe "/foo"
+      PathName("/foo/bar").qualified mustBe "/foo/bar"
     }
 
-    it("is always absolute") {
-      Name("foo").toString mustBe "/foo"
-      Name("foo/bar").toString mustBe "/foo/bar"
+    it("should represent verbs as strings correctly") {
+      VerbName("get", PathName("/")).qualified mustBe "/|get"
+      VerbName("get", PathName("/foo")).qualified mustBe "/foo|get"
     }
 
-    it("has a normalized root") {
-      Name("/").toString mustBe "/"
-      Name("//").toString mustBe "/"
-      Name("//foo").toString mustBe "/foo"
+    it("should represent parameters as strings correctly") {
+      ParmName("limit", PathName("/foo")).qualified mustBe "/foo?limit"
+      ParmName("limit", VerbName("get", PathName("/foo"))).qualified mustBe "/foo|get?limit"
     }
 
-    it("does not allow empty names") {
-      intercept[IllegalArgumentException] {
-        Name("/foo//bar")
-      } .getMessage mustBe "requirement failed: empty names are not allowed: [foo,,bar]"
-      intercept[IllegalArgumentException] {
-        Name("/foo/bar//")
-      } .getMessage mustBe "requirement failed: empty names are not allowed: [foo,bar,,]"
+    it("should represent types as strings correctly") {
+      DomainName("Car").qualified mustBe "Car"
+      DomainName("Wheel", DomainName("Car")).qualified mustBe "Car#Wheel"
     }
 
-    it("maintains a correct internal representation") {
-      Name(List.empty).toString mustBe "/"
-      Name(List("foo")).toString mustBe "/foo"
-      Name(List("foo", "bar")).toString mustBe "/foo/bar"
+    it("should compose on path names") {
+      import dsl._
+      val verbNameOnPathName = PathName("/foo/bar") =|= "get"
+      verbNameOnPathName.qualified mustBe "/foo/bar|get"
+
+      val parmNameOnPathName = PathName("/foo/bar") =?= "limit"
+      parmNameOnPathName.qualified mustBe "/foo/bar?limit"
+    }
+
+    it("should compose on verb names") {
+      import dsl._
+      val parmNameOnVerbNameOnPathName = PathName("/foo/bar") =|= "get" =?= "limit"
+      parmNameOnVerbNameOnPathName.qualified mustBe "/foo/bar|get?limit"
+    }
+
+    it("should compose on type names") {
+      import dsl._
+      val DomainNameOnDomainName = DomainName("Car") =#= "Wheel" =#= "Tire"
+      DomainNameOnDomainName.qualified mustBe "Car#Wheel#Tire"
+    }
+
+    it("should have a name typed toString representation") {
+      import dsl._
+      val pathName = PathName("/foo/bar")
+      val verbName = pathName =|= "GET"
+      val parmName = verbName =?= "limit"
+      val domainName = DomainName("Car") =#= "Wheel"
+
+      pathName.toString mustBe "PathName(/foo/bar)"
+      verbName.toString mustBe "VerbName(/foo/bar|GET)"
+      parmName.toString mustBe "ParmName(/foo/bar|GET?limit)"
+      domainName.toString mustBe "DomainName(Car#Wheel)"
     }
   }
 }

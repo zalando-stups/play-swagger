@@ -82,6 +82,75 @@ object Domain {
     }
   }
 
+  object newnaming {
+    object dsl {
+
+      import scala.language.implicitConversions
+
+      implicit def pathNameToNameOps(name: PathName):   PathNameDsl   = new PathNameDsl(name)
+      implicit def verbNameToNameOps(name: VerbName):   VerbNameDsl   = new VerbNameDsl(name)
+      implicit def typeNameToNameOps(name: DomainName): DomainNameDsl = new DomainNameDsl(name)
+
+      class PathNameDsl(val path: PathName) {
+        def =|=(name: String): VerbName = VerbName(name, path)
+        def =?=(name: String): ParmName = ParmName(name, path)
+      }
+
+      class VerbNameDsl(val verb: VerbName) {
+        def =?=(name: String) = ParmName(name, verb)
+      }
+
+      class DomainNameDsl(val domain: DomainName) {
+        def =#=(name: String) = DomainName(name, Some(domain))
+      }
+    }
+
+    abstract class Named(val parent: Option[Named]) {
+      val simple   : String
+      val delimiter: String
+      lazy val qualified: String = {
+        def loop(n: Named, acc: String): String = n.parent match {
+          case Some(p) => loop(p, p.simple + n.delimiter + acc)
+          case None    => acc
+        }
+        loop(this, this.simple)
+      }
+      override def toString: String = this match {
+        case n: PathName   => s"PathName(${ n.qualified })"
+        case n: VerbName   => s"VerbName(${ n.qualified })"
+        case n: ParmName   => s"ParmName(${ n.qualified })"
+        case n: DomainName => s"DomainName(${ n.qualified })"
+      }
+    }
+
+    case class PathName(simple: String) extends Named(None) {
+      override val delimiter: String = "/"
+    }
+
+    case class VerbName(simple: String, path: PathName) extends Named(Some(path)) {
+      override val delimiter: String = "|"
+    }
+
+    case class ParmName(simple: String, override val parent: Option[Named]) extends Named(parent) {
+      override val delimiter: String = "?"
+    }
+
+    object ParmName {
+      def apply(simple: String, parent: PathName): ParmName = ParmName(simple, Some(parent))
+      def apply(simple: String, parent: VerbName): ParmName = ParmName(simple, Some(parent))
+    }
+
+    case class DomainName(simple: String, override val parent: Option[Named]) extends Named(parent) {
+      override val delimiter: String = "#"
+    }
+
+    object DomainName {
+      def apply(simple: String): DomainName = DomainName(simple, None)
+      def apply(simple: String, parent: Named): DomainName = DomainName(simple, Some(parent))
+    }
+  }
+
+
   object relations {
     object InheritanceStrategy extends Enumeration {
       type InheritanceStrategy = Value
@@ -297,6 +366,8 @@ object Domain {
   }
 
 }
+
+
 
 object Path {
 
