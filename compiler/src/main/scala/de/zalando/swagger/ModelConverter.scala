@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Domain.Type
-import de.zalando.apifirst.Domain.naming.Name
+import de.zalando.apifirst.Domain.newnaming.Named
 import de.zalando.swagger.strictModel.SwaggerModel
 
 /**
@@ -11,7 +11,7 @@ import de.zalando.swagger.strictModel.SwaggerModel
   */
 trait ParameterNaming {
   type Types = Seq[Type]
-  type NamedType = (Name, Type)
+  type NamedType = (Named, Type)
   type NamedTypes = Seq[NamedType]
 }
 trait StringUtil {

@@ -17,8 +17,8 @@ class NameTest extends FunSpec with MustMatchers {
     }
 
     it("should have overwritten apply methods for different parameter parents") {
-      ParmName("limit", PathName("/")) mustBe ParmName("limit", Some(PathName("/")))
-      ParmName("limit", VerbName("get", PathName("/foo"))) mustBe ParmName("limit", Some(VerbName("get", PathName("/foo"))))
+      ParmName("limit", PathName("/")) mustBe ParmName("limit", PathName("/"))
+      ParmName("limit", VerbName("get", PathName("/foo"))) mustBe ParmName("limit", VerbName("get", PathName("/foo")))
     }
 
     it("should have overwritten apply methods for type names") {

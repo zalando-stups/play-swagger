@@ -2,7 +2,8 @@ package de.zalando.apifirst
 
 import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain.Type
-import de.zalando.apifirst.Domain.naming.Name
+import de.zalando.apifirst.Domain.newnaming.dsl.{PathNameDsl, VerbNameDsl}
+import de.zalando.apifirst.Domain.newnaming.{Named, DomainName, ParmName}
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.swagger.ValidationsConverter
 import de.zalando.swagger.model._
@@ -47,7 +48,7 @@ object Hypermedia {
 
 object Domain {
 
-  object naming {
+  object _naming {
     object dsl {
       import scala.language.implicitConversions
       implicit def stringToNameOps(s: String): NameDsl = new NameDsl(Name(s))
@@ -89,25 +90,33 @@ object Domain {
 
       implicit def pathNameToNameOps(name: PathName):   PathNameDsl   = new PathNameDsl(name)
       implicit def verbNameToNameOps(name: VerbName):   VerbNameDsl   = new VerbNameDsl(name)
+      implicit def parmNameToNameOps(name: ParmName):   ParmNameDsl   = new ParmNameDsl(name)
       implicit def typeNameToNameOps(name: DomainName): DomainNameDsl = new DomainNameDsl(name)
+
+      implicit def stringToPathName(name: String): PathNameDsl        = new PathNameDsl(PathName(name))
 
       class PathNameDsl(val path: PathName) {
         def =|=(name: String): VerbName = VerbName(name, path)
         def =?=(name: String): ParmName = ParmName(name, path)
+        def /(name: String) = this.=|=(name)
       }
 
       class VerbNameDsl(val verb: VerbName) {
         def =?=(name: String) = ParmName(name, verb)
+        def /(name: String) = this.=?=(name)
       }
-
+      class ParmNameDsl(nestInto: ParmName) {
+        def /(name: String) = DomainName(name, nestInto)
+      }
       class DomainNameDsl(val domain: DomainName) {
-        def =#=(name: String) = DomainName(name, Some(domain))
+        def =#=(name: String) = new DomainName(name, Some(domain))
       }
     }
 
     abstract class Named(val parent: Option[Named]) {
       val simple   : String
       val delimiter: String
+      def /(name: String): Named
       lazy val qualified: String = {
         def loop(n: Named, acc: String): String = n.parent match {
           case Some(p) => loop(p, p.simple + n.delimiter + acc)
@@ -121,32 +130,42 @@ object Domain {
         case n: ParmName   => s"ParmName(${ n.qualified })"
         case n: DomainName => s"DomainName(${ n.qualified })"
       }
+      def =?=(name: String): Named = this match {
+        case p: PathName => new ParmName(name, p)
+        case v: VerbName => new ParmName(name, v)
+        case v: DomainName => new DomainName(name, Some(v))
+      }
     }
 
     case class PathName(simple: String) extends Named(None) {
       override val delimiter: String = "/"
+      def /(name: String) = VerbName(name, this)
     }
 
     case class VerbName(simple: String, path: PathName) extends Named(Some(path)) {
       override val delimiter: String = "|"
+      def /(name: String) = ParmName(name, this)
     }
 
-    case class ParmName(simple: String, override val parent: Option[Named]) extends Named(parent) {
+    case class ParmName(simple: String, path: Named) extends Named(Some(path)) {
       override val delimiter: String = "?"
+      def /(name: String) = DomainName(name, this)
     }
 
     object ParmName {
-      def apply(simple: String, parent: PathName): ParmName = ParmName(simple, Some(parent))
-      def apply(simple: String, parent: VerbName): ParmName = ParmName(simple, Some(parent))
+      def apply(simple: String, parent: PathName): ParmName = new ParmName(simple, parent)
+      def apply(simple: String, parent: VerbName): ParmName = new ParmName(simple, parent)
+      def apply(simple: String, parent: ParmName): DomainName = new DomainName(simple, Some(parent))
     }
 
     case class DomainName(simple: String, override val parent: Option[Named]) extends Named(parent) {
       override val delimiter: String = "#"
+      override def /(name: String) = DomainName(name, this)
     }
 
     object DomainName {
-      def apply(simple: String): DomainName = DomainName(simple, None)
-      def apply(simple: String, parent: Named): DomainName = DomainName(simple, Some(parent))
+      def apply(simple: String): DomainName = new DomainName(simple, None)
+      def apply(simple: String, parent: Named): DomainName = new DomainName(simple, Some(parent))
     }
   }
 
@@ -451,7 +470,7 @@ object Application {
 
   // Play definition
   case class Parameter(
-    name:             Name,
+    name:             Named,
     typeName:         Domain.Type,
     fixed:            Option[String],
     default:          Option[String],
@@ -487,7 +506,7 @@ object Application {
     definitions:      Iterable[Domain.Type]
   )
 
-  case class StrictModel(calls: Seq[ApiCall], definitions: Map[Name, Domain.Type])
+  case class StrictModel(calls: Seq[ApiCall], definitions: Map[Named, Domain.Type])
 //  case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type], relations: Map[Name, ClassRelation])
 
 }

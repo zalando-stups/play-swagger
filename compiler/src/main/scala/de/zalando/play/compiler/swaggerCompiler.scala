@@ -1,9 +1,8 @@
 package de.zalando.play.compiler
 
 import java.io.File
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TestGenerator
 import de.zalando.apifirst.Application.Model
-import de.zalando.swagger.{Swagger2Ast, JsonParser, YamlParser}
+import de.zalando.swagger.{JsonParser, YamlParser}
 import org.apache.commons.io.FileUtils
 import play.routes.compiler.RoutesCompiler.RoutesCompilerTask
 import play.routes.compiler.RoutesGenerator
@@ -24,7 +23,7 @@ object SwaggerCompiler {
 
     val swaggerModel = parser.parse(task.definitionFile)
 
-    implicit val ast = Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
+    implicit val ast = Model(Nil, Nil)  // Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
 
     val basePath = Option(swaggerModel.basePath).getOrElse("/")
 
