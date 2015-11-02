@@ -6,7 +6,7 @@ import de.zalando.apifirst.Domain.newnaming.dsl.{PathNameDsl, VerbNameDsl}
 import de.zalando.apifirst.Domain.newnaming.{Named, DomainName, ParmName}
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.swagger.ValidationsConverter
-import de.zalando.swagger.model._
+// import de.zalando.swagger.model._
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -257,7 +257,7 @@ object Domain {
 
   implicit def option2TypeMeta(o: Option[String]): TypeMeta = TypeMeta(o)
 
-  implicit def schema2TypeMeta(s: Schema): TypeMeta = {
+/*  implicit def schema2TypeMeta(s: Schema): TypeMeta = {
     new TypeMeta(Option(s.description), ValidationsConverter.toValidations(s))
   }
 
@@ -268,7 +268,7 @@ object Domain {
       new TypeMeta(Option(s.description), ValidationsConverter.toValidations(s))
     case s: ParameterReference =>
       Option(s.$ref)
-  }
+  }*/
 
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
     def nestedTypes: Seq[Type] = Nil

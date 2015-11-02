@@ -48,7 +48,8 @@
             "name": "id",
             "in": "path",
             "description": "ID",
-            "type": "string"
+            "type": "string",
+            "required": true
           }
         ],
         "responses": {

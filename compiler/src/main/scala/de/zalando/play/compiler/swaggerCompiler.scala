@@ -2,7 +2,7 @@ package de.zalando.play.compiler
 
 import java.io.File
 import de.zalando.apifirst.Application.Model
-import de.zalando.swagger.{JsonParser, YamlParser}
+import de.zalando.swagger.{StrictJsonParser, StrictYamlParser}
 import org.apache.commons.io.FileUtils
 import play.routes.compiler.RoutesCompiler.RoutesCompilerTask
 import play.routes.compiler.RoutesGenerator
@@ -19,11 +19,11 @@ object SwaggerCompiler {
 
     outputDir.mkdirs()
 
-    val parser = if (task.definitionFile.getName.endsWith(".yaml")) YamlParser else JsonParser
+    val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
 
     val swaggerModel = parser.parse(task.definitionFile)
 
-    implicit val ast = Model(Nil, Nil)  // Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
+    implicit val ast = Model(Nil, Nil)  // FIXME Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
 
     val basePath = Option(swaggerModel.basePath).getOrElse("/")
 

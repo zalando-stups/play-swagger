@@ -12,6 +12,8 @@ paths:
       parameters:
         - name: A parameter
           x-parameter-extension: parameter-extension
+          in: query
+          type: string
       responses:
         200:
           description: OK
