@@ -16,7 +16,7 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers {
       it(s"should parse the yaml swagger file ${file.getName} as specification") {
         val model = StrictYamlParser.parse(file)
         model mustBe a [SwaggerModel]
-        println(ModelConverter.fromModel(model).definitions.mkString("\n\n"))
+        println(ModelConverter.fromModel(model).typeDefs.mkString("\n\n"))
       }
     }
   }

@@ -1,11 +1,11 @@
 package de.zalando.swagger
 
-import de.zalando.apifirst.Application.{ApiCall, HandlerCall}
-import de.zalando.apifirst.Domain.newnaming.Named
+import de.zalando.apifirst.Application.{ParameterRef, ApiCall, HandlerCall}
 import de.zalando.apifirst.Domain.{Type, newnaming}
+import newnaming._
 import de.zalando.apifirst.Http.{MimeType, Verb}
-import de.zalando.apifirst.Path.FullPath
 import de.zalando.apifirst._
+import Path.FullPath
 import de.zalando.swagger.strictModel._
 
 /**
@@ -28,13 +28,15 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
       verb              <- verbFromOperationName(operationName)
       operation         = path.operation(operationName)
       namePrefix        = url / operationName
-      params            = parameters(path, operation, namePrefix)
-      astPath           = Path.path2path(url, params)
-      handlerCall       <- handler(operation, path, params, operationName, astPath).toSeq
+      refsAndParamDefs  = parameters(path, operation, namePrefix)
+      refs              = refsAndParamDefs.map(_._1)
+      astPath           = Path.path2path(url, refs)
+      handlerCall       <- handler(operation, path, refs, operationName, astPath).toSeq
       results           = resultTypes(namePrefix, operation)
       (mimeIn, mimeOut) = mimeTypes(operation)
       errMappings       = errorMappings(path, operation)
-    } yield ApiCall(verb, astPath, handlerCall, mimeIn, mimeOut, errMappings, results)
+      parametersWithRef = refsAndParamDefs.filter(_._2.isDefined) map { pair => pair._1 -> pair._2.get }
+    } yield (ApiCall(verb, astPath, handlerCall, mimeIn, mimeOut, errMappings, results), parametersWithRef)
   }
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
@@ -52,8 +54,8 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
     pathParams ++ operationParams
   }
 
-  private def fromParameterList(parameters: ParametersList, parameterNamePrefix: Named): Seq[Application.Parameter] = {
-    Option(parameters).toSeq.flatten flatMap fromParametersListItem(parameterNamePrefix)
+  private def fromParameterList(parameters: ParametersList, parameterNamePrefix: Named): Seq[(Application.ParameterRef, Option[Application.Parameter])] = {
+    Option(parameters).toSeq.flatten map fromParametersListItem(parameterNamePrefix)
   }
 
   private def verbFromOperationName(operationName: String): Seq[Verb] =
@@ -77,26 +79,38 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
     }
   }
 
+
+  // for each parameter defined inline, create definition in "inlineParameters"
+  // then, create a parameter reference pointing to this parameter
+  // convert existing references as well
+  // TODO namings here must be replaced with something more generic
   @throws[MatchError]
-  private def fromParametersListItem(prefix: Named)(li: ParametersListItem): Seq[Application.Parameter] = li match {
-    case jr @ JsonReference(ref) => Nil // a parameter reference, probably can be ignored
-    case bp: BodyParameter[_] => Seq(fromBodyParameter(prefix, bp))
-    case nbp: NonBodyParameterCommons[_, _] => Seq(fromNonBodyParameter(prefix, nbp))
+  private def fromParametersListItem(prefix: Named)(li: ParametersListItem): (Application.ParameterRef, Option[Application.Parameter]) = li match {
+    case jr @ JsonReference(ref) =>
+      ParameterRef(ParmName(ref, PathName(""))) -> None
+    case bp: BodyParameter[_] =>
+      val (name, parameter) = fromBodyParameter(prefix, bp)
+      val ref = ParameterRef(ParmName(name.simple, PathName("inlineParameters")))
+      ref -> Some(parameter)
+    case nbp: NonBodyParameterCommons[_, _] =>
+      val (name, parameter) = fromNonBodyParameter(prefix, nbp)
+      val ref = ParameterRef(ParmName(name.simple, PathName("inlineParameters")))
+      ref -> Some(parameter)
   }
 
-  private def fromBodyParameter(prefix: Named, p: BodyParameter[_]): Application.Parameter = {
+  private def fromBodyParameter(prefix: Named, p: BodyParameter[_]): (Named, Application.Parameter) = {
     val default = None
     val (name, typeDef) = findType(prefix, p.name)
     val (constraint, encode) = Constraints(p.in)
-    Application.Parameter(name, typeDef, FIXED, default, constraint, encode, ParameterPlace.BODY)
+    name -> Application.Parameter(p.name, typeDef, FIXED, default, constraint, encode, ParameterPlace.BODY)
   }
 
-  private def fromNonBodyParameter(prefix: Named, p: NonBodyParameterCommons[_, _]): Application.Parameter = {
+  private def fromNonBodyParameter(prefix: Named, p: NonBodyParameterCommons[_, _]): (Named, Application.Parameter) = {
     val default = if (p.required) Option(p.default).map(_.toString) else None
     val (name, typeDef) = findType(prefix, p.name)
     val (constraint, encode) = Constraints(p.in)
     val place = ParameterPlace.withName(p.in)
-    Application.Parameter(name, typeDef, FIXED, default, constraint, encode, place)
+    name -> Application.Parameter(p.name, typeDef, FIXED, default, constraint, encode, place)
   }
 
   private def findType(prefix: Named, paramName: String): NamedType = {
@@ -137,7 +151,7 @@ trait HandlerGenerator extends StringUtil {
   def keyPrefix: String
   def model: SwaggerModel
   def definitionFileName: Option[String]
-  def handler(operation: Operation, path: PathItem, params: Seq[Application.Parameter], verb: String, callPath: FullPath): Option[HandlerCall] = for {
+  def handler(operation: Operation, path: PathItem, params: Seq[Application.ParameterRef], verb: String, callPath: FullPath): Option[HandlerCall] = for {
     handlerText <- getOrGenerateHandlerLine(operation, path, verb, callPath)
     parseResult = HandlerParser.parse(handlerText)
     handler <- if (parseResult.successful) Some(parseResult.get) else None

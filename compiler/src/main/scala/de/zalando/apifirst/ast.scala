@@ -2,11 +2,8 @@ package de.zalando.apifirst
 
 import de.zalando.apifirst.Application.Model
 import de.zalando.apifirst.Domain.Type
-import de.zalando.apifirst.Domain.newnaming.dsl.{PathNameDsl, VerbNameDsl}
-import de.zalando.apifirst.Domain.newnaming.{Named, DomainName, ParmName}
+import de.zalando.apifirst.Domain.newnaming.Named
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.swagger.ValidationsConverter
-// import de.zalando.swagger.model._
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -168,7 +165,6 @@ object Domain {
       def apply(simple: String, parent: Named): DomainName = new DomainName(simple, Some(parent))
     }
   }
-
 
   object relations {
     object InheritanceStrategy extends Enumeration {
@@ -360,7 +356,7 @@ object Domain {
 
   abstract class Reference(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta) {
     def resolve(implicit ast: Model): Option[TypeDef] = ???
-  }
+  } // TODO model this hierarchy with JsonPointer
 
   case class ReferenceObject(override val name: TypeName, override val meta: TypeMeta) extends Reference(name, meta) {
     override def toString = s"""ReferenceObject("$name", $meta)"""
@@ -398,8 +394,7 @@ object Path {
 
   case class Segment(override val value: String) extends PathElem(value)
 
-  // swagger in version 2.0 only supports Play's singleComponentPathPart - should be encoded for constraint,
-  case class InPathParameter(override val value: String, constraint: String, encode: Boolean = true) extends PathElem(value)
+  case class InPathParameter(name: Named) extends PathElem(name.simple)
 
   case class FullPath(value: Seq[PathElem]) extends Expr {
     def isAbsolute = value match {
@@ -430,12 +425,12 @@ object Path {
     def is(elements: PathElem*): FullPath = FullPath(elements.toList)
   }
 
-  def path2path(path: String, parameters: Seq[Application.Parameter]): FullPath = {
-    def path2segments(path: String, parameters: Seq[Application.Parameter]) = {
+  def path2path(path: String, parameters: Seq[Application.ParameterRef]): FullPath = {
+    def path2segments(path: String, parameters: Seq[Application.ParameterRef]) = {
       path.trim split Root.value map {
         case seg if seg.startsWith("{") && seg.endsWith("}") =>
           val name = seg.tail.init
-          parameters.find(_.name == name) map { p => InPathParameter(name, p.constraint, p.encode) }
+          parameters.find(_.simple == name) map { p => InPathParameter(p.name) }
         case seg if seg.nonEmpty =>
           Some(Segment(seg))
         case seg if seg.isEmpty =>
@@ -446,14 +441,6 @@ object Path {
     val elements = if (path.endsWith("/")) segments :+ Root else segments
     FullPath(elements)
   }
-
-}
-
-object Query {
-
-  case class QueryParam(name: String, value: String) extends Expr
-
-  case class FullQuery(values: QueryParam*) extends Expr
 
 }
 
@@ -468,9 +455,13 @@ case object ParameterPlace extends Enumeration {
 
 object Application {
 
+  case class ParameterRef(name: Named) {
+    val simple = name.simple
+  }
+
   // Play definition
   case class Parameter(
-    name:             Named,
+    name:             String,
     typeName:         Domain.Type,
     fixed:            Option[String],
     default:          Option[String],
@@ -484,11 +475,13 @@ object Application {
     controller:       String,
     instantiate:      Boolean,
     method:           String,
-    parameters:       Seq[Parameter]
+    parameters:       Seq[ParameterRef]
   ) {
-    val nonBodyParameters     = parameters.filterNot(_.place == ParameterPlace.BODY)
-    val bodyParameters        = parameters.filter(_.place == ParameterPlace.BODY)
-    val queryParameters       = parameters.filter(_.place == ParameterPlace.QUERY)
+/*
+    val nonBodyParameters     = params.filterNot(_.place == ParameterPlace.BODY)
+    val bodyParameters        = params.filter(_.place == ParameterPlace.BODY)
+    val queryParameters       = params.filter(_.place == ParameterPlace.QUERY)
+*/
   }
 
   case class ApiCall(
@@ -506,7 +499,10 @@ object Application {
     definitions:      Iterable[Domain.Type]
   )
 
-  case class StrictModel(calls: Seq[ApiCall], definitions: Map[Named, Domain.Type])
+  case class StrictModel(calls: Seq[ApiCall], typeDefs: Map[Named, Domain.Type], paramDefs: Map[ParameterRef, Parameter]) {
+    def findParameter(ref: ParameterRef): Parameter = paramDefs(ref)
+    def findParameter(name: Named): Option[Parameter] = paramDefs.find(_._1.name == name).map(_._2)
+  }
 //  case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type], relations: Map[Name, ClassRelation])
 
 }

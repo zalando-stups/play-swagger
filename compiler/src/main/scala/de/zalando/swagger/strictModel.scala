@@ -79,9 +79,9 @@ object strictModel {
     basePath:             BasePath,
     consumes:             MediaTypeList,
     produces:             MediaTypeList,
-    definitions:          Definitions,
-    parameters:           ParameterDefinitions,
-    responses:            ResponseDefinitions,
+    definitions:          Definitions, // Definitions are collections of types
+    parameters:           ParameterDefinitions, // Collections of parameters which can be referenced later
+    responses:            ResponseDefinitions,  // Default response definition, can be overridden
     securityDefinitions:  SecurityDefinitions,
     security:             Security,
     tags:                 Tags
@@ -258,7 +258,7 @@ object strictModel {
     options:              Operation,
     head:                 Operation,
     patch:                Operation,
-    parameters:           ParametersList,
+    parameters:           ParametersList,   // parameter list which is valid for all operations (can be overridden)
     @JsonProperty("$ref") $ref: Ref         // TODO $ref is currently not supported
   ) extends VendorExtensions with API with RefChecker {
     def param(name: String, op: Operation) = Option(op) map { name -> _.parameters } toList
