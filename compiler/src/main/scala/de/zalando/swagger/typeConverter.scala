@@ -23,8 +23,8 @@ object TypeConverter extends ParameterNaming {
   private implicit def fromParameterType(tpe: (ParameterType.Value, String)): TypeConstructor =
     (tpe._1, Option(tpe._2)) match {
       case (ParameterType.INTEGER, Some("int64"))     => Domain.Lng
-      case (ParameterType.INTEGER, Some("int32"))     => Domain.Int
-      case (ParameterType.INTEGER, _)                 => Domain.Int
+      case (ParameterType.INTEGER, Some("int32"))     => Domain.Intgr
+      case (ParameterType.INTEGER, _)                 => Domain.Intgr
       case (ParameterType.NUMBER, Some("float"))      => Domain.Flt
       case (ParameterType.NUMBER, Some("double"))     => Domain.Dbl
       case (ParameterType.NUMBER, _)                  => Domain.Dbl
@@ -41,8 +41,8 @@ object TypeConverter extends ParameterNaming {
   private implicit def fromPrimitiveType(tpe: (PrimitiveType.Val, String)): TypeConstructor =
     (tpe._1, Option(tpe._2)) match {
       case (PrimitiveType.INTEGER, Some("int64"))     => Domain.Lng
-      case (PrimitiveType.INTEGER, Some("int32"))     => Domain.Int
-      case (PrimitiveType.INTEGER, _)                 => Domain.Int
+      case (PrimitiveType.INTEGER, Some("int32"))     => Domain.Intgr
+      case (PrimitiveType.INTEGER, _)                 => Domain.Intgr
       case (PrimitiveType.NUMBER, Some("float"))      => Domain.Flt
       case (PrimitiveType.NUMBER, Some("double"))     => Domain.Dbl
       case (PrimitiveType.NUMBER, _)                  => Domain.Dbl
@@ -148,8 +148,8 @@ object TypeConverter extends ParameterNaming {
       case Right(fs: FileSchema[_])       => fromFileSchema(fs, required)
     }
 
-  implicit def fromReference(name: Named, ref: Ref): NamedTypes = {
-    Seq(name -> Domain.Reference(ref, TypeMeta(Option(ref))))
+  def fromReference(name: Named, ref: Ref): NamedTypes = {
+    Seq(name -> null) // FIXME Domain.Reference(ref, TypeMeta(Option(ref)))
   }
 
   implicit def fromPrimitivesItems[T](name: Named, items: PrimitivesItems[T]): NamedType = {

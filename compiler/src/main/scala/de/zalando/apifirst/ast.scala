@@ -4,6 +4,7 @@ import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.apifirst.naming.TypeName
 import de.zalando.apifirst.naming.newnaming.Named
+import de.zalando.apifirst.new_naming.Reference
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -71,7 +72,7 @@ object Domain {
 
   class Nmbr(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta)
 
-  case class Int(override val meta: TypeMeta) extends Nmbr("Int", meta)
+  case class Intgr(override val meta: TypeMeta) extends Nmbr("Int", meta)
 
   case class Lng(override val meta: TypeMeta) extends Nmbr("Long", meta)
 
@@ -148,32 +149,6 @@ object Domain {
       extend ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allExtends))
 
     override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.nestedIn(name) } distinct
-  }
-
-  abstract class Reference(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta) {
-    def resolve(implicit ast: StrictModel): Option[TypeDef] = ???
-  } // TODO model this hierarchy with JsonPointer
-
-  case class ReferenceObject(override val name: TypeName, override val meta: TypeMeta) extends Reference(name, meta) {
-    override def toString = s"""ReferenceObject("$name", $meta)"""
-    override def resolve(implicit ast: StrictModel): Option[TypeDef] = ast.typeDefs.find(_._2.name == name) match {
-      case Some((n: Named, t:TypeDef)) => Some(t)
-      case _ => None
-    }
-  }
-
-  case class RelativeSchemaFile(file: String, override val meta: TypeMeta) extends Reference(file, meta)
-
-  case class EmbeddedSchema(file: String, ref: Reference, override val meta: TypeMeta) extends Reference(file, meta)
-
-  object Reference {
-    def apply(url: String, meta: TypeMeta = None): Reference = url.indexOf('#') match {
-      case 0 => ReferenceObject(url.tail, meta)
-      case i if i < 0 => RelativeSchemaFile(url, meta)
-      case i if i > 0 =>
-        val (filePart, urlPart) = url.splitAt(i)
-        EmbeddedSchema(filePart, apply(urlPart, meta), meta)
-    }
   }
 
 }
