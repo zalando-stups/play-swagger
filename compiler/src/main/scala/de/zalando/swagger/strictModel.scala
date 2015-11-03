@@ -262,11 +262,11 @@ object strictModel {
     @JsonProperty("$ref") $ref: Ref         // TODO $ref is currently not supported
   ) extends VendorExtensions with API with RefChecker {
     def param(name: String, op: Operation) = Option(op) map { name -> _.parameters } toList
-    def params(prefix: String) = (("" -> parameters) :: param("get", get) :::
+    val params = (("" -> parameters) :: param("get", get) :::
       param("get", get) ::: param("put", put) ::: param("post", post) :::
       param("delete", delete) ::: param("options", options) ::: param("head", head) :::
       param("patch", patch)) flatMap { p =>
-        Option(p._2).toSeq.flatten map { pl => (prefix + p._1) -> pl }
+        Option(p._2).toSeq.flatten map { pl => p._1 -> pl }
       }
     def operationNames: Set[String] =
       getClass.getDeclaredFields.

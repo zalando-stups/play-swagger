@@ -11,7 +11,7 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers {
 
   val callsFixtures = new File("compiler/src/test/resources/examples/todo").listFiles
 
-  describe("Strict Swagger Parser model") {
+/*  describe("Strict Swagger Parser model") {
     modelFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
       it(s"should parse the yaml swagger file ${file.getName} as specification") {
         val model = StrictYamlParser.parse(file)
@@ -19,10 +19,10 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers {
         println(ModelConverter.fromModel(model).typeDefs.mkString("\n\n"))
       }
     }
-  }
+  }*/
 
   describe("Strict Swagger Parser calls") {
-    callsFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
+    callsFixtures.filter(_.getName.endsWith("instagram.api.yaml")).foreach { file =>
       it(s"should parse the yaml swagger file ${file.getName} as specification") {
         val model = StrictYamlParser.parse(file)
         model mustBe a [SwaggerModel]

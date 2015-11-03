@@ -1,12 +1,10 @@
 package de.zalando.swagger
 
-import de.zalando.apifirst.Domain
+import de.zalando.apifirst.{new_naming, Domain}
 import Domain._
 import TypeMetaConverter._
-import de.zalando.apifirst.naming.TypeName
-import de.zalando.apifirst.naming.newnaming._
+import de.zalando.apifirst.new_naming.{JsonPointer, Reference}
 import strictModel._
-import dsl._
 
 import scala.language.{implicitConversions, postfixOps}
 
@@ -71,10 +69,10 @@ object TypeConverter extends ParameterNaming {
       fromParameters(model.parameters)
 
   def fromParameters(parameters: ParameterDefinitions): NamedTypes =
-    Option(parameters).toSeq.flatten flatMap {  p => fromParamListItem(DomainName("parameters") / p._1, p._2) }
+    Option(parameters).toSeq.flatten flatMap {  p => fromParamListItem(Reference("/parameters") / p._1, p._2) }
 
   def fromDefinitions(definitions: Definitions): NamedTypes =
-    Option(definitions).toSeq.flatten flatMap { d => fromSchema(DomainName("definitions") / d._1, d._2, Nil) }
+    Option(definitions).toSeq.flatten flatMap { d => fromSchema(Reference("/definitions") / d._1, d._2, Nil) }
 
   def fromPaths(paths: Paths): NamedTypes =
     fromPathParameters(paths) ++ fromResponses(paths).flatten ++ fromOperationParameters(paths).toSeq.flatten
@@ -82,7 +80,9 @@ object TypeConverter extends ParameterNaming {
   private def fromPathParameters(paths: Paths): NamedTypes =
     allPathItems(paths) flatMap fromNamedParamListItem
 
-  private def forAllOperations[T](paths: Paths, logic: (VerbName, Operation) => T) =
+  import new_naming.stringToReference
+
+  private def forAllOperations[T](paths: Paths, logic: (Reference, Operation) => T) =
     for {
       (prefix, path) <- Option(paths).toSeq.flatten
       operationName <- path.operationNames
@@ -93,15 +93,18 @@ object TypeConverter extends ParameterNaming {
   private def fromOperationParameters(paths: Paths): Iterable[NamedTypes] =
     forAllOperations(paths, parametersCollector)
 
-  private def parametersCollector(name: VerbName, operation: Operation): NamedTypes =
+  private def parametersCollector(name: Reference, operation: Operation): NamedTypes =
     Option(operation.parameters).toSeq.flatten flatMap { fromParamListItem(name, _) }
 
-  private def allPathItems(paths: Paths): Seq[(Named, ParametersListItem)] =
-    Option(paths).toSeq.flatten flatMap { case (name, pathItem) =>
-      pathItem.params(name) map { p => PathName(p._1) -> p._2 }
+  private def allPathItems(paths: Paths): Seq[(Reference, ParametersListItem)] =
+    Option(paths).toSeq.flatten flatMap { case (url, pathItem) =>
+      val escapedUrl = JsonPointer.escape(url)
+      pathItem.params map { p =>
+        escapedUrl / p._1 -> p._2
+      }
     }
 
-  private def responseCollector: (Named, Operation) => (Named, Responses) = (name, op) => name -> op.responses
+  private def responseCollector: (Reference, Operation) => (Reference, Responses) = (name, op) => name -> op.responses
 
   private def fromResponses(paths: Paths): Seq[NamedTypes] =
     for {
@@ -110,12 +113,12 @@ object TypeConverter extends ParameterNaming {
       fullName = prefix / suffix
     } yield fromSchemaOrFileSchema(fullName, response.schema, Nil)
 
-  private def fromNull(name: Named): NamedTypes = Seq(name -> Null(TypeMeta(None)))
+  private def fromNull(name: Reference): NamedTypes = Seq(name -> Null(TypeMeta(None)))
 
-  def fromNamedParamListItem[T](pair: (Named, ParametersListItem)): NamedTypes =
+  def fromNamedParamListItem[T](pair: (Reference, ParametersListItem)): NamedTypes =
     fromParamListItem(pair._1, pair._2)
 
-  def fromParamListItem[T](name: Named, param: ParametersListItem): NamedTypes =
+  def fromParamListItem[T](name: Reference, param: ParametersListItem): NamedTypes =
     param match {
       case r @ JsonReference(ref)             => fromReference(name, ref)
       case nb: NonBodyParameterCommons[_, _]  => fromNonBodyParameter(name, nb)
@@ -123,36 +126,36 @@ object TypeConverter extends ParameterNaming {
       case other => ??? // FIXME
     }
 
-  implicit def fromNonBodyParameter[T, CF](name: Named, param: NonBodyParameterCommons[T, CF]): NamedTypes = {
+  implicit def fromNonBodyParameter[T, CF](name: Reference, param: NonBodyParameterCommons[T, CF]): NamedTypes = {
     val meta = TypeMeta(Option(param.format))
-    val fullName = name =?= param.name
+    val fullName = name / param.name
     val result = if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items), Option(param.collectionFormat).map(_.toString))
     else if (!param.required) wrapInOption(fullName -> (param.`type`, param.format)(meta))
     else fullName -> (param.`type`, param.format)(meta)
     Seq(result)
   }
 
-  implicit def fromBodyParameter[T](name: Named, param: BodyParameter[T]): NamedTypes =
-    fromSchemaOrFileSchema(name =?= param.name, param.schema, if (param.required) Seq(param.name) else Nil)
+  implicit def fromBodyParameter[T](name: Reference, param: BodyParameter[T]): NamedTypes =
+    fromSchemaOrFileSchema(name / param.name, param.schema, if (param.required) Seq(param.name) else Nil)
 
-  implicit def fromSchemaOrReference[T](name: Named, param: SchemaOrReference[T], required: Seq[String]): NamedTypes =
+  implicit def fromSchemaOrReference[T](name: Reference, param: SchemaOrReference[T], required: Seq[String]): NamedTypes =
     Option(param).toSeq flatMap {
       case Left(s)                    => fromSchema(name, s, required)
       case Right(JsonReference(ref))  => fromReference(name, ref)
     }
 
-  implicit def fromSchemaOrFileSchema[T](name: Named, param: SchemaOrFileSchema[T], required: Seq[String]): NamedTypes =
+  implicit def fromSchemaOrFileSchema[T](name: Reference, param: SchemaOrFileSchema[T], required: Seq[String]): NamedTypes =
     param match {
       case any if any == null             => fromNull(name)
       case Left(s: SchemaOrReference[_])  => fromSchemaOrReference(name, s, required)
       case Right(fs: FileSchema[_])       => fromFileSchema(fs, required)
     }
 
-  def fromReference(name: Named, ref: Ref): NamedTypes = {
-    Seq(name -> null) // FIXME Domain.Reference(ref, TypeMeta(Option(ref)))
+  def fromReference(name: Reference, ref: Ref): NamedTypes = {
+    Seq(name / ref.simple -> TypeReference(ref))
   }
 
-  implicit def fromPrimitivesItems[T](name: Named, items: PrimitivesItems[T]): NamedType = {
+  implicit def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
     val meta = TypeMeta(Option(items.format))
     if (items.isArray)
       wrapInArray(fromPrimitivesItems(name, items.items), Option(items.collectionFormat).map(_.toString))
@@ -160,16 +163,16 @@ object TypeConverter extends ParameterNaming {
       name -> (items.`type`, items.format)(meta)
   }
 
-  implicit def fromSchemaOrSchemaArray[T](name: Named, param: SchemaOrSchemaArray[T]): NamedTypes =
+  implicit def fromSchemaOrSchemaArray[T](name: Reference, param: SchemaOrSchemaArray[T]): NamedTypes =
     param match {
       case Right(sa)    => fromSchemaArray(name, sa)
       case Left(sr)     => fromSchemaOrReference(name, sr, Nil)
     }
 
-  implicit def fromSchemaArray(name: Named, sa: SchemaArray): NamedTypes =
+  implicit def fromSchemaArray(name: Reference, sa: SchemaArray): NamedTypes =
       sa flatMap { s => fromSchemaOrFileSchema(name, s, Nil) }
 
-  implicit def fromSchema[T](name: Named, param: Schema[_], required: Seq[String]): NamedTypes = {
+  implicit def fromSchema[T](name: Reference, param: Schema[_], required: Seq[String]): NamedTypes = {
     val tpe = if (param.`type` != null) param.`type` else PrimitiveType.OBJECT
     tpe match {
       case t: ArrayJsonSchemaType => fromArrayJsonSchema(name, param, t)
@@ -177,7 +180,7 @@ object TypeConverter extends ParameterNaming {
     }
   }
 
-  implicit def fromPrimitiveType(name: Named, param: Schema[_], p: PrimitiveType.Val, required: Seq[String]): NamedTypes = p match {
+  implicit def fromPrimitiveType(name: Reference, param: Schema[_], p: PrimitiveType.Val, required: Seq[String]): NamedTypes = p match {
     case PrimitiveType.ARRAY =>
       require(param.items.nonEmpty)
       val types = fromSchemaOrSchemaArray(name, param.items.get)
@@ -195,18 +198,18 @@ object TypeConverter extends ParameterNaming {
       if (isRequired(name, required)) Seq(primitiveType) else Seq(wrapInOption(primitiveType))
   }
 
-  implicit def fromArrayJsonSchema[T](name: Named, param: Schema[_], t: ArrayJsonSchemaType): NamedTypes = {
+  implicit def fromArrayJsonSchema[T](name: Reference, param: Schema[_], t: ArrayJsonSchemaType): NamedTypes = {
     t.toSeq map PrimitiveType.fromString map {
       name -> fromPrimitiveType(_, param.format)(param)
     }
   }
 
-  implicit def fromSchemaProperties[T](name: Named, param: SchemaProperties, required: Seq[String]): NamedTypes =
+  implicit def fromSchemaProperties[T](name: Reference, param: SchemaProperties, required: Seq[String]): NamedTypes =
     Option(param).toSeq.flatten flatMap { p =>
       fromSchemaOrFileSchema(name / p._1, p._2, required)
     }
 
-  implicit def fromSchemaOrBoolean[T](name: Named, param: SchemaOrBoolean[T], meta: TypeMeta): Option[NamedTypes] = {
+  implicit def fromSchemaOrBoolean[T](name: Reference, param: SchemaOrBoolean[T], meta: TypeMeta): Option[NamedTypes] = {
     val fullName = name
     Option(param) map {
       case Left(s)        => wrapInCatchAll(fromSchemaOrReference(fullName, s, Nil))
@@ -216,14 +219,14 @@ object TypeConverter extends ParameterNaming {
     }
   }
 
-  implicit def extensionType[T](name: Named)(schema: SchemaArray): NamedTypes =
+  implicit def extensionType[T](name: Reference)(schema: SchemaArray): NamedTypes =
     fromSchemaArray(name, schema)
 
-  implicit def fromTypes(name: Named, types: NamedTypes, discriminator: Option[String]): NamedTypes = {
+  implicit def fromTypes(name: Reference, types: NamedTypes, discriminator: Option[String]): NamedTypes = {
     val extend = Nil // FIXME
-    val fields = types map { t => Field(TypeName(t._1.simple), t._2, TypeMeta(None)) }
+    val fields = types map { t => Field(t._1.simple, t._2, TypeMeta(None)) }
     val meta = TypeMeta(None, Nil)
-    Seq(name -> Domain.TypeDef(TypeName(name.simple), fields, extend, meta)) // FIXME
+    Seq(name -> Domain.TypeDef(name.simple, fields, extend, meta))
   }
 
   implicit def fromFileSchema[T](schema: FileSchema[T], required: Seq[String]): NamedTypes = {
@@ -231,7 +234,7 @@ object TypeConverter extends ParameterNaming {
     ???
   }
 
-  private def isRequired[T](name: Named, required: Seq[String]): Boolean =
+  private def isRequired[T](name: Reference, required: Seq[String]): Boolean =
     required != null && required.contains(name.simple)
 
 }

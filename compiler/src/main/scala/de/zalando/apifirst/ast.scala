@@ -2,9 +2,7 @@ package de.zalando.apifirst
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.apifirst.naming.TypeName
-import de.zalando.apifirst.naming.newnaming.Named
-import de.zalando.apifirst.new_naming.Reference
+import de.zalando.apifirst.new_naming.{JsonPointer, TypeName, Reference}
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -68,7 +66,7 @@ object Domain {
     def imports: Set[String] = Set.empty
   }
 
-  implicit def string2TypeName(s: String): TypeName = TypeName(s)
+  case class TypeReference(pointer: JsonPointer) extends Type(pointer.toString, TypeMeta(None)) with Reference
 
   class Nmbr(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta)
 
@@ -111,13 +109,13 @@ object Domain {
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
-    extends Container(s"Seq[${tpe.name.oneUp}]", tpe, meta, Set("scala.collection.Seq"))
+    extends Container(s"${tpe.name.parent}", tpe, meta, Set("scala.collection.Seq"))
 
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"Option[${tpe.name.oneUp}]", tpe, meta, Set("scala.Option"))
+    extends Container(s"${tpe.name.parent}", tpe, meta, Set("scala.Option"))
 
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"Map[String, ${tpe.name.oneUp}]", tpe, meta, Set("scala.collection.immutable.Map"))
+    extends Container(s"${tpe.name.parent}", tpe, meta, Set("scala.collection.immutable.Map"))
 
   case class Field(name: TypeName, tpe: Type, meta: TypeMeta){
     override def toString = s"""Field("$name", $tpe, $meta)"""
@@ -136,19 +134,7 @@ object Domain {
                      override val meta: TypeMeta) extends Type(name, meta) {
     override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
 
-    def imports(implicit ast: StrictModel): Set[String] = {
-      val fromFields = fields.flatMap(_.imports)
-      val transient = extend.flatMap(_.resolve(ast).toSeq.flatMap(_.imports))
-      (fromFields ++ transient).filter(_.trim.nonEmpty).toSet
-    }
-
-    def allFields(implicit ast: StrictModel): Seq[Field] =
-      fields ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allFields))
-
-    def allExtends(implicit ast: StrictModel): Seq[Reference] =
-      extend ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allExtends))
-
-    override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.nestedIn(name) } distinct
+    override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
   }
 
 }
@@ -163,7 +149,7 @@ object Path {
 
   case class Segment(override val value: String) extends PathElem(value)
 
-  case class InPathParameter(name: Named) extends PathElem(name.simple)
+  case class InPathParameter(name: Reference) extends PathElem(name.simple)
 
   case class FullPath(value: Seq[PathElem]) extends Expr {
     def isAbsolute = value match {
@@ -224,7 +210,7 @@ case object ParameterPlace extends Enumeration {
 
 object Application {
 
-  case class ParameterRef(name: Named) {
+  case class ParameterRef(name: Reference) {
     val simple = name.simple
   }
 
@@ -270,9 +256,9 @@ object Application {
 
   type ParameterLookupTable =  Map[ParameterRef, Parameter]
 
-  case class StrictModel(calls: Seq[ApiCall], typeDefs: Map[Named, Domain.Type], params: ParameterLookupTable) {
+  case class StrictModel(calls: Seq[ApiCall], typeDefs: Map[Reference, Domain.Type], params: ParameterLookupTable) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
-    def findParameter(name: Named): Option[Parameter] = params.find(_._1.name == name).map(_._2)
+    def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
   }
 //  case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type], relations: Map[Name, ClassRelation])
 

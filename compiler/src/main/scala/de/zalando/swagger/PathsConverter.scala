@@ -1,7 +1,6 @@
 package de.zalando.swagger
 
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef, ApiCall, HandlerCall}
-import de.zalando.apifirst.naming.newnaming._
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst._
 import Path.FullPath
@@ -17,8 +16,9 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: Par
 
   lazy val convert = fromPaths(model.paths, model.basePath)
 
+  import new_naming._
+
   private def fromPath(basePath: BasePath)(pathDef: (String, PathItem)) = {
-    import dsl._
     implicit val (url, path) = pathDef
     for {
       operationName     <- path.operationNames
@@ -36,24 +36,24 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: Par
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
-  private def resultTypes(prefix: Named, operation: Operation): Iterable[ParameterRef] =
+  private def resultTypes(prefix: Reference, operation: Operation): Iterable[ParameterRef] =
     operation.responses map {
       case (code, definition) if code.forall(_.isDigit) =>
-        ParameterRef(ParmName(code, PathName("resultTypes") / prefix.qualified))
+        ParameterRef("resultTypes" :/ prefix / code)
       case ("default", definition)  =>
-        ParameterRef(ParmName("default", PathName("resultTypes") / prefix.qualified))
+        ParameterRef("resultTypes" :/ prefix / "default")
       case (other, _) =>
         throw new IllegalArgumentException(s"Expected numeric error code or 'default', but was $other")
     }
 
-  private def parameters(path: PathItem, operation: Operation, namePrefix: Named) = {
+  private def parameters(path: PathItem, operation: Operation, namePrefix: Reference) = {
     val pathParams        = fromParameterList(path.parameters, namePrefix)
     val operationParams   = fromParameterList(operation.parameters, namePrefix)
     val simpleNames       = operationParams map (_.simple)
     pathParams.filterNot { p => simpleNames.contains(p.simple) } ++ operationParams.toSet
   }
 
-  private def fromParameterList(parameters: ParametersList, parameterNamePrefix: Named): Seq[Application.ParameterRef] = {
+  private def fromParameterList(parameters: ParametersList, parameterNamePrefix: Reference): Seq[Application.ParameterRef] = {
     Option(parameters).toSeq.flatten map fromParametersListItem(parameterNamePrefix)
   }
 
@@ -78,14 +78,14 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: Par
     }
   }
 
-  // TODO namings here must be replaced with something more handsome
-  private def fromParametersListItem(prefix: Named)(li: ParametersListItem): ParameterRef= li match {
+  private def fromParametersListItem(prefix: Reference)(li: ParametersListItem): ParameterRef= li match {
     case jr @ JsonReference(ref) =>
-      ParameterRef(ParmName(ref, PathName("")))
+      val pointer = JsonPointer(ref)
+      ParameterRef(prefix / pointer.simple)
     case p: BodyParameter[_] =>
-      ParameterRef(ParmName(p.name, PathName("inlineParameters") / prefix.qualified))
+      ParameterRef("inlineParameters" :/ prefix / p.name)
     case p: NonBodyParameter[_] =>
-      ParameterRef(ParmName(p.name, PathName("inlineParameters") / prefix.qualified))
+      ParameterRef("inlineParameters" :/ prefix / p.name)
   }
 
 }
