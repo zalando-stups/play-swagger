@@ -1,11 +1,10 @@
 package de.zalando.swagger
 
-import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef, ApiCall, HandlerCall}
-import de.zalando.apifirst.Domain.{Type, newnaming}
-import newnaming._
-import de.zalando.apifirst.Http.{MimeType, Verb}
+import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef}
+import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst._
-import Path.FullPath
+import de.zalando.apifirst.naming.newnaming._
+import dsl._
 import de.zalando.swagger.strictModel._
 
 /**
@@ -24,7 +23,6 @@ class ParametersConverter(val keyPrefix: String, val model: SwaggerModel, typeDe
     Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
   private def fromPath(basePath: BasePath)(pathDef: (String, PathItem)) = {
-    import newnaming.dsl._
     implicit val (url, path) = pathDef
     for {
       operationName     <- path.operationNames

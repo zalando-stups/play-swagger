@@ -1,8 +1,7 @@
 package de.zalando.swagger
 
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef, ApiCall, HandlerCall}
-import de.zalando.apifirst.Domain.newnaming
-import newnaming._
+import de.zalando.apifirst.naming.newnaming._
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst._
 import Path.FullPath
@@ -19,7 +18,7 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: Par
   lazy val convert = fromPaths(model.paths, model.basePath)
 
   private def fromPath(basePath: BasePath)(pathDef: (String, PathItem)) = {
-    import newnaming.dsl._
+    import dsl._
     implicit val (url, path) = pathDef
     for {
       operationName     <- path.operationNames

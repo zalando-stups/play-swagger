@@ -3,9 +3,10 @@ package de.zalando.swagger
 import de.zalando.apifirst.Domain
 import Domain._
 import TypeMetaConverter._
-import Domain.newnaming._
+import de.zalando.apifirst.naming.TypeName
+import de.zalando.apifirst.naming.newnaming._
 import strictModel._
-import newnaming.dsl._
+import dsl._
 
 import scala.language.{implicitConversions, postfixOps}
 

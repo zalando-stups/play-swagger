@@ -1,11 +1,10 @@
 package de.zalando.apifirst
 
+import de.zalando.apifirst.naming.newnaming._
 import org.scalatest.{FunSpec, MustMatchers}
 
 class NameTest extends FunSpec with MustMatchers {
   describe("Name") {
-
-    import Domain.newnaming._
 
     it("should have a default apply method for path names") {
       PathName("/") mustBe PathName("/")

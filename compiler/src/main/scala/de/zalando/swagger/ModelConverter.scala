@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Domain.Type
-import de.zalando.apifirst.Domain.newnaming.Named
+import de.zalando.apifirst.naming.newnaming.Named
 import de.zalando.swagger.strictModel.SwaggerModel
 
 /**
