@@ -1,7 +1,7 @@
 package de.zalando.swagger
 
-import de.zalando.apifirst.Application.{ParameterRef, ApiCall, HandlerCall}
-import de.zalando.apifirst.Domain.{Type, newnaming}
+import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef, ApiCall, HandlerCall}
+import de.zalando.apifirst.Domain.newnaming
 import newnaming._
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst._
@@ -12,11 +12,9 @@ import de.zalando.swagger.strictModel._
   * @author  slasch 
   * @since   20.10.2015.
   */
-class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: ParameterNaming#NamedTypes,
+class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: ParameterLookupTable,
                      val definitionFileName: Option[String] = None)
   extends ParameterNaming with HandlerGenerator {
-
-  private val FIXED = None // There is no way to define fixed parameters in swagger spec
 
   lazy val convert = fromPaths(model.paths, model.basePath)
 
@@ -28,33 +26,35 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
       verb              <- verbFromOperationName(operationName)
       operation         = path.operation(operationName)
       namePrefix        = url / operationName
-      refsAndParamDefs  = parameters(path, operation, namePrefix)
-      refs              = refsAndParamDefs.map(_._1)
-      astPath           = Path.path2path(url, refs)
-      handlerCall       <- handler(operation, path, refs, operationName, astPath).toSeq
+      params            = parameters(path, operation, namePrefix)
+      astPath           = Path.path2path(url, params)
+      handlerCall       <- handler(operation, path, params, operationName, astPath).toSeq
       results           = resultTypes(namePrefix, operation)
       (mimeIn, mimeOut) = mimeTypes(operation)
       errMappings       = errorMappings(path, operation)
-      parametersWithRef = refsAndParamDefs.filter(_._2.isDefined) map { pair => pair._1 -> pair._2.get }
-    } yield (ApiCall(verb, astPath, handlerCall, mimeIn, mimeOut, errMappings, results), parametersWithRef)
+    } yield ApiCall(verb, astPath, handlerCall, mimeIn, mimeOut, errMappings, results)
   }
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
-  private def resultTypes(prefix: Named, operation: Operation): Map[String, Type] =
+  private def resultTypes(prefix: Named, operation: Operation): Iterable[ParameterRef] =
     operation.responses map {
-      case (code, definition) if code.forall(_.isDigit) => code -> findType(prefix, code)._2
-      case ("default", definition)  => "default" -> findType(prefix, "default")._2
-      case (other, _)               => throw new IllegalArgumentException(s"Expected numeric error code or 'default', but was $other")
+      case (code, definition) if code.forall(_.isDigit) =>
+        ParameterRef(ParmName(code, PathName("resultTypes") / prefix.qualified))
+      case ("default", definition)  =>
+        ParameterRef(ParmName("default", PathName("resultTypes") / prefix.qualified))
+      case (other, _) =>
+        throw new IllegalArgumentException(s"Expected numeric error code or 'default', but was $other")
     }
 
   private def parameters(path: PathItem, operation: Operation, namePrefix: Named) = {
     val pathParams        = fromParameterList(path.parameters, namePrefix)
     val operationParams   = fromParameterList(operation.parameters, namePrefix)
-    pathParams ++ operationParams
+    val simpleNames       = operationParams map (_.simple)
+    pathParams.filterNot { p => simpleNames.contains(p.simple) } ++ operationParams.toSet
   }
 
-  private def fromParameterList(parameters: ParametersList, parameterNamePrefix: Named): Seq[(Application.ParameterRef, Option[Application.Parameter])] = {
+  private def fromParameterList(parameters: ParametersList, parameterNamePrefix: Named): Seq[Application.ParameterRef] = {
     Option(parameters).toSeq.flatten map fromParametersListItem(parameterNamePrefix)
   }
 
@@ -79,72 +79,16 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: P
     }
   }
 
-
-  // for each parameter defined inline, create definition in "inlineParameters"
-  // then, create a parameter reference pointing to this parameter
-  // convert existing references as well
-  // TODO namings here must be replaced with something more generic
-  @throws[MatchError]
-  private def fromParametersListItem(prefix: Named)(li: ParametersListItem): (Application.ParameterRef, Option[Application.Parameter]) = li match {
+  // TODO namings here must be replaced with something more handsome
+  private def fromParametersListItem(prefix: Named)(li: ParametersListItem): ParameterRef= li match {
     case jr @ JsonReference(ref) =>
-      ParameterRef(ParmName(ref, PathName(""))) -> None
-    case bp: BodyParameter[_] =>
-      val (name, parameter) = fromBodyParameter(prefix, bp)
-      val ref = ParameterRef(ParmName(name.simple, PathName("inlineParameters")))
-      ref -> Some(parameter)
-    case nbp: NonBodyParameterCommons[_, _] =>
-      val (name, parameter) = fromNonBodyParameter(prefix, nbp)
-      val ref = ParameterRef(ParmName(name.simple, PathName("inlineParameters")))
-      ref -> Some(parameter)
+      ParameterRef(ParmName(ref, PathName("")))
+    case p: BodyParameter[_] =>
+      ParameterRef(ParmName(p.name, PathName("inlineParameters") / prefix.qualified))
+    case p: NonBodyParameter[_] =>
+      ParameterRef(ParmName(p.name, PathName("inlineParameters") / prefix.qualified))
   }
 
-  private def fromBodyParameter(prefix: Named, p: BodyParameter[_]): (Named, Application.Parameter) = {
-    val default = None
-    val (name, typeDef) = findType(prefix, p.name)
-    val (constraint, encode) = Constraints(p.in)
-    name -> Application.Parameter(p.name, typeDef, FIXED, default, constraint, encode, ParameterPlace.BODY)
-  }
-
-  private def fromNonBodyParameter(prefix: Named, p: NonBodyParameterCommons[_, _]): (Named, Application.Parameter) = {
-    val default = if (p.required) Option(p.default).map(_.toString) else None
-    val (name, typeDef) = findType(prefix, p.name)
-    val (constraint, encode) = Constraints(p.in)
-    val place = ParameterPlace.withName(p.in)
-    name -> Application.Parameter(p.name, typeDef, FIXED, default, constraint, encode, place)
-  }
-
-  private def findType(prefix: Named, paramName: String): NamedType = {
-    val name = prefix =?= paramName
-    val typeDef = typeDefByName(name) orElse findTypeByPath(prefix, paramName) getOrElse {
-      println(typeDefs.mkString("\n"))
-      throw new IllegalStateException(s"Could not find type definition with a name $name")
-    }
-    (name, typeDef)
-  }
-
-  private def findTypeByPath(fullPath: Named, name: String): Option[Type] = {
-    val (pathOption, operation) = (fullPath.parent, fullPath.simple)
-    val result = for {
-      path <- pathOption
-      verb <- Http.string2verb(operation)
-    } yield typeDefByName(path =?= name)
-    result.flatten
-  }
-
-  private def typeDefByName(name: Named): Option[Type] =
-    typeDefs.find(_._1 == name).map(_._2)
-
-}
-
-object Constraints {
-  private val byType: Map[String, (String, Boolean)] = Map(
-    "formData" -> (".+", true),
-    "path" -> ("[^/]+", true),
-    "header" -> (".+", false),
-    "body" -> (".+", false),
-    "query" -> (".+", true)
-  )
-  def apply(in: String): (String, Boolean) = byType(in)
 }
 
 trait HandlerGenerator extends StringUtil {

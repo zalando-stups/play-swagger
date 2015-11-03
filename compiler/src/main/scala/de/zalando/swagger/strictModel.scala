@@ -284,7 +284,10 @@ object strictModel {
     @JsonProperty(value = "$ref", required = true) $ref: Ref
   ) extends ParametersListItem with ResponseValue with RefChecker
 
-  sealed trait Parameter[T] extends ParametersListItem
+  sealed trait Parameter[T] extends ParametersListItem {
+    def name: String
+    def in: String
+  }
 
   abstract class NonBodyParameter[T] extends Parameter[T] with ValidationBase {
     @JsonProperty(required = true) def name:    String

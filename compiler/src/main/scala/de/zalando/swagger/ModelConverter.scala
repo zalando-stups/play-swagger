@@ -28,9 +28,9 @@ object ModelConverter extends ParameterNaming {
 
   def fromModel(model: SwaggerModel, keyPrefix: String = "x-api-first") = {
     val typeDefs = TypeConverter.fromModel(model)
-    val result = new PathsConverter(keyPrefix, model, typeDefs).convert
-    val (apiCalls, inlineParameters) = result.unzip
-    StrictModel(apiCalls, typeDefs.toMap, inlineParameters.flatten.toMap)
+    val inlineParameters = new ParametersConverter(keyPrefix,model, typeDefs).parameters // TODO add explicitly defined parameters here
+    val apiCalls = new PathsConverter(keyPrefix, model, inlineParameters).convert
+    StrictModel(apiCalls, typeDefs.toMap, inlineParameters)
   }
 
 }

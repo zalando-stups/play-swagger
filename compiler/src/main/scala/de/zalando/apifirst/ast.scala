@@ -1,6 +1,6 @@
 package de.zalando.apifirst
 
-import de.zalando.apifirst.Application.Model
+import de.zalando.apifirst.Application.{StrictModel, Model}
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst.Domain.newnaming.Named
 import de.zalando.apifirst.Http.MimeType
@@ -339,29 +339,29 @@ object Domain {
                      override val meta: TypeMeta) extends Type(name, meta) {
     override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
 
-    def imports(implicit ast: Model): Set[String] = {
+    def imports(implicit ast: StrictModel): Set[String] = {
       val fromFields = fields.flatMap(_.imports)
       val transient = extend.flatMap(_.resolve(ast).toSeq.flatMap(_.imports))
       (fromFields ++ transient).filter(_.trim.nonEmpty).toSet
     }
 
-    def allFields(implicit ast: Model): Seq[Field] =
+    def allFields(implicit ast: StrictModel): Seq[Field] =
       fields ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allFields))
 
-    def allExtends(implicit ast: Model): Seq[Reference] =
+    def allExtends(implicit ast: StrictModel): Seq[Reference] =
       extend ++ extend.flatMap(_.resolve.toSeq.flatMap(_.allExtends))
 
     override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.nestedIn(name) } distinct
   }
 
   abstract class Reference(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta) {
-    def resolve(implicit ast: Model): Option[TypeDef] = ???
+    def resolve(implicit ast: StrictModel): Option[TypeDef] = ???
   } // TODO model this hierarchy with JsonPointer
 
   case class ReferenceObject(override val name: TypeName, override val meta: TypeMeta) extends Reference(name, meta) {
     override def toString = s"""ReferenceObject("$name", $meta)"""
-    override def resolve(implicit ast: Model): Option[TypeDef] = ast.definitions.find(_.name == name) match {
-      case Some(t: TypeDef) => Some(t)
+    override def resolve(implicit ast: StrictModel): Option[TypeDef] = ast.typeDefs.find(_._2.name == name) match {
+      case Some((n: Named, t:TypeDef)) => Some(t)
       case _ => None
     }
   }
@@ -381,8 +381,6 @@ object Domain {
   }
 
 }
-
-
 
 object Path {
 
@@ -491,7 +489,7 @@ object Application {
     mimeIn:           Set[MimeType],  // can be empty for swagger specification
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
-    resultType:       Map[String, Type]
+    resultTypes:      Iterable[ParameterRef]
   )
 
   case class Model(
@@ -499,9 +497,11 @@ object Application {
     definitions:      Iterable[Domain.Type]
   )
 
-  case class StrictModel(calls: Seq[ApiCall], typeDefs: Map[Named, Domain.Type], paramDefs: Map[ParameterRef, Parameter]) {
-    def findParameter(ref: ParameterRef): Parameter = paramDefs(ref)
-    def findParameter(name: Named): Option[Parameter] = paramDefs.find(_._1.name == name).map(_._2)
+  type ParameterLookupTable =  Map[ParameterRef, Parameter]
+
+  case class StrictModel(calls: Seq[ApiCall], typeDefs: Map[Named, Domain.Type], params: ParameterLookupTable) {
+    def findParameter(ref: ParameterRef): Parameter = params(ref)
+    def findParameter(name: Named): Option[Parameter] = params.find(_._1.name == name).map(_._2)
   }
 //  case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type], relations: Map[Name, ClassRelation])
 

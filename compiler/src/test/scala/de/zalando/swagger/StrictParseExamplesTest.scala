@@ -28,7 +28,8 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers {
         model mustBe a [SwaggerModel]
         val result = ModelConverter.fromModel(model)
         // println(result.definitions.mkString("\n"))
-        println(result.calls.mkString("\n\n"))
+        // println(result.calls.mkString("\n\n"))
+        println(result.params.mkString("\n\n"))
       }
     }
   }
