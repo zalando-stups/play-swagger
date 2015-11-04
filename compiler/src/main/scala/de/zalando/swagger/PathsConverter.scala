@@ -12,7 +12,7 @@ import de.zalando.swagger.strictModel._
   */
 class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: ParameterLookupTable,
                      val definitionFileName: Option[String] = None)
-  extends ParameterNaming with HandlerGenerator {
+  extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
   lazy val convert = fromPaths(model.paths, model.basePath)
 
@@ -54,7 +54,7 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: Par
   }
 
   private def fromParameterList(parameters: ParametersList, parameterNamePrefix: Reference): Seq[Application.ParameterRef] = {
-    Option(parameters).toSeq.flatten map fromParametersListItem(parameterNamePrefix)
+    Option(parameters).toSeq.flatten map refFromParametersListItem(parameterNamePrefix)
   }
 
   private def verbFromOperationName(operationName: String): Seq[Verb] =
@@ -76,16 +76,6 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: Par
     Option(hiPriority).orElse(Option(lowPriority)).toSet.flatten.map {
       new MimeType(_)
     }
-  }
-
-  private def fromParametersListItem(prefix: Reference)(li: ParametersListItem): ParameterRef= li match {
-    case jr @ JsonReference(ref) =>
-      val pointer = JsonPointer(ref)
-      ParameterRef(prefix / pointer.simple)
-    case p: BodyParameter[_] =>
-      ParameterRef("inlineParameters" :/ prefix / p.name)
-    case p: NonBodyParameter[_] =>
-      ParameterRef("inlineParameters" :/ prefix / p.name)
   }
 
 }
