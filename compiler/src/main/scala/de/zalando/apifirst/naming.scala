@@ -64,7 +64,7 @@ object new_naming {
 
     def escape(str: String) = str.replace("~", "~0").replace("/", "~1")
 
-    def unescape(str: String) = str.replace("~0", "~").replace("~1", "/")
+    def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
 
     def apply(path: String) = {
       if (path == null || path.trim.isEmpty)
