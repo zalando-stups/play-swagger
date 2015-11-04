@@ -1,0 +1,40 @@
+#/definitions/errorModel ->
+	TypeDef("#errorModel", Seq(
+		Field("#code", Intgr), 
+		Field("#message", Str)))
+#/definitions/newPet ->
+	TypeDef("#newPet", Seq(
+		Field("#id", Opt(Lng)), 
+		Field("#name", Str), 
+		Field("#tag", Opt(Str))))
+#/definitions/pet ->
+	TypeDef("#pet", Seq(
+		Field("#id", Lng), 
+		Field("#name", Str), 
+		Field("#tag", Opt(Str))))
+#~1pets/get/limit ->
+	Opt(Intgr)
+#~1pets/get/responses/200 ->
+	Opt(Arr(TypeReference(#/definitions/pet)))
+#~1pets/get/responses/default ->
+	Opt(TypeReference(#/definitions/errorModel))
+#~1pets/get/tags ->
+	Opt(Arr(Str))
+#~1pets/post/pet ->
+	TypeReference(#/definitions/newPet)
+#~1pets/post/responses/200 ->
+	Opt(TypeReference(#/definitions/pet))
+#~1pets/post/responses/default ->
+	Opt(TypeReference(#/definitions/errorModel))
+#~1pets~1{id}/delete/id ->
+	Lng
+#~1pets~1{id}/delete/responses/204 ->
+	Null
+#~1pets~1{id}/delete/responses/default ->
+	Opt(TypeReference(#/definitions/errorModel))
+#~1pets~1{id}/get/id ->
+	Lng
+#~1pets~1{id}/get/responses/200 ->
+	Opt(TypeReference(#/definitions/pet))
+#~1pets~1{id}/get/responses/default ->
+	Opt(TypeReference(#/definitions/errorModel))

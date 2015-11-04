@@ -1,0 +1,144 @@
+#/definitions/Category ->
+	TypeDef("#Category", Seq(
+		Field("#id", Opt(Lng)), 
+		Field("#name", Opt(Str))))
+#/definitions/Order ->
+	TypeDef("#Order", Seq(
+		Field("#shipDate", Opt(DateTime)), 
+		Field("#quantity", Opt(Intgr)), 
+		Field("#petId", Opt(Lng)), 
+		Field("#id", Opt(Lng)), 
+		Field("#complete", Opt(Bool)), 
+		Field("#status", Opt(Str))))
+#/definitions/Pet ->
+	TypeDef("#Pet", Seq(
+		Field("#name", Str), 
+		Field("#tags", Opt(Arr(TypeReference(#/definitions/Tag)))), 
+		Field("#photoUrls", Arr(Str)), 
+		Field("#id", Opt(Lng)), 
+		Field("#status", Opt(Str)), 
+		Field("#category", Opt(TypeReference(#/definitions/Category)))))
+#/definitions/Tag ->
+	TypeDef("#Tag", Seq(
+		Field("#id", Opt(Lng)), 
+		Field("#name", Opt(Str))))
+#/definitions/User ->
+	TypeDef("#User", Seq(
+		Field("#email", Opt(Str)), 
+		Field("#username", Opt(Str)), 
+		Field("#userStatus", Opt(Intgr)), 
+		Field("#lastName", Opt(Str)), 
+		Field("#firstName", Opt(Str)), 
+		Field("#id", Opt(Lng)), 
+		Field("#phone", Opt(Str)), 
+		Field("#password", Opt(Str))))
+#~1pets/post/body ->
+	Opt(TypeReference(#/definitions/Pet))
+#~1pets/post/responses/405 ->
+	Null
+#~1pets/put/body ->
+	Opt(TypeReference(#/definitions/Pet))
+#~1pets/put/responses/400 ->
+	Null
+#~1pets/put/responses/404 ->
+	Null
+#~1pets/put/responses/405 ->
+	Null
+#~1pets~1findByStatus/get/responses/200 ->
+	Opt(Arr(TypeReference(#/definitions/Pet)))
+#~1pets~1findByStatus/get/responses/400 ->
+	Null
+#~1pets~1findByStatus/get/status ->
+	Opt(Arr(Str))
+#~1pets~1findByTags/get/responses/200 ->
+	Opt(Arr(TypeReference(#/definitions/Pet)))
+#~1pets~1findByTags/get/responses/400 ->
+	Null
+#~1pets~1findByTags/get/tags ->
+	Opt(Arr(Str))
+#~1pets~1{petId}/delete/api_key ->
+	Str
+#~1pets~1{petId}/delete/petId ->
+	Lng
+#~1pets~1{petId}/delete/responses/400 ->
+	Null
+#~1pets~1{petId}/get/petId ->
+	Lng
+#~1pets~1{petId}/get/responses/200 ->
+	Opt(TypeReference(#/definitions/Pet))
+#~1pets~1{petId}/get/responses/400 ->
+	Null
+#~1pets~1{petId}/get/responses/404 ->
+	Null
+#~1pets~1{petId}/post/name ->
+	Str
+#~1pets~1{petId}/post/petId ->
+	Str
+#~1pets~1{petId}/post/responses/405 ->
+	Null
+#~1pets~1{petId}/post/status ->
+	Str
+#~1stores~1order/post/body ->
+	Opt(TypeReference(#/definitions/Order))
+#~1stores~1order/post/responses/200 ->
+	Opt(TypeReference(#/definitions/Order))
+#~1stores~1order/post/responses/400 ->
+	Null
+#~1stores~1order~1{orderId}/delete/orderId ->
+	Str
+#~1stores~1order~1{orderId}/delete/responses/400 ->
+	Null
+#~1stores~1order~1{orderId}/delete/responses/404 ->
+	Null
+#~1stores~1order~1{orderId}/get/orderId ->
+	Str
+#~1stores~1order~1{orderId}/get/responses/200 ->
+	Opt(TypeReference(#/definitions/Order))
+#~1stores~1order~1{orderId}/get/responses/400 ->
+	Null
+#~1stores~1order~1{orderId}/get/responses/404 ->
+	Null
+#~1users/post/body ->
+	Opt(TypeReference(#/definitions/User))
+#~1users/post/responses/default ->
+	Null
+#~1users~1createWithArray/post/body ->
+	Opt(Arr(TypeReference(#/definitions/User)))
+#~1users~1createWithArray/post/responses/default ->
+	Null
+#~1users~1createWithList/post/body ->
+	Opt(Arr(TypeReference(#/definitions/User)))
+#~1users~1createWithList/post/responses/default ->
+	Null
+#~1users~1login/get/password ->
+	Opt(Str)
+#~1users~1login/get/responses/200 ->
+	Opt(Str)
+#~1users~1login/get/responses/400 ->
+	Null
+#~1users~1login/get/username ->
+	Opt(Str)
+#~1users~1logout/get/responses/default ->
+	Null
+#~1users~1{username}/delete/responses/400 ->
+	Null
+#~1users~1{username}/delete/responses/404 ->
+	Null
+#~1users~1{username}/delete/username ->
+	Str
+#~1users~1{username}/get/responses/200 ->
+	Opt(TypeReference(#/definitions/User))
+#~1users~1{username}/get/responses/400 ->
+	Null
+#~1users~1{username}/get/responses/404 ->
+	Null
+#~1users~1{username}/get/username ->
+	Str
+#~1users~1{username}/put/body ->
+	Opt(TypeReference(#/definitions/User))
+#~1users~1{username}/put/responses/400 ->
+	Null
+#~1users~1{username}/put/responses/404 ->
+	Null
+#~1users~1{username}/put/username ->
+	Str

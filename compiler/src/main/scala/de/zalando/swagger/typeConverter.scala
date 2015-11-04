@@ -109,7 +109,7 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
     for {
       (prefix, responses) <- forAllOperations(paths, responseCollector)
       (suffix, response) <- responses
-      fullName = prefix / suffix
+      fullName = prefix / "responses" / suffix
     } yield fromSchemaOrFileSchema(fullName, response.schema, Some(Nil))
 
   private def fromNull(name: Reference): NamedTypes = Seq(name -> Null(TypeMeta(None)))
@@ -119,7 +119,8 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
 
   private def fromParamListItem[T](name: Reference, param: ParametersListItem): NamedTypes =
     param match {
-      case r @ JsonReference(ref)             => fromReference(name / ref.simple, ref)
+      case r @ JsonReference(ref)             =>
+        fromReference(name / ref.simple, ref, None)
       case nb: NonBodyParameterCommons[_, _]  => fromNonBodyParameter(name, nb)
       case bp: BodyParameter[_]               => fromBodyParameter(name, bp)
       case other => ??? // FIXME
@@ -128,10 +129,11 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
   private def fromNonBodyParameter[T, CF](name: Reference, param: NonBodyParameterCommons[T, CF]): NamedTypes = {
     val meta = TypeMeta(Option(param.format))
     val fullName = name / param.name
-    val result = if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items), Option(param.collectionFormat).map(_.toString))
-    else if (!param.required) wrapInOption(fullName -> (param.`type`, param.format)(meta))
-    else fullName -> (param.`type`, param.format)(meta)
-    Seq(result)
+    val result =
+      if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items), Option(param.collectionFormat).map(_.toString))
+      else fullName -> (param.`type`, param.format)(meta)
+    val endResult = if (!param.required) wrapInOption(result) else result
+    Seq(endResult)
   }
 
   private def fromBodyParameter[T](name: Reference, param: BodyParameter[T]): NamedTypes =
@@ -140,7 +142,7 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
   private def fromSchemaOrReference[T](name: Reference, param: SchemaOrReference[T], required: Option[Seq[String]]): NamedTypes =
     Option(param).toSeq flatMap {
       case Left(s)                    => fromSchema(name, s, required)
-      case Right(JsonReference(ref))  => fromReference(name, ref)
+      case Right(JsonReference(ref))  => fromReference(name, ref, required)
     }
 
   private def fromSchemaOrFileSchema[T](name: Reference, param: SchemaOrFileSchema[T], required: Option[Seq[String]]): NamedTypes =
@@ -150,7 +152,9 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
       case Right(fs: FileSchema[_])       => fromFileSchema(fs, required)
     }
 
-  private def fromReference(name: Reference, ref: Ref): NamedTypes = Seq(name -> TypeReference(JsonPointer(ref)))
+  private def fromReference(name: Reference, ref: Ref, required: Option[Seq[String]]): NamedTypes = {
+    Seq(checkRequired(name, required, name -> TypeReference(JsonPointer(ref))))
+  }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
     val meta = TypeMeta(Option(items.format))

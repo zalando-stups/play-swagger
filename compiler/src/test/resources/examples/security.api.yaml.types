@@ -1,0 +1,14 @@
+#/definitions/ErrorModel ->
+	TypeDef("#ErrorModel", Seq(
+		Field("#code", Intgr), 
+		Field("#message", Str)))
+#/definitions/Pet ->
+	TypeDef("#Pet", Seq(
+		Field("#name", Str), 
+		Field("#tag", Opt(Str))))
+#~1pets~1{id}/get/id ->
+	Arr(Str)
+#~1pets~1{id}/get/responses/200 ->
+	Opt(Arr(TypeReference(#/definitions/Pet)))
+#~1pets~1{id}/get/responses/default ->
+	Opt(TypeReference(#/definitions/ErrorModel))

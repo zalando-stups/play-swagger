@@ -1,0 +1,20 @@
+#/definitions/Pet ->
+	TypeDef("#Pet", Seq(
+		Field("#name", Opt(Str)), 
+		Field("#birthday", Opt(Intgr))))
+#~1/get/limit ->
+	Opt(Intgr)
+#~1/get/responses/200 ->
+	Opt(Arr(TypeReference(#/definitions/Pet)))
+#~1/post/pet ->
+	TypeReference(#/definitions/Pet)
+#~1/post/responses/200 ->
+	Null
+#~1/put/pet ->
+	TypeReference(#/definitions/Pet)
+#~1/put/responses/200 ->
+	Null
+#~1{petId}/get/petId ->
+	Str
+#~1{petId}/get/responses/200 ->
+	Null

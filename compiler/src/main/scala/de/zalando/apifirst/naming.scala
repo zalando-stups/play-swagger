@@ -79,9 +79,9 @@ object new_naming {
           case (Nil, Nil) => 0
           case (Nil, _) => -1
           case (_, Nil) => 1
-          case (h1 :: t1, h2 :: t2) =>
-            val c = PointerNodeOrdering.compare(h1, h2)
-            if (c != 0) c else recurse(t1, t2)
+          case (s1, s2) =>
+            val c = PointerNodeOrdering.compare(s1.head, s2.head)
+            if (c != 0) c else recurse(s1.tail, s2.tail)
         }
         recurse(x.values, y.values)
       }

@@ -1,0 +1,81 @@
+#/definitions/Activities ->
+	TypeDef("#Activities", Seq(
+		Field("#offset", Opt(Intgr)), 
+		Field("#limit", Opt(Intgr)), 
+		Field("#count", Opt(Intgr)), 
+		Field("#history", Opt(Arr(TypeReference(#/definitions/Activity))))))
+#/definitions/Activity ->
+	TypeDef("#Activity", Seq(
+		Field("#uuid", Opt(Str))))
+#/definitions/Error ->
+	TypeDef("#Error", Seq(
+		Field("#code", Opt(Intgr)), 
+		Field("#message", Opt(Str)), 
+		Field("#fields", Opt(Str))))
+#/definitions/PriceEstimate ->
+	TypeDef("#PriceEstimate", Seq(
+		Field("#low_estimate", Opt(Dbl)), 
+		Field("#display_name", Opt(Str)), 
+		Field("#estimate", Opt(Str)), 
+		Field("#high_estimate", Opt(Dbl)), 
+		Field("#product_id", Opt(Str)), 
+		Field("#currency_code", Opt(Str)), 
+		Field("#surge_multiplier", Opt(Dbl))))
+#/definitions/Product ->
+	TypeDef("#Product", Seq(
+		Field("#image", Opt(Str)), 
+		Field("#description", Opt(Str)), 
+		Field("#display_name", Opt(Str)), 
+		Field("#product_id", Opt(Str)), 
+		Field("#capacity", Opt(Str))))
+#/definitions/Profile ->
+	TypeDef("#Profile", Seq(
+		Field("#first_name", Opt(Str)), 
+		Field("#email", Opt(Str)), 
+		Field("#promo_code", Opt(Str)), 
+		Field("#last_name", Opt(Str)), 
+		Field("#picture", Opt(Str))))
+#~1estimates~1price/get/end_latitude ->
+	Dbl
+#~1estimates~1price/get/end_longitude ->
+	Dbl
+#~1estimates~1price/get/responses/200 ->
+	Opt(Arr(TypeReference(#/definitions/PriceEstimate)))
+#~1estimates~1price/get/responses/default ->
+	Opt(TypeReference(#/definitions/Error))
+#~1estimates~1price/get/start_latitude ->
+	Dbl
+#~1estimates~1price/get/start_longitude ->
+	Dbl
+#~1estimates~1time/get/customer_uuid ->
+	Opt(Str)
+#~1estimates~1time/get/product_id ->
+	Opt(Str)
+#~1estimates~1time/get/responses/200 ->
+	Opt(Arr(TypeReference(#/definitions/Product)))
+#~1estimates~1time/get/responses/default ->
+	Opt(TypeReference(#/definitions/Error))
+#~1estimates~1time/get/start_latitude ->
+	Dbl
+#~1estimates~1time/get/start_longitude ->
+	Dbl
+#~1history/get/limit ->
+	Opt(Intgr)
+#~1history/get/offset ->
+	Opt(Intgr)
+#~1history/get/responses/200 ->
+	Opt(TypeReference(#/definitions/Activities))
+#~1history/get/responses/default ->
+	Opt(TypeReference(#/definitions/Error))
+#~1me/get/responses/200 ->
+	Opt(TypeReference(#/definitions/Profile))
+#~1me/get/responses/default ->
+	Opt(TypeReference(#/definitions/Error))
+#~1products/get/latitude ->
+	Dbl
+#~1products/get/longitude ->
+	Dbl
+#~1products/get/responses/200 ->
+	Opt(Arr(TypeReference(#/definitions/Product)))
+#~1products/get/responses/default ->
+	Opt(TypeReference(#/definitions/Error))

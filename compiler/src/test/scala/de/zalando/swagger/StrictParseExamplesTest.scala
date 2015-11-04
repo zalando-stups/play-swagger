@@ -26,26 +26,13 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers with ExpectedRes
     }
   }
 
-/*
-
-  describe("Strict Swagger Parser examples") {
-    callsFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
-      it(s"should parse the yaml swagger file ${file.getName} as specification") {
-        val model = StrictYamlParser.parse(file)
-        model mustBe a[SwaggerModel]
-        val result = ModelConverter.fromModel(model)
-        println(result.params.mkString("\n"))
-      }
-    }
-  }
-*/
-
   def testTypeConverter(file: File): Unit = {
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val model = StrictYamlParser.parse(file)
       model mustBe a[SwaggerModel]
       val typeDefs = ModelConverter.fromModel(model).typeDefs
-      val typesStr = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) } mkString "\n"
+      val typeMap  = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
+      val typesStr = typeMap.toSeq.sortBy(_._1.pointer).map(p => p._1 + " ->" + p._2).mkString("\n")
       val expected = asInFile(file, "types")
       if (expected.isEmpty) dump(typesStr, file, "types")
       clean(typesStr) mustBe clean(expected)
