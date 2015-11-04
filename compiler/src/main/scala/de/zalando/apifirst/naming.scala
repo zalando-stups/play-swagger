@@ -89,8 +89,6 @@ object new_naming {
 
   }
 
-//   implicit def stringToJsonPointer: String => JsonPointer = JsonPointer.apply
-
   implicit def stringToReference: String => Reference = Reference.apply
 
   trait Reference {
