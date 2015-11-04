@@ -1,0 +1,3 @@
+#/definitions/KeyedArrays -> 
+	TypeDef("#KeyedArrays", Seq(
+		Field("additionalProperties", CatchAll(Arr(Opt(Intgr))))))

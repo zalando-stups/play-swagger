@@ -9,6 +9,8 @@ import scala.io.Source
  */
 trait ExpectedResults {
 
+  val expectationsFolder = "/expected_results/"
+
   def dump(result: String, file: File, suffix: String): Unit = {
     if (result.nonEmpty) {
       val newFile = target(file, suffix)
@@ -30,5 +32,5 @@ trait ExpectedResults {
   }
 
   def target(file:File, suffix: String) =
-    new File(file.getParentFile.getParent + "/expected_results/" + file.getName + "." + suffix)
+    new File(file.getParentFile.getParent + expectationsFolder + file.getName + "." + suffix)
 }

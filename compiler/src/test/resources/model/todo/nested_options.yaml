@@ -22,9 +22,6 @@ produces:
 paths:
 definitions:
   Basic:
-    required:
-      - required
-      - id
     properties:
       optional:
         type: object

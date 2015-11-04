@@ -47,7 +47,7 @@ object Domain {
   type ModelDefinition = Iterable[Domain.Type]
 
   case class TypeMeta(comment: Option[String], constraints: Seq[String]) {
-    override def toString = s"""TypeMeta($escapedComment, $constraints"""
+    override def toString = s"""TypeMeta($escapedComment, $constraints)"""
 
     val escapedComment = comment match {
       case None => "None"
@@ -64,9 +64,12 @@ object Domain {
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
+    def toShortString(pad: String) = getClass.getSimpleName
   }
 
-  case class TypeReference(pointer: JsonPointer) extends Type(pointer.toString, TypeMeta(None)) with Reference
+  case class TypeReference(pointer: JsonPointer) extends Type(pointer.toString, TypeMeta(None)) with Reference {
+    override def toShortString(pad: String) = s"${super.toShortString(pad)}(${pointer.toString})"
+  }
 
   class Nmbr(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta)
 
@@ -106,6 +109,7 @@ object Domain {
     extends Type(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
     override def nestedTypes = tpe.nestedTypes :+ tpe
+    override def toShortString(pad: String) = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
@@ -117,8 +121,8 @@ object Domain {
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
     extends Container(s"${tpe.name.parent}", tpe, meta, Set("scala.collection.immutable.Map"))
 
-  case class Field(name: TypeName, tpe: Type, meta: TypeMeta){
-    override def toString = s"""Field("$name", $tpe, $meta)"""
+  case class Field(name: TypeName, tpe: Type) {
+    def toString(pad: String) = s"""\n${pad}Field("$name", ${tpe.toShortString(pad+"\t")})"""
 
     def imports = tpe match {
       case c: Container => c.allImports
@@ -132,7 +136,8 @@ object Domain {
                      fields: Seq[Field],
                      extend: Seq[Reference] = Nil,
                      override val meta: TypeMeta) extends Type(name, meta) {
-    override def toString = s"""\n\tTypeDef("$name", List(${fields.mkString("\n\t\t", ",\n\t\t", "")}), $extend, $meta)\n"""
+    override def toString = s"""\n\tTypeDef("$name", \n\t\tSeq(${fields.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), \n\t\tSeq(${extend.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), $meta)\n"""
+    override def toShortString(pad: String) = s"""TypeDef("$name", Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
 
     override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
   }

@@ -221,7 +221,7 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
 
   private def fromTypes(name: Reference, types: NamedTypes, discriminator: Option[String]): NamedTypes = {
     val extend = Nil // FIXME
-    val fields = types map { t => Field(t._1.simple, t._2, TypeMeta(None)) }
+    val fields = types map { t => Field(t._1.simple, t._2) }
     val meta = TypeMeta(None, Nil)
     Seq(name -> Domain.TypeDef(name.simple, fields, extend, meta))
   }

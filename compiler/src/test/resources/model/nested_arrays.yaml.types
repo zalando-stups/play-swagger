@@ -1,0 +1,7 @@
+#/definitions/Activity -> 
+	TypeDef("#Activity", Seq(
+		Field("#actions", Opt(Str))))
+#/definitions/Example -> 
+	TypeDef("#Example", Seq(
+		Field("#messages", Opt(Arr(Opt(Arr(Opt(TypeReference(#/definitions/Activity))))))),
+		Field("#nestedArrays", Opt(Arr(Opt(Arr(Opt(Arr(Opt(Arr(Opt(Str))))))))))))

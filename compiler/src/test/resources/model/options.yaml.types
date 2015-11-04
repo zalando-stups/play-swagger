@@ -1,0 +1,5 @@
+#/definitions/Basic -> 
+	TypeDef("#Basic", Seq(
+		Field("#id", Lng), 
+		Field("#required", Arr(Opt(Str))), 
+		Field("#optional", Opt(Arr(Opt(Str))))))
