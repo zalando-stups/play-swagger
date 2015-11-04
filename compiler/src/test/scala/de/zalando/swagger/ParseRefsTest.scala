@@ -1,8 +1,6 @@
 package de.zalando.swagger
 
-import de.zalando.apifirst.Domain
-import Domain._
-import de.zalando.apifirst.new_naming.{Reference, RelativeSchemaFile, EmbeddedSchema, ReferenceObject}
+import de.zalando.apifirst.new_naming._
 import org.scalatest.{FunSpec, MustMatchers}
 
 class ParseRefsTest extends FunSpec with MustMatchers {
@@ -11,13 +9,13 @@ class ParseRefsTest extends FunSpec with MustMatchers {
     it("should produce ReferenceObject for normal refs") {
       val ref = "#/definitions/Pet"
       val result = Reference(ref)
-      result mustBe ReferenceObject(ref)
+      result mustBe ReferenceObject(JsonPointer(ref))
       result.toString mustBe ref
     }
     it("should produce EmbeddedSchema for embedded refs") {
       val ref = "http://petstore.yaml#/definitions/Pet"
       val result = Reference(ref)
-      result mustBe EmbeddedSchema("http://petstore.yaml", "#/definitions/Pet")
+      result mustBe EmbeddedSchema("http://petstore.yaml", JsonPointer("#/definitions/Pet"))
       result.toString mustBe ref
     }
     it("should produce RelativeSchemaFile for file refs") {

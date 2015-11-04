@@ -89,7 +89,7 @@ object new_naming {
 
   }
 
-  implicit def stringToJsonPointer: String => JsonPointer = JsonPointer.apply
+//   implicit def stringToJsonPointer: String => JsonPointer = JsonPointer.apply
 
   implicit def stringToReference: String => Reference = Reference.apply
 
@@ -118,14 +118,14 @@ object new_naming {
   object Reference {
     def apply(url: String): Reference = url.indexOf('#') match {
       case 0 =>
-        ReferenceObject(url.tail)
+        ReferenceObject(JsonPointer(url.tail))
       case -1 if url.indexOf(':') > 0 =>
         RelativeSchemaFile(url)
       case -1 =>
-        ReferenceObject(url)
+        ReferenceObject(JsonPointer(url))
       case i if i > 0 =>
         val (filePart, urlPart) = url.splitAt(i)
-        EmbeddedSchema(filePart, urlPart)
+        EmbeddedSchema(filePart, JsonPointer(urlPart))
     }
   }
 

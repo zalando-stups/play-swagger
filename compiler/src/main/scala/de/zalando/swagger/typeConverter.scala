@@ -150,7 +150,7 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
       case Right(fs: FileSchema[_])       => fromFileSchema(fs, required)
     }
 
-  private def fromReference(name: Reference, ref: Ref): NamedTypes = Seq(name -> TypeReference(ref))
+  private def fromReference(name: Reference, ref: Ref): NamedTypes = Seq(name -> TypeReference(JsonPointer(ref)))
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
     val meta = TypeMeta(Option(items.format))
