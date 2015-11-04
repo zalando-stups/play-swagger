@@ -1,8 +1,8 @@
 #/definitions/NestedObjects -> 
 	TypeDef("#NestedObjects", Seq(
-		Field("#plain", TypeDef("#plain", Seq(
-			Field("#simple", Str)))), 
-		Field("#nested", TypeDef("#nested", Seq(
+		Field("#plain", Opt(TypeDef("#plain", Seq(
+			Field("#simple", Str))))),
+		Field("#nested", Opt(TypeDef("#nested", Seq(
 			Field("#nested2", TypeDef("#nested2", Seq(
 				Field("#nested3", Opt(TypeDef("#nested3", Seq(
-					Field("#bottom", Opt(Str))))))))))))))
+					Field("#bottom", Opt(Str)))))))))))))))

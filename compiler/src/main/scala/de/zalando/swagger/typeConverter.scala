@@ -73,7 +73,7 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
     Option(parameters).toSeq.flatten flatMap {  p => fromParamListItem(Reference("/parameters") / p._1, p._2) }
 
   private def fromDefinitions(definitions: Definitions): NamedTypes =
-    Option(definitions).toSeq.flatten flatMap { d => fromSchema(Reference("/definitions") / d._1, d._2, Nil) }
+    Option(definitions).toSeq.flatten flatMap { d => fromSchema(Reference("/definitions") / d._1, d._2, None) }
 
   private def fromPaths(paths: Paths): NamedTypes =
     fromPathParameters(paths) ++ fromResponses(paths).flatten ++ fromOperationParameters(paths).toSeq.flatten
@@ -110,7 +110,7 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
       (prefix, responses) <- forAllOperations(paths, responseCollector)
       (suffix, response) <- responses
       fullName = prefix / suffix
-    } yield fromSchemaOrFileSchema(fullName, response.schema, Nil)
+    } yield fromSchemaOrFileSchema(fullName, response.schema, Some(Nil))
 
   private def fromNull(name: Reference): NamedTypes = Seq(name -> Null(TypeMeta(None)))
 
@@ -135,15 +135,15 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
   }
 
   private def fromBodyParameter[T](name: Reference, param: BodyParameter[T]): NamedTypes =
-    fromSchemaOrFileSchema(name / param.name, param.schema, if (param.required) Seq(param.name) else Nil)
+    fromSchemaOrFileSchema(name / param.name, param.schema, if (param.required) Some(Seq(param.name)) else Some(Nil))
 
-  private def fromSchemaOrReference[T](name: Reference, param: SchemaOrReference[T], required: Seq[String]): NamedTypes =
+  private def fromSchemaOrReference[T](name: Reference, param: SchemaOrReference[T], required: Option[Seq[String]]): NamedTypes =
     Option(param).toSeq flatMap {
       case Left(s)                    => fromSchema(name, s, required)
       case Right(JsonReference(ref))  => fromReference(name, ref)
     }
 
-  private def fromSchemaOrFileSchema[T](name: Reference, param: SchemaOrFileSchema[T], required: Seq[String]): NamedTypes =
+  private def fromSchemaOrFileSchema[T](name: Reference, param: SchemaOrFileSchema[T], required: Option[Seq[String]]): NamedTypes =
     param match {
       case any if any == null             => fromNull(name)
       case Left(s: SchemaOrReference[_])  => fromSchemaOrReference(name, s, required)
@@ -160,39 +160,47 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
       name -> (items.`type`, items.format)(meta)
   }
 
-  private def fromSchemaOrSchemaArray[T](name: Reference, param: SchemaOrSchemaArray[T]): NamedTypes =
+  private def fromSchemaOrSchemaArray[T](name: Reference, param: SchemaOrSchemaArray[T], required: Option[Seq[String]]): NamedTypes =
     param match {
-      case Right(sa)    => fromSchemaArray(name, sa)
-      case Left(sr)     => fromSchemaOrReference(name, sr, Nil)
+      case Right(sa)    => fromSchemaArray(name, sa, required)
+      case Left(sr)     => fromSchemaOrReference(name, sr, required)
     }
 
-  private def fromSchemaArray(name: Reference, sa: SchemaArray): NamedTypes =
-      sa flatMap { s => fromSchemaOrFileSchema(name, s, Nil) }
+  private def fromSchemaArray(name: Reference, sa: SchemaArray, required: Option[Seq[String]]): NamedTypes =
+      sa flatMap { s => fromSchemaOrFileSchema(name, s, required) }
 
-  private def fromSchema[T](name: Reference, param: Schema[_], required: Seq[String]): NamedTypes = {
+  private def fromSchema[T](name: Reference, param: Schema[_], required: Option[Seq[String]]): NamedTypes = {
     val tpe = if (param.`type` != null) param.`type` else PrimitiveType.OBJECT
     tpe match {
       case t: ArrayJsonSchemaType => fromArrayJsonSchema(name, param, t)
-      case p: PrimitiveType.Val   => fromPrimitiveType(name, param, p, required)
+      case p: PrimitiveType.Val   =>
+        // paramRequired(param.required)
+        fromPrimitiveType(name, param, p, required)
     }
   }
 
-  private def fromPrimitiveType(name: Reference, param: Schema[_], p: PrimitiveType.Val, required: Seq[String]): NamedTypes = p match {
+  private def paramRequired(required: Seq[String]) = if (required == null) Some(Nil) else Some(required)
+
+  private def checkRequired(name: Reference, required: Option[Seq[String]], tpe: NamedType): NamedType =
+    if (isRequired(name, required)) tpe else wrapInOption(tpe)
+
+  private def fromPrimitiveType(name: Reference, param: Schema[_], p: PrimitiveType.Val, required: Option[Seq[String]]): NamedTypes = p match {
     case PrimitiveType.ARRAY =>
       require(param.items.nonEmpty)
-      val types = fromSchemaOrSchemaArray(name, param.items.get)
-      wrapInArray(types.head, None) +: types.tail
+      val types = fromSchemaOrSchemaArray(name, param.items.get, None)
+      checkRequired(name, required, wrapInArray(types.head, None)) +: types.tail
     case PrimitiveType.OBJECT =>
       param.allOf map {
-        extensionType(name)
+        extensionType(name, required)
       } getOrElse {
-        val catchAll = fromSchemaOrBoolean(name, param.additionalProperties, param)
-        val normal = fromSchemaProperties(name, param.properties, param.required)
-        fromTypes(name, normal ++ catchAll.toSeq.flatten, Option(param.discriminator))
+        val catchAll = fromSchemaOrBoolean("#additionalProperties", param.additionalProperties, param)
+        val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
+        val types = fromTypes(name, normal ++ catchAll.toSeq.flatten, Option(param.discriminator))
+        checkRequired(name, required, types.head) +: types.tail
       }
     case _ =>
       val primitiveType = name -> (p, param.format)(param)
-      if (isRequired(name, required)) Seq(primitiveType) else Seq(wrapInOption(primitiveType))
+      Seq(checkRequired(name, required, primitiveType))
   }
 
   private def fromArrayJsonSchema[T](name: Reference, param: Schema[_], t: ArrayJsonSchemaType): NamedTypes = {
@@ -201,7 +209,7 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
     }
   }
 
-  private def fromSchemaProperties[T](name: Reference, param: SchemaProperties, required: Seq[String]): NamedTypes =
+  private def fromSchemaProperties[T](name: Reference, param: SchemaProperties, required: Option[Seq[String]]): NamedTypes =
     Option(param).toSeq.flatten flatMap { p =>
       fromSchemaOrFileSchema(name / p._1, p._2, required)
     }
@@ -209,15 +217,15 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
   private def fromSchemaOrBoolean[T](name: Reference, param: SchemaOrBoolean[T], meta: TypeMeta): Option[NamedTypes] = {
     val fullName = name
     Option(param) map {
-      case Left(s)        => wrapInCatchAll(fromSchemaOrReference(fullName, s, Nil))
-      case Right(true)    => wrapInCatchAll(Seq(fullName -> Str(None, meta)))   // FIXME
-      case Right(false)   => wrapInCatchAll(Seq(fullName -> Str(None, meta)))  // FIXME
+      case Left(s)        => wrapInCatchAll(fromSchemaOrReference(fullName, s, None))
+      case Right(true)    => wrapInCatchAll(Seq(fullName -> Str(None, meta)))           // FIXME
+      case Right(false)   => wrapInCatchAll(Seq(fullName -> Str(None, meta)))           // FIXME
       case sp: ParameterDefinitions       => ??? // wrapInCatchAll(fromParameters(sp))                 // FIXME
     }
   }
 
-  private def extensionType[T](name: Reference)(schema: SchemaArray): NamedTypes =
-    fromSchemaArray(name, schema)
+  private def extensionType[T](name: Reference, required: Option[Seq[String]])(schema: SchemaArray): NamedTypes =
+    fromSchemaArray(name, schema, required)
 
   private def fromTypes(name: Reference, types: NamedTypes, discriminator: Option[String]): NamedTypes = {
     val extend = Nil // FIXME
@@ -226,12 +234,15 @@ class TypeConverter(model: strictModel.SwaggerModel) extends ParameterNaming {
     Seq(name -> Domain.TypeDef(name.simple, fields, extend, meta))
   }
 
-  private def fromFileSchema[T](schema: FileSchema[T], required: Seq[String]): NamedTypes = {
+  private def fromFileSchema[T](schema: FileSchema[T], required: Option[Seq[String]]): NamedTypes = {
     // TODO
     ???
   }
 
-  private def isRequired[T](name: Reference, required: Seq[String]): Boolean =
-    required != null && required.contains(name.simple)
+  // Use required = None if everything is required
+  // Use required = Some(listOfFields) to specify what exactly is required
+  // Use required = Some(Nil) to define that everything is optional
+  private def isRequired[T](name: Reference, required: Option[Seq[String]]): Boolean =
+    required.isEmpty || required.get.contains(name.simple)
 
 }

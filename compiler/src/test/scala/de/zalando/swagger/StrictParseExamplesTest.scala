@@ -12,20 +12,21 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers with ExpectedRes
 
   val modelFixtures = new File("compiler/src/test/resources/model/todo").listFiles
 
-  val callsFixtures = new File("compiler/src/test/resources/examples/todo").listFiles
+  val exampleFixtures = new File("compiler/src/test/resources/examples/todo").listFiles
 
   describe("Strict Swagger Parser model") {
     modelFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
-      it(s"should parse the yaml swagger file ${file.getName} as specification") {
-        val model = StrictYamlParser.parse(file)
-        model mustBe a[SwaggerModel]
-        val typeDefs = ModelConverter.fromModel(model).typeDefs
-        val typesStr = typeDefs map { case (k,v) => k -> ("\n\t" + v.toShortString("\t\t"))} mkString "\n"
-        // dump(typesStr, file, "types")
-        typesStr.trim mustBe asInFile(file, "types")
-      }
+      testTypeConverter(file)
     }
   }
+
+  describe("Strict Swagger Parser examples") {
+    exampleFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
+      testTypeConverter(file)
+    }
+  }
+
+/*
 
   describe("Strict Swagger Parser examples") {
     callsFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
@@ -37,5 +38,19 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers with ExpectedRes
       }
     }
   }
+*/
 
+  def testTypeConverter(file: File): Unit = {
+    it(s"should parse the yaml swagger file ${file.getName} as specification") {
+      val model = StrictYamlParser.parse(file)
+      model mustBe a[SwaggerModel]
+      val typeDefs = ModelConverter.fromModel(model).typeDefs
+      val typesStr = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) } mkString "\n"
+      val expected = asInFile(file, "types")
+      if (expected.isEmpty) dump(typesStr, file, "types")
+      clean(typesStr) mustBe clean(expected)
+    }
+  }
+
+  def clean(str: String) = str.split("\n").map(_.trim).mkString("\n")
 }

@@ -3,5 +3,5 @@
 		Field("#actions", Opt(Str))))
 #/definitions/Example -> 
 	TypeDef("#Example", Seq(
-		Field("#messages", Opt(Arr(Opt(Arr(Opt(TypeReference(#/definitions/Activity))))))),
-		Field("#nestedArrays", Opt(Arr(Opt(Arr(Opt(Arr(Opt(Arr(Opt(Str))))))))))))
+		Field("#messages", Opt(Arr(Arr(TypeReference(#/definitions/Activity))))),
+		Field("#nestedArrays", Opt(Arr(Arr(Arr(Arr(Str))))))))
