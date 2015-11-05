@@ -1,0 +1,9 @@
+#/definitions/ErrorModel ->
+	TypeDef("#ErrorModel", Seq(
+		Field("#message", Str), 
+		Field("#code", Intgr)))
+#/definitions/ExtendedErrorModel ->
+	Composite(
+		TypeReference(#/definitions/ErrorModel)
+		TypeDef("#ExtendedErrorModel", Seq(
+			Field("#rootCause", Str))))

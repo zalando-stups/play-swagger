@@ -1,0 +1,23 @@
+#/definitions/Cat ->
+	Composite(
+		TypeReference(#/definitions/Pet)
+		TypeDef("#Cat", Seq(
+			Field("#huntingSkill", Str))))
+#/definitions/CatNDog ->
+	Composite(
+		TypeReference(#/definitions/Dog)
+		TypeReference(#/definitions/Cat))
+#/definitions/Dog ->
+	Composite(
+		TypeReference(#/definitions/Pet)
+		TypeDef("#Dog", Seq(
+			Field("#packSize", Intgr))))
+#/definitions/Labrador ->
+	Composite(
+		TypeReference(#/definitions/Dog)
+		TypeDef("#Labrador", Seq(
+			Field("#cuteness", Intgr))))
+#/definitions/Pet ->
+	TypeDef("#Pet", Seq(
+		Field("#name", Str), 
+		Field("#petType", Str)))

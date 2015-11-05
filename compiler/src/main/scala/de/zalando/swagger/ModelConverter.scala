@@ -30,10 +30,12 @@ trait StringUtil {
 object ModelConverter extends ParameterNaming {
 
   def fromModel(model: SwaggerModel, keyPrefix: String = "x-api-first") = {
-    val typeDefs = new TypeConverter(model).convert
+    val converter = new TypeConverter(model, keyPrefix)
+    val typeDefs = converter.convert
+    val discriminators = converter.discriminators.toMap
     val inlineParameters = new ParametersConverter(keyPrefix, model, typeDefs).parameters // TODO add explicitly defined parameters here
     val apiCalls = new PathsConverter(keyPrefix, model, inlineParameters).convert
-    StrictModel(apiCalls, typeDefs.toMap, inlineParameters)
+    StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators)
   }
 
 }

@@ -1,8 +1,8 @@
 package de.zalando.apifirst
 
-import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.apifirst.new_naming.{JsonPointer, TypeName, Reference}
+import de.zalando.swagger.DiscriminatorLookupTable
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -105,6 +105,23 @@ object Domain {
 
   case class Any(override val meta: TypeMeta) extends Type("Any", meta)
 
+  /**
+   * The Composite describes the class composition
+   *
+   * It is different from the Container because it
+   * has more than one underlying Type
+   *
+   * @param name
+   * @param meta
+   * @param allOf
+   */
+  case class Composite(override val name: TypeName, override val meta: TypeMeta, allOf: Seq[Type])
+    extends Type(name, meta) {
+    override def toShortString(pad: String) = s"${getClass.getSimpleName}(${allOf.map(_.toShortString(pad+"\t")).mkString(s"\n$pad",s"\n$pad","")})"
+    override def nestedTypes = allOf flatMap ( _.nestedTypes )
+    override def imports: Set[String] = allOf.flatMap(_.imports).toSet
+  }
+
   abstract class Container(override val name: TypeName, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
     extends Type(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
@@ -134,9 +151,8 @@ object Domain {
 
   case class TypeDef(override val name: TypeName,
                      fields: Seq[Field],
-                     extend: Seq[Reference] = Nil,
                      override val meta: TypeMeta) extends Type(name, meta) {
-    override def toString = s"""\n\tTypeDef("$name", \n\t\tSeq(${fields.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), \n\t\tSeq(${extend.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), $meta)\n"""
+    override def toString = s"""\n\tTypeDef("$name", \n\t\tSeq(${fields.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), $meta)\n"""
     override def toShortString(pad: String) = s"""TypeDef("$name", Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
 
     override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
@@ -259,13 +275,13 @@ object Application {
     definitions:      Iterable[Domain.Type]
   )
 
-  type ParameterLookupTable =  Map[ParameterRef, Parameter]
+  type ParameterLookupTable     = Map[ParameterRef, Parameter]
+  type DiscriminatorLookupTable = Map[Reference, String]
 
-  case class StrictModel(calls: Seq[ApiCall], typeDefs: Map[Reference, Domain.Type], params: ParameterLookupTable) {
+  case class StrictModel(calls: Seq[ApiCall], typeDefs: Map[Reference, Domain.Type], params: ParameterLookupTable, discriminators: DiscriminatorLookupTable) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
   }
-//  case class StrictModel(calls: Seq[ApiCall], definitions: Map[String, Domain.Type], relations: Map[Name, ClassRelation])
 
 }
 
