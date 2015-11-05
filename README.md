@@ -28,7 +28,7 @@ To build a plugin, do the following:
 
 To use the plugin in a play project:
 
-- Create a new play project for example using activator, for example: ``activator new hello-world play-scala``` 
+- Create a new play project for example using activator, for example: ```activator new hello-world play-scala``` 
 - Edit the project/plugins.sbt by adding following: 
   ```addSbtPlugin("de.zalando" % "sbt-play-swagger" % "0.1-SNAPSHOT")```
 - Edit the build.sbt in the new project directory by adding following:
