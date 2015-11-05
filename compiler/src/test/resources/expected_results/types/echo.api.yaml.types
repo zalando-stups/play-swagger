@@ -1,0 +1,12 @@
+#~1/get/responses/200 ->
+	Null
+#~1/post/name ->
+	Opt(Str)
+#~1/post/responses/200 ->
+	Null
+#~1/post/year ->
+	Opt(Str)
+#~1test-path~1{id}/get/id ->
+	Str
+#~1test-path~1{id}/get/responses/200 ->
+	Null
