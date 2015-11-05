@@ -24,7 +24,5 @@ class ParseRefsTest extends FunSpec with MustMatchers {
       result mustBe RelativeSchemaFile(ref)
       result.toString mustBe ref
     }
-
-
   }
 }

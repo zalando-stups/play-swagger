@@ -7,8 +7,8 @@ import org.scalatest.{FunSpec, MustMatchers}
 
 class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
 
-  val ok = new File("compiler/src/test/resources/extensions.ok.yaml")
-  val nok = new File("compiler/src/test/resources/extensions.nok.yaml")
+  val ok = new File("compiler/src/test/resources/extensions/extensions.ok.yaml")
+  val nok = new File("compiler/src/test/resources/extensions/extensions.nok.yaml")
 
   describe("The swagger parser") {
     it("should read valid vendor extensions") {

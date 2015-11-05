@@ -6,13 +6,13 @@ import de.zalando.ExpectedResults
 import de.zalando.swagger.strictModel.SwaggerModel
 import org.scalatest.{FunSpec, MustMatchers}
 
-class StrictParseExamplesTest extends FunSpec with MustMatchers with ExpectedResults {
+class TypeConverterTest extends FunSpec with MustMatchers with ExpectedResults {
 
-  override val expectationsFolder = "/"
+  override val expectationsFolder = "/expected_results/types/"
 
-  val modelFixtures = new File("compiler/src/test/resources/model/todo").listFiles
+  val modelFixtures = new File("compiler/src/test/resources/model").listFiles
 
-  val exampleFixtures = new File("compiler/src/test/resources/examples/todo").listFiles
+  val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
   describe("Strict Swagger Parser model") {
     modelFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
@@ -34,7 +34,7 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers with ExpectedRes
       val typeMap  = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
       val typesStr = typeMap.toSeq.sortBy(_._1.pointer).map(p => p._1 + " ->" + p._2).mkString("\n")
       val expected = asInFile(file, "types")
-      if (expected.isEmpty) dump(typesStr, file, "types")
+      // if (expected.isEmpty) dump(typesStr, file, "types")
       clean(typesStr) mustBe clean(expected)
     }
   }

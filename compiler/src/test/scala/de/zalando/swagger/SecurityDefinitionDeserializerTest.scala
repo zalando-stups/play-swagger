@@ -11,15 +11,15 @@ import org.scalatest.{MustMatchers, FunSpec}
  */
 class SecurityDefinitionDeserializerTest extends FunSpec with MustMatchers {
 
-  val file = new File("compiler/src/test/resources/examples/todo/security.api.yaml")
+  val file = new File("compiler/src/test/resources/examples/security.api.yaml")
 
   describe("SecurityDefinitionDeserializer") {
-      it(s"should parse security definitions in the ${file.getName}") {
-        val result = StrictYamlParser.parse(file).securityDefinitions
-        result.size mustBe 3
-        result("githubAccessCode") mustBe a [Oauth2AccessCodeSecurity]
-        result("petstoreImplicit") mustBe a [Oauth2ImplicitSecurity]
-        result("internalApiKey") mustBe a [ApiKeySecurity]
-      }
+    it(s"should parse security definitions in the ${file.getName}") {
+      val result = StrictYamlParser.parse(file).securityDefinitions
+      result.size mustBe 3
+      result("githubAccessCode") mustBe a[Oauth2AccessCodeSecurity]
+      result("petstoreImplicit") mustBe a[Oauth2ImplicitSecurity]
+      result("internalApiKey") mustBe a[ApiKeySecurity]
+    }
   }
 }
