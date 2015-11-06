@@ -3,12 +3,10 @@ package de.zalando.swagger
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef}
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst._
-import de.zalando.apifirst.new_naming.{JsonPointer, Reference}
+import de.zalando.apifirst.new_naming.{Pointer, Pointer$, Reference, stringToReference}
 import de.zalando.swagger.strictModel._
 
 import scala.language.postfixOps
-
-import new_naming.stringToReference
 
 /**
  * @author  slasch
@@ -31,7 +29,7 @@ class ParametersConverter(val keyPrefix: String, val model: SwaggerModel, typeDe
 
   private def fromPath(basePath: BasePath)(pathDef: (String, PathItem)) = {
     implicit val (url, path) = pathDef
-    val escapedUrl = JsonPointer.escape(url)
+    val escapedUrl = Pointer.escape(url)
     for {
       operationName <- path.operationNames
       operation = path.operation(operationName)

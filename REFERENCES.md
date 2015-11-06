@@ -24,3 +24,17 @@ $ref: 'http://some.host/definitions#/Pet'   // absolute remote fragment referenc
 ```
 
 
+## Methods on Typename or JSON Reference
+
+- `implicit def uriToReference(uri: URI):  Reference`  creates a JSON Reference from given uri.
+- `implicit def stringToReference(string: String):  Reference`  creates a JSON Reference from given URI string.
+- `def simple:  String`  the last JSON Pointer token
+- `def parent: Reference` a new JSON Reference with the last JSON Pointer token dropped (if it exists)
+- `def +:(token: String): Reference` a new JSON Reference with the token added to the JSON Pointer in postfix position
+- `def :+(token: String): Reference` a new JSON Reference with the token added to the JSON Pointer in prefix posistion
+
+
+
+
+
+

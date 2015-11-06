@@ -3,9 +3,8 @@ package de.zalando.swagger
 import de.zalando.apifirst.{new_naming, Domain}
 import Domain._
 import TypeMetaConverter._
-import de.zalando.apifirst.new_naming.{JsonPointer, Reference}
+import de.zalando.apifirst.new_naming.{Pointer, Pointer$, Reference, stringToReference}
 import strictModel._
-import new_naming.stringToReference
 
 import scala.collection.mutable
 import scala.language.{implicitConversions, postfixOps}
@@ -87,7 +86,7 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
       (prefix, path) <- Option(paths).toSeq.flatten
       operationName <- path.operationNames
       operation = path.operation(operationName)
-      escapedUrl = JsonPointer.escape(prefix)
+      escapedUrl = Pointer.escape(prefix)
       name = escapedUrl / operationName
     } yield logic(name, operation)
 
@@ -104,7 +103,7 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
       (url, pathItem) <- Option(paths).toSeq.flatten
       parameterList <- Option(pathItem.parameters).toSeq
       paramListItem <- parameterList
-    } yield stringToReference(JsonPointer.escape(url)) -> paramListItem
+    } yield stringToReference(Pointer.escape(url)) -> paramListItem
 
   private def responseCollector: (Reference, Operation) => (Reference, Responses) = (name, op) => name -> op.responses
 
@@ -154,7 +153,7 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
     }
 
   private def fromReference(name: Reference, ref: Ref, required: Option[Seq[String]]): NamedTypes = {
-    Seq(checkRequired(name, required, name -> TypeReference(JsonPointer(ref))))
+    Seq(checkRequired(name, required, name -> TypeReference(Pointer(ref))))
   }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
@@ -196,7 +195,7 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
       param.allOf map {
         extensionType(name, required, param.vendorExtensions.get(keyPrefix + "-inheritance-strategy"))
       } getOrElse {
-        val catchAll = fromSchemaOrBoolean("#additionalProperties", param.additionalProperties, param)
+        val catchAll = fromSchemaOrBoolean("/additionalProperties", param.additionalProperties, param)
         val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
         val types = fromTypes(name, normal ++ catchAll.toSeq.flatten)
         memoizeDiscriminator(name, param.discriminator)
