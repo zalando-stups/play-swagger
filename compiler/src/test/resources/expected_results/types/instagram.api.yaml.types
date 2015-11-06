@@ -127,7 +127,7 @@
 	Opt(Intgr)
 #~1media~1search/get/responses/200 ->
 	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(Composite(
+		Field("#data", Opt(Arr(AllOf(
 			TypeReference(#/definitions/Media)
 			TypeDef("#data", Seq(
 				Field("#distance", Opt(Dbl)))))))))))

@@ -3,7 +3,7 @@
 		Field("#message", Str), 
 		Field("#code", Intgr)))
 #/definitions/ExtendedErrorModel ->
-	Composite(
+	AllOf(
 		TypeReference(#/definitions/ErrorModel)
 		TypeDef("#ExtendedErrorModel", Seq(
 			Field("#rootCause", Str))))

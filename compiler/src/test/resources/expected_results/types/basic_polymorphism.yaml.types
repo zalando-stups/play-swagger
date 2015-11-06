@@ -1,19 +1,19 @@
 #/definitions/Cat ->
-	Composite(
+	AllOf(
 		TypeReference(#/definitions/Pet)
 		TypeDef("#Cat", Seq(
 			Field("#huntingSkill", Str))))
 #/definitions/CatNDog ->
-	Composite(
+	AllOf(
 		TypeReference(#/definitions/Dog)
 		TypeReference(#/definitions/Cat))
 #/definitions/Dog ->
-	Composite(
+	AllOf(
 		TypeReference(#/definitions/Pet)
 		TypeDef("#Dog", Seq(
 			Field("#packSize", Intgr))))
 #/definitions/Labrador ->
-	Composite(
+	AllOf(
 		TypeReference(#/definitions/Dog)
 		TypeDef("#Labrador", Seq(
 			Field("#cuteness", Intgr))))

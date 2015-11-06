@@ -106,22 +106,36 @@ object Domain {
   case class Any(override val meta: TypeMeta) extends Type("Any", meta)
 
   /**
-   * The Composite describes the class composition
+   * Composite classes describe some class composition
    *
    * It is different from the Container because it
    * has more than one underlying Type
    *
    * @param name
    * @param meta
-   * @param allOf
+   * @param descendants
    */
-  case class Composite(override val name: TypeName, override val meta: TypeMeta, allOf: Seq[Type])
+  abstract class Composite(override val name: TypeName, override val meta: TypeMeta, val descendants: Seq[Type])
     extends Type(name, meta) {
-    override def toShortString(pad: String) = s"${getClass.getSimpleName}(${allOf.map(_.toShortString(pad+"\t")).mkString(s"\n$pad",s"\n$pad","")})"
-    override def nestedTypes = allOf flatMap ( _.nestedTypes )
-    override def imports: Set[String] = allOf.flatMap(_.imports).toSet
+    override def toShortString(pad: String) = s"${getClass.getSimpleName}(${descendants.map(_.toShortString(pad+"\t")).mkString(s"\n$pad",s"\n$pad","")})"
+    override def nestedTypes = descendants flatMap ( _.nestedTypes )
+    override def imports: Set[String] = descendants.flatMap(_.imports).toSet
   }
 
+  case class AllOf(override val name: TypeName, override val meta: TypeMeta, override val descendants: Seq[Type])
+    extends Composite(name, meta, descendants)
+
+  case class OneOf(override val name: TypeName, override val meta: TypeMeta, override val descendants: Seq[Type])
+    extends Composite(name, meta, descendants)
+
+  /**
+    * Container is just a wrapper for another single type with some unique properties
+   *
+    * @param name
+    * @param tpe
+    * @param meta
+    * @param imports
+    */
   abstract class Container(override val name: TypeName, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
     extends Type(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
