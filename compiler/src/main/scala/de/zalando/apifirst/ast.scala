@@ -1,7 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.apifirst.new_naming.{JsonPointer, TypeName, Reference}
+import de.zalando.apifirst.new_naming.{Pointer, Pointer$, TypeName, Reference}
 import de.zalando.swagger.DiscriminatorLookupTable
 
 import scala.language.{implicitConversions, postfixOps}
@@ -67,43 +67,43 @@ object Domain {
     def toShortString(pad: String) = getClass.getSimpleName
   }
 
-  case class TypeReference(pointer: JsonPointer) extends Type(pointer.toString, TypeMeta(None)) with Reference {
+  case class TypeReference(pointer: Pointer) extends Type(pointer.toString, TypeMeta(None)) with Reference {
     override def toShortString(pad: String) = s"${super.toShortString(pad)}(${pointer.toString})"
   }
 
   class Nmbr(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta)
 
-  case class Intgr(override val meta: TypeMeta) extends Nmbr("Int", meta)
+  case class Intgr(override val meta: TypeMeta) extends Nmbr("/Int", meta)
 
-  case class Lng(override val meta: TypeMeta) extends Nmbr("Long", meta)
+  case class Lng(override val meta: TypeMeta) extends Nmbr("/Long", meta)
 
-  case class Flt(override val meta: TypeMeta) extends Nmbr("Float", meta)
+  case class Flt(override val meta: TypeMeta) extends Nmbr("/Float", meta)
 
-  case class Dbl(override val meta: TypeMeta) extends Nmbr("Double", meta)
+  case class Dbl(override val meta: TypeMeta) extends Nmbr("/Double", meta)
 
-  case class Byt(override val meta: TypeMeta) extends Nmbr("Byte", meta)
+  case class Byt(override val meta: TypeMeta) extends Nmbr("/Byte", meta)
 
-  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends Type("String", meta)
+  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends Type("/String", meta)
 
-  case class Bool(override val meta: TypeMeta) extends Type("Boolean", meta)
+  case class Bool(override val meta: TypeMeta) extends Type("/Boolean", meta)
 
-  case class Date(override val meta: TypeMeta) extends Type("Date", meta) {
+  case class Date(override val meta: TypeMeta) extends Type("/Date", meta) {
     override val imports = Set("java.util.Date")
   }
 
-  case class File(override val meta: TypeMeta) extends Type("File", meta) {
+  case class File(override val meta: TypeMeta) extends Type("/File", meta) {
     override val imports = Set("java.io.File")
   }
 
-  case class DateTime(override val meta: TypeMeta) extends Type("Date", meta) {
+  case class DateTime(override val meta: TypeMeta) extends Type("/Date", meta) {
     override val imports = Set("java.util.Date")
   }
 
-  case class Password(override val meta: TypeMeta) extends Type("Password", meta)
+  case class Password(override val meta: TypeMeta) extends Type("/Password", meta)
 
-  case class Null(override val meta: TypeMeta) extends Type("null", meta)
+  case class Null(override val meta: TypeMeta) extends Type("/null", meta)
 
-  case class Any(override val meta: TypeMeta) extends Type("Any", meta)
+  case class Any(override val meta: TypeMeta) extends Type("/Any", meta)
 
   /**
    * Composite classes describe some class composition
