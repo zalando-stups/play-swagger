@@ -6,6 +6,7 @@ package de.zalando.swagger
  */
 
 import java.io.File
+import java.net.URI
 
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
@@ -18,15 +19,15 @@ import scala.io.Source
 import scala.language.postfixOps
 
 trait StrictParser {
-  def parse(file: File): SwaggerModel
+  def parse(file: File): (URI, SwaggerModel)
 }
 
 private[swagger] abstract class StrictSwaggerParser extends StrictParser {
   def factory: JsonFactory
 
-  def parse(file: File): SwaggerModel = {
+  def parse(file: File): (URI, SwaggerModel) = {
     val input = prepareFile(file)
-    mapper.readValue(input.getBytes, classOf[SwaggerModel])
+    (file.toURI, mapper.readValue(input.getBytes, classOf[SwaggerModel]))
   }
 
   lazy val mapper: ObjectMapper = {

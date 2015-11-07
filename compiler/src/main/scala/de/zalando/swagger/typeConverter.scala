@@ -1,9 +1,11 @@
 package de.zalando.swagger
 
+import java.net.URI
+
 import de.zalando.apifirst.{new_naming, Domain}
 import Domain._
 import TypeMetaConverter._
-import de.zalando.apifirst.new_naming.{Pointer, Pointer$, Reference, stringToReference}
+import de.zalando.apifirst.new_naming.{Pointer, Reference, uriToReference}
 import strictModel._
 
 import scala.collection.mutable
@@ -13,7 +15,7 @@ import scala.language.{implicitConversions, postfixOps}
  * @author  slasch 
  * @since   14.10.2015.
  */
-class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends ParameterNaming with DiscriminatorLookupTable {
+class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: String) extends ParameterNaming with DiscriminatorLookupTable {
 
   lazy val convert: NamedTypes =
     fromDefinitions(model.definitions) ++
@@ -70,10 +72,14 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
     (t.head._1 -> Domain.CatchAll(t.head._2, t.head._2.meta)) +: t.tail
 
   private def fromParameters(parameters: ParameterDefinitions): NamedTypes =
-    Option(parameters).toSeq.flatten flatMap { p => fromParamListItem(Reference("/parameters") / p._1, p._2) }
+    Option(parameters).toSeq.flatten flatMap { p =>
+      fromParamListItem(base / "parameters" / p._1, p._2)
+    }
 
   private def fromDefinitions(definitions: Definitions): NamedTypes =
-    Option(definitions).toSeq.flatten flatMap { d => fromSchema(Reference("/definitions") / d._1, d._2, None) }
+    Option(definitions).toSeq.flatten flatMap { d =>
+      fromSchema(base / "definitions" / d._1, d._2, None)
+    }
 
   private def fromPaths(paths: Paths): NamedTypes =
     fromPathParameters(paths) ++ fromResponses(paths).flatten ++ fromOperationParameters(paths).toSeq.flatten
@@ -81,13 +87,11 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
   private def fromPathParameters(paths: Paths): NamedTypes =
     allPathItems(paths) flatMap fromNamedParamListItem
 
-  private def forAllOperations[T](paths: Paths, logic: (Reference, Operation) => T) =
-    for {
+  private def forAllOperations[T](paths: Paths, logic: (Reference, Operation) => T) = for {
       (prefix, path) <- Option(paths).toSeq.flatten
       operationName <- path.operationNames
       operation = path.operation(operationName)
-      escapedUrl = Pointer.escape(prefix)
-      name = escapedUrl / operationName
+      name = base.prepend("paths") / Pointer(prefix) / operationName
     } yield logic(name, operation)
 
   private def fromOperationParameters(paths: Paths): Iterable[NamedTypes] =
@@ -98,33 +102,30 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
       fromParamListItem(name, _)
     }
 
-  private def allPathItems(paths: Paths): Seq[(Reference, ParametersListItem)] =
-    for {
-      (url, pathItem) <- Option(paths).toSeq.flatten
-      parameterList <- Option(pathItem.parameters).toSeq
-      paramListItem <- parameterList
-    } yield stringToReference(Pointer.escape(url)) -> paramListItem
+  private def allPathItems(paths: Paths): Seq[(Reference, ParametersListItem)] = for {
+    (url, pathItem) <- Option(paths).toSeq.flatten
+    parameterList <- Option(pathItem.parameters).toSeq
+    paramListItem <- parameterList
+  } yield base.prepend("paths") / Pointer(url) -> paramListItem
 
   private def responseCollector: (Reference, Operation) => (Reference, Responses) = (name, op) => name -> op.responses
 
-  private def fromResponses(paths: Paths): Seq[NamedTypes] =
-    for {
-      (prefix, responses) <- forAllOperations(paths, responseCollector)
-      (suffix, response) <- responses
-      fullName = prefix / "responses" / suffix
-    } yield fromSchemaOrFileSchema(fullName, response.schema, Some(Nil))
+  private def fromResponses(paths: Paths): Seq[NamedTypes] = for {
+    (prefix, responses) <- forAllOperations(paths, responseCollector)
+    (suffix, response) <- responses
+    fullName = prefix / "responses" / suffix
+  } yield fromSchemaOrFileSchema(fullName, response.schema, Some(Nil))
 
   private def fromNull(name: Reference): NamedTypes = Seq(name -> Null(TypeMeta(None)))
 
   private def fromNamedParamListItem[T](pair: (Reference, ParametersListItem)): NamedTypes =
-    fromParamListItem(pair._1 / "", pair._2)
+    fromParamListItem(pair._1, pair._2)
 
-  private def fromParamListItem[T](name: Reference, param: ParametersListItem): NamedTypes =
-    param match {
-      case r@JsonReference(ref) => fromReference(name / ref.simple, ref, None)
-      case nb: NonBodyParameterCommons[_, _] => fromNonBodyParameter(name, nb)
-      case bp: BodyParameter[_] => fromBodyParameter(name, bp)
-    }
+  private def fromParamListItem[T](name: Reference, param: ParametersListItem): NamedTypes = param match {
+    case r@JsonReference(ref) => fromReference(base / Pointer.deref(ref), ref, None)
+    case nb: NonBodyParameterCommons[_, _] => fromNonBodyParameter(name, nb)
+    case bp: BodyParameter[_] => fromBodyParameter(name, bp)
+  }
 
   private def fromNonBodyParameter[T, CF](name: Reference, param: NonBodyParameterCommons[T, CF]): NamedTypes = {
     val meta = TypeMeta(Option(param.format))
@@ -153,7 +154,7 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
     }
 
   private def fromReference(name: Reference, ref: Ref, required: Option[Seq[String]]): NamedTypes = {
-    Seq(checkRequired(name, required, name -> TypeReference(Pointer(ref))))
+    Seq(checkRequired(name, required, name -> TypeReference(base / Pointer.deref(ref))))
   }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
@@ -195,7 +196,7 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
       param.allOf map {
         extensionType(name, required, param.vendorExtensions.get(keyPrefix + "-inheritance-strategy"))
       } getOrElse {
-        val catchAll = fromSchemaOrBoolean("/additionalProperties", param.additionalProperties, param)
+        val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
         val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
         val types = fromTypes(name, normal ++ catchAll.toSeq.flatten)
         memoizeDiscriminator(name, param.discriminator)
@@ -230,13 +231,13 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
                               (schema: SchemaArray): NamedTypes = {
     val allOf = fromSchemaArray(name, schema, required).map(_._2)
     val meta = TypeMeta(None, Nil)
-    Seq(name -> Composite(name.simple, meta, allOf))
+    Seq(name -> AllOf(name / name.simple, meta, allOf))
   }
 
   private def fromTypes(name: Reference, types: NamedTypes): NamedTypes = {
-    val fields = types map { t => Field(t._1.simple, t._2) }
+    val fields = types map { t => Field(name / t._1.simple, t._2) }
     val meta = TypeMeta(None, Nil)
-    Seq(name -> Domain.TypeDef(name.simple, fields, meta))
+    Seq(name -> Domain.TypeDef(name, fields, meta))
   }
 
   private def fromFileSchema[T](schema: FileSchema[T], required: Option[Seq[String]]): NamedTypes = {

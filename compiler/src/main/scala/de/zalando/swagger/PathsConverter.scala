@@ -1,5 +1,7 @@
 package de.zalando.swagger
 
+import java.net.URI
+
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef, ApiCall, HandlerCall}
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst._
@@ -10,7 +12,7 @@ import de.zalando.swagger.strictModel._
   * @author  slasch 
   * @since   20.10.2015.
   */
-class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: ParameterLookupTable,
+class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String, params: ParameterLookupTable,
                      val definitionFileName: Option[String] = None)
   extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
@@ -24,7 +26,7 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: Par
       operationName     <- path.operationNames
       verb              <- verbFromOperationName(operationName)
       operation         = path.operation(operationName)
-      namePrefix        = url / operationName
+      namePrefix        = base / url / operationName
       params            = parameters(path, operation, namePrefix)
       astPath           = Path.path2path(url, params)
       handlerCall       <- handler(operation, path, params, operationName, astPath).toSeq
@@ -36,15 +38,17 @@ class PathsConverter(val keyPrefix: String, val model: SwaggerModel, params: Par
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
-  private def resultTypes(prefix: Reference, operation: Operation): Iterable[ParameterRef] =
+  private def resultTypes(prefix: Reference, operation: Operation): Iterable[ParameterRef] = {
     operation.responses map {
-      case (code, definition) if code.forall(_.isDigit) =>
-        ParameterRef("resultTypes" :/ prefix / code)
+      case (code, definition) if code.forall(_.isDigit) => {
+        ParameterRef(prefix.prepend("resultTypes") / code)
+      }
       case ("default", definition)  =>
-        ParameterRef("resultTypes" :/ prefix / "default")
+        ParameterRef(prefix.prepend("resultTypes") / "default")
       case (other, _) =>
         throw new IllegalArgumentException(s"Expected numeric error code or 'default', but was $other")
     }
+  }
 
   private def parameters(path: PathItem, operation: Operation, namePrefix: Reference) = {
     val pathParams        = fromParameterList(path.parameters, namePrefix)

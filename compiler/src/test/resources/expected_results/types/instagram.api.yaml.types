@@ -1,258 +1,258 @@
 #/definitions/Comment ->
-	TypeDef("#Comment", Seq(
-		Field("#id", Opt(Str)), 
-		Field("#created_time", Opt(Str)), 
-		Field("#text", Opt(Str)), 
-		Field("#from", Opt(TypeReference(#/definitions/MiniProfile)))))
+	TypeDef(#/definitions/Comment, Seq(
+		Field(#/definitions/Comment/id, Opt(Str)), 
+		Field(#/definitions/Comment/created_time, Opt(Str)), 
+		Field(#/definitions/Comment/text, Opt(Str)), 
+		Field(#/definitions/Comment/from, Opt(TypeReference(#/definitions/MiniProfile)))))
 #/definitions/Image ->
-	TypeDef("#Image", Seq(
-		Field("#width", Opt(Intgr)), 
-		Field("#height", Opt(Intgr)), 
-		Field("#url", Opt(Str))))
+	TypeDef(#/definitions/Image, Seq(
+		Field(#/definitions/Image/width, Opt(Intgr)), 
+		Field(#/definitions/Image/height, Opt(Intgr)), 
+		Field(#/definitions/Image/url, Opt(Str))))
 #/definitions/Like ->
-	TypeDef("#Like", Seq(
-		Field("#first_name", Opt(Str)), 
-		Field("#id", Opt(Str)), 
-		Field("#last_name", Opt(Str)), 
-		Field("#type", Opt(Str)), 
-		Field("#user_name", Opt(Str))))
+	TypeDef(#/definitions/Like, Seq(
+		Field(#/definitions/Like/first_name, Opt(Str)), 
+		Field(#/definitions/Like/id, Opt(Str)), 
+		Field(#/definitions/Like/last_name, Opt(Str)), 
+		Field(#/definitions/Like/type, Opt(Str)), 
+		Field(#/definitions/Like/user_name, Opt(Str))))
 #/definitions/Location ->
-	TypeDef("#Location", Seq(
-		Field("#id", Opt(Str)), 
-		Field("#name", Opt(Str)), 
-		Field("#latitude", Opt(Dbl)), 
-		Field("#longitude", Opt(Dbl))))
+	TypeDef(#/definitions/Location, Seq(
+		Field(#/definitions/Locationid, Opt(Str)), 
+		Field(#/definitions/Locationname, Opt(Str)), 
+		Field(#/definitions/Locationlatitude, Opt(Dbl)), 
+		Field(#/definitions/Locationlongitude, Opt(Dbl))))
 #/definitions/Media ->
-	TypeDef("#Media", Seq(
-		Field("#location", Opt(TypeReference(#/definitions/Location))), 
-		Field("#created_time", Opt(Intgr)), 
-		Field("comments:", Opt(TypeDef("comments:", Seq(
-			Field("#count", Opt(Intgr)), 
-			Field("#data", Opt(Arr(TypeReference(#/definitions/Comment)))))))), 
-		Field("#tags", Opt(Arr(TypeReference(#/definitions/Tag)))), 
-		Field("#users_in_photo", Opt(Arr(TypeReference(#/definitions/MiniProfile)))), 
-		Field("#filter", Opt(Str)), 
-		Field("#likes", Opt(TypeDef("#likes", Seq(
-			Field("#count", Opt(Intgr)), 
-			Field("#data", Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))), 
-		Field("#id", Opt(Intgr)), 
-		Field("#videos", Opt(TypeDef("#videos", Seq(
-			Field("#low_resolution", Opt(TypeReference(#/definitions/Image))), 
-			Field("#standard_resolution", Opt(TypeReference(#/definitions/Image))))))), 
-		Field("#type", Opt(Str)), 
-		Field("#images", Opt(TypeDef("#images", Seq(
-			Field("#low_resolution", Opt(TypeReference(#/definitions/Image))), 
-			Field("#thumbnail", Opt(TypeReference(#/definitions/Image))), 
-			Field("#standard_resolution", Opt(TypeReference(#/definitions/Image))))))), 
-		Field("#user", Opt(TypeReference(#/definitions/MiniProfile)))))
+	TypeDef(#/definitions/Media, Seq(
+		Field(#/definitions/Media/location, Opt(TypeReference(#/definitions/Location))), 
+		Field(#/definitions/Media/created_time, Opt(Intgr)), 
+		Field(comments:, Opt(TypeDef(comments:, Seq(
+			Field(#count, Opt(Intgr)), 
+			Field(#data, Opt(Arr(TypeReference(#/definitions/Comment)))))))), 
+		Field(#/definitions/Media/tags, Opt(Arr(TypeReference(#/definitions/Tag)))), 
+		Field(#/definitions/Media/users_in_photo, Opt(Arr(TypeReference(#/definitions/MiniProfile)))), 
+		Field(#/definitions/Media/filter, Opt(Str)), 
+		Field(#/definitions/Media/likes, Opt(TypeDef(#likes, Seq(
+			Field(#/definitions/Media/likes/count, Opt(Intgr)), 
+			Field(#/definitions/Media/likes/data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))), 
+		Field(#/definitions/Media/id, Opt(Intgr)), 
+		Field(#/definitions/Media/videos, Opt(TypeDef(#videos, Seq(
+			Field(#/definitions/Media/videos/low_resolution, Opt(TypeReference(#/definitions/Image))), 
+			Field(#/definitions/Media/videos/standard_resolution, Opt(TypeReference(#/definitions/Image))))))), 
+		Field(#/definitions/Media/type, Opt(Str)), 
+		Field(#/definitions/Media/images, Opt(TypeDef(#images, Seq(
+			Field(#/definitions/Media/images/low_resolution, Opt(TypeReference(#/definitions/Image))), 
+			Field(#/definitions/Media/images/thumbnail, Opt(TypeReference(#/definitions/Image))), 
+			Field(#/definitions/Media/images/standard_resolution, Opt(TypeReference(#/definitions/Image))))))), 
+		Field(#/definitions/Media/user, Opt(TypeReference(#/definitions/MiniProfile)))))
 #/definitions/MiniProfile ->
-	TypeDef("#MiniProfile", Seq(
-		Field("#user_name", Opt(Str)), 
-		Field("#full_name", Opt(Str)), 
-		Field("#id", Opt(Intgr)), 
-		Field("#profile_picture", Opt(Str))))
+	TypeDef(#/definitions/MiniProfile, Seq(
+		Field(#/definitions/MiniProfile/user_name, Opt(Str)), 
+		Field(#/definitions/MiniProfile/full_name, Opt(Str)), 
+		Field(#/definitions/MiniProfile/id, Opt(Intgr)), 
+		Field(#/definitions/MiniProfile/profile_picture, Opt(Str))))
 #/definitions/Tag ->
-	TypeDef("#Tag", Seq(
-		Field("#media_count", Opt(Intgr)), 
-		Field("#name", Opt(Str))))
+	TypeDef(#/definitions/TagTag, Seq(
+		Field(#/definitions/Tag/media_count, Opt(Intgr)), 
+		Field(#/definitions/Tag/name, Opt(Str))))
 #/definitions/User ->
-	TypeDef("#User", Seq(
-		Field("#website", Opt(Str)), 
-		Field("#profile_picture", Opt(Str)), 
-		Field("#username", Opt(Str)), 
-		Field("#full_name", Opt(Str)), 
-		Field("#bio", Opt(Str)), 
-		Field("#id", Opt(Intgr)), 
-		Field("#counts", Opt(TypeDef("#counts", Seq(
-			Field("#media", Opt(Intgr)), 
-			Field("#follows", Opt(Intgr)), 
-			Field("#follwed_by", Opt(Intgr))))))))
+	TypeDef(#/definitions/User, Seq(
+		Field(#/definitions/User/website, Opt(Str)), 
+		Field(#/definitions/User/profile_picture, Opt(Str)), 
+		Field(#/definitions/User/username, Opt(Str)), 
+		Field(#/definitions/User/full_name, Opt(Str)), 
+		Field(#/definitions/User/bio, Opt(Str)), 
+		Field(#/definitions/User/id, Opt(Intgr)), 
+		Field(#/definitions/User/counts, Opt(TypeDef(#counts, Seq(
+			Field(#/definitions/User/media, Opt(Intgr)), 
+			Field(#/definitions/User/follows, Opt(Intgr)), 
+			Field(#/definitions/User/follwed_by, Opt(Intgr))))))))
 #/parameters/tag-name/tag-name ->
 	Str
 #/parameters/user-id/user-id ->
 	Dbl
-#~1geographies~1{geo-id}~1media~1recent//geo-id ->
+#/paths/geographies/{geo-id}/media/recent//geo-id ->
 	Intgr
-#~1geographies~1{geo-id}~1media~1recent/get/count ->
+#/paths/geographies/{geo-id}/media/recent/get/count ->
 	Opt(Intgr)
-#~1geographies~1{geo-id}~1media~1recent/get/min_id ->
+#/paths/geographies/{geo-id}/media/recent/get/min_id ->
 	Opt(Intgr)
-#~1geographies~1{geo-id}~1media~1recent/get/responses/200 ->
+#/paths/geographies/{geo-id}/media/recent/get/responses/200 ->
 	Null
-#~1locations~1search/get/distance ->
+#/paths/locations/search/get/distance ->
 	Opt(Intgr)
-#~1locations~1search/get/facebook_places_id ->
+#/paths/locations/search/get/facebook_places_id ->
 	Opt(Intgr)
-#~1locations~1search/get/foursquare_id ->
+#/paths/locations/search/get/foursquare_id ->
 	Opt(Intgr)
-#~1locations~1search/get/foursquare_v2_id ->
+#/paths/locations/search/get/foursquare_v2_id ->
 	Opt(Intgr)
-#~1locations~1search/get/lat ->
+#/paths/locations/search/get/lat ->
 	Opt(Dbl)
-#~1locations~1search/get/lng ->
+#/paths/locations/search/get/lng ->
 	Opt(Dbl)
-#~1locations~1search/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Location)))))))
-#~1locations~1{location-id}//location-id ->
+#/paths/locations/search/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Location)))))))
+#/paths/locations/{location-id}//location-id ->
 	Intgr
-#~1locations~1{location-id}/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(TypeReference(#/definitions/Location))))))
-#~1locations~1{location-id}~1media~1recent//location-id ->
+#/paths/locations/{location-id}/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(TypeReference(#/definitions/Location))))))
+#/paths/locations/{location-id}/media/recent//location-id ->
 	Intgr
-#~1locations~1{location-id}~1media~1recent/get/max_id ->
+#/paths/locations/{location-id}/media/recent/get/max_id ->
 	Opt(Str)
-#~1locations~1{location-id}~1media~1recent/get/max_timestamp ->
+#/paths/locations/{location-id}/media/recent/get/max_timestamp ->
 	Opt(Intgr)
-#~1locations~1{location-id}~1media~1recent/get/min_id ->
+#/paths/locations/{location-id}/media/recent/get/min_id ->
 	Opt(Str)
-#~1locations~1{location-id}~1media~1recent/get/min_timestamp ->
+#/paths/locations/{location-id}/media/recent/get/min_timestamp ->
 	Opt(Intgr)
-#~1locations~1{location-id}~1media~1recent/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Media)))))))
-#~1media~1popular/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Media)))))))
-#~1media~1search/get/DISTANCE ->
+#/paths/locations/{location-id}/media/recent/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Media)))))))
+#/paths/media/popular/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Media)))))))
+#/paths/media/search/get/DISTANCE ->
 	Opt(Intgr)
-#~1media~1search/get/LAT ->
+#/paths/media/search/get/LAT ->
 	Opt(Dbl)
-#~1media~1search/get/LNG ->
+#/paths/media/search/get/LNG ->
 	Opt(Dbl)
-#~1media~1search/get/MAX_TIMESTAMP ->
+#/paths/media/search/get/MAX_TIMESTAMP ->
 	Opt(Intgr)
-#~1media~1search/get/MIN_TIMESTAMP ->
+#/paths/media/search/get/MIN_TIMESTAMP ->
 	Opt(Intgr)
-#~1media~1search/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(AllOf(
+#/paths/media/search/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(AllOf(
 			TypeReference(#/definitions/Media)
-			TypeDef("#data", Seq(
-				Field("#distance", Opt(Dbl)))))))))))
-#~1media~1{media-id}//media-id ->
+			TypeDef(#data, Seq(
+				Field(#distance, Opt(Dbl)))))))))))
+#/paths/media/{media-id}//media-id ->
 	Intgr
-#~1media~1{media-id}/get/responses/200 ->
+#/paths/media/{media-id}/get/responses/200 ->
 	Opt(TypeReference(#/definitions/Media))
-#~1media~1{media-id}~1comments//media-id ->
+#/paths/media/{media-id}/comments//media-id ->
 	Intgr
-#~1media~1{media-id}~1comments/delete/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#meta", Opt(TypeDef("#meta", Seq(
-			Field("#code", Opt(Dbl)))))), 
-		Field("#data", Opt(TypeDef("#data", Seq()))))))
-#~1media~1{media-id}~1comments/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#meta", Opt(TypeDef("#meta", Seq(
-			Field("#code", Opt(Dbl)))))), 
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Comment)))))))
-#~1media~1{media-id}~1comments/post/TEXT ->
+#/paths/media/{media-id}/comments/delete/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#meta, Opt(TypeDef(#meta, Seq(
+			Field(#code, Opt(Dbl)))))), 
+		Field(#data, Opt(TypeDef(#data, Seq()))))))
+#/paths/media/{media-id}/comments/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#meta, Opt(TypeDef(#meta, Seq(
+			Field(#code, Opt(Dbl)))))), 
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Comment)))))))
+#/paths/media/{media-id}/comments/post/TEXT ->
 	Opt(Dbl)
-#~1media~1{media-id}~1comments/post/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#meta", Opt(TypeDef("#meta", Seq(
-			Field("#code", Opt(Dbl)))))), 
-		Field("#data", Opt(TypeDef("#data", Seq()))))))
-#~1media~1{media-id}~1likes//media-id ->
+#/paths/media/{media-id}/comments/post/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#meta, Opt(TypeDef(#meta, Seq(
+			Field(#code, Opt(Dbl)))))), 
+		Field(#data, Opt(TypeDef(#data, Seq()))))))
+#/paths/media/{media-id}/likes//media-id ->
 	Intgr
-#~1media~1{media-id}~1likes/delete/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#meta", Opt(TypeDef("#meta", Seq(
-			Field("#code", Opt(Dbl)))))), 
-		Field("#data", Opt(TypeDef("#data", Seq()))))))
-#~1media~1{media-id}~1likes/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#meta", Opt(TypeDef("#meta", Seq(
-			Field("#code", Opt(Dbl)))))), 
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Like)))))))
-#~1media~1{media-id}~1likes/post/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#meta", Opt(TypeDef("#meta", Seq(
-			Field("#code", Opt(Dbl)))))), 
-		Field("#data", Opt(TypeDef("#data", Seq()))))))
-#~1media~1{shortcode}//shortcode ->
+#/paths/media/{media-id}/likes/delete/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#meta, Opt(TypeDef(#meta, Seq(
+			Field(#code, Opt(Dbl)))))), 
+		Field(#data, Opt(TypeDef(#data, Seq()))))))
+#/paths/media/{media-id}/likes/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#meta, Opt(TypeDef(#meta, Seq(
+			Field(#code, Opt(Dbl)))))), 
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Like)))))))
+#/paths/media/{media-id}/likes/post/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#meta, Opt(TypeDef(#meta, Seq(
+			Field(#code, Opt(Dbl)))))), 
+		Field(#data, Opt(TypeDef(#data, Seq()))))))
+#/paths/media/{shortcode}//shortcode ->
 	Str
-#~1media~1{shortcode}/get/responses/200 ->
+#/paths/media/{shortcode}/get/responses/200 ->
 	Opt(TypeReference(#/definitions/Media))
-#~1tags~1search/get/q ->
+#/paths/tags/search/get/q ->
 	Opt(Str)
-#~1tags~1search/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#meta", Opt(TypeDef("#meta", Seq(
-			Field("#code", Opt(Intgr)))))), 
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Tag)))))))
-#~1tags~1{tag-name}//tag-name ->
+#/paths/tags/search/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#meta, Opt(TypeDef(#meta, Seq(
+			Field(#code, Opt(Intgr)))))), 
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Tag)))))))
+#/paths/tags/{tag-name}//tag-name ->
 	TypeReference(#/parameters/tag-name)
-#~1tags~1{tag-name}/get/responses/200 ->
+#/paths/tags/{tag-name}/get/responses/200 ->
 	Opt(TypeReference(#/definitions/Tag))
-#~1tags~1{tag-name}~1media~1recent//tag-name ->
+#/paths/tags/{tag-name}/media/recent//tag-name ->
 	TypeReference(#/parameters/tag-name)
-#~1tags~1{tag-name}~1media~1recent/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Tag)))))))
-#~1users~1search/get/count ->
+#/paths/tags/{tag-name}/media/recent/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Tag)))))))
+#/paths/users/search/get/count ->
 	Opt(Str)
-#~1users~1search/get/q ->
+#/paths/users/search/get/q ->
 	Str
-#~1users~1search/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
-#~1users~1self~1feed/get/count ->
+#/paths/users/search/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
+#/paths/users/self/feed/get/count ->
 	Opt(Intgr)
-#~1users~1self~1feed/get/max_id ->
+#/paths/users/self/feed/get/max_id ->
 	Opt(Intgr)
-#~1users~1self~1feed/get/min_id ->
+#/paths/users/self/feed/get/min_id ->
 	Opt(Intgr)
-#~1users~1self~1feed/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Media)))))))
-#~1users~1self~1media~1liked/get/count ->
+#/paths/users/self/feed/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Media)))))))
+#/paths/users/self/media/liked/get/count ->
 	Opt(Intgr)
-#~1users~1self~1media~1liked/get/max_like_id ->
+#/paths/users/self/media/liked/get/max_like_id ->
 	Opt(Intgr)
-#~1users~1self~1media~1liked/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Media)))))))
-#~1users~1self~1requested-by/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#meta", Opt(TypeDef("#meta", Seq(
-			Field("#code", Opt(Intgr)))))), 
-		Field("#data", Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
-#~1users~1{user-id}//user-id ->
+#/paths/users/self/media/liked/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Media)))))))
+#/paths/users/self/requested-by/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#meta, Opt(TypeDef(#meta, Seq(
+			Field(#code, Opt(Intgr)))))), 
+		Field(#data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
+#/paths/users/{user-id}//user-id ->
 	TypeReference(#/parameters/user-id)
-#~1users~1{user-id}/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(TypeReference(#/definitions/User))))))
-#~1users~1{user-id}~1followed-by//user-id ->
+#/paths/users/{user-id}/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(TypeReference(#/definitions/User))))))
+#/paths/users/{user-id}/followed-by//user-id ->
 	TypeReference(#/parameters/user-id)
-#~1users~1{user-id}~1followed-by/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
-#~1users~1{user-id}~1follows//user-id ->
+#/paths/users/{user-id}/followed-by/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
+#/paths/users/{user-id}/follows//user-id ->
 	TypeReference(#/parameters/user-id)
-#~1users~1{user-id}~1follows/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
-#~1users~1{user-id}~1media~1recent//user-id ->
+#/paths/users/{user-id}/follows/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
+#/paths/users/{user-id}/media/recent//user-id ->
 	TypeReference(#/parameters/user-id)
-#~1users~1{user-id}~1media~1recent/get/count ->
+#/paths/users/{user-id}/media/recent/get/count ->
 	Opt(Intgr)
-#~1users~1{user-id}~1media~1recent/get/max_id ->
+#/paths/users/{user-id}/media/recent/get/max_id ->
 	Opt(Str)
-#~1users~1{user-id}~1media~1recent/get/max_timestamp ->
+#/paths/users/{user-id}/media/recent/get/max_timestamp ->
 	Opt(Intgr)
-#~1users~1{user-id}~1media~1recent/get/min_id ->
+#/paths/users/{user-id}/media/recent/get/min_id ->
 	Opt(Str)
-#~1users~1{user-id}~1media~1recent/get/min_timestamp ->
+#/paths/users/{user-id}/media/recent/get/min_timestamp ->
 	Opt(Intgr)
-#~1users~1{user-id}~1media~1recent/get/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/Media)))))))
-#~1users~1{user-id}~1relationship//user-id ->
+#/paths/users/{user-id}/media/recent/get/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/Media)))))))
+#/paths/users/{user-id}/relationship//user-id ->
 	TypeReference(#/parameters/user-id)
-#~1users~1{user-id}~1relationship/post/action ->
+#/paths/users/{user-id}/relationship/post/action ->
 	Opt(Str)
-#~1users~1{user-id}~1relationship/post/responses/200 ->
-	Opt(TypeDef("#200", Seq(
-		Field("#data", Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
+#/paths/users/{user-id}/relationship/post/responses/200 ->
+	Opt(TypeDef(#200, Seq(
+		Field(#data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))

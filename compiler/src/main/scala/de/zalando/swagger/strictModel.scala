@@ -32,7 +32,7 @@ object strictModel {
       value == null || pattern.r.unapplySeq(value).nonEmpty
   }
   trait UriChecker {
-    def url: URI
+    def url: Uri
     require(url == null || Try(new URL(url)).isSuccess, s"Valid URI was expected, but got $url")
   }
   trait EmailChecker extends PatternChecker {
@@ -190,7 +190,7 @@ object strictModel {
    * @param description
    */
   case class ExternalDocs(
-    @JsonProperty(required = true) url: URI,
+    @JsonProperty(required = true) url: Uri,
     description: String
   ) extends VendorExtensions with API with UriChecker
 
@@ -224,7 +224,7 @@ object strictModel {
    */
   case class Contact(
     name:                 String,
-    url:                  URI,
+    url:                  Uri,
     email:                Email
   ) extends VendorExtensions with API with UriChecker with EmailChecker
 
@@ -235,7 +235,7 @@ object strictModel {
    */
   case class License(
     name:                 String,
-    url:                  URI
+    url:                  Uri
   ) extends API with UriChecker
 
   /**
@@ -753,7 +753,7 @@ object strictModel {
   case class Oauth2ImplicitSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
     @JsonProperty(required = true) flow: String,    // "enum": implicit
-    @JsonProperty(required = true) authorizationUrl: URI,
+    @JsonProperty(required = true) authorizationUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
   ) extends SecurityDefinition with UriChecker {
@@ -763,7 +763,7 @@ object strictModel {
   case class Oauth2PasswordSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
     @JsonProperty(required = true) flow: String,    // "enum": password
-    @JsonProperty(required = true) tokenUrl: URI,
+    @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
   ) extends SecurityDefinition with UriChecker {
@@ -773,7 +773,7 @@ object strictModel {
   case class Oauth2ApplicationSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
     @JsonProperty(required = true) flow: String,    // "enum": application
-    @JsonProperty(required = true) tokenUrl: URI,
+    @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
   ) extends SecurityDefinition with UriChecker {
@@ -783,8 +783,8 @@ object strictModel {
   case class Oauth2AccessCodeSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
     @JsonProperty(required = true) flow: String,    // "enum": accessCode
-    @JsonProperty(required = true) authorizationUrl: URI,
-    @JsonProperty(required = true) tokenUrl: URI,
+    @JsonProperty(required = true) authorizationUrl: Uri,
+    @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
   ) extends SecurityDefinition with UriChecker {
@@ -836,7 +836,7 @@ object strictModel {
   type BasePath               = String
   type Format                 = String
   type SimpleTag              = String
-  type URI                    = String
+  type Uri                    = String
   type Email                  = String
   type Ref                    = String
   type MimeType               = String // The MIME type of the HTTP message.

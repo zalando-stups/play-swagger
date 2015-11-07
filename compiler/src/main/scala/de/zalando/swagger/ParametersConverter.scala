@@ -1,9 +1,11 @@
 package de.zalando.swagger
 
+import java.net.URI
+
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef}
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst._
-import de.zalando.apifirst.new_naming.{Pointer, Pointer$, Reference, stringToReference}
+import de.zalando.apifirst.new_naming.{Pointer, Reference, uriToReference}
 import de.zalando.swagger.strictModel._
 
 import scala.language.postfixOps
@@ -12,7 +14,7 @@ import scala.language.postfixOps
  * @author  slasch
  * @since   03.11.2015.
  */
-class ParametersConverter(val keyPrefix: String, val model: SwaggerModel, typeDefs: ParameterNaming#NamedTypes,
+class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String, typeDefs: ParameterNaming#NamedTypes,
                           val definitionFileName: Option[String] = None)
   extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
@@ -29,11 +31,10 @@ class ParametersConverter(val keyPrefix: String, val model: SwaggerModel, typeDe
 
   private def fromPath(basePath: BasePath)(pathDef: (String, PathItem)) = {
     implicit val (url, path) = pathDef
-    val escapedUrl = Pointer.escape(url)
     for {
       operationName <- path.operationNames
       operation = path.operation(operationName)
-      namePrefix = escapedUrl / operationName
+      namePrefix = base.prepend("paths") / Pointer(url) / operationName
     } yield parameters(path, operation, namePrefix)
   }
 
@@ -62,8 +63,9 @@ class ParametersConverter(val keyPrefix: String, val model: SwaggerModel, typeDe
 
   private def fromExplicitParameter(prefix: Reference, ref: String): Application.Parameter = {
     val default = None
+    val x = model.parameters
     val parameter = model.parameters.find { case (_, p) =>
-      p.name == ref.simple
+      p.name == Pointer.deref(ref).simple
     } map {
       _._2
     } getOrElse {
@@ -99,7 +101,7 @@ class ParametersConverter(val keyPrefix: String, val model: SwaggerModel, typeDe
   }
 
   private def findTypeByPath(fullPath: Reference, name: String): Option[Type] =
-    typeDefByName(fullPath.parent / "" / name)
+    typeDefByName(fullPath.parent / name)
 
   private def typeDefByName(name: Reference): Option[Type] =
     typeDefs.find(_._1 == name).map(_._2)

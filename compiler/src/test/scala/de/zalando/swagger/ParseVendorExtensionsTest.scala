@@ -12,7 +12,7 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
 
   describe("The swagger parser") {
     it("should read valid vendor extensions") {
-      implicit val swagger = StrictYamlParser.parse(ok)
+      implicit val (uri, swagger) = StrictYamlParser.parse(ok)
       swagger.info.vendorExtensions contains "x-info-extension"
       swagger.paths("/").vendorExtensions contains "x-path-extension"
       swagger.paths("/").get.vendorExtensions contains "x-operation-extension"

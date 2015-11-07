@@ -12,21 +12,23 @@ object new_naming {
 
   type TypeName = Reference
 
-  abstract class PointerNode {
-    def asString: String
+  trait PointerNode {
+    def asJsonString: String
   }
 
-  final case class Node(private val raw: String) extends PointerNode {
-    override def asString = Pointer.escape(raw)
+  final case class Node(private val token: String) extends PointerNode {
+    override def asJsonString: String = Pointer.escape(token)
+    override def toString: String = token
   }
 
   final case class Index(i: Long) extends PointerNode {
     require(i >= 0, "index must be positive")
-    override def asString = i.toString
+    override def asJsonString: String = i.toString
+    override def toString: String = i.toString
   }
 
   final case class Pointer(tokens: Seq[PointerNode]) {
-    def ++(that: Pointer): Pointer = Pointer(tokens ++ that.tokens)
+    def ++(that: Pointer): Pointer     = Pointer(tokens ++ that.tokens)
     def :+(node: PointerNode): Pointer = Pointer(tokens :+ node)
     def :+(node: String): Pointer      = Pointer(tokens :+ Node(node))
     def :+(node: Long): Pointer        = Pointer(tokens :+ Index(node))
@@ -34,17 +36,16 @@ object new_naming {
     def +:(node: String): Pointer      = Pointer(Node(node) +: tokens)
     def +:(node: Long): Pointer        = Pointer(Index(node) +: tokens)
 
-    override def toString: String = tokens match {
-      case Nil => ""
-      case _   => tokens.map(_.asString).mkString("/", "/", "")
+    def asJsonString() = if (tokens.isEmpty) "" else tokens.map(_.asJsonString).mkString("/", "/", "")
+
+    override def toString() = if (tokens.isEmpty) "" else tokens.map(_.toString).mkString("/", "/", "")
+
+    lazy val parent: Pointer = tokens match {
+      case Nil => Pointer(Nil)
+      case _   => Pointer(tokens.init)
     }
 
-    lazy val parent: Option[Pointer] = tokens match {
-      case Nil => None
-      case _   => Some(Pointer(tokens.init))
-    }
-
-    lazy val simple = tokens.lastOption.map(_.asString).getOrElse("")
+    lazy val simple = tokens.lastOption.map(_.toString).getOrElse("")
   }
 
   object Pointer {
@@ -52,18 +53,47 @@ object new_naming {
     def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
 
     def apply(path: String): Pointer = {
-      require(path == null || path.isEmpty || path.startsWith("/"),
+      require(path != null && (path.isEmpty || path.startsWith("/")),
         s"must be created from zero or more reference tokens prefixed by a '/', but found: $path")
 
-      val tokens: Seq[PointerNode] = if (path.isEmpty)
-        Nil
-      else {
-        def isAllDigits(token: String) = (token.length > 0) && (token forall Character.isDigit)
-        path drop(1) split '/' map unescape map { token =>
-          if (isAllDigits(token)) Index(token.toLong) else Node(token)
+      // Your own parser, seriously?  I know.
+      // Just got fed up trying to split('/')
+      //
+      // "/"      ->  Seq(Node()),
+      // "//"     ->  Seq(Node(), Node()),
+      // "/foo"   ->  Seq(Node(foo))
+      // "/foo/"  ->  Seq(Node(foo), Node())
+      //
+      def parse(s: String): Seq[String] = {
+        def recurse(s: String, acc: (Option[String], Seq[String])): Seq[String] = {
+          s.headOption match {
+            case Some('/') => acc._1 match {
+              case Some(token) => recurse(s.tail, (Some(""), acc._2 :+ token))
+              case None        => recurse(s.tail, (Some(""), acc._2))
+            }
+            case Some(c)   => acc._1 match {
+              case Some(token) => recurse(s.tail, (Some(token :+ c), acc._2))
+              case None        => recurse(s.tail, (Some(c.toString), acc._2))
+            }
+            case None      => acc._1 match {
+              case Some(token) => acc._2 :+ token
+              case None        => acc._2
+            }
+          }
         }
+        recurse(s, (None,Seq()))
       }
-      Pointer(tokens)
+
+      def isAllDigits(token: String) = (token.length > 0) && (token forall Character.isDigit)
+
+      Pointer(parse(path) map unescape map { token =>
+        if (isAllDigits(token)) Index(token.toLong) else Node(token)
+      })
+    }
+
+    def deref(jstr: String): Pointer = {
+      val fragment = unescape(jstr.reverse.takeWhile(_ != '#').reverse)
+      Pointer(fragment)
     }
 
     implicit object JsonPointerOrdering extends Ordering[Pointer] {
@@ -90,28 +120,45 @@ object new_naming {
     }
   }
 
-  implicit def stringToReference: String => Reference = Reference.apply
+  implicit def uriToReference: URI => Reference = Reference.apply
 
-  trait Reference {
-    def pointer: Pointer
+  class Reference(private[new_naming] val uri: URI) {
+    import Reference._
+    private lazy val base = uri.toString.takeWhile(_ != '#') + "#"
+    lazy val pointer: Pointer = uri.getFragment match {
+      case s if (s == null || s.isEmpty) => Pointer(Nil)
+      case s                             => Pointer(percentDecodeFragmentChars(s))
+    }
     lazy val simple = pointer.simple
-    lazy val parent = new ReferenceObject(pointer.parent.get)         // TODO return the right Reference type
-    def /(child: String) = new ReferenceObject(pointer :+ child)  // TODO return the right Reference type
-    def :/(prefix: String) = new ReferenceObject(prefix +: pointer)  // TODO return the right Reference type
-    def :/(suffix: Reference) = new ReferenceObject(pointer ++ suffix.pointer)
-  }
-
-  case class ReferenceObject(override val pointer: Pointer) extends Reference {
-    override def toString = pointer.toString
+    lazy val parent: Reference = Reference(s"${base}${pointer.parent}")
+    def prepend(token: String): Reference = Reference(s"${base}/${token}${pointer}")
+    def /(token: String): Reference = Reference(s"${base}${pointer}/${token}")
+    def /(p: Pointer): Reference = Reference(s"${base}${pointer}${p}")
+    override def toString = base + percentDecodeFragmentChars(pointer.toString)
+    override def equals(obj: scala.Any) = obj.isInstanceOf[Reference] && obj.asInstanceOf[Reference].uri == uri
+    override def hashCode: Int = uri.hashCode
   }
 
   object Reference {
-    def apply(url: String): Reference = url.indexOf('#') match {
-      case 0 =>
-        ReferenceObject(Pointer(url.tail))
-      case -1 =>
-        ReferenceObject(Pointer(url))
+    def apply(uri: URI): Reference = new Reference(uri)
+    def apply(str: String): Reference = {
+      val uri = if (str.contains("#")) {
+        val (base, frag) = str.splitAt(str.indexOf("#") - 1)
+        URI.create(base + percentEncodeFragmentChars(frag))
+      }
+      else {
+        URI.create(str)
+      }
+      require(uri.isAbsolute, s"must be absolute, found: $str")
+      Reference(uri)
     }
-  }
 
+    private[new_naming] def percentEncodeFragmentChars(fragment: String): String = fragment
+    .replace("{", "%7B")
+    .replace("}", "%7D")
+
+    private[new_naming] def percentDecodeFragmentChars(fragment: String): String = fragment
+    .replace("%7B", "{")
+    .replace("%7D", "}")
+  }
 }
