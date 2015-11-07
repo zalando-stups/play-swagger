@@ -34,7 +34,7 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
     for {
       operationName <- path.operationNames
       operation = path.operation(operationName)
-      namePrefix = base.prepend("paths") / Pointer(url) / operationName
+      namePrefix = base / "paths" / url / operationName
     } yield parameters(path, operation, namePrefix)
   }
 
@@ -63,15 +63,14 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
 
   private def fromExplicitParameter(prefix: Reference, ref: String): Application.Parameter = {
     val default = None
-    val x = model.parameters
-    val parameter = model.parameters.find { case (_, p) =>
-      p.name == Pointer.deref(ref).simple
+    val parameter = model.parameters.find { case (paramName, _) =>
+      paramName == Pointer.deref(ref).simple
     } map {
       _._2
     } getOrElse {
       throw new IllegalStateException(s"Could not find parameter definition for reference $ref")
     }
-    val (_, typeDef) = findType(prefix, parameter.name)
+    val typeDef = findTypeByParameterRef(prefix, ref)
     val (constraint, encode) = Constraints(parameter.in)
     val place = ParameterPlace.withName(parameter.in)
     Application.Parameter(parameter.name, typeDef, FIXED, default, constraint, encode, place)
@@ -95,13 +94,22 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
   private def findType(prefix: Reference, paramName: String): NamedType = {
     val name = prefix / paramName
     val typeDef = typeDefByName(name) orElse findTypeByPath(prefix, paramName) getOrElse {
+      println(typeDefs.mkString("\n"))
       throw new IllegalStateException(s"Could not find type definition with a name $name")
     }
     (name, typeDef)
   }
 
+  private def findTypeByParameterRef(fullPath: Reference, ref: String): Type = {
+    val parent = base / ref
+    typeDefs.find(_._1.parent == parent).map(_._2) getOrElse {
+      println(typeDefs.map(_._1.parent).mkString("\n"))
+      throw new IllegalStateException(s"Could not find parameter definition with reference $ref")
+    }
+  }
+
   private def findTypeByPath(fullPath: Reference, name: String): Option[Type] =
-    typeDefByName(fullPath.parent / name)
+    typeDefByName(fullPath.parent / "" / name)
 
   private def typeDefByName(name: Reference): Option[Type] =
     typeDefs.find(_._1 == name).map(_._2)
@@ -123,7 +131,7 @@ object Constraints {
 trait ParameterReferenceGenerator {
   protected def refFromParametersListItem(prefix: Reference)(li: ParametersListItem): ParameterRef = li match {
     case jr@JsonReference(ref) =>
-      ParameterRef(prefix) // JsonPointer(ref).simple
+      ParameterRef(prefix / Pointer.deref(ref).simple)
     case p: BodyParameter[_] =>
       ParameterRef(prefix / p.name)
     case p: NonBodyParameter[_] =>

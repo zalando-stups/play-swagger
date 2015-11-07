@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.{JsonProperty, JsonAnySetter}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
+import de.zalando.apifirst.new_naming.Pointer
 
 import scala.collection.mutable
 import scala.util.Try
@@ -283,6 +284,8 @@ object strictModel {
   case class JsonReference(
     @JsonProperty(value = "$ref", required = true) $ref: Ref
   ) extends ParametersListItem with ResponseValue with RefChecker
+
+  implicit def jsonReferenceToPointer(ref: JsonReference): Pointer = Pointer.deref(ref.$ref)
 
   sealed trait Parameter[T] extends ParametersListItem {
     def name: String

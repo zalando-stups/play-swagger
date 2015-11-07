@@ -38,7 +38,7 @@ object new_naming {
 
     def asJsonString() = if (tokens.isEmpty) "" else tokens.map(_.asJsonString).mkString("/", "/", "")
 
-    override def toString() = if (tokens.isEmpty) "" else tokens.map(_.toString).mkString("/", "/", "")
+    override def toString = if (tokens.isEmpty) "" else tokens.map(_.toString).mkString("/", "/", "")
 
     lazy val parent: Pointer = tokens match {
       case Nil => Pointer(Nil)
@@ -53,8 +53,11 @@ object new_naming {
     def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
 
     def apply(path: String): Pointer = {
+      require(path != null)
+/*
       require(path != null && (path.isEmpty || path.startsWith("/")),
         s"must be created from zero or more reference tokens prefixed by a '/', but found: $path")
+*/
 
       // Your own parser, seriously?  I know.
       // Just got fed up trying to split('/')
@@ -81,7 +84,7 @@ object new_naming {
             }
           }
         }
-        recurse(s, (None,Seq()))
+        recurse(s.dropWhile(_ == '#'), (None,Seq()))
       }
 
       def isAllDigits(token: String) = (token.length > 0) && (token forall Character.isDigit)
@@ -122,36 +125,27 @@ object new_naming {
 
   implicit def uriToReference: URI => Reference = Reference.apply
 
-  class Reference(private[new_naming] val uri: URI) {
-    import Reference._
-    private lazy val base = uri.toString.takeWhile(_ != '#') + "#"
-    lazy val pointer: Pointer = uri.getFragment match {
-      case s if (s == null || s.isEmpty) => Pointer(Nil)
-      case s                             => Pointer(percentDecodeFragmentChars(s))
-    }
-    lazy val simple = pointer.simple
-    lazy val parent: Reference = Reference(s"${base}${pointer.parent}")
-    def prepend(token: String): Reference = Reference(s"${base}/${token}${pointer}")
-    def /:(token: String) = prepend(token)
-    def /(token: String): Reference = Reference(s"${base}${pointer}/${token}")
-    def /(p: Pointer): Reference = Reference(s"${base}${pointer}${p}")
-    override def toString = base + percentDecodeFragmentChars(pointer.toString)
-    override def equals(obj: scala.Any) = obj.isInstanceOf[Reference] && obj.asInstanceOf[Reference].uri == uri
-    override def hashCode: Int = uri.hashCode
+  case class Reference(base: String, pointer: Pointer = Pointer(Nil)) {
+    require(new URI(base).isAbsolute, s"must be absolute, found: $base")
+    val simple = pointer.simple
+    lazy val parent = new Reference(base, pointer.parent)
+    def prepend(token: String): Reference = new Reference(base, Pointer(token) ++ pointer)
+    def /(token: String): Reference = if (token.isEmpty) /(Pointer(Seq(Node(token)))) else /(Pointer(token))
+    def /(p: Pointer): Reference = new Reference(base, pointer ++ p)
+    def /: = prepend _
+    override def toString = base + Reference.percentDecodeFragmentChars(pointer.toString())
   }
 
   object Reference {
-    def apply(uri: URI): Reference = new Reference(uri)
+    def apply(uri: URI): Reference = Reference(uri.toString)
     def apply(str: String): Reference = {
-      val uri = if (str.contains("#")) {
-        val (base, frag) = str.splitAt(str.indexOf("#") - 1)
-        URI.create(base + percentEncodeFragmentChars(frag))
+      if (str.contains("#")) {
+        val (base, frag) = str.splitAt(str.indexOf("#")+1)
+        new Reference(base, Pointer(percentEncodeFragmentChars(frag)))
       }
       else {
-        URI.create(str)
+        new Reference(str + '#')
       }
-      require(uri.isAbsolute, s"must be absolute, found: $str")
-      Reference(uri)
     }
 
     private[new_naming] def percentEncodeFragmentChars(fragment: String): String = fragment

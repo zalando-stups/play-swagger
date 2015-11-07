@@ -42,11 +42,11 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     allPathItems(paths) flatMap fromNamedParamListItem
 
   private def forAllOperations[T](paths: Paths, logic: (Reference, Operation) => T) = for {
-      (prefix, path) <- Option(paths).toSeq.flatten
-      operationName <- path.operationNames
-      operation = path.operation(operationName)
-      name = base.prepend("paths") / Pointer(prefix) / operationName
-    } yield logic(name, operation)
+    (prefix, path) <- Option(paths).toSeq.flatten
+    operationName <- path.operationNames
+    operation = path.operation(operationName)
+    name = base / "paths" / prefix / operationName
+  } yield logic(name, operation)
 
   private def fromOperationParameters(paths: Paths): Iterable[NamedTypes] =
     forAllOperations(paths, parametersCollector)
@@ -60,7 +60,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     (url, pathItem) <- Option(paths).toSeq.flatten
     parameterList <- Option(pathItem.parameters).toSeq
     paramListItem <- parameterList
-  } yield ("paths" /: base) / Pointer(url) -> paramListItem
+    name = base / "paths" / url  / ""
+  } yield name -> paramListItem
 
   private def responseCollector: (Reference, Operation) => (Reference, Responses) = (name, op) => name -> op.responses
 
@@ -74,7 +75,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     fromParamListItem(pair._1, pair._2)
 
   private def fromParamListItem[T](name: Reference, param: ParametersListItem): NamedTypes = param match {
-    case r@JsonReference(ref) => Seq(fromReference(base / Pointer.deref(ref), ref, None))
+    case r : JsonReference => Seq(fromReference(name, r, None))
     case nb: NonBodyParameterCommons[_, _] => Seq(fromNonBodyParameter(name, nb))
     case bp: BodyParameter[_] => fromBodyParameter(name, bp)
   }
@@ -85,7 +86,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   private def fromSchemaOrReference[T](name: Reference, param: SchemaOrReference[T], required: Option[Seq[String]]): NamedTypes =
     Option(param).toSeq flatMap {
       case Left(s) => fromSchema(name, s, required)
-      case Right(JsonReference(ref)) => Seq(fromReference(name, ref, required))
+      case Right(r: JsonReference) => Seq(fromReference(name, r, required))
     }
 
   private def fromSchemaOrFileSchema[T](name: Reference, param: SchemaOrFileSchema[T], required: Option[Seq[String]]): NamedTypes =
@@ -139,16 +140,14 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     }
 
   // FIXME the boolean value is basically ignored here
-  private def fromSchemaOrBoolean[T](name: Reference, param: SchemaOrBoolean[T], meta: TypeMeta): Option[NamedTypes] = {
-    val fullName = name
+  private def fromSchemaOrBoolean[T](name: Reference, param: SchemaOrBoolean[T], meta: TypeMeta): Option[NamedTypes] =
     Option(param) map {
       case Left(s) =>
-        val typeDefs = fromSchemaOrReference(fullName, s, None)
+        val typeDefs = fromSchemaOrReference(name, s, None)
         wrapInCatchAll(typeDefs.head) +: typeDefs.tail
-      case Right(true) => Seq(wrapInCatchAll(fullName -> Str(None, meta)))
-      case Right(false) => Seq(wrapInCatchAll(fullName -> Str(None, meta)))
+      case Right(true) => Seq(wrapInCatchAll(name -> Str(None, meta)))
+      case Right(false) => Seq(wrapInCatchAll(name -> Str(None, meta)))
     }
-  }
 
   // ------------------------------------ Single Types ------------------------------------
   private def fromNull(name: Reference): NamedType = name -> Null(TypeMeta(None))
@@ -159,16 +158,15 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     name -> AllOf(name / name.simple, schema, allOf)
   }
 
-  private def fromReference(name: Reference, ref: Ref, required: Option[Seq[String]]): NamedType = {
-    checkRequired(name, required, name -> TypeReference(base / Pointer.deref(ref)))
+  private def fromReference(name: Reference, ref: JsonReference, required: Option[Seq[String]]): NamedType = {
+    checkRequired(name, required, name -> TypeReference(base / ref))
   }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
-    val meta = TypeMeta(Option(items.format))
     if (items.isArray)
       wrapInArray(fromPrimitivesItems(name, items.items), Option(items.collectionFormat).map(_.toString))
     else
-      name -> (items.`type`, items.format)(meta)
+      name -> (items.`type`, items.format)(items)
   }
 
   private def fromArrayJsonSchema[T](name: Reference, param: Schema[_], t: ArrayJsonSchemaType): NamedType = {
@@ -180,11 +178,10 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   }
 
   private def fromNonBodyParameter[T, CF](name: Reference, param: NonBodyParameterCommons[T, CF]): NamedType = {
-    val meta = TypeMeta(Option(param.format))
     val fullName = name / param.name
     val result =
       if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items), Option(param.collectionFormat).map(_.toString))
-      else fullName -> (param.`type`, param.format)(meta)
+      else fullName -> (param.`type`, param.format)(param)
     if (!param.required) wrapInOption(result) else result
   }
 
@@ -193,10 +190,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     name -> Domain.TypeDef(name, fields, types)
   }
 
-  private def fromFileSchema[T](schema: FileSchema[T], required: Option[Seq[String]]): NamedType = {
-    // TODO
-    ???
-  }
+  private def fromFileSchema[T](schema: FileSchema[T], required: Option[Seq[String]]): NamedType = ???
 
   // ------------------------------------ Primitives ------------------------------------
 
@@ -234,7 +228,6 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (PrimitiveType.STRING, Some("password")) => Domain.Password
       case (PrimitiveType.STRING, fmt) => Domain.Str.curried(fmt)
       case (PrimitiveType.NULL, _) => Domain.Null
-      // TODO object, array
     }
 
   // ------------------------------------ Wrappers ------------------------------------

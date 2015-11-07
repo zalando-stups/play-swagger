@@ -46,5 +46,9 @@ class PointerTest extends FunSpec with MustMatchers {
       Pointer("//foo").parent    mustBe Pointer("/")
       Pointer("").parent         mustBe Pointer("")
     }
+
+    it("must correctly append empty nodes") {
+      Pointer("/foo/bar") :+ "" mustBe Pointer("/foo/bar/")
+    }
   }
 }
