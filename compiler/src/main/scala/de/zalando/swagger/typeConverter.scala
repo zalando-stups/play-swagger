@@ -151,41 +151,36 @@ class TypeConverter(model: strictModel.SwaggerModel, keyPrefix: String) extends 
     checkRequired(name, required, name -> TypeReference(JsonPointer(ref)))
 
   private def fromArrayJsonSchema[T](name: Reference, param: Schema[_], t: ArrayJsonSchemaType): NamedType = {
-    val meta = TypeMeta(Option(param.description), t.toSeq)
     val descendants = t.toSeq map { d =>
       val typeDef = PrimitiveType.fromString(d)
       fromPrimitiveType(typeDef, param.format)(param)
     }
-    name -> OneOf(name.simple, meta, descendants)
+    name -> OneOf(name.simple, param, descendants)
   }
 
   private def fromNonBodyParameter[T, CF](name: Reference, param: NonBodyParameterCommons[T, CF]): NamedType = {
-    val meta = TypeMeta(Option(param.format))
     val fullName = name / param.name
     val result =
       if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items), Option(param.collectionFormat).map(_.toString))
-      else fullName -> (param.`type`, param.format)(meta)
+      else fullName -> (param.`type`, param.format)(param)
     if (!param.required) wrapInOption(result) else result
   }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
-    val meta = TypeMeta(Option(items.format))
     if (items.isArray)
       wrapInArray(fromPrimitivesItems(name, items.items), Option(items.collectionFormat).map(_.toString))
     else
-      name -> (items.`type`, items.format)(meta)
+      name -> (items.`type`, items.format)(items)
   }
 
   private def extensionType[T](name: Reference, required: Option[Seq[String]])(schema: SchemaArray): NamedType = {
     val allOf = fromSchemaArray(name, schema, required).map(_._2)
-    val meta = TypeMeta(None, Nil)
-    name -> AllOf(name.simple, meta, allOf)
+    name -> AllOf(name.simple, schema, allOf)
   }
 
   private def fromTypes(name: Reference, types: NamedTypes): NamedType = {
     val fields = types map { t => Field(t._1.simple, t._2) }
-    val meta = TypeMeta(None, Nil)
-    name -> Domain.TypeDef(name.simple, fields, meta)
+    name -> Domain.TypeDef(name.simple, fields, types)
   }
 
   private def fromFileSchema[T](schema: FileSchema[T], required: Option[Seq[String]]): NamedType = {
