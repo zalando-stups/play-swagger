@@ -94,6 +94,9 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
 
   private def findType(prefix: Reference, paramName: String): NamedType = {
     val name = prefix / paramName
+//    println(">>> FIND: " + paramName)
+//    println(">>> WITH: " + prefix)
+//    println(">>>   IN: \n" + typeDefs.map(_.toString() + "\n"))
     val typeDef = typeDefByName(name) orElse findTypeByPath(prefix, paramName) getOrElse {
       throw new IllegalStateException(s"Could not find type definition with a name $name")
     }

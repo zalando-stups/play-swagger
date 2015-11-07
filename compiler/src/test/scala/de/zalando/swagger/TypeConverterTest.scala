@@ -32,8 +32,8 @@ class TypeConverterTest extends FunSpec with MustMatchers with ExpectedResults {
       model mustBe a[SwaggerModel]
       val typeDefs = ModelConverter.fromModel(base, model).typeDefs
       val typeMap  = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
-      val typesStr = typeMap.toSeq.sortBy(_._1.pointer).map(p => p._1 + " ->" + p._2).mkString("\n").replace(base.toString, "")
-      println(typesStr)
+      val typesStr = typeMap.toSeq.sortBy(_._1).map(p => p._1 + " ->" + p._2).mkString("\n").replace(base.toString, "")
+      // println(typesStr)
       val expected = asInFile(file, "types")
       if (expected.isEmpty) dump(typesStr, file, "types")
       clean(typesStr) mustBe clean(expected)

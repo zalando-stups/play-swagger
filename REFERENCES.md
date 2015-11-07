@@ -24,14 +24,99 @@ $ref: 'http://some.host/definitions#/Pet'   // absolute remote fragment referenc
 ```
 
 
-## Methods on Typename or JSON Reference
+## Methods on Json Pointer and JSON Reference
 
-- `implicit def uriToReference(uri: URI):  Reference`  creates a JSON Reference from given uri.
-- `implicit def stringToReference(string: String):  Reference`  creates a JSON Reference from given URI string.
-- `def simple:  String`  the last JSON Pointer token
-- `def parent: Reference` a new JSON Reference with the last JSON Pointer token dropped (if it exists)
-- `def +:(token: String): Reference` a new JSON Reference with the token added to the JSON Pointer in postfix position
-- `def :+(token: String): Reference` a new JSON Reference with the token added to the JSON Pointer in prefix posistion
+The methods on JSON Pointer and Reference provide for hierarchical naming for AST nodes, particularly from within the different swagger to AST converters, and can be used to build names for these nodes when traversing the swagger model.  The intend is to make all AST node names fully qualified, i.e. the references are absolute, including the base swagger `file:/` or `http://` from which the swagger model was parsed.
+
+For example, the minimal `file:/echo.yaml` specification containing:
+
+```
+paths:
+  /:
+    get:
+      responses:
+        200:
+          description: Echo GET
+    post:
+      responses:
+        200:
+          description: Echo POST
+      parameters:
+        - name: name
+          in: formData
+          description: name
+          type: string
+        - name: year
+          in: formData
+          description: year
+          type: string
+  /test-path/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          description: ID
+          type: string
+          required: true
+      responses:
+        200:
+          description: Echo test-path
+```
+
+Has a path definitions for the root `/` and `/test-path/{id}` accepting a GET and POST operation that accept a body or different primitive types of path and form data parameters. This definition will converted into the following full qualified named type definitions:
+
+```
+file:/echo.yaml#/paths//get/responses/200 ->
+	Null
+file:/echo.yaml#/paths//post/name ->
+	Opt(Str)
+file:/echo.yaml#/paths//post/responses/200 ->
+	Null
+file:/echo.yaml#/paths//post/year ->
+	Opt(Str)
+file:/echo.yaml#/paths/test-path/{id}/get/id ->
+	Str
+file:/echo.yaml#/paths/test-path/{id}/get/responses/200 ->
+	Null
+```
+
+The following methods and fields on `Reference` enable the creation and navigation of names from within the converter classes.
+
+### Reference
+
+#### `def /(token: String): Reference`
+
+This method created a new JSON Reference postpending given JSON Pointer token, e.g. given an existing `val bar = Reference("file:/echo.yaml#/foo") / "bar"` will create the reference name `file:/echo.yaml#/foo/bar`.
+
+#### `def /(pointer: Pointer): Reference`
+
+This method created a new JSON Reference postpending given JSON Pointer, e.g. given an existing `val bar = Reference("file:/echo.yaml#/foo") / Pointer("/bar/baz")` will create the reference name `file:/echo.yaml#/foo/bar/baz`.
+
+#### `def prepend(token: String): Reference`
+
+This method created a new JSON Reference prepending given JSON Pointer token, e.g. given an existing `val bar = Reference("file:/echo.yaml#/foo") prepend "bar"` will create the reference name `file:/echo.yaml#/bar/foo`.
+
+#### `implicit def uriToReference(uri: URI):  Reference`
+
+This implicit method creates a JSON Reference from a given uri. The use case is to instantiate each converter class with a `base: URI` parameter containing the absolute `file:/` or `http:/` swagger definition from which the swagger model was parsed, thus giving each converter class the possibility to instantiate a "root" reference name, e.g. given the `base = URI.create("file:/echo.yaml")`example above, `val paths = base / "paths"` creates the reference name `file:/echo.yaml#/paths`.
+
+#### `val parent: Reference`
+
+This value returns a new reference to this reference's parent pointer token or a reference to its base, i.e. the whole document, if no such parent token exists, e.g. `Reference("file:/echo.yaml#/bar/foo").parent == Reference("file:/echo.yaml#/bar")` and `Reference("file:/echo.yaml#/foo").parent == Reference("file:/echo.yaml#")`.  Note that as pointers allow for the `/` token, the parent reference of `Reference("file:/echo.yaml#/")` also equals `Reference("file:/echo.yaml#")`, just like the previous example.
+
+#### `def simple:  String`
+
+This utility value contains the last token string as a name or the empty string if no token exists, i.e. `Reference("file:/echo.yaml#/foo/bar") == "bar"`, `Reference("file:/echo.yaml#/") == "/"` and `Reference("file:/echo.yaml#") == ""`.
+
+#### `val pointer: Pointer`
+
+The pointer value gives access to the reference its pointer, providing a way to create new reference names to the same pointer but in different documents, e.g.:
+
+```
+val ref1 = Reference("file/a.yaml#/foo/bar")
+val ref2 = Reference("file/b.yaml")
+println(ref2 / ref1.pointer) // prints file/b.yaml#/foo/bar
+``` 
 
 
 

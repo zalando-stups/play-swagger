@@ -71,7 +71,7 @@
 	Str
 #/parameters/user-id/user-id ->
 	Dbl
-#/paths/geographies/{geo-id}/media/recent//geo-id ->
+#/paths/geographies/{geo-id}/media/recent/geo-id ->
 	Intgr
 #/paths/geographies/{geo-id}/media/recent/get/count ->
 	Opt(Intgr)
@@ -94,12 +94,12 @@
 #/paths/locations/search/get/responses/200 ->
 	Opt(TypeDef(#200, Seq(
 		Field(#data, Opt(Arr(TypeReference(#/definitions/Location)))))))
-#/paths/locations/{location-id}//location-id ->
+#/paths/locations/{location-id}/location-id ->
 	Intgr
 #/paths/locations/{location-id}/get/responses/200 ->
 	Opt(TypeDef(#200, Seq(
 		Field(#data, Opt(TypeReference(#/definitions/Location))))))
-#/paths/locations/{location-id}/media/recent//location-id ->
+#/paths/locations/{location-id}/media/recent/location-id ->
 	Intgr
 #/paths/locations/{location-id}/media/recent/get/max_id ->
 	Opt(Str)
@@ -131,11 +131,11 @@
 			TypeReference(#/definitions/Media)
 			TypeDef(#data, Seq(
 				Field(#distance, Opt(Dbl)))))))))))
-#/paths/media/{media-id}//media-id ->
+#/paths/media/{media-id}/media-id ->
 	Intgr
 #/paths/media/{media-id}/get/responses/200 ->
 	Opt(TypeReference(#/definitions/Media))
-#/paths/media/{media-id}/comments//media-id ->
+#/paths/media/{media-id}/comments/media-id ->
 	Intgr
 #/paths/media/{media-id}/comments/delete/responses/200 ->
 	Opt(TypeDef(#200, Seq(
@@ -154,7 +154,7 @@
 		Field(#meta, Opt(TypeDef(#meta, Seq(
 			Field(#code, Opt(Dbl)))))), 
 		Field(#data, Opt(TypeDef(#data, Seq()))))))
-#/paths/media/{media-id}/likes//media-id ->
+#/paths/media/{media-id}/likes/media-id ->
 	Intgr
 #/paths/media/{media-id}/likes/delete/responses/200 ->
 	Opt(TypeDef(#200, Seq(
@@ -171,7 +171,7 @@
 		Field(#meta, Opt(TypeDef(#meta, Seq(
 			Field(#code, Opt(Dbl)))))), 
 		Field(#data, Opt(TypeDef(#data, Seq()))))))
-#/paths/media/{shortcode}//shortcode ->
+#/paths/media/{shortcode}/shortcode ->
 	Str
 #/paths/media/{shortcode}/get/responses/200 ->
 	Opt(TypeReference(#/definitions/Media))
@@ -182,11 +182,11 @@
 		Field(#meta, Opt(TypeDef(#meta, Seq(
 			Field(#code, Opt(Intgr)))))), 
 		Field(#data, Opt(Arr(TypeReference(#/definitions/Tag)))))))
-#/paths/tags/{tag-name}//tag-name ->
+#/paths/tags/{tag-name}/tag-name ->
 	TypeReference(#/parameters/tag-name)
 #/paths/tags/{tag-name}/get/responses/200 ->
 	Opt(TypeReference(#/definitions/Tag))
-#/paths/tags/{tag-name}/media/recent//tag-name ->
+#/paths/tags/{tag-name}/media/recent/tag-name ->
 	TypeReference(#/parameters/tag-name)
 #/paths/tags/{tag-name}/media/recent/get/responses/200 ->
 	Opt(TypeDef(#200, Seq(
@@ -219,22 +219,22 @@
 		Field(#meta, Opt(TypeDef(#meta, Seq(
 			Field(#code, Opt(Intgr)))))), 
 		Field(#data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
-#/paths/users/{user-id}//user-id ->
+#/paths/users/{user-id}/user-id ->
 	TypeReference(#/parameters/user-id)
 #/paths/users/{user-id}/get/responses/200 ->
 	Opt(TypeDef(#200, Seq(
 		Field(#data, Opt(TypeReference(#/definitions/User))))))
-#/paths/users/{user-id}/followed-by//user-id ->
+#/paths/users/{user-id}/followed-by/user-id ->
 	TypeReference(#/parameters/user-id)
 #/paths/users/{user-id}/followed-by/get/responses/200 ->
 	Opt(TypeDef(#200, Seq(
 		Field(#data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
-#/paths/users/{user-id}/follows//user-id ->
+#/paths/users/{user-id}/follows/user-id ->
 	TypeReference(#/parameters/user-id)
 #/paths/users/{user-id}/follows/get/responses/200 ->
 	Opt(TypeDef(#200, Seq(
 		Field(#data, Opt(Arr(TypeReference(#/definitions/MiniProfile)))))))
-#/paths/users/{user-id}/media/recent//user-id ->
+#/paths/users/{user-id}/media/recent/user-id ->
 	TypeReference(#/parameters/user-id)
 #/paths/users/{user-id}/media/recent/get/count ->
 	Opt(Intgr)
@@ -249,7 +249,7 @@
 #/paths/users/{user-id}/media/recent/get/responses/200 ->
 	Opt(TypeDef(#200, Seq(
 		Field(#data, Opt(Arr(TypeReference(#/definitions/Media)))))))
-#/paths/users/{user-id}/relationship//user-id ->
+#/paths/users/{user-id}/relationship/user-id ->
 	TypeReference(#/parameters/user-id)
 #/paths/users/{user-id}/relationship/post/action ->
 	Opt(Str)

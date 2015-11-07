@@ -160,5 +160,9 @@ object new_naming {
     private[new_naming] def percentDecodeFragmentChars(fragment: String): String = fragment
     .replace("%7B", "{")
     .replace("%7D", "}")
+
+    implicit object ReferenceOrdering extends Ordering[Reference] {
+      override def compare(x: Reference, y: Reference): Int = x.toString compare y.toString
+    }
   }
 }
