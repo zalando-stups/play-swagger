@@ -1,4 +1,4 @@
 #/definitions/Basic -> 
-	TypeDef("#Basic", Seq(
-		Field("#optional", Opt(TypeDef("#optional", Seq(
-			Field("#nested_optional", Opt(Str))))))))
+	TypeDef(#/definitions/Basic, Seq(
+		Field(#/definitions/Basic/optional, Opt(TypeDef(#/definitions/Basic/optional, Seq(
+			Field(#/definitions/Basic/optional/nested_optional, Opt(Str))))))))

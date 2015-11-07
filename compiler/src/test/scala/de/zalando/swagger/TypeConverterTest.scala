@@ -28,11 +28,12 @@ class TypeConverterTest extends FunSpec with MustMatchers with ExpectedResults {
 
   def testTypeConverter(file: File): Unit = {
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
-      val model = StrictYamlParser.parse(file)
+      val (base, model) = StrictYamlParser.parse(file)
       model mustBe a[SwaggerModel]
-      val typeDefs = ModelConverter.fromModel(model).typeDefs
+      val typeDefs = ModelConverter.fromModel(base, model).typeDefs
       val typeMap  = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
-      val typesStr = typeMap.toSeq.sortBy(_._1.pointer).map(p => p._1 + " ->" + p._2).mkString("\n")
+      val typesStr = typeMap.toSeq.sortBy(_._1.pointer).map(p => p._1 + " ->" + p._2).mkString("\n").replace(base.toString, "")
+      println(typesStr)
       val expected = asInFile(file, "types")
       if (expected.isEmpty) dump(typesStr, file, "types")
       clean(typesStr) mustBe clean(expected)

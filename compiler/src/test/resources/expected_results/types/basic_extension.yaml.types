@@ -1,9 +1,9 @@
 #/definitions/ErrorModel ->
-	TypeDef("#ErrorModel", Seq(
-		Field("#message", Str), 
-		Field("#code", Intgr)))
+	TypeDef(#/definitions/ErrorModel, Seq(
+		Field(#/definitions/ErrorModel/message, Str),
+		Field(#/definitions/ErrorModel/code, Intgr)))
 #/definitions/ExtendedErrorModel ->
 	AllOf(
 		TypeReference(#/definitions/ErrorModel)
-		TypeDef("#ExtendedErrorModel", Seq(
-			Field("#rootCause", Str))))
+		TypeDef(#/definitions/ExtendedErrorModel, Seq(
+			Field(#/definitions/ExtendedErrorModel/rootCause, Str))))

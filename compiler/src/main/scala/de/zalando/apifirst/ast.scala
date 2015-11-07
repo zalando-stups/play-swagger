@@ -1,7 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.apifirst.new_naming.{JsonPointer, TypeName, Reference}
+import de.zalando.apifirst.new_naming.{Pointer, Pointer$, TypeName, Reference}
 import de.zalando.swagger.DiscriminatorLookupTable
 
 import scala.language.{implicitConversions, postfixOps}
@@ -66,12 +66,15 @@ object Domain {
     def imports: Set[String] = Set.empty
     def toShortString(pad: String) = getClass.getSimpleName
   }
-
-  case class TypeReference(pointer: JsonPointer) extends Type(pointer.toString, TypeMeta(None)) with Reference {
-    override def toShortString(pad: String) = s"${super.toShortString(pad)}(${pointer.toString})"
+  
+  case class TypeReference(override val name: Reference) extends Type(name, TypeMeta(None)) {
+    override def toShortString(pad: String) = s"${super.toShortString(pad)}(${name})"
   }
+  
+  abstract class ProvidedType(name: String, override val meta: TypeMeta)
+    extends Type(Reference(s"http://zalando.net/domain/lang/#/${name}"), meta)
 
-  class Nmbr(override val name: TypeName, override val meta: TypeMeta) extends Type(name, meta)
+  class Nmbr(name: String, override val meta: TypeMeta) extends ProvidedType(name, meta)
 
   case class Intgr(override val meta: TypeMeta) extends Nmbr("Int", meta)
 
@@ -83,27 +86,27 @@ object Domain {
 
   case class Byt(override val meta: TypeMeta) extends Nmbr("Byte", meta)
 
-  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends Type("String", meta)
+  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends ProvidedType("String", meta)
 
-  case class Bool(override val meta: TypeMeta) extends Type("Boolean", meta)
+  case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta)
 
-  case class Date(override val meta: TypeMeta) extends Type("Date", meta) {
+  case class Date(override val meta: TypeMeta) extends ProvidedType("Date", meta) {
     override val imports = Set("java.util.Date")
   }
 
-  case class File(override val meta: TypeMeta) extends Type("File", meta) {
+  case class File(override val meta: TypeMeta) extends ProvidedType("File", meta) {
     override val imports = Set("java.io.File")
   }
 
-  case class DateTime(override val meta: TypeMeta) extends Type("Date", meta) {
+  case class DateTime(override val meta: TypeMeta) extends ProvidedType("Date", meta) {
     override val imports = Set("java.util.Date")
   }
 
-  case class Password(override val meta: TypeMeta) extends Type("Password", meta)
+  case class Password(override val meta: TypeMeta) extends ProvidedType("Password", meta)
 
-  case class Null(override val meta: TypeMeta) extends Type("null", meta)
+  case class Null(override val meta: TypeMeta) extends ProvidedType("null", meta)
 
-  case class Any(override val meta: TypeMeta) extends Type("Any", meta)
+  case class Any(override val meta: TypeMeta) extends ProvidedType("Any", meta)
 
   /**
    * Composite classes describe some class composition
@@ -136,24 +139,24 @@ object Domain {
     * @param meta
     * @param imports
     */
-  abstract class Container(override val name: TypeName, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
-    extends Type(name, meta) {
+  abstract class Container(name: String, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
+    extends ProvidedType(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
     override def nestedTypes = tpe.nestedTypes :+ tpe
     override def toShortString(pad: String) = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
-    extends Container(s"${tpe.name.parent}", tpe, meta, Set("scala.collection.Seq"))
+    extends Container(s"/${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.Seq"))
 
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"${tpe.name.parent}", tpe, meta, Set("scala.Option"))
+    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.Option"))
 
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"${tpe.name.parent}", tpe, meta, Set("scala.collection.immutable.Map"))
+    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.immutable.Map"))
 
   case class Field(name: TypeName, tpe: Type) {
-    def toString(pad: String) = s"""\n${pad}Field("$name", ${tpe.toShortString(pad+"\t")})"""
+    def toString(pad: String) = s"""\n${pad}Field($name, ${tpe.toShortString(pad+"\t")})"""
 
     def imports = tpe match {
       case c: Container => c.allImports
@@ -166,8 +169,9 @@ object Domain {
   case class TypeDef(override val name: TypeName,
                      fields: Seq[Field],
                      override val meta: TypeMeta) extends Type(name, meta) {
-    override def toString = s"""\n\tTypeDef("$name", \n\t\tSeq(${fields.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), $meta)\n"""
-    override def toShortString(pad: String) = s"""TypeDef("$name", Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
+    override def toString = s"""\n\tTypeDef($name, \n\t\tSeq(${fields.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), $meta)\n"""
+
+    override def toShortString(pad: String) = s"""TypeDef($name, Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
 
     override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
   }
@@ -184,7 +188,7 @@ object Path {
 
   case class Segment(override val value: String) extends PathElem(value)
 
-  case class InPathParameter(name: Reference) extends PathElem(name.simple)
+  case class InPathParameter(val simple: String) extends PathElem(simple)
 
   case class FullPath(value: Seq[PathElem]) extends Expr {
     def isAbsolute = value match {
@@ -220,7 +224,7 @@ object Path {
       path.trim split Root.value map {
         case seg if seg.startsWith("{") && seg.endsWith("}") =>
           val name = seg.tail.init
-          parameters.find(_.simple == name) map { p => InPathParameter(p.name) }
+          parameters.find(_.simple == name) map { p => InPathParameter(p.name.simple) }
         case seg if seg.nonEmpty =>
           Some(Segment(seg))
         case seg if seg.isEmpty =>

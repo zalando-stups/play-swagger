@@ -1,8 +1,8 @@
 #/definitions/Cat ->
 	AllOf(
 		TypeReference(#/definitions/Pet)
-		TypeDef("#Cat", Seq(
-			Field("#huntingSkill", Str))))
+		TypeDef(#/definitions/Cat, Seq(
+			Field(#/definitions/Cat/huntingSkill, Str))))
 #/definitions/CatNDog ->
 	AllOf(
 		TypeReference(#/definitions/Dog)
@@ -10,14 +10,14 @@
 #/definitions/Dog ->
 	AllOf(
 		TypeReference(#/definitions/Pet)
-		TypeDef("#Dog", Seq(
-			Field("#packSize", Intgr))))
+		TypeDef(#/definitions/Dog, Seq(
+			Field(#/definitions/Dog/packSize, Intgr))))
 #/definitions/Labrador ->
 	AllOf(
 		TypeReference(#/definitions/Dog)
-		TypeDef("#Labrador", Seq(
-			Field("#cuteness", Intgr))))
+		TypeDef(#/definitions/Labrador, Seq(
+			Field(#/definitions/Labrador/cuteness, Intgr))))
 #/definitions/Pet ->
-	TypeDef("#Pet", Seq(
-		Field("#name", Str), 
-		Field("#petType", Str)))
+	TypeDef(#/definitions/Pet, Seq(
+		Field(#/definitions/Pet/name, Str),
+		Field(#/definitions/Pet/petType, Str)))

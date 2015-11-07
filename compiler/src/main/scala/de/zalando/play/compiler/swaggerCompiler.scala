@@ -21,7 +21,7 @@ object SwaggerCompiler {
 
     val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
 
-    val swaggerModel = parser.parse(task.definitionFile)
+    val (uri, swaggerModel) = parser.parse(task.definitionFile)
 
     implicit val ast = Model(Nil, Nil)  // FIXME Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
 

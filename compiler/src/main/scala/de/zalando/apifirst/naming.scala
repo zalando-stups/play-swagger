@@ -1,5 +1,7 @@
 package de.zalando.apifirst
 
+import java.net.URI
+
 import scala.language.postfixOps
 
 /**
@@ -10,71 +12,92 @@ object new_naming {
 
   type TypeName = Reference
 
-  abstract class PointerNode {
-    def asString: String
+  trait PointerNode {
+    def asJsonString: String
   }
 
-  final case class Node(private val raw: String) extends PointerNode {
-    override def asString = JsonPointer.escape(raw)
+  final case class Node(private val token: String) extends PointerNode {
+    override def asJsonString: String = Pointer.escape(token)
+    override def toString: String = token
   }
 
   final case class Index(i: Long) extends PointerNode {
-    assert(i >= 0, "index must be positive")
-
-    override def asString = i.toString
+    require(i >= 0, "index must be positive")
+    override def asJsonString: String = i.toString
+    override def toString: String = i.toString
   }
 
-  final case class JsonPointer(values: Seq[PointerNode]) {
-    def ++(that: JsonPointer): JsonPointer = {
-      val append = if (that.values.headOption.exists(_ == Node(""))) that.values.tail else that.values
-      JsonPointer(values ++ append)
+  final case class Pointer(tokens: Seq[PointerNode]) {
+    def ++(that: Pointer): Pointer     = Pointer(tokens ++ that.tokens)
+    def :+(node: PointerNode): Pointer = Pointer(tokens :+ node)
+    def :+(node: String): Pointer      = Pointer(tokens :+ Node(node))
+    def :+(node: Long): Pointer        = Pointer(tokens :+ Index(node))
+    def +:(node: PointerNode): Pointer = Pointer(node +: tokens)
+    def +:(node: String): Pointer      = Pointer(Node(node) +: tokens)
+    def +:(node: Long): Pointer        = Pointer(Index(node) +: tokens)
+
+    def asJsonString() = if (tokens.isEmpty) "" else tokens.map(_.asJsonString).mkString("/", "/", "")
+
+    override def toString() = if (tokens.isEmpty) "" else tokens.map(_.toString).mkString("/", "/", "")
+
+    lazy val parent: Pointer = tokens match {
+      case Nil => Pointer(Nil)
+      case _   => Pointer(tokens.init)
     }
 
-    def :+(node: PointerNode): JsonPointer = JsonPointer(values :+ node)
-
-    def :+(nodeStr: String): JsonPointer = JsonPointer(values :+ Node(nodeStr))
-
-    def +:(node: PointerNode): JsonPointer = JsonPointer(node +: values)
-
-    def +:(nodeStr: String): JsonPointer = JsonPointer(Node(nodeStr) +: values)
-
-    override def toString: String = values match {
-      case Nil => ""
-      case nonempty => nonempty.map(_.asString).mkString("#", "/", "")
-    }
-
-    private lazy val parentValues = values match {
-      case Nil => Nil
-      case _ => values.init
-    }
-    lazy val parent = JsonPointer(parentValues)
-    lazy val simple = values.lastOption.map(_.asString).getOrElse("")
+    lazy val simple = tokens.lastOption.map(_.toString).getOrElse("")
   }
 
-  implicit object PointerNodeOrdering extends Ordering[PointerNode] {
-    override def compare(x: PointerNode, y: PointerNode): Int = (x, y) match {
-      case (Index(_), Node(_)) => -1
-      case (Node(_), Index(_)) => 1
-      case (Index(a), Index(b)) => a compare b
-      case (Node(a), Node(b)) => a compare b
-    }
-  }
-
-  object JsonPointer {
-
+  object Pointer {
     def escape(str: String) = str.replace("~", "~0").replace("/", "~1")
-
     def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
 
-    def apply(path: String) = {
-      if (path == null || path.trim.isEmpty)
-        new JsonPointer(Nil)
-      else
-       new JsonPointer(path dropWhile { _ == '#' } split "/" map unescape map Node toSeq)
+    def apply(path: String): Pointer = {
+      require(path != null && (path.isEmpty || path.startsWith("/")),
+        s"must be created from zero or more reference tokens prefixed by a '/', but found: $path")
+
+      // Your own parser, seriously?  I know.
+      // Just got fed up trying to split('/')
+      //
+      // "/"      ->  Seq(Node()),
+      // "//"     ->  Seq(Node(), Node()),
+      // "/foo"   ->  Seq(Node(foo))
+      // "/foo/"  ->  Seq(Node(foo), Node())
+      //
+      def parse(s: String): Seq[String] = {
+        def recurse(s: String, acc: (Option[String], Seq[String])): Seq[String] = {
+          s.headOption match {
+            case Some('/') => acc._1 match {
+              case Some(token) => recurse(s.tail, (Some(""), acc._2 :+ token))
+              case None        => recurse(s.tail, (Some(""), acc._2))
+            }
+            case Some(c)   => acc._1 match {
+              case Some(token) => recurse(s.tail, (Some(token :+ c), acc._2))
+              case None        => recurse(s.tail, (Some(c.toString), acc._2))
+            }
+            case None      => acc._1 match {
+              case Some(token) => acc._2 :+ token
+              case None        => acc._2
+            }
+          }
+        }
+        recurse(s, (None,Seq()))
+      }
+
+      def isAllDigits(token: String) = (token.length > 0) && (token forall Character.isDigit)
+
+      Pointer(parse(path) map unescape map { token =>
+        if (isAllDigits(token)) Index(token.toLong) else Node(token)
+      })
     }
 
-    implicit object JsonPointerOrdering extends Ordering[JsonPointer] {
-      override def compare(x: JsonPointer, y: JsonPointer): Int = {
+    def deref(jstr: String): Pointer = {
+      val fragment = unescape(jstr.reverse.takeWhile(_ != '#').reverse)
+      Pointer(fragment)
+    }
+
+    implicit object JsonPointerOrdering extends Ordering[Pointer] {
+      override def compare(x: Pointer, y: Pointer): Int = {
         def recurse(xs: Seq[PointerNode], ys: Seq[PointerNode]): Int = (xs, ys) match {
           case (Nil, Nil) => 0
           case (Nil, _) => -1
@@ -83,48 +106,60 @@ object new_naming {
             val c = PointerNodeOrdering.compare(s1.head, s2.head)
             if (c != 0) c else recurse(s1.tail, s2.tail)
         }
-        recurse(x.values, y.values)
+        recurse(x.tokens, y.tokens)
       }
     }
 
-  }
-
-  implicit def stringToReference: String => Reference = Reference.apply
-
-  trait Reference {
-    def pointer: JsonPointer
-    lazy val simple = pointer.simple
-    lazy val parent = new ReferenceObject(pointer.parent)         // TODO return the right Reference type
-    def /(child: String) = new ReferenceObject(pointer :+ child)  // TODO return the right Reference type
-    def :/(prefix: String) = new ReferenceObject(prefix +: pointer)  // TODO return the right Reference type
-    def :/(suffix: Reference) = new ReferenceObject(pointer ++ suffix.pointer)
-  }
-
-  case class ReferenceObject(override val pointer: JsonPointer) extends Reference {
-    override def toString = pointer.toString
-  }
-
-  case class RelativeSchemaFile(file: String) extends Reference {
-    val pointer = JsonPointer(Nil)
-    override def toString = file
-  }
-
-  case class EmbeddedSchema(file: String, override val pointer: JsonPointer) extends Reference {
-    override def toString = file + pointer.toString
-  }
-
-  object Reference {
-    def apply(url: String): Reference = url.indexOf('#') match {
-      case 0 =>
-        ReferenceObject(JsonPointer(url.tail))
-      case -1 if url.indexOf(':') > 0 =>
-        RelativeSchemaFile(url)
-      case -1 =>
-        ReferenceObject(JsonPointer(url))
-      case i if i > 0 =>
-        val (filePart, urlPart) = url.splitAt(i)
-        EmbeddedSchema(filePart, JsonPointer(urlPart))
+    implicit object PointerNodeOrdering extends Ordering[PointerNode] {
+      override def compare(x: PointerNode, y: PointerNode): Int = (x, y) match {
+        case (Index(_), Node(_)) => -1
+        case (Node(_), Index(_)) => 1
+        case (Index(a), Index(b)) => a compare b
+        case (Node(a), Node(b)) => a compare b
+      }
     }
   }
 
+  implicit def uriToReference: URI => Reference = Reference.apply
+
+  class Reference(private[new_naming] val uri: URI) {
+    import Reference._
+    private lazy val base = uri.toString.takeWhile(_ != '#') + "#"
+    lazy val pointer: Pointer = uri.getFragment match {
+      case s if (s == null || s.isEmpty) => Pointer(Nil)
+      case s                             => Pointer(percentDecodeFragmentChars(s))
+    }
+    lazy val simple = pointer.simple
+    lazy val parent: Reference = Reference(s"${base}${pointer.parent}")
+    def prepend(token: String): Reference = Reference(s"${base}/${token}${pointer}")
+    def /:(token: String) = prepend(token)
+    def /(token: String): Reference = Reference(s"${base}${pointer}/${token}")
+    def /(p: Pointer): Reference = Reference(s"${base}${pointer}${p}")
+    override def toString = base + percentDecodeFragmentChars(pointer.toString)
+    override def equals(obj: scala.Any) = obj.isInstanceOf[Reference] && obj.asInstanceOf[Reference].uri == uri
+    override def hashCode: Int = uri.hashCode
+  }
+
+  object Reference {
+    def apply(uri: URI): Reference = new Reference(uri)
+    def apply(str: String): Reference = {
+      val uri = if (str.contains("#")) {
+        val (base, frag) = str.splitAt(str.indexOf("#") - 1)
+        URI.create(base + percentEncodeFragmentChars(frag))
+      }
+      else {
+        URI.create(str)
+      }
+      require(uri.isAbsolute, s"must be absolute, found: $str")
+      Reference(uri)
+    }
+
+    private[new_naming] def percentEncodeFragmentChars(fragment: String): String = fragment
+    .replace("{", "%7B")
+    .replace("}", "%7D")
+
+    private[new_naming] def percentDecodeFragmentChars(fragment: String): String = fragment
+    .replace("%7B", "{")
+    .replace("%7D", "}")
+  }
 }
