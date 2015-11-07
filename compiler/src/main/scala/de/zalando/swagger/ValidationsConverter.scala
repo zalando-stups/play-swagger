@@ -15,7 +15,9 @@ object ValidationsConverter {
 
   def toValidations[T, CF](bp: NonBodyParameter[T]): Seq[String] = validationsPF(bp)
 
-  def toValidations(nb: ParametersListItem with NonBodyParameterCommons[_, _]): Seq[String] = validationsPF(nb)
+  def toValidations(nb: NonBodyParameterCommons[_, _]): Seq[String] = validationsPF(nb)
+
+  def toValidations[T, CF](bp: PrimitivesItems[T]): Seq[String] = validationsPF(bp)
 
   @throws[MatchError]
   private def validationsPF[CF, T](bp: ValidationBase): Seq[String] = {

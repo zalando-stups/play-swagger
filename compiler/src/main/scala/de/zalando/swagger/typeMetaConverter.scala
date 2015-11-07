@@ -7,7 +7,7 @@ import de.zalando.swagger.strictModel._
  * @author  slasch 
  * @since   15.10.2015.
  */
-object TypeMetaConverter {
+object TypeMetaConverter extends ParameterNaming {
   import ValidationsConverter._
 
   implicit def arrayTypeMeta[T](comment: String, items: ArrayValidation[T]): TypeMeta =
@@ -16,11 +16,24 @@ object TypeMetaConverter {
   implicit def schemaTypeMeta[T](param: Schema[_]): TypeMeta =
     TypeMeta(Option(param.description).orElse(Option(param.format)), toValidations(param))
 
+  implicit def primitivesItemsTypeMeta[T](param: PrimitivesItems[T]): TypeMeta =
+    TypeMeta(Option(param.format).orElse(Option(param.collectionFormat).map(_.toString)), toValidations(param))
+
+  implicit def nonBodyParameterCommonsTypeMeta(nb: NonBodyParameterCommons[_, _]): TypeMeta =
+    TypeMeta(Option(nb.format), toValidations(nb))
+
+  implicit def schemaArrayTypeMeta(nb: SchemaArray): TypeMeta =
+    TypeMeta(Some(s"Schemas: $nb.size"), Nil)
+
+  implicit def namedTypesTypeMeta(nb: NamedTypes): TypeMeta =
+    TypeMeta(Some(s"Named types: $nb.size"), Nil)
+
   implicit def parametersListItemMeta(item:ParametersListItem): TypeMeta =
     item match {
-      case r @ JsonReference(ref) => TypeMeta(Some(ref))
+      case r @ JsonReference(ref) =>
+        TypeMeta(Some(ref))
       case nb: NonBodyParameterCommons[_, _] =>
-        TypeMeta(Option(nb.format), toValidations(nb))
+        nonBodyParameterCommonsTypeMeta(nb)
       case bp: BodyParameter[_] =>
         TypeMeta(Option(bp.description), toValidations(bp))
       case nbp: NonBodyParameter[_] =>
