@@ -5,19 +5,13 @@
 #/paths//get/limit ->
 	Opt(Intgr)
 #/paths//get/responses/200 ->
-	Opt(Arr(TypeDef(/definitions/Pet, Seq(
-		Field(/definitions/Pet/name, Opt(Str)), 
-		Field(/definitions/Pet/birthday, Opt(Intgr))))))
+	Opt(Arr(TypeReference(#/definitions/Pet)))
 #/paths//post/pet ->
-	TypeDef(/definitions/Pet, Seq(
-		Field(/definitions/Pet/name, Opt(Str)), 
-		Field(/definitions/Pet/birthday, Opt(Intgr))))
+	TypeReference(#/definitions/Pet)
 #/paths//post/responses/200 ->
 	Null
 #/paths//put/pet ->
-	TypeDef(/definitions/Pet, Seq(
-		Field(/definitions/Pet/name, Opt(Str)), 
-		Field(/definitions/Pet/birthday, Opt(Intgr))))
+	TypeReference(#/definitions/Pet)
 #/paths//put/responses/200 ->
 	Null
 #/paths/{petId}/get/petId ->

@@ -113,25 +113,28 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     }
   }
 
-  private def fromPrimitiveType(name: Reference, param: Schema[_], p: PrimitiveType.Val, required: Option[Seq[String]]): NamedTypes = p match {
-    case PrimitiveType.ARRAY =>
-      require(param.items.nonEmpty)
-      val types = fromSchemaOrSchemaArray(name, param.items.get, None)
-      checkRequired(name, required, wrapInArray(types.head, None)) +: types.tail
-    case PrimitiveType.OBJECT =>
-      val obj = param.allOf map {
-        extensionType(name, required)
-      } getOrElse {
-        val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
-        val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
-        val types = fromTypes(name, normal ++ catchAll.toSeq.flatten)
-        memoizeDiscriminator(name, param.discriminator)
-        checkRequired(name, required, types)
-      }
-      Seq(obj)
-    case _ =>
-      val primitiveType = name -> (p, param.format)(param)
-      Seq(checkRequired(name, required, primitiveType))
+  private def fromPrimitiveType(name: Reference, param: Schema[_], p: PrimitiveType.Val, required: Option[Seq[String]]): NamedTypes = {
+    p match {
+      case PrimitiveType.ARRAY =>
+        require(param.items.nonEmpty, s"Items should not be empty for $name")
+        val types = fromSchemaOrSchemaArray(name, param.items.get, None)
+        checkRequired(name, required, wrapInArray(types.head, None)) +: types.tail
+      case PrimitiveType.OBJECT =>
+        val obj = param.allOf map {
+          extensionType(name, required)
+        } getOrElse {
+          val typeName = param.vendorExtensions.get("x-$ref").map(Pointer.deref).map(Reference(base.toString, _)) getOrElse name
+          val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
+          val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
+          val types = fromTypes(name, normal ++ catchAll.toSeq.flatten, typeName)
+          memoizeDiscriminator(typeName, param.discriminator)
+          checkRequired(name, required, types)
+        }
+        Seq(obj)
+      case _ =>
+        val primitiveType = name -> (p, param.format)(param)
+        Seq(checkRequired(name, required, primitiveType))
+    }
   }
 
   private def fromSchemaProperties[T](name: Reference, param: SchemaProperties, required: Option[Seq[String]]): NamedTypes =
@@ -185,9 +188,9 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     if (!param.required) wrapInOption(result) else result
   }
 
-  private def fromTypes(name: Reference, types: NamedTypes): NamedType = {
-    val fields = types map { t => Field(name / t._1.simple, t._2) }
-    name -> Domain.TypeDef(name, fields, types)
+  private def fromTypes(name: Reference, types: NamedTypes, typeName: Reference): NamedType = {
+    val fields = types map { t => Field(typeName / t._1.simple, t._2) }
+    name -> Domain.TypeDef(typeName, fields, types)
   }
 
   private def fromFileSchema[T](schema: FileSchema[T], required: Option[Seq[String]]): NamedType = ???

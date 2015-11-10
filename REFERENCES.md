@@ -9,7 +9,10 @@ A JSON Object containing a `$ref` attribute with a string value.  The "$ref" str
 A JSON Pointer is a string syntax for identifying a specific value within a JSON document.  A JSON Pointer is a Unicode string containing a sequence of zero or more reference tokens, each prefixed by a `/` character.  Token values can be strings or integers, with strings identifying (possibly nested) JSON Object fields and integers identifying JSON Array indices.  The characters `/` and `~` are escaped, see the JSON Pointer [specification](http://tools.ietf.org/html/rfc6901) for more information.
 
 ### Canonical dereferencing
-A Swagger implemenation should canonically dereference all resolved JSON Reference URI values.  Informally spoken this means that relative URI's should be made absolute before values are dereferenced.  See the JSON Schema [specification](http://json-schema.org/latest/json-schema-core.html#anchor27) paragraph 7.2.3 for more information on the difference about canonical dereferencing and inline dereferencing.
+A Swagger implementation should canonically dereference all resolved JSON Reference URI values.  Informally spoken this means that relative URI's should be made absolute before values are dereferenced.  See the JSON Schema [specification](http://json-schema.org/latest/json-schema-core.html#anchor27) paragraph 7.2.3 for more information on the difference about canonical dereferencing and inline dereferencing.
+
+Question: should the ID keyword (paragraph 7.2.2) also be handled?
+
 
 ### Examples
 

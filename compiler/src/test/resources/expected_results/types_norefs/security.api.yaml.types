@@ -9,10 +9,6 @@
 #/paths/pets/{id}/get/id ->
 	Arr(Str)
 #/paths/pets/{id}/get/responses/200 ->
-	Opt(Arr(TypeDef(/definitions/Pet, Seq(
-		Field(/definitions/Pet/name, Str), 
-		Field(/definitions/Pet/tag, Opt(Str))))))
+	Opt(Arr(TypeReference(#/definitions/Pet)))
 #/paths/pets/{id}/get/responses/default ->
-	Opt(TypeDef(/definitions/ErrorModel, Seq(
-		Field(/definitions/ErrorModel/code, Intgr), 
-		Field(/definitions/ErrorModel/message, Str))))
+	Opt(TypeReference(#/definitions/ErrorModel))

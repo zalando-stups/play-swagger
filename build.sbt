@@ -39,9 +39,9 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "org.scala-lang" % "scala-library" % scalaVersion.value,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalacheck" %% "scalacheck" % "1.12.4"
+      "org.scalacheck" %% "scalacheck" % "1.12.4",
+      "me.andrz.jackson" % "jackson-json-reference" % "0.1.2"
     )
-
   )
 
 // This is the sbt plugin
@@ -84,6 +84,9 @@ def common: Seq[Setting[_]] = Seq(
   organization := "de.zalando",
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
-  resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+  resolvers ++= Seq(
+    "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
+    Resolver.bintrayRepo("slavaschmidt","maven")
+  )
 )
 

@@ -1,0 +1,23 @@
+#/definitions/Cat ->
+	AllOf(
+		TypeReference(#/definitions/Pet)
+		TypeDef(#/definitions/Cat, Seq(
+			Field(#/definitions/Cat/huntingSkill, Str))))
+#/definitions/CatNDog ->
+	AllOf(
+		TypeReference(#/definitions/Dog)
+		TypeReference(#/definitions/Cat))
+#/definitions/Dog ->
+	AllOf(
+		TypeReference(#/definitions/Pet)
+		TypeDef(#/definitions/Dog, Seq(
+			Field(#/definitions/Dog/packSize, Intgr))))
+#/definitions/Labrador ->
+	AllOf(
+		TypeReference(#/definitions/Dog)
+		TypeDef(#/definitions/Labrador, Seq(
+			Field(#/definitions/Labrador/cuteness, Intgr))))
+#/definitions/Pet ->
+	TypeDef(#/definitions/Pet, Seq(
+		Field(#/definitions/Pet/name, Str),
+		Field(#/definitions/Pet/petType, Str)))
