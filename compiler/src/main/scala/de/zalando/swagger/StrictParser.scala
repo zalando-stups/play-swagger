@@ -22,6 +22,14 @@ trait StrictParser {
   def parse(file: File): (URI, SwaggerModel)
 }
 
+/**
+  * This context is needed to override default JsonContext behaviour to read contents of provided URL of File
+  * We cannot do that because we need to use our 'prepared' content.
+  * And we need to prepare the content because of Jackson bug in Yaml Parsing
+  * @param file
+  * @param contents
+  * @param factory
+  */
 class TransientJsonContext(file: File, contents: String, factory: ObjectMapperFactory) extends JsonContext(file) {
   //private val parent = file.getParentFile
   setUrl(file.toURI.toURL)
@@ -55,13 +63,8 @@ private[swagger] abstract class StrictSwaggerParser extends StrictParser {
 
   def parse(file: File): (URI, SwaggerModel) = {
     val input = prepareFile(file)
-    processor.setMapperFactory(mapperFactory)
-    processor.setPreserveRefs(true)
-    processor.setMaxDepth(-1)
-    // val node = processor.process(file)
     val node = processor.process(new TransientJsonContext(file, input, mapperFactory))
     (file.toURI, mapper.treeToValue(node.deepCopy(), classOf[SwaggerModel]))
-    // (file.toURI, mapper.readValue(mapper.writeValueAsString(node), classOf[SwaggerModel]))
   }
 
   def mapper: ObjectMapper = {
@@ -77,8 +80,9 @@ private[swagger] abstract class StrictSwaggerParser extends StrictParser {
   lazy val processor = {
     val p = new JsonReferenceProcessor()
     p.setMapperFactory(mapperFactory)
-    p.setStopOnCircular(false) // default true
-    p.setMaxDepth(200) // default 1
+    p.setStopOnCircular(false)
+    p.setMaxDepth(200)
+    p.setPreserveRefs(true)
     p
   }
 
@@ -91,6 +95,11 @@ object StrictYamlParser extends StrictSwaggerParser {
 
   lazy val mapperFactory = new YamlObjectMapperFactory
 
+  /**
+    * The workaround for jackson not able to parse extended yaml syntax
+    * @param file
+    * @return
+    */
   override def prepareFile(file: File) = {
     val input = super.prepareFile(file)
     val yaml = new Yaml
