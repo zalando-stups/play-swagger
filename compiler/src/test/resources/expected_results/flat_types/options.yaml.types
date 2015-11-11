@@ -1,0 +1,11 @@
+#/definitions/Basic ->
+	TypeDef(#/definitions/Basic, Seq(
+		Field(#/definitions/Basic/id, Lng), 
+		Field(#/definitions/Basic/required, TypeReference(#/definitions/Basic/required)), 
+		Field(#/definitions/Basic/optional, TypeReference(#/definitions/Basic/optional))))
+#/definitions/Basic/optional ->
+	Opt(TypeReference(#/definitions/Basic/optional/container))
+#/definitions/Basic/optional/container ->
+	Arr(Str)
+#/definitions/Basic/required ->
+	Arr(Str)

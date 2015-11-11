@@ -1,0 +1,10 @@
+#/definitions/Basic ->
+	TypeDef(#/definitions/Basic, Seq(
+		Field(#/definitions/Basic/optional, TypeReference(#/definitions/Basic/optional))))
+#/definitions/Basic/optional ->
+	Opt(TypeReference(#/definitions/Basic/optional/container))
+#/definitions/Basic/optional/container ->
+	TypeDef(#/definitions/Basic/optional, Seq(
+		Field(#/definitions/Basic/optional/nested_optional, TypeReference(#/definitions/Basic/optional/nested_optional))))
+#/definitions/Basic/optional/nested_optional ->
+	Opt(Str)

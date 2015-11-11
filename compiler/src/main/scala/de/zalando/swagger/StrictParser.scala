@@ -31,12 +31,10 @@ trait StrictParser {
   * @param factory
   */
 class TransientJsonContext(file: File, contents: String, factory: ObjectMapperFactory) extends JsonContext(file) {
-  //private val parent = file.getParentFile
   setUrl(file.toURI.toURL)
   private val rootNode = factory.create().readTree(contents)
   setNode(rootNode)
 }
-
 
 class JsonObjectMapperFactory extends ObjectMapperFactory {
   override def create: ObjectMapper = {
@@ -64,7 +62,7 @@ private[swagger] abstract class StrictSwaggerParser extends StrictParser {
   def parse(file: File): (URI, SwaggerModel) = {
     val input = prepareFile(file)
     val node = processor.process(new TransientJsonContext(file, input, mapperFactory))
-    (file.toURI, mapper.treeToValue(node.deepCopy(), classOf[SwaggerModel]))
+    (file.toURI, mapper.treeToValue(node, classOf[SwaggerModel]))
   }
 
   def mapper: ObjectMapper = {
@@ -110,6 +108,5 @@ object StrictYamlParser extends StrictSwaggerParser {
 
 object StrictJsonParser extends StrictSwaggerParser {
   lazy val mapperFactory = new JsonObjectMapperFactory
-
 }
 

@@ -144,16 +144,23 @@ object Domain {
     def allImports: Set[String] = imports ++ tpe.imports
     override def nestedTypes = tpe.nestedTypes :+ tpe
     override def toShortString(pad: String) = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
+    def withType(t: Type): Container
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
-    extends Container(s"/${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.Seq"))
+    extends Container(s"/${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.Seq")) {
+    def withType(t: Type) = this.copy(tpe = t)
+  }
 
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.Option"))
+    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.Option")) {
+    def withType(t: Type) = this.copy(tpe = t)
+  }
 
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.immutable.Map"))
+    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.immutable.Map")) {
+    def withType(t: Type) = this.copy(tpe = t)
+  }
 
   case class Field(name: TypeName, tpe: Type) {
     def toString(pad: String) = s"""\n${pad}Field($name, ${tpe.toShortString(pad+"\t")})"""
@@ -294,9 +301,10 @@ object Application {
   )
 
   type ParameterLookupTable     = Map[ParameterRef, Parameter]
+  type TypeLookupTable          = Map[Reference, Domain.Type]
   type DiscriminatorLookupTable = Map[Reference, String]
 
-  case class StrictModel(calls: Seq[ApiCall], typeDefs: Map[Reference, Domain.Type], params: ParameterLookupTable, discriminators: DiscriminatorLookupTable) {
+  case class StrictModel(calls: Seq[ApiCall], typeDefs: TypeLookupTable, params: ParameterLookupTable, discriminators: DiscriminatorLookupTable) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
   }

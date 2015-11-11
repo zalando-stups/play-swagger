@@ -1,0 +1,30 @@
+#/definitions/Activity ->
+	TypeDef(#/definitions/Activity, Seq(
+		Field(#/definitions/Activity/actions, TypeReference(#/definitions/Activity/actions))))
+#/definitions/Activity/actions ->
+	Opt(Str)
+/definitions/Activity/actions ->
+	Opt(Str)
+#/definitions/Example ->
+	TypeDef(#/definitions/Example, Seq(
+		Field(#/definitions/Example/messages, TypeReference(#/definitions/Example/messages)), 
+		Field(#/definitions/Example/nestedArrays, TypeReference(#/definitions/Example/nestedArrays))))
+#/definitions/Example/messages ->
+	Opt(TypeReference(#/definitions/Example/messages/container))
+#/definitions/Example/messages/container ->
+	Arr(TypeReference(#/definitions/Example/messages/container/container))
+#/definitions/Example/messages/container/container ->
+	Arr(TypeReference(#/definitions/Example/messages/container/container/container))
+#/definitions/Example/messages/container/container/container ->
+	TypeDef(/definitions/Activity, Seq(
+		Field(/definitions/Activity/actions, TypeReference(/definitions/Activity/actions))))
+#/definitions/Example/nestedArrays ->
+	Opt(TypeReference(#/definitions/Example/nestedArrays/container))
+#/definitions/Example/nestedArrays/container ->
+	Arr(TypeReference(#/definitions/Example/nestedArrays/container/container))
+#/definitions/Example/nestedArrays/container/container ->
+	Arr(TypeReference(#/definitions/Example/nestedArrays/container/container/container))
+#/definitions/Example/nestedArrays/container/container/container ->
+	Arr(TypeReference(#/definitions/Example/nestedArrays/container/container/container/container))
+#/definitions/Example/nestedArrays/container/container/container/container ->
+	Arr(Str)
