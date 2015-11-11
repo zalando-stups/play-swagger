@@ -15,6 +15,6 @@ object relations {
 
   case class HierarchyDescendant(root: HierarchyRoot, tpe: TypeDef) extends ClassRelation
 
-  case class Composition(parts: Seq[TypeDef]) extends ClassRelation
+  // case class Composition(parts: Seq[TypeDef]) extends ClassRelation
 
 }

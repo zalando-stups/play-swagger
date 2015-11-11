@@ -106,7 +106,7 @@ object Domain {
 
   case class Null(override val meta: TypeMeta) extends ProvidedType("null", meta)
 
-  case class Any(override val meta: TypeMeta) extends ProvidedType("Any", meta)
+  // case class Any(override val meta: TypeMeta) extends ProvidedType("Any", meta)
 
   /**
    * Composite classes describe some class composition
@@ -123,13 +123,18 @@ object Domain {
     override def toShortString(pad: String) = s"${getClass.getSimpleName}(${descendants.map(_.toShortString(pad+"\t")).mkString(s"\n$pad",s"\n$pad","")})"
     override def nestedTypes = descendants flatMap ( _.nestedTypes )
     override def imports: Set[String] = descendants.flatMap(_.imports).toSet
+    def withTypes(t: Seq[Type]): Composite
   }
 
   case class AllOf(override val name: TypeName, override val meta: TypeMeta, override val descendants: Seq[Type])
-    extends Composite(name, meta, descendants)
+    extends Composite(name, meta, descendants) {
+    def withTypes(t: Seq[Type]) = this.copy(descendants = t)
+  }
 
   case class OneOf(override val name: TypeName, override val meta: TypeMeta, override val descendants: Seq[Type])
-    extends Composite(name, meta, descendants)
+    extends Composite(name, meta, descendants) {
+    def withTypes(t: Seq[Type]) = this.copy(descendants = t)
+  }
 
   /**
     * Container is just a wrapper for another single type with some unique properties
@@ -145,6 +150,10 @@ object Domain {
     override def nestedTypes = tpe.nestedTypes :+ tpe
     override def toShortString(pad: String) = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
     def withType(t: Type): Container
+    override def equals(other: Any) = other match {
+      case c: Container => c.name == this.name && c.tpe == this.tpe
+      case _ => false
+    }
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
@@ -155,6 +164,10 @@ object Domain {
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
     extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.Option")) {
     def withType(t: Type) = this.copy(tpe = t)
+    override def equals(other: Any) = other match {
+      case c: Opt => c.tpe == this.tpe
+      case _ => false
+    }
   }
 
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
@@ -181,6 +194,12 @@ object Domain {
     override def toShortString(pad: String) = s"""TypeDef($name, Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
 
     override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
+
+    override def equals(other: Any): Boolean = other match {
+      case t: TypeDef => t.name == this.name && t.fields == this.fields
+      case _ => false
+    }
+
   }
 
 }

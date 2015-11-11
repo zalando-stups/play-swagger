@@ -1,60 +1,60 @@
-#/definitions/errorModel ->
-	TypeDef(#/definitions/errorModel, Seq(
-		Field(#/definitions/errorModel/code, Intgr), 
-		Field(#/definitions/errorModel/message, Str)))
-#/definitions/newPet ->
-	TypeDef(#/definitions/newPet, Seq(
-		Field(#/definitions/newPet/id, Opt(Lng)), 
-		Field(#/definitions/newPet/name, Str), 
-		Field(#/definitions/newPet/tag, Opt(Str))))
-#/definitions/pet ->
-	TypeDef(#/definitions/pet, Seq(
-		Field(#/definitions/pet/id, Lng), 
-		Field(#/definitions/pet/name, Str), 
-		Field(#/definitions/pet/tag, Opt(Str))))
-#/paths/pets/get/limit ->
-	Opt(Intgr)
-#/paths/pets/get/responses/200 ->
-	Opt(Arr(TypeDef(/definitions/pet, Seq(
-		Field(/definitions/pet/id, Lng), 
-		Field(/definitions/pet/name, Str), 
-		Field(/definitions/pet/tag, Opt(Str))))))
-#/paths/pets/get/responses/default ->
-	Opt(TypeDef(/definitions/errorModel, Seq(
+/definitions/errorModel ->
+	TypeDef(/definitions/errorModel, Seq(
 		Field(/definitions/errorModel/code, Intgr), 
-		Field(/definitions/errorModel/message, Str))))
-#/paths/pets/get/tags ->
-	Opt(Arr(Str))
-#/paths/pets/post/pet ->
+		Field(/definitions/errorModel/message, Str)))
+/definitions/newPet ->
 	TypeDef(/definitions/newPet, Seq(
 		Field(/definitions/newPet/id, Opt(Lng)), 
 		Field(/definitions/newPet/name, Str), 
 		Field(/definitions/newPet/tag, Opt(Str))))
-#/paths/pets/post/responses/200 ->
+/definitions/pet ->
+	TypeDef(/definitions/pet, Seq(
+		Field(/definitions/pet/id, Lng), 
+		Field(/definitions/pet/name, Str), 
+		Field(/definitions/pet/tag, Opt(Str))))
+/paths/pets/get/limit ->
+	Opt(Intgr)
+/paths/pets/get/responses/200 ->
+	Opt(Arr(TypeDef(/definitions/pet, Seq(
+		Field(/definitions/pet/id, Lng), 
+		Field(/definitions/pet/name, Str), 
+		Field(/definitions/pet/tag, Opt(Str))))))
+/paths/pets/get/responses/default ->
+	Opt(TypeDef(/definitions/errorModel, Seq(
+		Field(/definitions/errorModel/code, Intgr), 
+		Field(/definitions/errorModel/message, Str))))
+/paths/pets/get/tags ->
+	Opt(Arr(Str))
+/paths/pets/post/pet ->
+	TypeDef(/definitions/newPet, Seq(
+		Field(/definitions/newPet/id, Opt(Lng)), 
+		Field(/definitions/newPet/name, Str), 
+		Field(/definitions/newPet/tag, Opt(Str))))
+/paths/pets/post/responses/200 ->
 	Opt(TypeDef(/definitions/pet, Seq(
 		Field(/definitions/pet/id, Lng), 
 		Field(/definitions/pet/name, Str), 
 		Field(/definitions/pet/tag, Opt(Str)))))
-#/paths/pets/post/responses/default ->
+/paths/pets/post/responses/default ->
 	Opt(TypeDef(/definitions/errorModel, Seq(
 		Field(/definitions/errorModel/code, Intgr), 
 		Field(/definitions/errorModel/message, Str))))
-#/paths/pets/{id}/delete/id ->
+/paths/pets/{id}/delete/id ->
 	Lng
-#/paths/pets/{id}/delete/responses/204 ->
+/paths/pets/{id}/delete/responses/204 ->
 	Null
-#/paths/pets/{id}/delete/responses/default ->
+/paths/pets/{id}/delete/responses/default ->
 	Opt(TypeDef(/definitions/errorModel, Seq(
 		Field(/definitions/errorModel/code, Intgr), 
 		Field(/definitions/errorModel/message, Str))))
-#/paths/pets/{id}/get/id ->
+/paths/pets/{id}/get/id ->
 	Lng
-#/paths/pets/{id}/get/responses/200 ->
+/paths/pets/{id}/get/responses/200 ->
 	Opt(TypeDef(/definitions/pet, Seq(
 		Field(/definitions/pet/id, Lng), 
 		Field(/definitions/pet/name, Str), 
 		Field(/definitions/pet/tag, Opt(Str)))))
-#/paths/pets/{id}/get/responses/default ->
+/paths/pets/{id}/get/responses/default ->
 	Opt(TypeDef(/definitions/errorModel, Seq(
 		Field(/definitions/errorModel/code, Intgr), 
 		Field(/definitions/errorModel/message, Str))))

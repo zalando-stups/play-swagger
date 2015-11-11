@@ -127,7 +127,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
           val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
           val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
           val types = fromTypes(name, normal ++ catchAll.toSeq.flatten, typeName)
-          memoizeDiscriminator(typeName, param.discriminator)
+          memoizeDiscriminator(name, param.discriminator)
           checkRequired(name, required, types)
         }
         Seq(obj)

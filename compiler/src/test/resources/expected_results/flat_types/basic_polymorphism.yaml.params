@@ -1,0 +1,72 @@
+/definitions/Cat ->
+	AllOf(
+		TypeReference(/definitions/Cat/AllOf0)
+		TypeReference(/definitions/Cat/AllOf1))
+/definitions/Cat/AllOf0 ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, Str), 
+		Field(/definitions/Pet/petType, Str)))
+/definitions/Cat/AllOf1 ->
+	TypeDef(/definitions/Cat, Seq(
+		Field(/definitions/Cat/huntingSkill, Str)))
+/definitions/CatNDog ->
+	AllOf(
+		TypeReference(/definitions/CatNDog/AllOf0)
+		TypeReference(/definitions/CatNDog/AllOf1))
+/definitions/CatNDog/AllOf0 ->
+	AllOf(
+		TypeReference(/definitions/CatNDog/AllOf0/AllOf0)
+		TypeReference(/definitions/CatNDog/AllOf0/AllOf1))
+/definitions/CatNDog/AllOf0/AllOf0 ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, Str), 
+		Field(/definitions/Pet/petType, Str)))
+/definitions/CatNDog/AllOf0/AllOf1 ->
+	TypeDef(/definitions/CatNDog, Seq(
+		Field(/definitions/CatNDog/packSize, Intgr)))
+/definitions/CatNDog/AllOf1 ->
+	AllOf(
+		TypeReference(/definitions/CatNDog/AllOf1/AllOf0)
+		TypeReference(/definitions/CatNDog/AllOf1/AllOf1))
+/definitions/CatNDog/AllOf1/AllOf0 ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, Str), 
+		Field(/definitions/Pet/petType, Str)))
+/definitions/CatNDog/AllOf1/AllOf1 ->
+	TypeDef(/definitions/CatNDog, Seq(
+		Field(/definitions/CatNDog/huntingSkill, Str)))
+/definitions/Dog ->
+	AllOf(
+		TypeReference(/definitions/Dog/AllOf0)
+		TypeReference(/definitions/Dog/AllOf1))
+/definitions/Dog/AllOf0 ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, Str), 
+		Field(/definitions/Pet/petType, Str)))
+/definitions/Dog/AllOf1 ->
+	TypeDef(/definitions/Dog, Seq(
+		Field(/definitions/Dog/packSize, Intgr)))
+/definitions/Labrador ->
+	AllOf(
+		TypeReference(/definitions/Labrador/AllOf0)
+		TypeReference(/definitions/Labrador/AllOf1))
+/definitions/Labrador/AllOf0 ->
+	AllOf(
+		TypeReference(/definitions/Labrador/AllOf0/AllOf0)
+		TypeReference(/definitions/Labrador/AllOf0/AllOf1))
+/definitions/Labrador/AllOf0/AllOf0 ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, Str), 
+		Field(/definitions/Pet/petType, Str)))
+/definitions/Labrador/AllOf0/AllOf1 ->
+	TypeDef(/definitions/Labrador, Seq(
+		Field(/definitions/Labrador/packSize, Intgr)))
+/definitions/Labrador/AllOf1 ->
+	TypeDef(/definitions/Labrador, Seq(
+		Field(/definitions/Labrador/cuteness, Intgr)))
+/definitions/Pet ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, Str), 
+		Field(/definitions/Pet/petType, Str)))
+-- params --
+

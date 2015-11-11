@@ -1,0 +1,29 @@
+/definitions/ErrorModel ->
+	TypeDef(/definitions/ErrorModel, Seq(
+		Field(/definitions/ErrorModel/code, Intgr), 
+		Field(/definitions/ErrorModel/message, Str)))
+/definitions/Pet ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, Str), 
+		Field(/definitions/Pet/tag, TypeReference(/definitions/Pet/tag))))
+/definitions/Pet/tag ->
+	Opt(Str)
+/paths/pets/{id}/get/id ->
+	Arr(Str)
+/paths/pets/{id}/get/responses/200 ->
+	Opt(TypeReference(/paths/pets/{id}/get/responses/200/Opt))
+/paths/pets/{id}/get/responses/200/Opt ->
+	Arr(TypeReference(/paths/pets/{id}/get/responses/200/Opt/Arr))
+/paths/pets/{id}/get/responses/200/Opt/Arr ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, Str), 
+		Field(/definitions/Pet/tag, TypeReference(/definitions/Pet/tag))))
+/paths/pets/{id}/get/responses/default ->
+	Opt(TypeReference(/paths/pets/{id}/get/responses/default/Opt))
+/paths/pets/{id}/get/responses/default/Opt ->
+	TypeDef(/definitions/ErrorModel, Seq(
+		Field(/definitions/ErrorModel/code, Intgr), 
+		Field(/definitions/ErrorModel/message, Str)))
+-- params --
+
+ParameterRef(/paths/pets/{id}/get/id) ->Parameter(id,TypeReference(/paths/pets/{id}/get/id),None,None,[^/]+,true,path)

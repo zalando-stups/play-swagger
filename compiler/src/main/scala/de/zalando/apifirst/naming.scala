@@ -130,7 +130,7 @@ object new_naming {
     val simple = pointer.simple
     lazy val parent = new Reference(base, pointer.parent)
     def prepend(token: String): Reference = new Reference(base, Pointer(token) ++ pointer)
-    def /(token: String): Reference = if (token.isEmpty) /(Pointer(Seq(Node(token)))) else /(Pointer(token))
+    def /(token: String): Reference = /(Pointer.deref(token))
     def /(p: Pointer): Reference = new Reference(base, pointer ++ p)
     def /: = prepend _
     override def toString = base + Reference.percentDecodeFragmentChars(pointer.toString())
@@ -141,10 +141,10 @@ object new_naming {
     def apply(str: String): Reference = {
       if (str.contains("#")) {
         val (base, frag) = str.splitAt(str.indexOf("#")+1)
-        new Reference(base, Pointer(percentEncodeFragmentChars(frag)))
+        new Reference(base.init, Pointer(percentEncodeFragmentChars(frag)))
       }
       else {
-        new Reference(str + '#')
+        new Reference(str)
       }
     }
 

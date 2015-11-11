@@ -1,46 +1,46 @@
-#/definitions/Activities ->
-	TypeDef(#/definitions/Activities, Seq(
-		Field(#/definitions/Activities/offset, Opt(Intgr)), 
-		Field(#/definitions/Activities/limit, Opt(Intgr)), 
-		Field(#/definitions/Activities/count, Opt(Intgr)), 
-		Field(#/definitions/Activities/history, Opt(Arr(TypeDef(/definitions/Activity, Seq(
+/definitions/Activities ->
+	TypeDef(/definitions/Activities, Seq(
+		Field(/definitions/Activities/offset, Opt(Intgr)), 
+		Field(/definitions/Activities/limit, Opt(Intgr)), 
+		Field(/definitions/Activities/count, Opt(Intgr)), 
+		Field(/definitions/Activities/history, Opt(Arr(TypeDef(/definitions/Activity, Seq(
 			Field(/definitions/Activity/uuid, Opt(Str)))))))))
-#/definitions/Activity ->
-	TypeDef(#/definitions/Activity, Seq(
-		Field(#/definitions/Activity/uuid, Opt(Str))))
-#/definitions/Error ->
-	TypeDef(#/definitions/Error, Seq(
-		Field(#/definitions/Error/code, Opt(Intgr)), 
-		Field(#/definitions/Error/message, Opt(Str)), 
-		Field(#/definitions/Error/fields, Opt(Str))))
-#/definitions/PriceEstimate ->
-	TypeDef(#/definitions/PriceEstimate, Seq(
-		Field(#/definitions/PriceEstimate/low_estimate, Opt(Dbl)), 
-		Field(#/definitions/PriceEstimate/display_name, Opt(Str)), 
-		Field(#/definitions/PriceEstimate/estimate, Opt(Str)), 
-		Field(#/definitions/PriceEstimate/high_estimate, Opt(Dbl)), 
-		Field(#/definitions/PriceEstimate/product_id, Opt(Str)), 
-		Field(#/definitions/PriceEstimate/currency_code, Opt(Str)), 
-		Field(#/definitions/PriceEstimate/surge_multiplier, Opt(Dbl))))
-#/definitions/Product ->
-	TypeDef(#/definitions/Product, Seq(
-		Field(#/definitions/Product/image, Opt(Str)), 
-		Field(#/definitions/Product/description, Opt(Str)), 
-		Field(#/definitions/Product/display_name, Opt(Str)), 
-		Field(#/definitions/Product/product_id, Opt(Str)), 
-		Field(#/definitions/Product/capacity, Opt(Str))))
-#/definitions/Profile ->
-	TypeDef(#/definitions/Profile, Seq(
-		Field(#/definitions/Profile/first_name, Opt(Str)), 
-		Field(#/definitions/Profile/email, Opt(Str)), 
-		Field(#/definitions/Profile/promo_code, Opt(Str)), 
-		Field(#/definitions/Profile/last_name, Opt(Str)), 
-		Field(#/definitions/Profile/picture, Opt(Str))))
-#/paths/estimates/price/get/end_latitude ->
+/definitions/Activity ->
+	TypeDef(/definitions/Activity, Seq(
+		Field(/definitions/Activity/uuid, Opt(Str))))
+/definitions/Error ->
+	TypeDef(/definitions/Error, Seq(
+		Field(/definitions/Error/code, Opt(Intgr)), 
+		Field(/definitions/Error/message, Opt(Str)), 
+		Field(/definitions/Error/fields, Opt(Str))))
+/definitions/PriceEstimate ->
+	TypeDef(/definitions/PriceEstimate, Seq(
+		Field(/definitions/PriceEstimate/low_estimate, Opt(Dbl)), 
+		Field(/definitions/PriceEstimate/display_name, Opt(Str)), 
+		Field(/definitions/PriceEstimate/estimate, Opt(Str)), 
+		Field(/definitions/PriceEstimate/high_estimate, Opt(Dbl)), 
+		Field(/definitions/PriceEstimate/product_id, Opt(Str)), 
+		Field(/definitions/PriceEstimate/currency_code, Opt(Str)), 
+		Field(/definitions/PriceEstimate/surge_multiplier, Opt(Dbl))))
+/definitions/Product ->
+	TypeDef(/definitions/Product, Seq(
+		Field(/definitions/Product/image, Opt(Str)), 
+		Field(/definitions/Product/description, Opt(Str)), 
+		Field(/definitions/Product/display_name, Opt(Str)), 
+		Field(/definitions/Product/product_id, Opt(Str)), 
+		Field(/definitions/Product/capacity, Opt(Str))))
+/definitions/Profile ->
+	TypeDef(/definitions/Profile, Seq(
+		Field(/definitions/Profile/first_name, Opt(Str)), 
+		Field(/definitions/Profile/email, Opt(Str)), 
+		Field(/definitions/Profile/promo_code, Opt(Str)), 
+		Field(/definitions/Profile/last_name, Opt(Str)), 
+		Field(/definitions/Profile/picture, Opt(Str))))
+/paths/estimates/price/get/end_latitude ->
 	Dbl
-#/paths/estimates/price/get/end_longitude ->
+/paths/estimates/price/get/end_longitude ->
 	Dbl
-#/paths/estimates/price/get/responses/200 ->
+/paths/estimates/price/get/responses/200 ->
 	Opt(Arr(TypeDef(/definitions/PriceEstimate, Seq(
 		Field(/definitions/PriceEstimate/low_estimate, Opt(Dbl)), 
 		Field(/definitions/PriceEstimate/display_name, Opt(Str)), 
@@ -49,75 +49,75 @@
 		Field(/definitions/PriceEstimate/product_id, Opt(Str)), 
 		Field(/definitions/PriceEstimate/currency_code, Opt(Str)), 
 		Field(/definitions/PriceEstimate/surge_multiplier, Opt(Dbl))))))
-#/paths/estimates/price/get/responses/default ->
+/paths/estimates/price/get/responses/default ->
 	Opt(TypeDef(/definitions/Error, Seq(
 		Field(/definitions/Error/code, Opt(Intgr)), 
 		Field(/definitions/Error/message, Opt(Str)), 
 		Field(/definitions/Error/fields, Opt(Str)))))
-#/paths/estimates/price/get/start_latitude ->
+/paths/estimates/price/get/start_latitude ->
 	Dbl
-#/paths/estimates/price/get/start_longitude ->
+/paths/estimates/price/get/start_longitude ->
 	Dbl
-#/paths/estimates/time/get/customer_uuid ->
+/paths/estimates/time/get/customer_uuid ->
 	Opt(Str)
-#/paths/estimates/time/get/product_id ->
+/paths/estimates/time/get/product_id ->
 	Opt(Str)
-#/paths/estimates/time/get/responses/200 ->
+/paths/estimates/time/get/responses/200 ->
 	Opt(Arr(TypeDef(/definitions/Product, Seq(
 		Field(/definitions/Product/image, Opt(Str)), 
 		Field(/definitions/Product/description, Opt(Str)), 
 		Field(/definitions/Product/display_name, Opt(Str)), 
 		Field(/definitions/Product/product_id, Opt(Str)), 
 		Field(/definitions/Product/capacity, Opt(Str))))))
-#/paths/estimates/time/get/responses/default ->
+/paths/estimates/time/get/responses/default ->
 	Opt(TypeDef(/definitions/Error, Seq(
 		Field(/definitions/Error/code, Opt(Intgr)), 
 		Field(/definitions/Error/message, Opt(Str)), 
 		Field(/definitions/Error/fields, Opt(Str)))))
-#/paths/estimates/time/get/start_latitude ->
+/paths/estimates/time/get/start_latitude ->
 	Dbl
-#/paths/estimates/time/get/start_longitude ->
+/paths/estimates/time/get/start_longitude ->
 	Dbl
-#/paths/history/get/limit ->
+/paths/history/get/limit ->
 	Opt(Intgr)
-#/paths/history/get/offset ->
+/paths/history/get/offset ->
 	Opt(Intgr)
-#/paths/history/get/responses/200 ->
+/paths/history/get/responses/200 ->
 	Opt(TypeDef(/definitions/Activities, Seq(
 		Field(/definitions/Activities/offset, Opt(Intgr)), 
 		Field(/definitions/Activities/limit, Opt(Intgr)), 
 		Field(/definitions/Activities/count, Opt(Intgr)), 
 		Field(/definitions/Activities/history, Opt(Arr(TypeDef(/definitions/Activity, Seq(
 			Field(/definitions/Activity/uuid, Opt(Str))))))))))
-#/paths/history/get/responses/default ->
+/paths/history/get/responses/default ->
 	Opt(TypeDef(/definitions/Error, Seq(
 		Field(/definitions/Error/code, Opt(Intgr)), 
 		Field(/definitions/Error/message, Opt(Str)), 
 		Field(/definitions/Error/fields, Opt(Str)))))
-#/paths/me/get/responses/200 ->
+/paths/me/get/responses/200 ->
 	Opt(TypeDef(/definitions/Profile, Seq(
 		Field(/definitions/Profile/first_name, Opt(Str)), 
 		Field(/definitions/Profile/email, Opt(Str)), 
 		Field(/definitions/Profile/promo_code, Opt(Str)), 
 		Field(/definitions/Profile/last_name, Opt(Str)), 
 		Field(/definitions/Profile/picture, Opt(Str)))))
-#/paths/me/get/responses/default ->
+/paths/me/get/responses/default ->
 	Opt(TypeDef(/definitions/Error, Seq(
 		Field(/definitions/Error/code, Opt(Intgr)), 
 		Field(/definitions/Error/message, Opt(Str)), 
 		Field(/definitions/Error/fields, Opt(Str)))))
-#/paths/products/get/latitude ->
+/paths/products/get/latitude ->
 	Dbl
-#/paths/products/get/longitude ->
+/paths/products/get/longitude ->
 	Dbl
-#/paths/products/get/responses/200 ->
+/paths/products/get/responses/200 ->
 	Opt(Arr(TypeDef(/definitions/Product, Seq(
 		Field(/definitions/Product/image, Opt(Str)), 
 		Field(/definitions/Product/description, Opt(Str)), 
 		Field(/definitions/Product/display_name, Opt(Str)), 
 		Field(/definitions/Product/product_id, Opt(Str)), 
 		Field(/definitions/Product/capacity, Opt(Str))))))
-#/paths/products/get/responses/default ->
+/paths/products/get/responses/default ->
 	Opt(TypeDef(/definitions/Error, Seq(
 		Field(/definitions/Error/code, Opt(Intgr)), 
 		Field(/definitions/Error/message, Opt(Str)), 

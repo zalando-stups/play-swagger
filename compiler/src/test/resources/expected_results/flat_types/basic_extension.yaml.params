@@ -1,0 +1,17 @@
+/definitions/ErrorModel ->
+	TypeDef(/definitions/ErrorModel, Seq(
+		Field(/definitions/ErrorModel/message, Str), 
+		Field(/definitions/ErrorModel/code, Intgr)))
+/definitions/ExtendedErrorModel ->
+	AllOf(
+		TypeReference(/definitions/ExtendedErrorModel/AllOf0)
+		TypeReference(/definitions/ExtendedErrorModel/AllOf1))
+/definitions/ExtendedErrorModel/AllOf0 ->
+	TypeDef(/definitions/ErrorModel, Seq(
+		Field(/definitions/ErrorModel/message, Str), 
+		Field(/definitions/ErrorModel/code, Intgr)))
+/definitions/ExtendedErrorModel/AllOf1 ->
+	TypeDef(/definitions/ExtendedErrorModel, Seq(
+		Field(/definitions/ExtendedErrorModel/rootCause, Str)))
+-- params --
+

@@ -1,5 +1,6 @@
 package de.zalando.apifirst.naming
 
+import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.new_naming._
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -41,6 +42,16 @@ class ReferenceTest extends FunSpec with MustMatchers {
        (base / "foo" / "bar").parent mustBe Reference("file:/swagger.yaml#/foo")
        (base / "foo").parent         mustBe Reference("file:/swagger.yaml#")
        (base).parent                 mustBe Reference("file:/swagger.yaml#")
+     }
+
+     it("must ignore starting # while comparing references") {
+       val one = TypeDef(Reference("/definitions/ErrorModel"), Seq(
+         new Field(Reference("/definitions/ErrorModel/message"), Str(None, TypeMeta(None))),
+         new Field(Reference("/definitions/ErrorModel/code"), Intgr(TypeMeta(None)))), TypeMeta(None))
+       val two = TypeDef(Reference("#/definitions/ErrorModel"), Seq(
+         new Field(Reference("#/definitions/ErrorModel/message"), Str(None, TypeMeta(None))),
+         new Field(Reference("#/definitions/ErrorModel/code"), Intgr(TypeMeta(None)))), TypeMeta(None))
+
      }
    }
  }

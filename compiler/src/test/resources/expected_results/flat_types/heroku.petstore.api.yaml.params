@@ -1,0 +1,40 @@
+/definitions/Pet ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, TypeReference(/definitions/Pet/name)), 
+		Field(/definitions/Pet/birthday, TypeReference(/definitions/Pet/birthday))))
+/definitions/Pet/birthday ->
+	Opt(Intgr)
+/definitions/Pet/name ->
+	Opt(Str)
+/paths//get/limit ->
+	Opt(Intgr)
+/paths//get/responses/200 ->
+	Opt(TypeReference(/paths//get/responses/200/Opt))
+/paths//get/responses/200/Opt ->
+	Arr(TypeReference(/paths//get/responses/200/Opt/Arr))
+/paths//get/responses/200/Opt/Arr ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, TypeReference(/definitions/Pet/name)), 
+		Field(/definitions/Pet/birthday, TypeReference(/definitions/Pet/birthday))))
+/paths//post/pet ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, TypeReference(/definitions/Pet/name)), 
+		Field(/definitions/Pet/birthday, TypeReference(/definitions/Pet/birthday))))
+/paths//post/responses/200 ->
+	Null
+/paths//put/pet ->
+	TypeDef(/definitions/Pet, Seq(
+		Field(/definitions/Pet/name, TypeReference(/definitions/Pet/name)), 
+		Field(/definitions/Pet/birthday, TypeReference(/definitions/Pet/birthday))))
+/paths//put/responses/200 ->
+	Null
+/paths/{petId}/get/petId ->
+	Str
+/paths/{petId}/get/responses/200 ->
+	Null
+-- params --
+
+ParameterRef(/paths//get/limit) ->Parameter(limit,TypeReference(/paths//get/limit),None,None,.+,true,query)
+ParameterRef(/paths//post/pet) ->Parameter(pet,TypeReference(/paths//post/pet),None,None,.+,false,body)
+ParameterRef(/paths//put/pet) ->Parameter(pet,TypeReference(/paths//put/pet),None,None,.+,false,body)
+ParameterRef(/paths/{petId}/get/petId) ->Parameter(petId,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

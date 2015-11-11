@@ -1,0 +1,26 @@
+/definitions/NestedObjects ->
+	TypeDef(/definitions/NestedObjects, Seq(
+		Field(/definitions/NestedObjects/plain, TypeReference(/definitions/NestedObjects/plain)), 
+		Field(/definitions/NestedObjects/nested, TypeReference(/definitions/NestedObjects/nested))))
+/definitions/NestedObjects/nested ->
+	Opt(TypeReference(/definitions/NestedObjects/nested/Opt))
+/definitions/NestedObjects/nested/Opt ->
+	TypeDef(/definitions/NestedObjects/nested, Seq(
+		Field(/definitions/NestedObjects/nested/nested2, TypeReference(/definitions/NestedObjects/nested/nested2))))
+/definitions/NestedObjects/nested/nested2 ->
+	TypeDef(/definitions/NestedObjects/nested/nested2, Seq(
+		Field(/definitions/NestedObjects/nested/nested2/nested3, TypeReference(/definitions/NestedObjects/nested/nested2/nested3))))
+/definitions/NestedObjects/nested/nested2/nested3 ->
+	Opt(TypeReference(/definitions/NestedObjects/nested/nested2/nested3/Opt))
+/definitions/NestedObjects/nested/nested2/nested3/Opt ->
+	TypeDef(/definitions/NestedObjects/nested/nested2/nested3, Seq(
+		Field(/definitions/NestedObjects/nested/nested2/nested3/bottom, TypeReference(/definitions/NestedObjects/nested/nested2/nested3/bottom))))
+/definitions/NestedObjects/nested/nested2/nested3/bottom ->
+	Opt(Str)
+/definitions/NestedObjects/plain ->
+	Opt(TypeReference(/definitions/NestedObjects/plain/Opt))
+/definitions/NestedObjects/plain/Opt ->
+	TypeDef(/definitions/NestedObjects/plain, Seq(
+		Field(/definitions/NestedObjects/plain/simple, Str)))
+-- params --
+
