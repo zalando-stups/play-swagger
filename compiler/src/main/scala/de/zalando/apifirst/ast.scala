@@ -150,10 +150,6 @@ object Domain {
     override def nestedTypes = tpe.nestedTypes :+ tpe
     override def toShortString(pad: String) = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
     def withType(t: Type): Container
-    override def equals(other: Any) = other match {
-      case c: Container => c.name == this.name && c.tpe == this.tpe
-      case _ => false
-    }
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
@@ -164,10 +160,6 @@ object Domain {
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
     extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.Option")) {
     def withType(t: Type) = this.copy(tpe = t)
-    override def equals(other: Any) = other match {
-      case c: Opt => c.tpe == this.tpe
-      case _ => false
-    }
   }
 
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
@@ -194,11 +186,6 @@ object Domain {
     override def toShortString(pad: String) = s"""TypeDef($name, Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
 
     override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
-
-    override def equals(other: Any): Boolean = other match {
-      case t: TypeDef => t.name == this.name && t.fields == this.fields
-      case _ => false
-    }
 
   }
 

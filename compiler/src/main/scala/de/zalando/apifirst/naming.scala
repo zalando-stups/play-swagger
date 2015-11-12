@@ -126,7 +126,7 @@ object new_naming {
   implicit def uriToReference: URI => Reference = Reference.apply
 
   case class Reference(base: String, pointer: Pointer = Pointer(Nil)) {
-    require(new URI(base).isAbsolute, s"must be absolute, found: $base")
+//    require(new URI(base).isAbsolute, s"must be absolute, found: $base")
     val simple = pointer.simple
     lazy val parent = new Reference(base, pointer.parent)
     def prepend(token: String): Reference = new Reference(base, Pointer(token) ++ pointer)
@@ -139,6 +139,8 @@ object new_naming {
   object Reference {
     def apply(uri: URI): Reference = Reference(uri.toString)
     def apply(str: String): Reference = {
+      Reference("", Pointer(percentEncodeFragmentChars(str)))
+/*
       if (str.contains("#")) {
         val (base, frag) = str.splitAt(str.indexOf("#")+1)
         new Reference(base.init, Pointer(percentEncodeFragmentChars(frag)))
@@ -146,6 +148,7 @@ object new_naming {
       else {
         new Reference(str)
       }
+*/
     }
 
     private[new_naming] def percentEncodeFragmentChars(fragment: String): String = fragment

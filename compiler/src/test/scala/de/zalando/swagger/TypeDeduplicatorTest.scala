@@ -1,49 +1,112 @@
 package de.zalando.swagger
 
-import java.io.File
-
 import de.zalando.ExpectedResults
-import de.zalando.apifirst.{ParameterDereferencer, TypeDeduplicator, TypeFlattener}
-import de.zalando.swagger.strictModel.SwaggerModel
+import de.zalando.apifirst.Application._
+import de.zalando.apifirst.Domain._
+import de.zalando.apifirst.{Application, ParameterPlace, TypeDeduplicator}
+import de.zalando.apifirst.new_naming.{Reference, TypeName}
 import org.scalatest.{FunSpec, MustMatchers}
 
 class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResults {
 
-  override val expectationsFolder = "/expected_results/deduped_types/"
-
-  val modelFixtures = new File("compiler/src/test/resources/model").listFiles
-
-  val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
-
-/*  describe("Strict Swagger Parser model") {
-    modelFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
-      testTypeFlattener(file)
+  describe("TypeDeduplicator") {
+    it("should deduplicate container Opt types") {
+      testContainerType(Opt.apply)
     }
-  }*/
-
-  describe("Strict Swagger Parser examples") {
-    exampleFixtures.filter(_.getName.endsWith("simple.petstore.api.yaml")).foreach { file =>
-      testTypeFlattener(file)
+    it("should deduplicate container CatchAll types") {
+      testContainerType(CatchAll.apply)
     }
-  }
-
-  def testTypeFlattener(file: File): Unit = {
-    it(s"should parse the yaml swagger file ${file.getName} as specification") {
-      val (base, model) = StrictYamlParser.parse(file)
-      model mustBe a[SwaggerModel]
-      val ast       = ModelConverter.fromModel(base, model)
-      val flatAst   = (ParameterDereferencer.apply _ andThen TypeFlattener.apply _ andThen TypeDeduplicator.apply) (ast)
-      val typeDefs  = flatAst.typeDefs
-      val typeMap   = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
-      val typesStr  = typeMap.toSeq.sortBy(_._1.pointer).map(p => p._1 + " ->" + p._2).mkString("\n").replace(base.toString, "")
-      val params    = flatAst.params
-      val paramsStr = params.toSeq.sortBy(_._1.name).map(p => p._1 + " ->" + p._2).mkString("\n").replace(base.toString, "")
-      val expected  = asInFile(file, "params")
-      val result    = typesStr + "\n-- params --\n\n" + paramsStr
-      if (expected.isEmpty) dump(result, file, "params")
-      clean(result) mustBe clean(expected)
+    it("should deduplicate composition OneOf types") {
+      testCompositionType(OneOf.apply)
+    }
+    it("should deduplicate composition AllOf types") {
+      testCompositionType(OneOf.apply)
+    }
+    it("should deduplicate TypeReferences") {
+      testTypeReferences(TypeReference.apply)
+    }
+    it("should deduplicate TypeDefs") {
+      testTypeDef(TypeDef.apply)
+    }
+    it("should choose types with discriminators if possible") {
+      testDiscriminator(TypeDef.apply)
     }
   }
 
-  def clean(str: String) = str.split("\n").map(_.trim).mkString("\n")
+  private val reference1: Reference = Reference("/paths/users/get/limit")
+  private val reference2: Reference = Reference("/definitions/queryLimit")
+
+  def testContainerType[T](constructor: (Type, TypeMeta) => Type): Unit = {
+    val duplicates = Map[Reference, Type](
+      reference1 -> constructor(Intgr(None), TypeMeta(None)),
+      reference2 -> constructor(Intgr(None), TypeMeta(Some("Limit for search queries")))
+    )
+    checkExpectations(duplicates)
+  }
+
+  def testCompositionType[T](constructor: (TypeName, TypeMeta, Seq[Type]) => Type): Unit = {
+    val descendants: Seq[Type] = Seq(
+      TypeReference(Reference("a")),TypeReference(Reference("b")),TypeReference(Reference("c"))
+    )
+    val duplicates = Map[Reference, Type](
+      reference1 -> constructor(reference1, TypeMeta(None), descendants),
+      reference2 -> constructor(Reference("definitions/limit"), TypeMeta(Some("Limit for search queries")), descendants)
+    )
+    checkExpectations(duplicates)
+  }
+  def testTypeReferences(constructor: Reference => TypeReference): Unit = {
+    val duplicates = Map[Reference, Type](
+      reference1 -> constructor(Reference("/wohooo")),
+      reference2 -> constructor(Reference("/wohooo"))
+    )
+    checkExpectations(duplicates)
+  }
+
+  def testTypeDef(constructor: (TypeName, Seq[Field], TypeMeta) => TypeDef): Unit = {
+    val fields: Seq[Field] = Seq(
+      Field(Reference("a"), Lng(TypeMeta(None))),
+      Field(Reference("b"), Str(None, TypeMeta(None))),
+      Field(Reference("c"), Date(TypeMeta(None)))
+    )
+
+    val duplicates = Map[Reference, Type](
+      reference1 -> constructor(Reference("/wohooo1"), fields,  TypeMeta(None)),
+      reference2 -> constructor(Reference("/wohooo2"), fields, TypeMeta(Some("Limit for search queries")))
+    )
+    checkExpectations(duplicates)
+  }
+
+  def testDiscriminator(constructor: (TypeName, Seq[Field], TypeMeta) => TypeDef): Unit = {
+    val longName = "/very/deep/nested/type/with/discriminator"
+    val fields: Seq[Field] = Seq(
+      Field(Reference("a"), Lng(TypeMeta(None))),
+      Field(Reference("b"), Str(None, TypeMeta(None))),
+      Field(Reference("c"), Date(TypeMeta(None)))
+    )
+    val discriminators = Map(
+      Reference(longName) -> "root"
+    )
+    val duplicates = Map[Reference, Type](
+      Reference(longName) -> constructor(Reference(longName), fields,  TypeMeta(None)),
+      reference1 -> constructor(Reference("/definitions/nothing-special"), fields, TypeMeta(Some("Limit for search queries")))
+    )
+    checkExpectations(duplicates, discriminators)
+  }
+
+  def checkExpectations[T](types: Map[Reference, Type], discriminators: Application.DiscriminatorLookupTable = Map.empty): Unit = {
+    val params: ParameterLookupTable = Map(
+      ParameterRef(reference1)  -> Parameter("limit1", TypeReference(reference1), None, None, "", encode = false, ParameterPlace.BODY),
+      ParameterRef(reference2)  -> Parameter("limit1", TypeReference(reference2), None, None, "", encode = false, ParameterPlace.BODY)
+    )
+
+    val expectedTypes = types - reference1
+    val model = StrictModel(Nil, types, params, discriminators)
+    val result = TypeDeduplicator(model)
+    result.typeDefs mustBe expectedTypes
+
+    // for discriminators check, params are different
+    if (discriminators.isEmpty)
+      result.params.foreach(_._2.typeName.asInstanceOf[TypeReference].name mustBe reference2)
+  }
+
 }

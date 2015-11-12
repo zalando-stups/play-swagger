@@ -1,10 +1,11 @@
 package de.zalando.apifirst
 
-import de.zalando.apifirst.Application.{TypeLookupTable, StrictModel}
+import de.zalando.apifirst.Application.{StrictModel, TypeLookupTable}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.new_naming.Reference
 
 import scala.annotation.tailrec
+import scala.language.reflectiveCalls
 
 /**
   * Flattens types by recursively replacing nested type definitions with references
@@ -71,6 +72,7 @@ object TypeFlattener extends TypeAnalyzer {
 }
 
 object TypeDeduplicator extends TypeAnalyzer {
+
   /**
     * Removes redundant type definitions changing pointing references
     *
@@ -81,8 +83,11 @@ object TypeDeduplicator extends TypeAnalyzer {
   def apply(app: StrictModel): StrictModel = {
     var result = app
     app.typeDefs foreach { case (name, typeDef) =>
-      val duplicates = result.typeDefs.filter { _._2 == typeDef }
-      val dupDefs = duplicates.toSeq.map(_._1).sortBy(_.toString.length)
+      val duplicates = result.typeDefs.filter { d => isSameTypeDef(typeDef)(d._2) }
+      val dupDefs = duplicates.toSeq.sortBy { p =>
+        val factor = if (app.discriminators.keySet.contains(p._2.name)) 1 else 1000
+        p._1.pointer.tokens.size * factor
+      }.map (_._1)
       val bestDef = if (dupDefs.size > 1) dupDefs.headOption else None
       bestDef foreach { bDef =>
         val duplicateRefs = dupDefs.tail
@@ -96,6 +101,7 @@ object TypeDeduplicator extends TypeAnalyzer {
             else
               ref -> c
           case c: Composite =>
+            assert(c.descendants.forall(_.isInstanceOf[TypeReference]))
             val newDescendants = c.descendants map { d =>
               if (duplicateRefs.contains(d.asInstanceOf[TypeReference].name))
                 TypeReference(bDef)
@@ -156,4 +162,30 @@ trait TypeAnalyzer {
     case tpe@(_: TypeDef | _: Composite | _: Container) => true
     case _ => false
   }
+
+  def isSameTypeDef(one: Type)(two: Type): Boolean = (one, two) match {
+    case (c1: Container, c2: Container) =>
+      isSameTypeDef(c1.tpe)(c2.tpe)
+    case (c1: Composite, c2: Composite) if c1.descendants.size == c2.descendants.size =>
+      sameDescendants(c1, c2)
+    case (t1: TypeDef, t2: TypeDef) if t1.fields.size == t2.fields.size =>
+      sameFields(t1, t2)
+    case (t1: ProvidedType, t2: ProvidedType) if t1.getClass == t2.getClass =>
+      sameNames(t1, t2)
+    case (r1: TypeReference, r2: TypeReference) =>
+      r1.name == r2.name
+    case _ => false
+  }
+
+  def sameFields(t1: TypeDef, t2: TypeDef): Boolean =
+    t1.fields.forall(p => t2.fields.exists(e => isSameTypeDef(p.tpe)(e.tpe) && sameNames(p, e)))
+
+  type hasSimpleName = {def name: {def simple: String}}
+
+  def sameNames(p: hasSimpleName, e: hasSimpleName): Boolean =
+    p.name.simple == e.name.simple
+
+  def sameDescendants(c1: Composite, c2: Composite): Boolean =
+    c1.descendants.forall(p => c2.descendants.exists(isSameTypeDef(p)))
+
 }
