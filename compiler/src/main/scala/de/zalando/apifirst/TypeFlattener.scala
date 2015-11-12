@@ -1,6 +1,6 @@
 package de.zalando.apifirst
 
-import de.zalando.apifirst.Application.{StrictModel, TypeLookupTable}
+import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.new_naming.Reference
 
@@ -79,59 +79,66 @@ object TypeDeduplicator extends TypeAnalyzer {
     * @param app
     * @return
     */
-  @tailrec
   def apply(app: StrictModel): StrictModel = {
-    var result = app
-    app.typeDefs foreach { case (name, typeDef) =>
-      val duplicates = result.typeDefs.filter { d => isSameTypeDef(typeDef)(d._2) }
-      val dupDefs = duplicates.toSeq.sortBy { p =>
-        val factor = if (app.discriminators.keySet.contains(p._2.name)) 1 else 1000
-        p._1.pointer.tokens.size * factor
-      }.map (_._1)
-      val bestDef = if (dupDefs.size > 1) dupDefs.headOption else None
-      bestDef foreach { bDef =>
-        val duplicateRefs = dupDefs.tail
-        val newDefs = result.typeDefs flatMap { case (k, v) =>
-          if (duplicateRefs.contains(k)) None else Some(k -> v)
-        }
-        val defsWithCorrectRefs = newDefs map { case (ref, tpe) => tpe match {
-          case c: Container if c.tpe.isInstanceOf[TypeReference] =>
-            if (duplicateRefs.contains(c.tpe.asInstanceOf[TypeReference].name))
-              ref -> c.withType(TypeReference(bDef))
-            else
-              ref -> c
-          case c: Composite =>
-            assert(c.descendants.forall(_.isInstanceOf[TypeReference]))
-            val newDescendants = c.descendants map { d =>
-              if (duplicateRefs.contains(d.asInstanceOf[TypeReference].name))
-                TypeReference(bDef)
-              else
-                d
-            }
-            ref -> c.withTypes(newDescendants)
-
-          case t: Domain.TypeDef =>
-            val newFields = t.fields.map { f =>
-              f.tpe match {
-                case reference: TypeReference if duplicateRefs.contains(reference.name) => f.copy(tpe = TypeReference(bDef))
-                case _ => f
-              }
-            }
-            ref -> t.copy(fields = newFields)
-          case _ => ref -> tpe
-        }
-        }
-        val newParams = result.params map { case (k, v) =>
-          if (duplicateRefs.contains(v.typeName.name))
-            k -> v.copy(typeName = TypeReference(bDef))
-          else
-            k -> v
-        }
-        result = result.copy(typeDefs = defsWithCorrectRefs, params = newParams)
-      }
-    }
-    if (result == app) result else apply(result)
+    val types = app.typeDefs.values
+    val duplicate = types find { t => types.count(isSameTypeDef(t)) > 1 }
+    duplicate map replaceSingle(app) map apply getOrElse app
   }
+
+  private def replaceSingle(model: StrictModel): Type => StrictModel = tpe => {
+    val duplicates = model.typeDefs.filter { d => isSameTypeDef(tpe)(d._2) }
+    val duplicateNames = sortByDiscriminatorOrPathLength(model.discriminators, duplicates)
+    val bestMatch :: refsToRemove = duplicateNames
+    val typesToRewrite = model.typeDefs filterNot { t => refsToRemove.contains(t._1) }
+    val typesWithCorrectRefs = typesToRewrite map { d => replaceReferencesInTypes(refsToRemove, bestMatch)(d._1, d._2) }
+    val newParams = model.params map replaceReferenceInParameter(refsToRemove, bestMatch)
+    model.copy(typeDefs = typesWithCorrectRefs, params = newParams)
+  }
+
+
+  private def replaceReferencesInTypes(duplicateRefs: Seq[Reference], target: Reference):
+  (Reference, Type) => (Reference, Type) = (ref, tpe) => ref -> {
+    tpe match {
+      case c: Container =>
+        c.tpe match {
+          case r: TypeReference if duplicateRefs.contains(r.name) => c.withType(TypeReference(target))
+          case o => c
+        }
+
+      case c: Composite =>
+        val newDescendants = c.descendants map {
+          case d: TypeReference if duplicateRefs.contains(d.name) => TypeReference(target)
+          case o => o
+        }
+        c.withTypes(newDescendants)
+
+      case t: TypeDef =>
+        val newFields = t.fields.map {
+          case f@Field(_, tpe: TypeReference) if duplicateRefs.contains(tpe.name) => f.copy(tpe = TypeReference(target))
+          case o => o
+        }
+        t.copy(fields = newFields)
+
+      case TypeReference(name) if duplicateRefs.contains(name) => TypeReference(target)
+
+      case _ => tpe
+    }
+  }
+
+  private def replaceReferenceInParameter(duplicateRefs: Seq[Reference], target: Reference):
+  ((ParameterRef, Parameter)) => (ParameterRef, Parameter) = {
+    case (r: ParameterRef, p: Parameter) if duplicateRefs.contains(p.typeName.name) =>
+      r -> p.copy(typeName = TypeReference(target))
+    case o => o
+  }
+
+  private def sortByDiscriminatorOrPathLength(discriminators: DiscriminatorLookupTable,
+                                              duplicates: TypeLookupTable): List[Reference] =
+    duplicates.toSeq.sortBy { p =>
+      val factor = if (discriminators.keySet.contains(p._2.name)) 1 else 1000
+      p._1.pointer.tokens.size * factor
+    }.map(_._1).toList
+
 }
 
 object ParameterDereferencer extends TypeAnalyzer {

@@ -1,8 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.apifirst.new_naming.{Pointer, Pointer$, TypeName, Reference}
-import de.zalando.swagger.DiscriminatorLookupTable
+import de.zalando.apifirst.new_naming.{Reference, TypeName}
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional

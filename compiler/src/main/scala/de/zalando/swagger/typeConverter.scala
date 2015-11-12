@@ -15,7 +15,7 @@ import scala.language.{implicitConversions, postfixOps}
  * @author  slasch 
  * @since   14.10.2015.
  */
-class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: String) extends ParameterNaming with DiscriminatorLookupTable {
+class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: String) extends ParameterNaming with DiscriminatorMemoizer {
 
   lazy val convert: NamedTypes =
     fromDefinitions(model.definitions) ++
@@ -262,7 +262,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 /*
  * It's safe to use mutable map with out locking in current setup
  */
-trait DiscriminatorLookupTable {
+trait DiscriminatorMemoizer {
   val discriminators = new mutable.HashMap[Reference, String]()
 
   def memoizeDiscriminator(name: Reference, discriminator: String) =
