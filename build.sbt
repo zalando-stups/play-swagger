@@ -1,4 +1,4 @@
-val PlayVersion = "2.4.2"
+val PlayVersion = "2.4.3"
 val ScalaVersion = "2.11.7"
 
 // This is the API project, it gets added to the runtime dependencies of any
