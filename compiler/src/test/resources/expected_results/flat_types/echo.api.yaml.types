@@ -1,0 +1,11 @@
+//paths//post/responses/200 -> 
+	Null
+//paths//post/year -> 
+	Opt(Str)
+//paths/test-path/{id}/get/id -> 
+	Str
+-- params --
+
+//paths//post/name -> Parameter(name,TypeReference(//paths//post/year),None,None,.+,true,formData)
+//paths//post/year -> Parameter(year,TypeReference(//paths//post/year),None,None,.+,true,formData)
+//paths/test-path/{id}/get/id -> Parameter(id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

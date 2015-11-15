@@ -1,0 +1,86 @@
+/definitions/Category/id -> 
+	Opt(Lng)
+/definitions/Order/complete -> 
+	Opt(Bool)
+/definitions/Order/quantity -> 
+	Opt(Intgr)
+/definitions/Order/shipDate -> 
+	Opt(DateTime)
+/definitions/Pet/category -> 
+	Opt(TypeReference(/definitions/Pet/category/Opt))
+/definitions/Pet/category/Opt -> 
+	TypeDef(/definitions/Category, Seq(
+		Field(/definitions/Category/id, TypeReference(/definitions/Category/id)), 
+		Field(/definitions/Category/name, TypeReference(/definitions/User/password))))
+/definitions/Pet/tags -> 
+	Opt(TypeReference(/definitions/Pet/category))
+/definitions/User/password -> 
+	Opt(Str)
+//definitions/Order -> 
+	TypeDef(//definitions/Order, Seq(
+		Field(//definitions/Order/shipDate, TypeReference(/definitions/Order/shipDate)), 
+		Field(//definitions/Order/quantity, TypeReference(/definitions/Order/quantity)), 
+		Field(//definitions/Order/petId, TypeReference(/definitions/Category/id)), 
+		Field(//definitions/Order/id, TypeReference(/definitions/Category/id)), 
+		Field(//definitions/Order/complete, TypeReference(/definitions/Order/complete)), 
+		Field(//definitions/Order/status, TypeReference(/definitions/User/password))))
+//definitions/Pet -> 
+	TypeDef(//definitions/Pet, Seq(
+		Field(//definitions/Pet/name, Str), 
+		Field(//definitions/Pet/tags, TypeReference(/definitions/Pet/tags)), 
+		Field(//definitions/Pet/photoUrls, TypeReference(/definitions/User/password)), 
+		Field(//definitions/Pet/id, TypeReference(/definitions/Category/id)), 
+		Field(//definitions/Pet/status, TypeReference(/definitions/User/password)), 
+		Field(//definitions/Pet/category, TypeReference(/definitions/Pet/category))))
+//definitions/User -> 
+	TypeDef(//definitions/User, Seq(
+		Field(//definitions/User/email, TypeReference(/definitions/User/password)), 
+		Field(//definitions/User/username, TypeReference(/definitions/User/password)), 
+		Field(//definitions/User/userStatus, TypeReference(/definitions/Order/quantity)), 
+		Field(//definitions/User/lastName, TypeReference(/definitions/User/password)), 
+		Field(//definitions/User/firstName, TypeReference(/definitions/User/password)), 
+		Field(//definitions/User/id, TypeReference(/definitions/Category/id)), 
+		Field(//definitions/User/phone, TypeReference(/definitions/User/password)), 
+		Field(//definitions/User/password, TypeReference(/definitions/User/password))))
+//paths/pets/findByStatus/get/responses/200 -> 
+	Opt(TypeReference(//paths/pets/put/body))
+//paths/pets/findByTags/get/tags -> 
+	Opt(TypeReference(/definitions/User/password))
+//paths/pets/post/responses/405 -> 
+	Null
+//paths/pets/put/body -> 
+	Opt(TypeReference(//definitions/Pet))
+//paths/pets/{petId}/delete/petId -> 
+	Lng
+//paths/pets/{petId}/post/name -> 
+	Str
+//paths/stores/order/post/body -> 
+	Opt(TypeReference(//definitions/Order))
+//paths/users/createWithList/post/body -> 
+	Opt(TypeReference(//paths/users/post/body))
+//paths/users/post/body -> 
+	Opt(TypeReference(//definitions/User))
+-- params --
+
+//paths/pets/findByStatus/get/status -> Parameter(status,TypeReference(//paths/pets/findByTags/get/tags),None,None,.+,true,query)
+//paths/pets/findByTags/get/tags -> Parameter(tags,TypeReference(//paths/pets/findByTags/get/tags),None,None,.+,true,query)
+//paths/pets/post/body -> Parameter(body,TypeReference(//paths/pets/put/body),None,None,.+,false,body)
+//paths/pets/put/body -> Parameter(body,TypeReference(//paths/pets/put/body),None,None,.+,false,body)
+//paths/pets/{petId}/delete/api_key -> Parameter(api_key,Str(None,TypeMeta(None, List())),None,None,.+,false,header)
+//paths/pets/{petId}/delete/petId -> Parameter(petId,Lng(TypeMeta(Some("int64"), List())),None,None,[^/]+,true,path)
+//paths/pets/{petId}/get/petId -> Parameter(petId,Lng(TypeMeta(Some("int64"), List())),None,None,[^/]+,true,path)
+//paths/pets/{petId}/post/name -> Parameter(name,Str(None,TypeMeta(None, List())),None,None,.+,true,formData)
+//paths/pets/{petId}/post/petId -> Parameter(petId,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
+//paths/pets/{petId}/post/status -> Parameter(status,Str(None,TypeMeta(None, List())),None,None,.+,true,formData)
+//paths/stores/order/post/body -> Parameter(body,TypeReference(//paths/stores/order/post/body),None,None,.+,false,body)
+//paths/stores/order/{orderId}/delete/orderId -> Parameter(orderId,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
+//paths/stores/order/{orderId}/get/orderId -> Parameter(orderId,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
+//paths/users/createWithArray/post/body -> Parameter(body,TypeReference(//paths/users/createWithList/post/body),None,None,.+,false,body)
+//paths/users/createWithList/post/body -> Parameter(body,TypeReference(//paths/users/createWithList/post/body),None,None,.+,false,body)
+//paths/users/login/get/password -> Parameter(password,TypeReference(/definitions/User/password),None,None,.+,true,query)
+//paths/users/login/get/username -> Parameter(username,TypeReference(/definitions/User/password),None,None,.+,true,query)
+//paths/users/post/body -> Parameter(body,TypeReference(//paths/users/post/body),None,None,.+,false,body)
+//paths/users/{username}/delete/username -> Parameter(username,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
+//paths/users/{username}/get/username -> Parameter(username,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
+//paths/users/{username}/put/body -> Parameter(body,TypeReference(//paths/users/post/body),None,None,.+,false,body)
+//paths/users/{username}/put/username -> Parameter(username,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

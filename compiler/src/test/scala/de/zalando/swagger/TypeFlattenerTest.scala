@@ -1,48 +1,127 @@
 package de.zalando.swagger
 
-import java.io.File
-
 import de.zalando.ExpectedResults
-import de.zalando.apifirst.{TypeFlattener, ParameterDereferencer}
-import de.zalando.swagger.strictModel.SwaggerModel
+import de.zalando.apifirst.Application._
+import de.zalando.apifirst.Domain._
+import de.zalando.apifirst._
+import de.zalando.apifirst.new_naming.Reference
 import org.scalatest.{FunSpec, MustMatchers}
 
+/**
+  * @author  slasch
+  * @since   15.11.2015.
+  */
 class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
 
-  override val expectationsFolder = "/expected_results/flat_types/"
+  private val noMeta = TypeMeta(None)
+  private val reference1 = Reference("/paths/users/get/limit")
+  private val wohooo2 = TypeDef(Reference("/wohooo2"), Seq(Field(Reference("d"), Null(noMeta))), noMeta)
+  private val fields: Seq[Field] = Seq(
+    Field(Reference("a"), Lng(noMeta)),
+    Field(Reference("b"), Opt(Str(None, noMeta), noMeta)),
+    Field(Reference("c"), wohooo2)
+  )
+  private val wohooo1 = TypeDef(Reference("/wohooo1"), fields, noMeta)
 
-  val modelFixtures = new File("compiler/src/test/resources/model").listFiles
-
-  val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
-
-  describe("Strict Swagger Parser model") {
-    modelFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
-      testTypeFlattener(file)
+  describe("TypeFlattener") {
+    it("should flatten nested Opt types") {
+      val nested = Map[Reference, Type](
+        reference1 -> Opt(Opt(Intgr(None), noMeta), noMeta)
+      )
+      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      flat.typeDefs.size mustBe 2
+      flat.typeDefs mustBe Map(
+        reference1 -> Opt(TypeReference(reference1 / "Opt"), noMeta),
+        reference1 / "Opt" -> Opt(Intgr(noMeta), noMeta))
     }
-  }
 
-  describe("Strict Swagger Parser examples") {
-    exampleFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
-      testTypeFlattener(file)
+    it("should flatten nested Arr types") {
+      val nested = Map[Reference, Type](
+        reference1 -> Arr(Arr(Arr(Intgr(None), noMeta), noMeta), noMeta)
+      )
+      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      flat.typeDefs.size mustBe 3
+      flat.typeDefs mustBe Map(
+        reference1 -> Arr(TypeReference(reference1 / "Arr"), noMeta),
+        reference1 / "Arr" -> Arr(TypeReference(reference1 / "Arr" / "Arr"), noMeta),
+        reference1 / "Arr" / "Arr" -> Arr(Intgr(noMeta), noMeta))
     }
-  }
 
-  def testTypeFlattener(file: File): Unit = {
-    it(s"should parse the yaml swagger file ${file.getName} as specification") {
-      val (base, model) = StrictYamlParser.parse(file)
-      model mustBe a[SwaggerModel]
-      val ast       = ModelConverter.fromModel(base, model)
-      val flatAst   = (ParameterDereferencer.apply _ andThen TypeFlattener.apply) (ast)
-      val typeDefs  = flatAst.typeDefs
-      val typeMap   = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
-      val typesStr  = typeMap.toSeq.sortBy(_._1.pointer).map(p => p._1 + " ->" + p._2).mkString("\n").replace(base.toString, "")
-      val params    = flatAst.params
-      val paramsStr = params.toSeq.sortBy(_._1.name).map(p => p._1 + " ->" + p._2).mkString("\n").replace(base.toString, "")
-      val expected = asInFile(file, "params")
-      if (expected.isEmpty) dump(typesStr + "\n-- params --\n\n" + paramsStr, file, "params")
-      clean(typesStr) mustBe clean(expected)
+    it("should flatten CatchAll types") {
+      val nested = Map[Reference, Type](
+        reference1 -> CatchAll(Opt(Intgr(None), noMeta), noMeta)
+      )
+      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      flat.typeDefs.size mustBe 2
+      flat.typeDefs mustBe Map(
+        reference1 -> CatchAll(TypeReference(reference1 / "CatchAll"), noMeta),
+        reference1 / "CatchAll" -> Opt(Intgr(noMeta), noMeta)
+      )
     }
-  }
 
-  def clean(str: String) = str.split("\n").map(_.trim).mkString("\n")
+    it("should flatten OneOf types") {
+      val nested = Map[Reference, Type](
+        reference1 -> OneOf(reference1, noMeta,
+          Seq(
+            Opt(Intgr(None), noMeta),
+            Arr(Str(None, None), noMeta)
+          )
+        ))
+      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      flat.typeDefs.size mustBe 3
+      flat.typeDefs mustBe Map(
+        reference1 -> OneOf(reference1, noMeta,
+          Seq(
+            TypeReference(reference1 / "OneOf0"),
+            TypeReference(reference1 / "OneOf1")
+          )
+        ),
+        reference1 / "OneOf0" -> Opt(Intgr(None), noMeta),
+        reference1 / "OneOf1" -> Arr(Str(None, None), noMeta)
+      )
+    }
+
+    it("should flatten AllOf types") {
+      val nested = Map[Reference, Type](
+        reference1 -> AllOf(reference1, noMeta,
+          Seq(wohooo2, TypeDef(Reference("/wohooo3"), fields, noMeta))
+        ))
+      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      flat.typeDefs.size mustBe 5
+      flat.typeDefs mustBe Map(
+        reference1 -> AllOf(reference1, noMeta, List(TypeReference(reference1 / "AllOf0"),TypeReference(reference1 / "AllOf1"))),
+        reference1 / "AllOf0" -> wohooo2,
+        reference1 / "AllOf1" ->
+          TypeDef(Reference("/wohooo3"),
+            Seq(
+              Field(Reference("/a"), Lng(noMeta)),
+              Field(Reference("/b"), TypeReference(Reference("/wohooo3/b"))),
+              Field(Reference("/c"), TypeReference(Reference("/wohooo3/c")))
+            ), noMeta),
+        Reference("/wohooo3/b") -> Opt(Str(None, noMeta), noMeta),
+        Reference("/wohooo3/c") -> wohooo2
+      )
+    }
+
+    it("should flatten TypeDefs") {
+
+      val nested = Map[Reference, Type](
+        reference1 -> wohooo1
+      )
+      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      flat.typeDefs.size mustBe 3
+      flat.typeDefs mustBe Map(
+        reference1 -> TypeDef(Reference("wohooo1"),
+          Seq(
+            Field(Reference("a"), Lng(noMeta)),
+            Field(Reference("b"), TypeReference(Reference("wohooo1") / "b")),
+            Field(Reference("c"), TypeReference(Reference("wohooo1") / "c"))
+          ), noMeta)
+        ,
+        Reference("wohooo1") / "b" -> Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List())),
+        Reference("wohooo1") / "c" -> wohooo2
+      )
+    }
+
+  }
 }

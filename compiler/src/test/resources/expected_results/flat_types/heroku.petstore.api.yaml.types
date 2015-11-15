@@ -1,0 +1,22 @@
+/definitions/Pet/birthday -> 
+	Opt(Intgr)
+/definitions/Pet/name -> 
+	Opt(Str)
+//definitions/Pet -> 
+	TypeDef(//definitions/Pet, Seq(
+		Field(//definitions/Pet/name, TypeReference(/definitions/Pet/name)), 
+		Field(//definitions/Pet/birthday, TypeReference(/definitions/Pet/birthday))))
+//paths//get/responses/200 -> 
+	Opt(TypeReference(//paths//get/responses/200/Opt))
+//paths//get/responses/200/Opt -> 
+	Arr(TypeReference(//definitions/Pet))
+//paths//post/responses/200 -> 
+	Null
+//paths/{petId}/get/petId -> 
+	Str
+-- params --
+
+//paths//get/limit -> Parameter(limit,TypeReference(/definitions/Pet/birthday),None,None,.+,true,query)
+//paths//post/pet -> Parameter(pet,TypeReference(//definitions/Pet),None,None,.+,false,body)
+//paths//put/pet -> Parameter(pet,TypeReference(//definitions/Pet),None,None,.+,false,body)
+//paths/{petId}/get/petId -> Parameter(petId,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

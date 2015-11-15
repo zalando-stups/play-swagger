@@ -35,7 +35,7 @@ object TypeFlattener extends TypeAnalyzer {
 
   private def extractComplexType(ref: Reference, typeDef: Type): Seq[(Reference, Type)] = typeDef match {
     case t: TypeDef if complexFields(t).nonEmpty =>
-      val (changedFields, extractedTypes) = t.fields.filter(complexField).map(createTypeFromField).unzip
+      val (changedFields, extractedTypes) = t.fields.filter(complexField).map(createTypeFromField(t)).unzip
       val newFields = t.fields.filterNot(complexField) ++ changedFields
       val newTypeDef = t.copy(fields = newFields)
       (ref -> newTypeDef) +: extractedTypes
@@ -55,8 +55,8 @@ object TypeFlattener extends TypeAnalyzer {
 
   private def complexField: (Field) => Boolean = f => isComplexType(f.tpe)
 
-  private def createTypeFromField: (Field) => (Field, (Reference, Type)) = field => {
-    val newReference = TypeReference(field.name)
+  private def createTypeFromField(t: TypeDef): (Field) => (Field, (Reference, Type)) = field => {
+    val newReference = TypeReference(t.name / field.name.simple)
     val extractedType = field.tpe
     (field.copy(tpe = newReference), newReference.name -> extractedType)
   }
@@ -64,8 +64,7 @@ object TypeFlattener extends TypeAnalyzer {
   private def flattenType: (String, Reference) => ((Type, Int)) => (Type, (Reference, Type)) = (name, ref) => pair => {
     val (typeDef, index) = pair
     val newReference = TypeReference(ref / (name + index))
-    val extractedType = typeDef // FIXME the name should be changed here as well
-    (newReference, newReference.name -> extractedType)
+    (newReference, newReference.name -> typeDef)
   }
 
 
