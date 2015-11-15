@@ -7,6 +7,10 @@ import de.zalando.apifirst.{Application, ParameterPlace, TypeDeduplicator}
 import de.zalando.apifirst.new_naming.{Reference, TypeName}
 import org.scalatest.{FunSpec, MustMatchers}
 
+/**
+  * @author  slasch
+  * @since   12.11.2015.
+  */
 class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResults {
 
   describe("TypeDeduplicator") {

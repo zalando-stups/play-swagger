@@ -153,8 +153,9 @@ object ParameterDereferencer extends TypeAnalyzer {
     result.params foreach { case (name, definition) =>
       definition.typeName match {
         case tpe if isComplexType(tpe) =>
-          val tps = app.typeDefs + (name.name -> tpe)
-          val newReference = TypeReference(name.name)
+          val newName = name.name / "ref"
+          val newReference = TypeReference(newName)
+          val tps = app.typeDefs + (newName -> tpe)
           val newParams = app.params.updated(name, definition.copy(typeName = newReference))
           result = result.copy(typeDefs = tps, params = newParams)
         case _ =>

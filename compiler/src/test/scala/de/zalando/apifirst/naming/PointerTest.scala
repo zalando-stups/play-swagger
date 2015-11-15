@@ -1,6 +1,6 @@
 package de.zalando.apifirst.naming
 
-import de.zalando.apifirst.new_naming.{Pointer, Index, Node, Pointer$}
+import de.zalando.apifirst.new_naming.{Pointer, Index, Node}
 import org.scalatest.{MustMatchers, FunSpec}
 
 class PointerTest extends FunSpec with MustMatchers {
