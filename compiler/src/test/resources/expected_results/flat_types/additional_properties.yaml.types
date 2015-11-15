@@ -1,9 +1,9 @@
-/file:/Users/slasch/work/workspaces/zalando/play-swagger/compiler/src/test/resources/model/additional_properties.yaml/definitions/KeyedArrays -> 
-	TypeDef(/file:/Users/slasch/work/workspaces/zalando/play-swagger/compiler/src/test/resources/model/additional_properties.yaml/definitions/KeyedArrays, Seq(
-		Field(/file:/Users/slasch/work/workspaces/zalando/play-swagger/compiler/src/test/resources/model/additional_properties.yaml/definitions/KeyedArrays/additionalProperties, TypeReference(/file:/Users/slasch/work/workspaces/zalando/play-swagger/compiler/src/test/resources/model/additional_properties.yaml/definitions/KeyedArrays/additionalProperties))))
-/file:/Users/slasch/work/workspaces/zalando/play-swagger/compiler/src/test/resources/model/additional_properties.yaml/definitions/KeyedArrays/additionalProperties -> 
-	CatchAll(TypeReference(/file:/Users/slasch/work/workspaces/zalando/play-swagger/compiler/src/test/resources/model/additional_properties.yaml/definitions/KeyedArrays/additionalProperties/CatchAll))
-/file:/Users/slasch/work/workspaces/zalando/play-swagger/compiler/src/test/resources/model/additional_properties.yaml/definitions/KeyedArrays/additionalProperties/CatchAll -> 
+⌿definitions⌿KeyedArrays -> 
+	TypeDef(⌿definitions⌿KeyedArrays, Seq(
+		Field(⌿definitions⌿KeyedArrays⌿additionalProperties, TypeReference(⌿definitions⌿KeyedArrays⌿additionalProperties))))
+⌿definitions⌿KeyedArrays⌿additionalProperties -> 
+	CatchAll(TypeReference(⌿definitions⌿KeyedArrays⌿additionalProperties⌿CatchAll))
+⌿definitions⌿KeyedArrays⌿additionalProperties⌿CatchAll -> 
 	Arr(Intgr)
 -- params --
 

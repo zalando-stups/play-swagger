@@ -35,9 +35,9 @@ class TypeFlattenerIntegrationTest extends FunSpec with MustMatchers with Expect
       val flatAst   = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
       val typeDefs  = flatAst.typeDefs
       val typeMap   = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
-      val typesStr  = typeMap.toSeq.sortBy(_._1.pointer).map(p => p._1 + " -> " + p._2).mkString("\n").replace(base.toString, "")
+      val typesStr  = typeMap.toSeq.sortBy(_._1.parts.size).map(p => p._1 + " -> " + p._2).mkString("\n").replace(base.toString, "")
       val params    = flatAst.params
-      val paramsStr = params.toSeq.sortBy(_._1.name).map(p => p._1.name.toString + " -> " + p._2).mkString("\n").replace(base.toString, "")
+      val paramsStr = params.toSeq.sortBy(_._1.name.parts.size).map(p => p._1.name.toString + " -> " + p._2).mkString("\n").replace(base.toString, "")
       val expected  = asInFile(file, "types")
       val fullResult = typesStr + "\n-- params --\n\n" + paramsStr
       if (expected.isEmpty) dump(fullResult, file, "types")

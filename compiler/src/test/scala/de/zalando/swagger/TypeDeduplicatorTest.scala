@@ -3,9 +3,10 @@ package de.zalando.swagger
 import de.zalando.ExpectedResults
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.{Application, ParameterPlace, TypeDeduplicator}
+import de.zalando.apifirst.{new_naming, Application, ParameterPlace, TypeDeduplicator}
 import de.zalando.apifirst.new_naming.{Reference, TypeName}
 import org.scalatest.{FunSpec, MustMatchers}
+import new_naming.dsl._
 
 /**
   * @author  slasch
@@ -37,8 +38,8 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
     }
   }
 
-  private val reference1: Reference = Reference("/paths/users/get/limit")
-  private val reference2: Reference = Reference("/definitions/queryLimit")
+  private val reference1 = "paths" / "users" / "get" / "limit"
+  private val reference2 = "definitions" / "queryLimit"
 
   def testContainerType[T](constructor: (Type, TypeMeta) => Type): Unit = {
     val duplicates = Map[Reference, Type](
@@ -50,57 +51,58 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
 
   def testCompositionType[T](constructor: (TypeName, TypeMeta, Seq[Type]) => Type): Unit = {
     val descendants: Seq[Type] = Seq(
-      TypeReference(Reference("a")),TypeReference(Reference("b")),TypeReference(Reference("c"))
+      TypeReference("a"), TypeReference("b"), TypeReference("c")
     )
     val duplicates = Map[Reference, Type](
       reference1 -> constructor(reference1, TypeMeta(None), descendants),
-      reference2 -> constructor(Reference("definitions/limit"), TypeMeta(Some("Limit for search queries")), descendants)
+      reference2 -> constructor("definitions" / "limit", TypeMeta(Some("Limit for search queries")), descendants)
     )
     checkExpectations(duplicates)
   }
+
   def testTypeReferences(constructor: Reference => TypeReference): Unit = {
     val duplicates = Map[Reference, Type](
-      reference1 -> constructor(Reference("/wohooo")),
-      reference2 -> constructor(Reference("/wohooo"))
+      reference1 -> constructor("wohooo"),
+      reference2 -> constructor("wohooo")
     )
     checkExpectations(duplicates)
   }
 
   def testTypeDef(constructor: (TypeName, Seq[Field], TypeMeta) => TypeDef): Unit = {
     val fields: Seq[Field] = Seq(
-      Field(Reference("a"), Lng(TypeMeta(None))),
-      Field(Reference("b"), Str(None, TypeMeta(None))),
-      Field(Reference("c"), Date(TypeMeta(None)))
+      Field("a", Lng(TypeMeta(None))),
+      Field("b", Str(None, TypeMeta(None))),
+      Field("c", Date(TypeMeta(None)))
     )
 
     val duplicates = Map[Reference, Type](
-      reference1 -> constructor(Reference("/wohooo1"), fields,  TypeMeta(None)),
-      reference2 -> constructor(Reference("/wohooo2"), fields, TypeMeta(Some("Limit for search queries")))
+      reference1 -> constructor("wohooo1", fields, TypeMeta(None)),
+      reference2 -> constructor("wohooo2", fields, TypeMeta(Some("Limit for search queries")))
     )
     checkExpectations(duplicates)
   }
 
   def testDiscriminator(constructor: (TypeName, Seq[Field], TypeMeta) => TypeDef): Unit = {
-    val longName = "/very/deep/nested/type/with/discriminator"
+    val longName = "very" / "deep" / "nested" / "type" / "with" / "discriminator"
     val fields: Seq[Field] = Seq(
-      Field(Reference("a"), Lng(TypeMeta(None))),
-      Field(Reference("b"), Str(None, TypeMeta(None))),
-      Field(Reference("c"), Date(TypeMeta(None)))
+      Field("a", Lng(TypeMeta(None))),
+      Field("b", Str(None, TypeMeta(None))),
+      Field("c", Date(TypeMeta(None)))
     )
     val discriminators = Map(
-      Reference(longName) -> "root"
+      longName -> "root"
     )
     val duplicates = Map[Reference, Type](
-      Reference(longName) -> constructor(Reference(longName), fields,  TypeMeta(None)),
-      reference1 -> constructor(Reference("/definitions/nothing-special"), fields, TypeMeta(Some("Limit for search queries")))
+      longName -> constructor(longName, fields, TypeMeta(None)),
+      reference1 -> constructor("definitions" / "nothing-special", fields, TypeMeta(Some("Limit for search queries")))
     )
     checkExpectations(duplicates, discriminators)
   }
 
   def checkExpectations[T](types: Map[Reference, Type], discriminators: Application.DiscriminatorLookupTable = Map.empty): Unit = {
     val params: ParameterLookupTable = Map(
-      ParameterRef(reference1)  -> Parameter("limit1", TypeReference(reference1), None, None, "", encode = false, ParameterPlace.BODY),
-      ParameterRef(reference2)  -> Parameter("limit1", TypeReference(reference2), None, None, "", encode = false, ParameterPlace.BODY)
+      ParameterRef(reference1) -> Parameter("limit1", TypeReference(reference1), None, None, "", encode = false, ParameterPlace.BODY),
+      ParameterRef(reference2) -> Parameter("limit1", TypeReference(reference2), None, None, "", encode = false, ParameterPlace.BODY)
     )
 
     val expectedTypes = types - reference1
