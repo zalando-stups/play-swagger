@@ -71,7 +71,7 @@ object Domain {
   }
   
   abstract class ProvidedType(name: String, override val meta: TypeMeta)
-    extends Type(Reference(s"http://zalando.net/domain/lang/#/${name}"), meta)
+    extends Type(Reference(name), meta)
 
   class Nmbr(name: String, override val meta: TypeMeta) extends ProvidedType(name, meta)
 

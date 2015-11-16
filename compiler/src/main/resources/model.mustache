@@ -1,0 +1,31 @@
+{{#main_package}}
+package {{&main_package}}
+{{/main_package}}
+
+{{#imports}}
+import {{&imports}}
+{{/imports}}
+
+{{#packages}}
+package {{&package}} {
+
+{{#aliases}}
+    type {{& name }} = {{& alias }}[{{& underlying_type }}]
+{{/aliases}}
+
+{{#traits}}
+    trait I{{& names._2}} {
+    {{#methods}}
+        def {{&names._3}}: {{&typeName}}
+    {{/methods}}
+    }
+{{/traits}}
+{{#classes}}
+    class {{&names._2}} (
+    {{#methods}}
+        {{&names._3}}: {{&typeName}}
+    {{/methods}}
+    }
+{{/classes}}
+}
+{{/packages}}

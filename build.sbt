@@ -40,7 +40,8 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-library" % scalaVersion.value,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalacheck" %% "scalacheck" % "1.12.4",
-      "me.andrz.jackson" % "jackson-json-reference" % "0.1.2"
+      "me.andrz.jackson" % "jackson-json-reference" % "0.1.2",
+      "org.scalatra.scalate" %% "scalate-core" % "1.7.0"
     )
   )
 
