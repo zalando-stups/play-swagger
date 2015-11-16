@@ -101,7 +101,7 @@ object Domain {
     override val imports = Set("java.util.Date")
   }
 
-  case class Password(override val meta: TypeMeta) extends ProvidedType("Password", meta)
+  case class Password(override val meta: TypeMeta) extends ProvidedType("String", meta)
 
   case class Null(override val meta: TypeMeta) extends ProvidedType("null", meta)
 

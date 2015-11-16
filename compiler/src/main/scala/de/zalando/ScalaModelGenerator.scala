@@ -1,7 +1,7 @@
 package de.zalando
 
 import de.zalando.apifirst.Application.TypeLookupTable
-import de.zalando.apifirst.Domain.{Type, Container}
+import de.zalando.apifirst.Domain.{TypeDef, Type, Container}
 import de.zalando.apifirst.ScalaName
 import de.zalando.apifirst.new_naming.Reference
 import org.fusesource.scalate.TemplateEngine
@@ -34,7 +34,7 @@ class ScalaModelGenerator(types: TypeLookupTable) {
   }
 
   private def aliases(types: Map[Reference, Type]) =
-    types map {
+    types collect {
       case (k, v: Container) => Map(
         "name" -> k.className,
         "alias" -> v.imports.head,
@@ -42,7 +42,20 @@ class ScalaModelGenerator(types: TypeLookupTable) {
       )
     }
 
+  private def classes(types: Map[Reference, Type]) =
+    types collect {
+      case (k, t: TypeDef) => Map(
+        "name" -> k.className,
+        "fields" -> t.fields.zipWithIndex.map { case (f,i) =>
+          Map(
+            "name" -> f.name.simple,
+            "typeName" -> f.tpe.name.simple,
+            "last" -> (i == t.fields.size-1)
+          )
+        }
+      )
+    }
+
   private def traits(types: Map[Reference, Type]) = Map.empty
-  private def classes(types: Map[Reference, Type]) = Map.empty
 
 }

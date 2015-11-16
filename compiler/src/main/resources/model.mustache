@@ -20,12 +20,9 @@ package {{&package}} {
     {{/methods}}
     }
 {{/traits}}
+
 {{#classes}}
-    class {{&names._2}} (
-    {{#methods}}
-        {{&names._3}}: {{&typeName}}
-    {{/methods}}
-    }
+    case class {{& name }}({{#fields}}{{&name}}: {{&typeName}}{{^last}}, {{/last}}{{/fields}}){{! TODO add trait(s) here if needed}}
 {{/classes}}
 }
 {{/packages}}
