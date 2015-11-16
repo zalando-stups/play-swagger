@@ -3,26 +3,26 @@ package {{&main_package}}
 {{/main_package}}
 
 {{#imports}}
-import {{&imports}}
+ import {{&imports}}
 {{/imports}}
 
 {{#packages}}
-package {{&package}} {
+ package {{&package}} {
 
-{{#aliases}}
-    type {{& name }} = {{& alias }}[{{& underlying_type }}]
-{{/aliases}}
+    {{#aliases}}
+        type {{& name }} = {{& alias }}[{{& underlying_type }}]⮐
+        ⮐
+    {{/aliases}}
+    {{#traits}}
+        trait I{{& name}} {⮐
+        {{#fields}}
+            def {{&name}}: {{&typeName}}⮐
+        {{/fields}}
+        }⮐
+    {{/traits}}
 
-{{#traits}}
-    trait I{{& names._2}} {
-    {{#methods}}
-        def {{&names._3}}: {{&typeName}}
-    {{/methods}}
-    }
-{{/traits}}
-
-{{#classes}}
-    case class {{& name }}({{#fields}}{{&name}}: {{&typeName}}{{^last}}, {{/last}}{{/fields}}){{! TODO add trait(s) here if needed}}
-{{/classes}}
-}
+    {{#classes}}
+        case class {{& name }}({{#fields}}{{&name}}: {{&typeName}}{{^last}}, {{/last}}⮐{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
+    {{/classes}}
+ }
 {{/packages}}
