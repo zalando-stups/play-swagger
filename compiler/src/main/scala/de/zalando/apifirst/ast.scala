@@ -146,13 +146,13 @@ object Domain {
   abstract class Container(name: String, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
     extends ProvidedType(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
-    override def nestedTypes = tpe.nestedTypes :+ tpe
+    override def nestedTypes = Seq(tpe)
     override def toShortString(pad: String) = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
     def withType(t: Type): Container
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
-    extends Container(s"/${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.Seq")) {
+    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.Seq")) {
     def withType(t: Type) = this.copy(tpe = t)
   }
 
@@ -164,6 +164,7 @@ object Domain {
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
     extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.immutable.Map")) {
     def withType(t: Type) = this.copy(tpe = t)
+    override def nestedTypes = Str(None, None) +: super.nestedTypes
   }
 
   case class Field(name: TypeName, tpe: Type) {
