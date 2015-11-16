@@ -2,9 +2,10 @@ package de.zalando.apifirst
 
 import java.net.URI
 
+import de.zalando.apifirst.new_naming.Reference
 import de.zalando.apifirst.new_naming.dsl.NameDsl
 
-import scala.language.postfixOps
+import scala.language.{implicitConversions, postfixOps}
 
 /**
  * @since   03.11.2015.
@@ -36,7 +37,7 @@ object new_naming {
     import Reference._
     val qualified = if (parts.isEmpty) delimiter else delimiter + parts.mkString(delimiter)
     val simple = if (parts.isEmpty) delimiter else parts.last
-    val namespace = if (parts.isEmpty) root else Reference(parts.init)
+    val parent = if (parts.isEmpty) root else Reference(parts.init)
     override def toString = qualified
     // FIXME helper methods to simplify migration from JsonPointer
     def /(part: String) = new NameDsl(this) / part
@@ -44,7 +45,6 @@ object new_naming {
     def prepend(part: String) = Reference(part :: parts)
     val tokens = parts
     val pointer = this
-    val parent = namespace
   }
 
 
@@ -62,4 +62,54 @@ object new_naming {
       Reference(parts)
     }
   }
+}
+
+/**
+  * Represents scala name converted from the ast pointer
+  * This implementation makes heavily use of swagger internal
+  * naming model. Probably it should be refactored to support
+  * other specification formats
+  */
+object ScalaName extends StringUtil {
+  implicit def reference2ScalaName(r: Reference): ScalaName = ScalaName(r)
+  private val scalaNames = Seq(
+    "abstract", "case", "do", "for", "import", "lazy", "object", "override", "return",
+    "var", "while", "class", "false", "if", "new", "package", "sealed", "trait", "try",
+    "private", "super", "this", "true", "type",  "def", "final", "implicit", "null",
+    "protected", "throw", "val", "_", "catch", "else", "extends", "finally", "forSome",
+    "match", "with", "yield", "case"
+  )
+
+  private val scalaPartNames = Seq(",", ";", ":", "=", "=>", "<-", "<:", "<%", ">:", "#", "@", "⇒", "←","+","-","[", ")", "]", "}")
+
+  def escape(name: String) =
+    if (scalaNames.contains(name) || scalaPartNames.exists(name.contains))
+      "`" + name + "`"
+    else
+      name
+
+}
+
+trait StringUtil {
+  def capitalize(separator: String, str: String) = {
+    assert(str != null)
+    str.split(separator).map { p => if (p.nonEmpty) p.head.toUpper +: p.tail else p }.mkString("")
+  }
+
+  def camelize(separator: String, str: String) = capitalize(separator, str) match {
+    case p if p.isEmpty => ""
+    case p => p.head.toLower +: p.tail
+  }
+}
+
+case class ScalaName(r: Reference) {
+  import ScalaName._
+  require(r.parts.size > 1, "At least two parts required to construct a name")
+  def packageName = escape(r.parts.head.toLowerCase)
+  def className = escape(capitalize("/", r.parts.tail.head))
+  def methodName =
+    if (r.parts.size < 3) None
+    else Some(ScalaName.escape(camelize("/", r.parts.tail.tail.mkString("_"))))
+  def names = (packageName, className, methodName)
+
 }

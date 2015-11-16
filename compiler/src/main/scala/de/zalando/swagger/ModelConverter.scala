@@ -17,18 +17,6 @@ trait ParameterNaming {
   type NamedTypes = Seq[NamedType]
 }
 
-trait StringUtil {
-  def capitalize(separator: String, str: String) = {
-    assert(str != null)
-    str.split(separator).map { p => if (p.nonEmpty) p.head.toUpper +: p.tail else p }.mkString("")
-  }
-
-  def camelize(separator: String, str: String) = capitalize(separator, str) match {
-    case p if p.isEmpty => ""
-    case p => p.head.toLower +: p.tail
-  }
-}
-
 object ModelConverter extends ParameterNaming {
 
   def fromModel(base: URI, model: SwaggerModel, keyPrefix: String = "x-api-first") = {

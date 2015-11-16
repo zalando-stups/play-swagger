@@ -84,6 +84,7 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
 
 }
 
+// TODO use ScalaName here
 trait HandlerGenerator extends StringUtil {
   def keyPrefix: String
   def model: SwaggerModel
