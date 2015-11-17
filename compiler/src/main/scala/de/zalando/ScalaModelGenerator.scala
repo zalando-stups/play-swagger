@@ -50,19 +50,8 @@ class ScalaModelGenerator(allTypes: TypeLookupTable, discriminators: Discriminat
         typeDefProps(k, t, t.fields) + ("trait" -> traitName)
       case (k, t: Composite) =>
         val fields = dereferenceFields(t).distinct
-        val traitName = lookupTraitName(t, fields)
-        typeDefProps(k, t, fields) + ("trait" -> traitName.map(t => Map("name" -> t)))
+        typeDefProps(k, t, fields) + ("trait" -> t.root.map(r => Map("name" -> r.simple)))
     }
-
-  private def lookupTraitName(t: Composite, fields: Seq[Field]): Option[String] =
-    t.descendants.collect {
-      case r: TypeReference if discriminators.contains(r.name) &&
-        fields.exists(_.name == discriminators(r.name)) => Some(r.name.simple)
-      case r: TypeReference => allTypes.get(r.name) match {
-        case Some(c: Composite) => lookupTraitName(c, fields)
-        case _ => None
-      }
-    }.headOption.flatten
 
   private def traits(types: Map[Reference, Type]) =
     types collect {

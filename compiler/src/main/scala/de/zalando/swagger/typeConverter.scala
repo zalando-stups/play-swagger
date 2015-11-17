@@ -123,7 +123,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
         val obj = param.allOf map {
           extensionType(name, required)
         } getOrElse {
-          val typeName = param.vendorExtensions.get("x-$ref").map(Pointer.deref).map(Reference(base.toString, _)) getOrElse name
+          val typeName = typeNameFromInlinedReference(param) getOrElse name
           val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
           val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
           val types = fromTypes(name, normal ++ catchAll.toSeq.flatten, typeName)
@@ -136,6 +136,9 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
         Seq(checkRequired(name, required, primitiveType))
     }
   }
+
+  private def typeNameFromInlinedReference(param: Schema[_]): Option[Reference] =
+    param.vendorExtensions.get("x-$ref").map(Pointer.deref).map(Reference(base.toString, _))
 
   private def fromSchemaProperties[T](name: Reference, param: SchemaProperties, required: Option[Seq[String]]): NamedTypes =
     Option(param).toSeq.flatten flatMap { p =>
@@ -158,7 +161,10 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   private def extensionType[T](name: Reference, required: Option[Seq[String]])
                               (schema: SchemaArray): NamedType = {
     val allOf = fromSchemaArray(name, schema, required).map(_._2)
-    name -> AllOf(name / name.simple, schema, allOf)
+    val root = schema.collect {
+      case Left(Left(s: Schema[_])) if s.discriminator != null => typeNameFromInlinedReference(s).map(_ / s.discriminator)
+    }.flatten.headOption
+    name -> AllOf(name / name.simple, schema, allOf, root)
   }
 
   private def fromReference(name: Reference, ref: JsonReference, required: Option[Seq[String]]): NamedType = {

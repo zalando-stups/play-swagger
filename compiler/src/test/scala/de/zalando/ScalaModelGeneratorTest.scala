@@ -117,15 +117,15 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Cat" ->
           AllOf("definitions" / "Cat", None,
             Seq(TypeReference("definitions" / "Pet"),
-              TypeReference("definitions" / "Cat" / "AllOf1"))),
+              TypeReference("definitions" / "Cat" / "AllOf1")), Some("definitions" / "Pet")),
         "definitions" / "Dog" ->
           AllOf("definitions" / "Dog", None,
             Seq(TypeReference("definitions" / "Pet"),
-              TypeReference("definitions" / "Dog" / "AllOf1"))),
+              TypeReference("definitions" / "Dog" / "AllOf1")), Some("definitions" / "Pet")),
         "definitions" / "CatNDog" ->
           AllOf("definitions" / "CatNDog", None,
             Seq(TypeReference("definitions" / "Dog"),
-              TypeReference("definitions" / "Cat"))),
+              TypeReference("definitions" / "Cat")), Some("definitions" / "Pet")),
         "definitions" / "Pet" ->
           TypeDef("definitions" / "Pet", Seq(
             Field("definitions" / "Pet" / "name", Str(None, None)),
@@ -133,7 +133,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Labrador" ->
           AllOf("definitions" / "Labrador", None,
             Seq(TypeReference("definitions" / "Dog"),
-              TypeReference("definitions" / "Labrador" / "AllOf1"))),
+              TypeReference("definitions" / "Labrador" / "AllOf1")), Some("definitions" / "Pet")),
         "definitions" / "Cat" / "AllOf1" ->
           TypeDef("definitions" / "Cat", Seq(
             Field("definitions" / "Cat" / "huntingSkill", Str(None, None))), None),

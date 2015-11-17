@@ -117,7 +117,10 @@ object Domain {
    * @param meta
    * @param descendants
    */
-  abstract class Composite(override val name: TypeName, override val meta: TypeMeta, val descendants: Seq[Type])
+  abstract class Composite(override val name: TypeName,
+                           override val meta: TypeMeta,
+                           val descendants: Seq[Type],
+                           val root: Option[Reference])
     extends Type(name, meta) {
     override def toShortString(pad: String) = s"${getClass.getSimpleName}(${descendants.map(_.toShortString(pad+"\t")).mkString(s"\n$pad",s"\n$pad","")})"
     override def nestedTypes = descendants flatMap ( _.nestedTypes )
@@ -125,13 +128,18 @@ object Domain {
     def withTypes(t: Seq[Type]): Composite
   }
 
-  case class AllOf(override val name: TypeName, override val meta: TypeMeta, override val descendants: Seq[Type])
-    extends Composite(name, meta, descendants) {
+  case class AllOf(override val name: TypeName,
+                   override val meta: TypeMeta,
+                   override val descendants: Seq[Type],
+                   override val root: Option[Reference] = None)
+    extends Composite(name, meta, descendants, root) {
     def withTypes(t: Seq[Type]) = this.copy(descendants = t)
   }
 
-  case class OneOf(override val name: TypeName, override val meta: TypeMeta, override val descendants: Seq[Type])
-    extends Composite(name, meta, descendants) {
+  case class OneOf(override val name: TypeName,
+                   override val meta: TypeMeta,
+                   override val descendants: Seq[Type])
+    extends Composite(name, meta, descendants, None) {
     def withTypes(t: Seq[Type]) = this.copy(descendants = t)
   }
 
@@ -283,13 +291,7 @@ object Application {
     instantiate:      Boolean,
     method:           String,
     parameters:       Seq[ParameterRef]
-  ) {
-/*
-    val nonBodyParameters     = params.filterNot(_.place == ParameterPlace.BODY)
-    val bodyParameters        = params.filter(_.place == ParameterPlace.BODY)
-    val queryParameters       = params.filter(_.place == ParameterPlace.QUERY)
-*/
-  }
+  )
 
   case class ApiCall(
     verb:             Http.Verb,
