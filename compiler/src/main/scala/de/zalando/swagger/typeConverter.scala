@@ -127,7 +127,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
           val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
           val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
           val types = fromTypes(name, normal ++ catchAll.toSeq.flatten, typeName)
-          memoizeDiscriminator(name, param.discriminator)
+          memoizeDiscriminator(name, typeName / param.discriminator)
           checkRequired(name, required, types)
         }
         Seq(obj)
@@ -260,17 +260,17 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 }
 
 /*
- * It's safe to use mutable map with out locking in current setup
+ * It's safe to use mutable map without locking in current setup
  */
 trait DiscriminatorMemoizer {
-  val discriminators = new mutable.HashMap[Reference, String]()
+  val discriminators = new mutable.HashMap[Reference, Reference]()
 
-  def memoizeDiscriminator(name: Reference, discriminator: String) =
+  def memoizeDiscriminator(name: Reference, discriminator: Reference) =
     Option(discriminator) map {
       discriminators += name -> _
     }
 
-  def findDiscriminator(allOf: Seq[Type]): Option[String] =
+  def findDiscriminator(allOf: Seq[Type]): Option[Reference] =
     allOf find { t =>
       discriminators.contains(t.name)
     } map { t => discriminators(t.name) }

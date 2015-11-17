@@ -90,7 +90,7 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
       Field("c", Date(TypeMeta(None)))
     )
     val discriminators = Map(
-      longName -> "root"
+      longName -> longName / "a"
     )
     val duplicates = Map[Reference, Type](
       longName -> constructor(longName, fields, TypeMeta(None)),

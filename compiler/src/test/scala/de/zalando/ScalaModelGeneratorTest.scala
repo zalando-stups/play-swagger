@@ -145,7 +145,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
             Field("definitions" / "Labrador" / "cuteness", Intgr(None))), None)
       )
       val discriminators: DiscriminatorLookupTable = Map(
-        "definitions" / "Pet" -> "petType"
+        "definitions" / "Pet" -> "definitions" / "Pet" / "petType"
       )
       val result = new ScalaModelGenerator(model, discriminators)("test")
 

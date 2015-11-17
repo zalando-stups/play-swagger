@@ -57,7 +57,7 @@ class ScalaModelGenerator(allTypes: TypeLookupTable, discriminators: Discriminat
   private def lookupTraitName(t: Composite, fields: Seq[Field]): Option[String] =
     t.descendants.collect {
       case r: TypeReference if discriminators.contains(r.name) &&
-        fields.exists(_.name.simple == discriminators(r.name)) => Some(r.name.simple)
+        fields.exists(_.name == discriminators(r.name)) => Some(r.name.simple)
       case r: TypeReference => allTypes.get(r.name) match {
         case Some(c: Composite) => lookupTraitName(c, fields)
         case _ => None
