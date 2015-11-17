@@ -25,4 +25,4 @@ paths:
        - basicAuth: []
       responses:
         200:
-          description:  Will send `Authenticated` if authentication is succesful, otherwise it will send `Unauthorized`
+          description:  Will send `Authenticated` if authentication is successful, otherwise it will send `Unauthorized`

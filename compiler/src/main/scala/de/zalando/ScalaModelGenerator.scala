@@ -14,7 +14,8 @@ import ScalaName._
 class ScalaModelGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLookupTable = Map.empty) {
 
   def apply(fileName: String): String = {
-    if (allTypes.isEmpty) "" else nonEmptyTemplate(Map("main_package" -> fileName))
+    if (allTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
+    else nonEmptyTemplate(Map("main_package" -> fileName))
   }
 
   private def nonEmptyTemplate(map: Map[String, Any]): String = {
@@ -24,6 +25,7 @@ class ScalaModelGenerator(allTypes: TypeLookupTable, discriminators: Discriminat
       "packages" -> typesByPackage.toList.map { case (pckg, typeDefs) =>
         Map(
           "package" -> pckg,
+          "imports" -> imports(typeDefs, pckg),
           "aliases" -> aliases(typeDefs),
           "traits" -> traits(typeDefs),
           "classes" -> classes(typeDefs)
@@ -33,24 +35,34 @@ class ScalaModelGenerator(allTypes: TypeLookupTable, discriminators: Discriminat
     output.replaceAll("\u2B90", "")
   }
 
+  private def imports(typeDefs: Map[Reference, Type], pckg: String) = {
+    val allImports = typeDefs.values.flatMap(_.nestedTypes).filter(_.name.parts.nonEmpty).toSeq.distinct
+    val neededImports = allImports.filterNot(_.name.packageName == pckg).filterNot(_.name.packageName.isEmpty)
+    val result = neededImports.groupBy(_.name.packageName).flatMap { packageGroup =>
+      if (packageGroup._2.size > 2) Seq(packageGroup._1 + "._")
+      else packageGroup._2.map(_.name.qualifiedName)
+    }
+    result.map(r => Map("name" -> r))
+  }
+
   private def aliases(types: Map[Reference, Type]) =
     types collect {
       case (k, v: Container) =>
         Map(
-          "name" -> k.className,
+          "name" -> k.typeAlias,
           "alias" -> v.imports.head,
-          "underlying_type" -> v.nestedTypes.map(_.name.simple).mkString(", ")
+          "underlying_type" -> v.nestedTypes.map(_.name.typeAlias).mkString(", ")
         )
     }
 
   private def classes(types: Map[Reference, Type]) =
     types collect {
       case (k, t: TypeDef) if !k.simple.contains("AllOf") && !k.simple.contains("OneOf") =>
-        val traitName = discriminators.get(k).map(_ => Map("name" -> k.className))
+        val traitName = discriminators.get(k).map(_ => Map("name" -> k.typeAlias))
         typeDefProps(k, t, t.fields) + ("trait" -> traitName)
       case (k, t: Composite) =>
         val fields = dereferenceFields(t).distinct
-        typeDefProps(k, t, fields) + ("trait" -> t.root.map(r => Map("name" -> r.simple)))
+        typeDefProps(k, t, fields) + ("trait" -> t.root.map(r => Map("name" -> r.className)))
     }
 
   private def traits(types: Map[Reference, Type]) =
@@ -70,11 +82,11 @@ class ScalaModelGenerator(allTypes: TypeLookupTable, discriminators: Discriminat
 
   private def typeDefProps(k: Reference, t: Type, fields: Seq[Field]): Map[String, Object] = {
     Map(
-      "name" -> k.className,
+      "name" -> k.typeAlias,
       "fields" -> fields.zipWithIndex.map { case (f, i) =>
         Map(
-          "name" -> f.name.simple,
-          "typeName" -> f.tpe.name.simple,
+          "name" -> escape(f.name.simple),
+          "typeName" -> f.tpe.name.typeAlias,
           "last" -> (i == fields.size - 1)
         )
       }

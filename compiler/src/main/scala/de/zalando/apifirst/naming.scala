@@ -102,14 +102,19 @@ trait StringUtil {
   }
 }
 
-case class ScalaName(r: Reference) {
+case class ScalaName(ref: Reference) {
   import ScalaName._
-  require(r.parts.size > 1, "At least two parts required to construct a name")
-  def packageName = escape(r.parts.head.toLowerCase)
-  def className = escape(capitalize("/", r.parts.tail.head))
-  def methodName =
-    if (r.parts.size < 3) None
-    else Some(ScalaName.escape(camelize("/", r.parts.tail.tail.mkString("_"))))
+  val parts = ref.parts.flatMap(_.split("/").filter(_.nonEmpty)) match {
+    case Nil => throw new IllegalArgumentException("At least one part required to construct a name")
+    case single :: Nil => "" :: removeVars(single) :: Nil
+    case many => many.map(removeVars)
+  }
+  private def removeVars(s: String) = if (s.startsWith("{") && s.endsWith("}")) s.substring(1,s.length-2) else s
+  def packageName = parts.head.toLowerCase.split("/").filter(_.nonEmpty).map(escape).mkString(".")
+  def qualifiedName = packageName + "." + className
+  def className = escape(capitalize("/", parts.tail.head))
+  def typeAlias = escape(capitalize("/", parts.tail.mkString("/")))
+  def methodName = escape(camelize("/", parts.last))
   def names = (packageName, className, methodName)
 
 }

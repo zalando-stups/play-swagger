@@ -26,10 +26,10 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       new ScalaModelGenerator(model)("test") mustBeAs
         """package test
-          |package definitions {
+          |object definitions {
           |
-          |type Opti = scala.Option[Long]
-          |type Stri = scala.Option[String]
+          |type Opti = Option[Long]
+          |type Stri = Option[String]
           |}
           | """
     }
@@ -42,10 +42,10 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       new ScalaModelGenerator(model)("overloaded") mustBeAs
         """package overloaded
-          |package definitions {
+          |object definitions {
           |
-          |type Option = scala.Option[Long]
-          |type String = scala.Option[String]
+          |type Option = Option[Long]
+          |type String = Option[String]
           |}
           | """
     }
@@ -58,7 +58,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       new ScalaModelGenerator(model)("test") mustBeAs
         """package test
-          |package definitions {
+          |object definitions {
           |
           |type Int = scala.collection.Seq[Int]
           |type Dbl = scala.collection.Seq[Double]
@@ -73,9 +73,20 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       new ScalaModelGenerator(model)("test") mustBeAs
         """package test
-          |package parameters {
+          |object parameters {
           |
           |type All = scala.collection.immutable.Map[String, Boolean]
+          |}
+          | """
+    }
+
+    it("should generate single type alias for top-level primitive type") {
+      val model = Map(
+        "paths" / "/" / "get" / "responses" / "200" -> Null(None)
+      )
+      new ScalaModelGenerator(model)("test") mustBeAs
+        """package test
+          |object paths {
           |}
           | """
     }
@@ -90,7 +101,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       new ScalaModelGenerator(model)("test") mustBeAs
         """package test
-          |package definitions {
+          |object definitions {
           |
           |case class User(name: String, id: Long)
           |}
@@ -104,9 +115,9 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       new ScalaModelGenerator(model)("test") mustBeAs
         """package test
-          |package definitions {
+          |object definitions {
           |
-          |type OptionalData = scala.Option[Passwords]
+          |type OptionalData = Option[Passwords]
           |type Passwords = scala.collection.Seq[String]
           |}
           | """
@@ -151,7 +162,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
       result mustBeAs
         """package test
-          |package definitions {
+          |object definitions {
           |
           |trait IPet {
           |    def name: String
@@ -182,7 +193,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       new ScalaModelGenerator(model)("test") mustBeAs
         """package test
-          |package definitions {
+          |object definitions {
           |
           |case class ErrorModel(message: String, code: Int)
           |case class ExtendedErrorModel(message: String, code: Int, rootCause: String)

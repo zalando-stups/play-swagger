@@ -10,21 +10,25 @@ import org.scalatest.{FunSpec, MustMatchers}
 class ScalaNameTest extends FunSpec with MustMatchers {
 
   it("must correctly capitalize names") {
-    ("one" / "two" / "three").names mustBe ("one", "Two", Some("three"))
-    ("ONE" / "TWO" / "THREE").names mustBe ("one", "TWO", Some("tHREE"))
-    ("OnE" / "TwO" / "ThReE").names mustBe ("one", "TwO", Some("thReE"))
+    ("one" / "two" / "three").names mustBe ("one", "Two", "three")
+    ("ONE" / "TWO" / "THREE").names mustBe ("one", "TWO", "tHREE")
+    ("OnE" / "TwO" / "ThReE").names mustBe ("one", "TwO", "thReE")
   }
 
   it("must correctly recognize short names") {
-    ("one" / "two").names mustBe ("one", "Two", None)
+    ("one" / "two").names mustBe ("one", "Two", "two")
   }
 
   it("must correctly escape scala names") {
-    ("catch" / "if" / "match").names mustBe ("`catch`","If",Some("`match`"))
+    ("catch" / "if" / "match").names mustBe ("`catch`","If","`match`")
+  }
+
+  it("must be able to produce import statemets") {
+    ("java.util" / "date").qualifiedName mustBe "java.util.Date"
   }
 
   it("must correctly concat names") {
-    ("definitions"/"Example"/"nestedArrays"/"Opt"/"Arr:").names mustBe ("definitions", "Example", Some("`nestedArrays_Opt_Arr:`"))
+    ("definitions"/"Example"/"nestedArrays"/"Opt"/"Arr:").names mustBe ("definitions", "Example", "`arr:`")
   }
 
 }

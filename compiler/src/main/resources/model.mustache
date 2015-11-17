@@ -2,27 +2,26 @@
 package {{&main_package}}
 {{/main_package}}
 
-{{#imports}}
- import {{&imports}}
-{{/imports}}
 
 {{#packages}}
- package {{&package}} {
+object {{&package}} {
+    {{#imports}}
+    import {{&name}}
+    {{/imports}}
 
     {{#aliases}}
-        type {{& name }} = {{& alias }}[{{& underlying_type }}]⮐
-        ⮐
+    type {{& name }} = {{& alias }}[{{& underlying_type }}]⮐
     {{/aliases}}
+
     {{#traits}}
-        trait I{{& name}} {⮐
-        {{#fields}}
-            def {{&name}}: {{&typeName}}⮐
-        {{/fields}}
-        }⮐
+    trait I{{& name}} {⮐
+    {{#fields}}
+        def {{&name}}: {{&typeName}}⮐
+    {{/fields}}
+    }⮐
     {{/traits}}
 
     {{#classes}}
-        case class {{& name }}({{#fields}}{{&name}}: {{&typeName}}{{^last}}, {{/last}}⮐{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
-    {{/classes}}
- }
+    case class {{& name }}({{#fields}}{{&name}}: {{&typeName}}{{^last}}, {{/last}}⮐{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
+    {{/classes}}⮐}
 {{/packages}}

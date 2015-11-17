@@ -127,7 +127,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
           val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
           val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
           val types = fromTypes(name, normal ++ catchAll.toSeq.flatten, typeName)
-          memoizeDiscriminator(name, typeName / param.discriminator)
+          Option(param.discriminator) foreach { d => memoizeDiscriminator(name, typeName / d) }
           checkRequired(name, required, types)
         }
         Seq(obj)
@@ -164,7 +164,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     val root = schema.collect {
       case Left(Left(s: Schema[_])) if s.discriminator != null => typeNameFromInlinedReference(s).map(_ / s.discriminator)
     }.flatten.headOption
-    name -> AllOf(name / name.simple, schema, allOf, root)
+    val inheritedRoot = allOf.collect { case c: Composite => c.root }.flatten.headOption
+    name -> AllOf(name / name.simple, schema, allOf, root orElse inheritedRoot)
   }
 
   private def fromReference(name: Reference, ref: JsonReference, required: Option[Seq[String]]): NamedType = {

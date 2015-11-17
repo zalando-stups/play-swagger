@@ -60,6 +60,8 @@ object Domain {
 
   implicit def option2TypeMeta(o: Option[String]): TypeMeta = TypeMeta(o)
 
+  trait PrimitiveType
+
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
@@ -73,7 +75,7 @@ object Domain {
   abstract class ProvidedType(name: String, override val meta: TypeMeta)
     extends Type(Reference(name), meta)
 
-  class Nmbr(name: String, override val meta: TypeMeta) extends ProvidedType(name, meta)
+  class Nmbr(name: String, override val meta: TypeMeta) extends ProvidedType(name, meta) with PrimitiveType
 
   case class Intgr(override val meta: TypeMeta) extends Nmbr("Int", meta)
 
@@ -89,21 +91,21 @@ object Domain {
 
   case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta)
 
-  case class Date(override val meta: TypeMeta) extends ProvidedType("Date", meta) {
+  case class Date(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta) {
     override val imports = Set("java.util.Date")
   }
 
-  case class File(override val meta: TypeMeta) extends ProvidedType("File", meta) {
+  case class File(override val meta: TypeMeta) extends ProvidedType("java.io/File", meta) {
     override val imports = Set("java.io.File")
   }
 
-  case class DateTime(override val meta: TypeMeta) extends ProvidedType("Date", meta) {
+  case class DateTime(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta) {
     override val imports = Set("java.util.Date")
   }
 
   case class Password(override val meta: TypeMeta) extends ProvidedType("String", meta)
 
-  case class Null(override val meta: TypeMeta) extends ProvidedType("null", meta)
+  case class Null(override val meta: TypeMeta) extends ProvidedType("Null", meta)
 
   // case class Any(override val meta: TypeMeta) extends ProvidedType("Any", meta)
 
@@ -165,7 +167,7 @@ object Domain {
   }
 
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.Option")) {
+    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("Option")) {
     def withType(t: Type) = this.copy(tpe = t)
   }
 
