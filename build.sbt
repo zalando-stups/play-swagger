@@ -13,7 +13,7 @@ lazy val api = (project in file("api"))
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "org.scalacheck" %% "scalacheck" % "1.12.4",
-      "org.specs2" %% "specs2-scalacheck" % "3.6"
+      "org.specs2" %% "specs2-scalacheck" % "3.6.5"
     ),
     scalaVersion :=  "2.10.5",
     crossScalaVersions := Seq(scalaVersion.value, ScalaVersion)
