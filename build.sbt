@@ -86,7 +86,6 @@ def common: Seq[Setting[_]] = Seq(
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
-    "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
     Resolver.bintrayRepo("slavaschmidt","maven")
   )
 )
