@@ -1,0 +1,19 @@
+⌿definitions⌿ErrorModel -> 
+	TypeDef(⌿definitions⌿ErrorModel, Seq(
+		Field(⌿definitions⌿ErrorModel⌿code, Intgr), 
+		Field(⌿definitions⌿ErrorModel⌿message, Str)))
+⌿/definitions/Pet⌿tag -> 
+	Opt(Str)
+⌿definitions⌿Pet -> 
+	TypeDef(⌿definitions⌿Pet, Seq(
+		Field(⌿definitions⌿Pet⌿name, Str), 
+		Field(⌿definitions⌿Pet⌿tag, TypeReference(⌿/definitions/Pet⌿tag))))
+⌿paths⌿/pets/{id}⌿get⌿responses⌿default -> 
+	Opt(TypeReference(⌿definitions⌿ErrorModel))
+⌿paths⌿/pets/{id}⌿get⌿responses⌿200 -> 
+	Opt(TypeReference(⌿paths⌿/pets/{id}⌿get⌿responses⌿200⌿Opt))
+⌿paths⌿/pets/{id}⌿get⌿responses⌿200⌿Opt -> 
+	Arr(TypeReference(⌿definitions⌿Pet))
+-- params --
+
+⌿paths⌿/pets/{id}⌿get⌿id -> Parameter(id,TypeReference(⌿/definitions/Pet⌿tag),None,None,[^/]+,true,path)

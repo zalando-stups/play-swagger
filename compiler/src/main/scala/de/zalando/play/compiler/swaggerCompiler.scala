@@ -1,9 +1,8 @@
 package de.zalando.play.compiler
 
 import java.io.File
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TestGenerator
 import de.zalando.apifirst.Application.Model
-import de.zalando.swagger.{Swagger2Ast, JsonParser, YamlParser}
+import de.zalando.swagger.{StrictJsonParser, StrictYamlParser}
 import org.apache.commons.io.FileUtils
 import play.routes.compiler.RoutesCompiler.RoutesCompilerTask
 import play.routes.compiler.RoutesGenerator
@@ -20,51 +19,52 @@ object SwaggerCompiler {
 
     outputDir.mkdirs()
 
-    val parser = if (task.definitionFile.getName.endsWith(".yaml")) YamlParser else JsonParser
+    val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
 
-    val swaggerModel = parser.parse(task.definitionFile)
+    val (uri, swaggerModel) = parser.parse(task.definitionFile)
 
-    implicit val ast = Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
+    implicit val ast = Model(Nil, Nil)  // FIXME Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
 
     val basePath = Option(swaggerModel.basePath).getOrElse("/")
 
     val namespace = task.definitionFile.getName.takeWhile(_ != '.')
+    /*
+        val generateFiles = generate(namespace, task, outputDir) _
 
-    val generateFiles = generate(namespace, task, outputDir) _
+        val playRules = RuleGenerator.apiCalls2PlayRules(ast.calls: _*).toList
 
-    val playRules = RuleGenerator.apiCalls2PlayRules(ast.calls: _*).toList
+        val playTask = RoutesCompilerTask(task.definitionFile, routesImport,
+          forwardsRouter = true, reverseRouter, namespaceReverseRouter = true)
 
-    val playTask = RoutesCompilerTask(task.definitionFile, routesImport,
-      forwardsRouter = true, reverseRouter, namespaceReverseRouter = true)
+        val generated = task.generator.generate(playTask, Some(namespace), playRules)
 
-    val generated = task.generator.generate(playTask, Some(namespace), playRules)
+        val routesFiles = generated map writeToFile(outputDir, true).tupled
 
-    val routesFiles = generated map writeToFile(outputDir, true).tupled
+        val model = generateFiles(ModelGenerator, "model/", true)
 
-    val model = generateFiles(ModelGenerator, "model/", true)
+        val generators = generateFiles(ModelFactoryGenerator, "generators/", true)
 
-    val generators = generateFiles(ModelFactoryGenerator, "generators/", true)
+        val baseControllers = generateFiles(BaseControllersGenerator, "controllers/", true)
 
-    val baseControllers = generateFiles(BaseControllersGenerator, "controllers/", true)
+        val validators = generateFiles(ValidatorsGenerator, "validators/", true)
 
-    val validators = generateFiles(ValidatorsGenerator, "validators/", true)
+        val tests = generateFiles(new TestsGenerator(basePath), "../../../../test/", true)
 
-    val tests = generateFiles(new TestsGenerator(basePath), "../../../../test/", true)
+        val controllerFiles = generateFiles(ControllersGenerator, "../../../../controller_skeletons/", false)
 
-    val controllerFiles = generateFiles(ControllersGenerator, "../../../../controller_skeletons/", false)
-
-    SwaggerCompilationResult(routesFiles, model, generators, baseControllers, controllerFiles, validators, tests)
+        SwaggerCompilationResult(routesFiles, model, generators, baseControllers, controllerFiles, validators, tests)*/
+    null // FIXME
   }
 
 
-  def generate(namespace: String, task: SwaggerCompilationTask, outputDir: File)
+/*  def generate(namespace: String, task: SwaggerCompilationTask, outputDir: File)
       (generator: GeneratorBase, directory: String, writeOver: Boolean)(implicit ast: Model) = {
     val generatedContent = generator.generate(namespace)
     val modelFileName = directory + task.definitionFile.getName + ".scala"
     generatedContent.headOption.map(_._2).map { content =>
       writeToFile(outputDir, writeOver)(modelFileName, content)
     }.toSeq
-  }
+  }*/
 
   def writeToFile(outputDir: File, writeOver: Boolean) = (filename: String, content: String) => {
     val file = new File(outputDir, filename)

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.{JsonProperty, JsonAnySetter}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
+import de.zalando.apifirst.new_naming.Pointer
 
 import scala.collection.mutable
 import scala.util.Try
@@ -32,7 +33,7 @@ object strictModel {
       value == null || pattern.r.unapplySeq(value).nonEmpty
   }
   trait UriChecker {
-    def url: URI
+    def url: Uri
     require(url == null || Try(new URL(url)).isSuccess, s"Valid URI was expected, but got $url")
   }
   trait EmailChecker extends PatternChecker {
@@ -79,9 +80,9 @@ object strictModel {
     basePath:             BasePath,
     consumes:             MediaTypeList,
     produces:             MediaTypeList,
-    definitions:          Definitions,
-    parameters:           ParameterDefinitions,
-    responses:            ResponseDefinitions,
+    definitions:          Definitions, // Definitions are collections of types
+    parameters:           ParameterDefinitions, // Collections of parameters which can be referenced later
+    responses:            ResponseDefinitions,  // Default response definition, can be overridden
     securityDefinitions:  SecurityDefinitions,
     security:             Security,
     tags:                 Tags
@@ -126,10 +127,9 @@ object strictModel {
   }
 
   private[swagger] class PrimitiveTypeReference extends TypeReference[PrimitiveType.type]
-  case object PrimitiveType extends Enumeration with JsonSchemaType {
-    abstract class Value extends super.Value with JsonSchemaType
+  case object PrimitiveType extends Enumeration {
     class Val(i: Int, name: String) extends super.Val(i, name) with JsonSchemaType
-    type PrimitiveType = Value
+    type PrimitiveType = Val
     val ARRAY   = new Val(1, "array")
     val BOOLEAN = new Val(2, "boolean")
     val INTEGER = new Val(3, "integer")
@@ -137,6 +137,15 @@ object strictModel {
     val STRING  = new Val(5, "string")
     val OBJECT  = new Val(6, "object")
     val NULL    = new Val(0, "null")
+    def fromString(name: String) = name match {
+      case "array"    => ARRAY
+      case "boolean"  => BOOLEAN
+      case "integer"  => INTEGER
+      case "number"   => NUMBER
+      case "string"   => STRING
+      case "object"   => OBJECT
+      case "null"     => NULL
+    }
   }
   private[swagger] class ParameterTypeReference extends TypeReference[ParameterType.type]
   case object ParameterType extends Enumeration {
@@ -182,7 +191,7 @@ object strictModel {
    * @param description
    */
   case class ExternalDocs(
-    @JsonProperty(required = true) url: URI,
+    @JsonProperty(required = true) url: Uri,
     description: String
   ) extends VendorExtensions with API with UriChecker
 
@@ -216,7 +225,7 @@ object strictModel {
    */
   case class Contact(
     name:                 String,
-    url:                  URI,
+    url:                  Uri,
     email:                Email
   ) extends VendorExtensions with API with UriChecker with EmailChecker
 
@@ -227,7 +236,7 @@ object strictModel {
    */
   case class License(
     name:                 String,
-    url:                  URI
+    url:                  Uri
   ) extends API with UriChecker
 
   /**
@@ -250,23 +259,59 @@ object strictModel {
     options:              Operation,
     head:                 Operation,
     patch:                Operation,
-    parameters:           ParametersList,
-    @JsonProperty("$ref") $ref: Ref
-  ) extends VendorExtensions with API with RefChecker
+    parameters:           ParametersList,   // parameter list which is valid for all operations (can be overridden)
+    @JsonProperty("$ref") $ref: Ref         // TODO $ref is currently not supported
+  ) extends VendorExtensions with API with RefChecker {
+    def param(name: String, op: Operation) = Option(op) map { name -> _.parameters } toList
+    val params = (("" -> parameters) :: param("get", get) :::
+      param("get", get) ::: param("put", put) ::: param("post", post) :::
+      param("delete", delete) ::: param("options", options) ::: param("head", head) :::
+      param("patch", patch)) flatMap { p =>
+        Option(p._2).toSeq.flatten map { pl => p._1 -> pl }
+      }
+    def operationNames: Set[String] =
+      getClass.getDeclaredFields.
+      filter(_.getType == classOf[Operation]).
+      filter { f => f.setAccessible(true); f.get(this) != null }.
+        map(_.getName).toSet
+    def operation(name: String): Operation =
+      getClass.getDeclaredField(name).get(this).asInstanceOf[Operation]
+  }
 
 
   sealed trait ParametersListItem
 
   case class JsonReference(
     @JsonProperty(value = "$ref", required = true) $ref: Ref
-  ) extends ParametersListItem with ResponseValue with SchemaOrFileSchema with SchemaOrSchemaArray with RefChecker
+  ) extends ParametersListItem with ResponseValue with RefChecker
 
-  sealed trait Parameter[T] extends ParametersListItem
+  implicit def jsonReferenceToPointer(ref: JsonReference): Pointer = Pointer.deref(ref.$ref)
 
-  abstract class NonBodyParameter[T] extends Parameter[T] {
+  sealed trait Parameter[T] extends ParametersListItem {
+    def name: String
+    def in: String
+  }
+
+  abstract class NonBodyParameter[T] extends Parameter[T] with ValidationBase {
     @JsonProperty(required = true) def name:    String
     @JsonProperty(required = true) def in:      String
     @JsonScalaEnumeration(classOf[ParameterTypeReference]) @JsonProperty(required = true) def `type`: ParameterType.Value
+  }
+
+  trait NonBodyParameterCommons[T, CF] extends ValidationBase {
+    def `type`: ParameterType.Value
+    def items: PrimitivesItems[T]
+    def default: Default[T]
+    def format: String
+    def isArray = `type`== ParameterType.ARRAY
+    def inPath = in == "path"
+    def required: Boolean
+    def collectionFormat: CF
+    def name: String
+    def in: String
+    if (collectionFormat != null) require(isArray)
+    if (default != null) require(!required)
+    if (isArray) require(items != null)
   }
 
   /**
@@ -280,10 +325,10 @@ object strictModel {
   case class BodyParameter[T](
     @JsonProperty(required = true) name:    String,
     @JsonProperty(required = true) in:      String,
-    @JsonProperty(required = true) schema:  SchemaOrReference,
+    @JsonProperty(required = true) schema:  SchemaOrFileSchema[T],
     description:                            String,
     required:                               Boolean = false
-  ) extends Parameter[T] with VendorExtensions
+  ) extends Parameter[T] with VendorExtensions with ValidationBase
 
   /**
    *
@@ -331,7 +376,7 @@ object strictModel {
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
   /**
    *
@@ -381,7 +426,7 @@ object strictModel {
     enum:                   Enum[T],
     multipleOf:             MultipleOf,
     allowEmptyValue:        Boolean = false // unique for form
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
   /**
    *
@@ -431,7 +476,7 @@ object strictModel {
     enum:                   Enum[T],
     multipleOf:             MultipleOf,
     allowEmptyValue:        Boolean = false // unique for query and form
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormatWithMulti.Value]
 
   /**
    *
@@ -479,24 +524,18 @@ object strictModel {
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T]
-
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
   sealed trait ResponseValue
 
   case class Response[T](
     @JsonProperty(required = true) description: String,
-    schema: SchemaOrFileSchema,
+    schema: SchemaOrFileSchema[T],
     headers: Headers,
     examples: Examples
   ) extends ResponseValue with VendorExtensions
 
 
-  sealed trait SchemaOrReference
-
-  sealed trait SchemaOrFileSchema extends SchemaOrReference
-
-  sealed trait SchemaOrSchemaArray extends SchemaOrFileSchema
   /**
    *
    * @param responses     Response objects names can either be any valid HTTP status code or 'default'.
@@ -596,7 +635,7 @@ object strictModel {
     readOnly:               Boolean = false,
     externalDocs:           ExternalDocs,
     example:                Example[T]
-  ) extends VendorExtensions with SchemaOrFileSchema
+  ) extends VendorExtensions
 
   class Schema[T](
     val format:                 String,
@@ -618,23 +657,23 @@ object strictModel {
     val maxProperties:          MaxProperties,
     val minProperties:          MinProperties,
     val required:               StringArray,
-    val additionalProperties:   SchemaOrBoolean,
+    val additionalProperties:   SchemaOrBoolean[T],
     val `type`:                 JsonSchemaType,
     val properties:             SchemaProperties,
     val allOf:                  Option[SchemaArray],
-    val items:                  Option[SchemaOrSchemaArray],
+    val items:                  Option[SchemaOrSchemaArray[_]],
     val discriminator:          String,
     val xml:                    Xml,
     val readOnly:               Boolean = false,
     val externalDocs:           ExternalDocs,
     val example:                Example[T]
-  ) extends VendorExtensions with SchemaOrSchemaArray with AllValidations[T] with ObjectValidation {
+  ) extends VendorExtensions with AllValidations[T] with ObjectValidation {
     require(allOf.forall(_.nonEmpty))
     validateSchemaArray(items)
     validateSchemaArray(allOf)
     private def validateSchemaArray(a: Option[_]) =
-      a.isEmpty || a.get.isInstanceOf[SchemaOrFileSchema] ||
-        ( a.get.isInstanceOf[PlainSchemaArray] && a.get.asInstanceOf[PlainSchemaArray].nonEmpty)
+      a.isEmpty || a.get.isInstanceOf[SchemaOrFileSchema[_]] ||
+        (a.get.isInstanceOf[SchemaArray] && a.get.asInstanceOf[SchemaArray].nonEmpty)
   }
 
   /**
@@ -675,7 +714,13 @@ object strictModel {
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
     multipleOf:             MultipleOf
-  ) extends VendorExtensions with AllValidations[T]
+  ) extends VendorExtensions with AllValidations[T] {
+    require(`type` != PrimitiveType.NULL)
+    require(`type` != PrimitiveType.OBJECT)
+    if (isArray) require(items != null)
+    if (collectionFormat != null) require(isArray)
+    def isArray = `type` == PrimitiveType.ARRAY
+  }
 
   /**
    *
@@ -711,7 +756,7 @@ object strictModel {
   case class Oauth2ImplicitSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
     @JsonProperty(required = true) flow: String,    // "enum": implicit
-    @JsonProperty(required = true) authorizationUrl: URI,
+    @JsonProperty(required = true) authorizationUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
   ) extends SecurityDefinition with UriChecker {
@@ -721,7 +766,7 @@ object strictModel {
   case class Oauth2PasswordSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
     @JsonProperty(required = true) flow: String,    // "enum": password
-    @JsonProperty(required = true) tokenUrl: URI,
+    @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
   ) extends SecurityDefinition with UriChecker {
@@ -731,7 +776,7 @@ object strictModel {
   case class Oauth2ApplicationSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
     @JsonProperty(required = true) flow: String,    // "enum": application
-    @JsonProperty(required = true) tokenUrl: URI,
+    @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
   ) extends SecurityDefinition with UriChecker {
@@ -741,8 +786,8 @@ object strictModel {
   case class Oauth2AccessCodeSecurity(
     @JsonProperty(required = true) `type`: String,  // "enum": oauth2
     @JsonProperty(required = true) flow: String,    // "enum": accessCode
-    @JsonProperty(required = true) authorizationUrl: URI,
-    @JsonProperty(required = true) tokenUrl: URI,
+    @JsonProperty(required = true) authorizationUrl: Uri,
+    @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
   ) extends SecurityDefinition with UriChecker {
@@ -758,7 +803,7 @@ object strictModel {
       value match {
         case str: String if key.startsWith("x-") =>
           extensions += key -> str
-        case mapping: Map[_, _] =>
+        case mapping: Map[_, _] if key.startsWith("x-") =>
           import scala.util.control.Exception._
           handling(classOf[ClassNotFoundException]) by { e =>
             throw new IllegalArgumentException(s"Could not find exception class $e for error code")
@@ -794,7 +839,7 @@ object strictModel {
   type BasePath               = String
   type Format                 = String
   type SimpleTag              = String
-  type URI                    = String
+  type Uri                    = String
   type Email                  = String
   type Ref                    = String
   type MimeType               = String // The MIME type of the HTTP message.
@@ -808,8 +853,7 @@ object strictModel {
   type ParametersList         = ManyUnique[ParametersListItem]
   type SimpleTags             = ManyUnique[SimpleTag]
   type StringArray            = Many[String]
-  type PlainSchemaArray       = Many[SchemaOrReference]
-  type SchemaArray            = PlainSchemaArray with SchemaOrSchemaArray
+  type SchemaArray            = Many[SchemaOrFileSchema[_]]
 
   type ParameterDefinitions   = AdditionalProperties[Parameter[_]]
   type ResponseDefinitions    = AdditionalProperties[Response[_]]
@@ -819,12 +863,18 @@ object strictModel {
   type Headers                = AdditionalProperties[Header[_]]
   type Responses              = AdditionalProperties[Response[_]]
   type Examples               = AdditionalProperties[Any]
-  type SchemaProperties       = AdditionalProperties[SchemaOrReference]
+  type SchemaProperties       = AdditionalProperties[SchemaOrFileSchema[_]]
   type Paths                  = AdditionalProperties[PathItem] with VendorExtensions
   type Oauth2Scopes           = AdditionalProperties[String]
 
+  type SchemaOrReference[T]   = Either[Schema[T], JsonReference]
+  type SchemaOrBoolean[T]     = Either[SchemaOrReference[T], Boolean]
+  type SchemaOrFileSchema[T]  = Either[SchemaOrReference[T], FileSchema[T]]
+  type SchemaOrSchemaArray[T] = Either[SchemaOrReference[T], SchemaArray]
+
   // -------------------------- Validations --------------------------
 
+  sealed trait ValidationBase
   /**
    * validations for Int, Long, Double, Float
    */
@@ -835,7 +885,7 @@ object strictModel {
     type Minimum                = Option[Double]
     type ExclusiveMinimum       = Option[Boolean]
   }
-  trait NumberValidation {
+  trait NumberValidation extends ValidationBase {
     import NumberValidation._
     def multipleOf:             MultipleOf
     def maximum:                Maximum
@@ -846,12 +896,13 @@ object strictModel {
     require(exclusiveMaximum.isEmpty || maximum.isDefined)
     require(exclusiveMinimum.isEmpty || minimum.isDefined)
   }
+
   object StringValidation {
     type MaxLength              = Option[Int] // length <=
     type MinLength              = Option[Int] // length >=
     type Pattern                = Option[String]
   }
-  trait StringValidation {
+  trait StringValidation extends ValidationBase {
     import StringValidation._
     def maxLength: MaxLength
     def minLength: MinLength
@@ -860,13 +911,14 @@ object strictModel {
     require(minLength.forall(_>=0))
     require(pattern.forall(p => Try(p.r).isSuccess))
   }
+
   object ArrayValidation {
     type MaxItems               = Option[Int]
     type MinItems               = Option[Int]
     type UniqueItems            = Option[Boolean]
     type Enum[T]                = Option[ManyUnique[T]]
   }
-  trait ArrayValidation[T] {
+  trait ArrayValidation[T] extends ValidationBase {
     import ArrayValidation._
     def maxItems:               MaxItems
     def minItems:               MinItems
@@ -878,13 +930,11 @@ object strictModel {
   object ObjectValidation {
     type MaxProperties          = Option[Int]
     type MinProperties          = Option[Int]
-    type SchemaOrBoolean      = Any
   }
-  trait ObjectValidation {
+  trait ObjectValidation extends ValidationBase {
     import ObjectValidation._
     def maxProperties:          MaxProperties
     def minProperties:          MinProperties
-    def additionalProperties:   SchemaOrBoolean
     require(maxProperties.forall(_>=0))
     require(minProperties.forall(_>=0))
   }

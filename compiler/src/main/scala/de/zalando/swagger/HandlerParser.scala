@@ -8,6 +8,7 @@ import scala.util.parsing.input.CharSequenceReader
 /**
  * @since 17.07.2015
  */
+object HandlerParser extends HandlerParser
 // handler related part of the play's parser
 // we can use it if we won't change handler definition syntax
 trait HandlerParser extends JavaTokenParsers {
@@ -87,14 +88,14 @@ trait HandlerParser extends JavaTokenParsers {
     case first ~ _ ~ second ~ _ ~ rest => first :: second :: rest
   }, "Controller method call expected")
 
-  def call: Parser[HandlerCall] = opt("@") ~ absoluteMethod /*~ opt(parameters)*/ ^^ {
-    case instantiate ~ absMethod /*~ parameters*/ => {
+  def call: Parser[HandlerCall] = opt("@") ~ absoluteMethod ^^ {
+    case instantiate ~ absMethod => {
       val (packageParts, classAndMethod) = absMethod.splitAt(absMethod.size - 2)
       val packageName = packageParts.mkString(".")
       val className = classAndMethod.head
       val methodName = classAndMethod(1)
       val dynamic = instantiate.isDefined
-      HandlerCall(packageName, className, dynamic, methodName, Nil, Nil, Nil)
+      HandlerCall(packageName, className, dynamic, methodName, Nil)
     }
   }
 

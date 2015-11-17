@@ -198,7 +198,7 @@ security:
 #                                   Parameters                                 #
 ################################################################################
 parameters:
-  user-id:
+  user-id-param:
     name: user-id
     in: path
     description: The user identifier number
@@ -217,7 +217,7 @@ parameters:
 paths:
   /users/{user-id}:
     parameters:
-      - $ref: '#/parameters/user-id'
+      - $ref: '#/parameters/user-id-param'
     get:
       security:
         - key: []
@@ -267,7 +267,7 @@ paths:
 
   /users/{user-id}/media/recent:
     parameters:
-      - $ref: '#/parameters/user-id'
+      - $ref: '#/parameters/user-id-param'
     get:
       tags:
         - Users
@@ -363,7 +363,7 @@ paths:
 
   /users/{user-id}/follows:
     parameters:
-      - $ref: '#/parameters/user-id'
+      - $ref: '#/parameters/user-id-param'
     get:
       tags:
         - Relationships
@@ -380,7 +380,7 @@ paths:
 
   /users/{user-id}/followed-by:
     parameters:
-      - $ref: '#/parameters/user-id'
+      - $ref: '#/parameters/user-id-param'
     get:
       tags:
         - Relationships
@@ -417,7 +417,7 @@ paths:
 
   /users/{user-id}/relationship:
     parameters:
-      - $ref: '#/parameters/user-id'
+      - $ref: '#/parameters/user-id-param'
     post:
       tags:
         - Relationships
