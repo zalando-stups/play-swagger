@@ -12,3 +12,7 @@ notifications:
       - slava.schmidt.extern@zalando.de
 jdk:
   - oraclejdk8
+before_install:
+  - pip install codecov
+after_success:
+  - codecov
