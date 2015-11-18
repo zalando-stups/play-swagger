@@ -1,8 +1,9 @@
-package de.zalando.apifirst
+package de.zalando.apifirst.generators
 
 import java.io.File
 
-import de.zalando.{ScalaModelGenerator, ExpectedResults}
+import de.zalando.ExpectedResults
+import de.zalando.apifirst.{ParameterDereferencer, TypeDeduplicator, TypeFlattener}
 import de.zalando.swagger.{ModelConverter, StrictYamlParser}
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -15,16 +16,16 @@ class ScalaModelGeneratorIntegrationTest extends FunSpec with MustMatchers with 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
   def toTest: File => Boolean = f => {
-    f.getName.endsWith(".yaml") && f.getName == "basic_polymorphism.yaml"
+    f.getName.endsWith(".yaml")
   }
 
   describe("ScalaModelGenerator should generate model files") {
     (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>
-      testTypeFlattener(file)
+      testScalaModelGenerator(file)
     }
   }
 
-  def testTypeFlattener(file: File): Unit = {
+  def testScalaModelGenerator(file: File): Unit = {
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val (base, model) = StrictYamlParser.parse(file)
       val ast         = ModelConverter.fromModel(base, model)

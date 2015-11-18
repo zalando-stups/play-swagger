@@ -87,25 +87,25 @@ object Domain {
 
   case class Byt(override val meta: TypeMeta) extends Nmbr("Byte", meta)
 
-  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends ProvidedType("String", meta)
+  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends ProvidedType("String", meta) with PrimitiveType
 
-  case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta)
+  case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta) with PrimitiveType
 
-  case class Date(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta) {
+  case class Date(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta)  with PrimitiveType {
     override val imports = Set("java.util.Date")
   }
 
-  case class File(override val meta: TypeMeta) extends ProvidedType("java.io/File", meta) {
+  case class File(override val meta: TypeMeta) extends ProvidedType("java.io/File", meta)  with PrimitiveType {
     override val imports = Set("java.io.File")
   }
 
-  case class DateTime(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta) {
+  case class DateTime(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta)  with PrimitiveType {
     override val imports = Set("java.util.Date")
   }
 
-  case class Password(override val meta: TypeMeta) extends ProvidedType("String", meta)
+  case class Password(override val meta: TypeMeta) extends ProvidedType("String", meta) with PrimitiveType
 
-  case class Null(override val meta: TypeMeta) extends ProvidedType("Null", meta)
+  case class Null(override val meta: TypeMeta) extends ProvidedType("Null", meta) with PrimitiveType
 
   // case class Any(override val meta: TypeMeta) extends ProvidedType("Any", meta)
 

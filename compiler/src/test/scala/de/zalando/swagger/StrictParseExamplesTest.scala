@@ -17,7 +17,9 @@ class StrictParseExamplesTest extends FunSpec with MustMatchers {
   describe("Strict Swagger Parser") {
     fixtures.filter(f => f.getName.endsWith(".yaml") && ! disabledTests.contains(f.getName)).foreach { file =>
       it(s"should parse the yaml swagger file ${file.getName} as specification") {
-        StrictYamlParser.parse(file) mustBe a [(URI, SwaggerModel)]
+        val result = StrictYamlParser.parse(file)
+        result._1 mustBe a [URI]
+        result._2 mustBe a [SwaggerModel]
       }
     }
   }

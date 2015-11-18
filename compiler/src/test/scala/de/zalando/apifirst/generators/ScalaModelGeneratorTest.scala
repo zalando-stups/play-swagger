@@ -1,10 +1,9 @@
-package de.zalando
+package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.DiscriminatorLookupTable
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.new_naming
-import org.scalatest.{MustMatchers, FunSpec}
-import new_naming.dsl._
+import de.zalando.apifirst.new_naming.dsl._
+import org.scalatest.{FunSpec, MustMatchers}
 
 import scala.language.implicitConversions
 
@@ -85,10 +84,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "paths" / "/" / "get" / "responses" / "200" -> Null(None)
       )
       new ScalaModelGenerator(model)("test") mustBeAs
-        """package test
-          |object paths {
-          |}
-          | """
+        """"""
     }
 
     it("should generate a class file for typeDef") {

@@ -1,0 +1,38 @@
+{{#main_package}}
+package {{&main_package}}
+{{/main_package}}
+
+import org.scalacheck.Gen
+import org.scalacheck.Arbitrary._
+
+{{#packages}}
+object {{&package}} {
+    {{#imports}}
+    import {{&name}}
+    {{/imports}}
+
+    {{#classes}}
+    def create{{& name }} = _generate({{& name }})⮐
+    {{/classes}}
+
+    {{#aliases}}
+    def create{{& name }} = _generate({{& name }})⮐
+    {{/aliases}}
+
+    {{#aliases}}
+    val {{& name}} = {{& generator }}⮐
+    {{/aliases}}⮐
+
+    {{#classes}}
+    val  {{& name}} =⮐
+        for {⮐
+        {{#fields}}
+             {{& name}} <- {{& generator}}⮐
+        {{/fields}}
+        } yield {{& class_name}}({{#fields}}{{& name}}{{^last}}, {{/last}}{{/fields}})⮐
+    ⮐
+    {{/classes}}
+
+    def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
+}
+{{/packages}}
