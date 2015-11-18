@@ -88,7 +88,6 @@ def common: Seq[Setting[_]] = Seq(
   resolvers ++= Seq(
     Resolver.bintrayRepo("slavaschmidt","maven")
   )
-  resolvers += Resolver.mavenLocal
 )
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60
