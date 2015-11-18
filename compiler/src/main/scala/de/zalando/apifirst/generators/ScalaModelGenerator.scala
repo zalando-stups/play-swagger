@@ -100,17 +100,22 @@ abstract class ScalaGenerator(allTypes: TypeLookupTable, discriminators: Discrim
     output.replaceAll("\u2B90", "")
   }
 
-  // FIXME if suffix nonempty, the type itself must be imported
+  // TODO for validators, tests and controllers we'll need a chain of dependencies
   def imports(typeDefs: Map[Reference, Type], pckg: String) = {
-    val allImports = typeDefs.values.flatMap(_.nestedTypes).filter(_.name.parts.nonEmpty).toSeq.distinct
+    val allImports = typeDefs.values.flatMap { v => v +: v.nestedTypes }.filter(_.name.parts.nonEmpty).toSeq.distinct
     val neededImports = allImports.filterNot(_.name.packageName == pckg + suffix).filterNot(_.name.packageName.isEmpty)
-    println(pckg + " - " + neededImports + " | " + allImports)
     val result = neededImports.groupBy(_.name.packageName).flatMap { packageGroup =>
-      if (packageGroup._2.size > 2) Seq(packageGroup._1 + "._") // suffix +
-      else packageGroup._2.map(_.name.qualifiedName) //  + suffix
+      if (packageGroup._2.size > 2) Seq(packageGroup._1 + "._")
+      else packageGroup._2.map(_.name.qualifiedName)
     }
-    result.toSeq.distinct.map(r => Map("name" -> r))
+    val correctedResult = if (suffix.nonEmpty) result ++ result.map(addSuffix) else result
+    correctedResult.toSeq.distinct.map(r => Map("name" -> r))
   }
+
+  // FIXME
+  private def addSuffix(importStr: String) =
+    if (importStr.endsWith("._")) importStr.substring(importStr.length-2) + suffix + "._"
+    else importStr.substring(0,importStr.lastIndexOf(".")) + suffix + "." + importStr.substring(importStr.lastIndexOf(".")+1,importStr.size) + suffix
 
   private def traits(types: Map[Reference, Type]) =
     types collect {
