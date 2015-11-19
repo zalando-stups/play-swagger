@@ -19,14 +19,16 @@ object ValidationsConverter {
 
   def toValidations[T, CF](bp: PrimitivesItems[T]): Seq[String] = validationsPF(bp)
 
-  @throws[MatchError]
-  private def validationsPF[CF, T](bp: ValidationBase): Seq[String] = {
-    bp match {
-      case v: ArrayValidation[_] => toArrayValidations(v)
-      case v: StringValidation => toStringValidations(v)
-      case n: NumberValidation => toNumberValidations(n)
-      case o: ObjectValidation => toObjectValidations(o)
-    }
+  private val allValidations = Seq[PartialFunction[ValidationBase, Seq[String]]](
+    { case v: ArrayValidation[_] => toArrayValidations(v) },
+    { case v: StringValidation => toStringValidations(v) },
+    { case n: NumberValidation[_] => toNumberValidations(n) },
+    { case o: ObjectValidation => toObjectValidations(o) }
+  )
+
+  private def validationsPF[CF, T](b: ValidationBase): Seq[String] = {
+    val default: ValidationBase => Seq[String] = _ => Nil
+    allValidations flatMap { v => v.applyOrElse(b, default) }
   }
 
   def toArrayValidations[T](a: ArrayValidation[T]): Seq[String] =
@@ -44,19 +46,19 @@ object ValidationsConverter {
     }
     val emailConstraint: Option[String] = if (format.exists(_ == "email")) Some("emailAddress") else None
     Seq(
-      ifDefined(p.maxLength, s"maxLength(${p.maxLength})"),
-      ifDefined(p.minLength, s"minLength(${p.minLength})"),
-      Option(p.pattern) map { p => s"""pattern("$p".r)""" },
+      ifDefined(p.maxLength, s"maxLength(${p.maxLength.get})"),
+      ifDefined(p.minLength, s"minLength(${p.minLength.get})"),
+      p.pattern map { p => s"""pattern("$p".r)""" },
       emailConstraint
     ).flatten
   }
 
-  private def toNumberValidations(p: NumberValidation): Seq[String] = {
-    val strictMax = Option(p.exclusiveMaximum).getOrElse(false)
-    val strictMin = Option(p.exclusiveMinimum).getOrElse(false)
+  private def toNumberValidations[T](p: NumberValidation[T]): Seq[String] = {
+    val strictMax = p.exclusiveMaximum.getOrElse(false)
+    val strictMin = p.exclusiveMinimum.getOrElse(false)
     Seq(
-      ifDefined(p.maximum, s"max(${p.maximum.get.toInt}, $strictMax)"),
-      ifDefined(p.minimum, s"min(${p.minimum.get.toInt}, $strictMin)"),
+      ifDefined(p.maximum, s"max(${p.maximum.get}, $strictMax)"),
+      ifDefined(p.minimum, s"min(${p.minimum.get}, $strictMin)"),
       ifDefined(p.multipleOf, s"multipleOf(${p.multipleOf.get})")
     ).flatten
   }
