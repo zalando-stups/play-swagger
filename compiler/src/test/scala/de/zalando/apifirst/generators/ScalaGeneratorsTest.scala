@@ -111,12 +111,13 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
+          |   import definitions.User
           |   def createUserGenerator = _generate(UserGenerator)
-          |   val  UserGenerator =
+          |   val UserGenerator =
           |     for {
           |       name <- arbitrary[String]
           |       id <- arbitrary[Long]
-          |     } yield UserGenerator(name, id)
+          |     } yield User(name, id)
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
           |}"""
     }
@@ -183,42 +184,43 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Arbitrary._
           |
           |object definitionsGenerator {
+          |   import definitions._
           |   def createCatGenerator = _generate(CatGenerator)
           |   def createDogGenerator = _generate(DogGenerator)
           |   def createCatNDogGenerator = _generate(CatNDogGenerator)
           |   def createPetGenerator = _generate(PetGenerator)
           |   def createLabradorGenerator = _generate(LabradorGenerator)
-          |   val  CatGenerator =
+          |   val CatGenerator =
           |     for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |       huntingSkill <- arbitrary[String]
-          |     } yield CatGenerator(name, petType, huntingSkill)
-          |   val  DogGenerator =
+          |     } yield Cat(name, petType, huntingSkill)
+          |   val DogGenerator =
           |     for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |       packSize <- arbitrary[Int]
-          |     } yield DogGenerator(name, petType, packSize)
-          |   val  CatNDogGenerator =
+          |     } yield Dog(name, petType, packSize)
+          |   val CatNDogGenerator =
           |     for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |       packSize <- arbitrary[Int]
           |       huntingSkill <- arbitrary[String]
-          |     } yield CatNDogGenerator(name, petType, packSize, huntingSkill)
-          |   val  PetGenerator =
+          |     } yield CatNDog(name, petType, packSize, huntingSkill)
+          |   val PetGenerator =
           |     for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
-          |     } yield PetGenerator(name, petType)
-          |   val  LabradorGenerator =
+          |     } yield Pet(name, petType)
+          |   val LabradorGenerator =
           |     for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |       packSize <- arbitrary[Int]
           |       cuteness <- arbitrary[Int]
-          |     } yield LabradorGenerator(name, petType, packSize, cuteness)
+          |     } yield Labrador(name, petType, packSize, cuteness)
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
           |}"""
     }
@@ -242,19 +244,20 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
+          |   import definitions._
           |   def createErrorModelGenerator = _generate(ErrorModelGenerator)
           |   def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)
-          |   val  ErrorModelGenerator =
+          |   val ErrorModelGenerator =
           |     for {
           |       message <- arbitrary[String]
           |       code <- arbitrary[Int]
-          |     } yield ErrorModelGenerator(message, code)
-          |   val  ExtendedErrorModelGenerator =
+          |     } yield ErrorModel(message, code)
+          |   val ExtendedErrorModelGenerator =
           |     for {
           |       message <- arbitrary[String]
           |       code <- arbitrary[Int]
           |       rootCause <- arbitrary[String]
-          |     } yield ExtendedErrorModelGenerator(message, code, rootCause)
+          |     } yield ExtendedErrorModel(message, code, rootCause)
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
           |}"""
     }

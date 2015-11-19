@@ -40,6 +40,7 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
   }
 
   // TODO for validators, tests and controllers we'll need a chain of dependencies
+  // FIXME very fragile implementation
   private def imports(typeDefs: Map[Reference, Type], pckg: String, suffix: String) = {
     val allImports = typeDefs.values.flatMap { v => v +: v.nestedTypes }.filter(_.name.parts.nonEmpty).toSeq.distinct
     val neededImports = allImports.filterNot(_.name.packageName == pckg + suffix).filterNot(_.name.packageName.isEmpty)
@@ -48,13 +49,14 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
       else packageGroup._2.map(_.name.qualifiedName)
     }
     val correctedResult = if (suffix.nonEmpty) result ++ result.map(addSuffix(suffix)) else result
-    correctedResult.toSeq.distinct.map(r => Map("name" -> r))
+    correctedResult.toSeq.distinct.filterNot(_.startsWith(pckg+suffix)).map(r => Map("name" -> r))
   }
 
   // FIXME
   private def addSuffix(suffix: String)(importStr: String) =
-    if (importStr.endsWith("._")) importStr.substring(importStr.length-2) + suffix + "._"
-    else importStr.substring(0,importStr.lastIndexOf(".")) + suffix + "." + importStr.substring(importStr.lastIndexOf(".")+1,importStr.size) + suffix
+    if (importStr.endsWith("._")) importStr.substring(0,importStr.length-2) + suffix + "._"
+    else importStr.substring(0,importStr.lastIndexOf(".")) + suffix + "." +
+      importStr.substring(importStr.lastIndexOf(".")+1,importStr.length) + suffix
 
   private def traits(types: Map[Reference, Type], suffix: String) =
     types collect {
