@@ -20,7 +20,7 @@ class ScalaTestDataGeneratorIntegrationTest extends FunSpec with MustMatchers wi
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
   def toTest: File => Boolean = f => {
-    f.getName.endsWith(".yaml") && f.getName == "heroku.petstore.api.yaml"
+    f.getName.endsWith(".yaml") && f.getName != "instagram.api.yaml"
   }
 
   describe("ScalaTestDataGenerator should generate model files") {
@@ -34,7 +34,7 @@ class ScalaTestDataGeneratorIntegrationTest extends FunSpec with MustMatchers wi
       val (base, model) = StrictYamlParser.parse(file)
       val ast         = ModelConverter.fromModel(base, model)
       val flatAst     = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
-      val scalaModel  = new ScalaGenerator(flatAst.typeDefs).generators(file.getName)
+      val scalaModel  = new ScalaGenerator(flatAst.typeDefs, flatAst.discriminators).generators(file.getName)
       val expected    = asInFile(file, "scala")
       if (expected.isEmpty) dump(scalaModel, file, "scala")
       clean(scalaModel) mustBe clean(expected)

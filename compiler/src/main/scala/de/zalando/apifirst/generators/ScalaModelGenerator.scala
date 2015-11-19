@@ -52,7 +52,7 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
     correctedResult.toSeq.distinct.filterNot(_.startsWith(pckg+suffix)).map(r => Map("name" -> r))
   }
 
-  // FIXME
+  // FIXME very fragile implementation
   private def addSuffix(suffix: String)(importStr: String) =
     if (importStr.endsWith("._")) importStr.substring(0,importStr.length-2) + suffix + "._"
     else importStr.substring(0,importStr.lastIndexOf(".")) + suffix + "." +
@@ -128,27 +128,17 @@ trait ScalaTestDataGenerator {
     case o => s"generator name for $o"// relativeGeneratorName(tpe, thisType)
   }
 
-  private def containerType(c: Container): String = c match {
-    case Opt(tpe, _) =>
-      val innerGenerator = generatorNameForType(tpe)
-      s"Gen.option($innerGenerator)"
-    case Arr(tpe, _, _) =>
-      val innerGenerator = generatorNameForType(tpe)
-      s"Gen.containerOf[List,${tpe.name.className}]($innerGenerator)"
-    case c @ CatchAll(tpe, _) =>
-      // TODO generate non-empty map
-      // FIXME this is not working yet
-      s"Gen.const(${tpe.name.className})".replace("Map[", "Map.empty[")
+  private def containerType(c: Container): String = {
+    val innerGenerator = generatorNameForType(c.tpe)
+    val className = c.tpe.name.typeAlias()
+    c match {
+      case Opt(tpe, _)          => s"Gen.option($innerGenerator)"
+      case Arr(tpe, _, _)       => s"Gen.containerOf[List,$className]($innerGenerator)"
+      case c @ CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
+    }
   }
 
   private def primitiveType(tpe: Type) = s"arbitrary[${tpe.name.className}]"
-
-  /*
-  def generatorName(typeDef: Type): String = escape(typeDef.name.className + GEN)
-
-  def relativeGeneratorName(typeDef: Type, thisType: TypeName)
-    = escape(typeDef.name.relativeTo(thisType).replace(targetNamespace, defaultNamespace) + GEN)
-  */
 
 }
 trait ScalaModelGenerator {

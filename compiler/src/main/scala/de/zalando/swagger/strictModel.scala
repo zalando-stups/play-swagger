@@ -669,6 +669,9 @@ object strictModel {
     val example:                Example[T]
   ) extends VendorExtensions with AllValidations[T] with ObjectValidation {
     require(allOf.forall(_.nonEmpty))
+    // TODO this could be handled with a Map[String, Any]
+    require(`type`!=PrimitiveType.OBJECT || properties != null || additionalProperties != null,
+      "Support for object definitions without properties is not implemented yet")
     validateSchemaArray(items)
     validateSchemaArray(allOf)
     private def validateSchemaArray(a: Option[_]) =
