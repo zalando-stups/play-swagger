@@ -364,9 +364,9 @@ object strictModel {
     items:                  PrimitivesItems[T],
     @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
     default:                Default[T],
-    maximum:                Maximum,
+    maximum:                Maximum[T],
     exclusiveMaximum:       ExclusiveMaximum,
-    minimum:                Minimum,
+    minimum:                Minimum[T],
     exclusiveMinimum:       ExclusiveMinimum,
     maxLength:              MaxLength,
     minLength:              MinLength,
@@ -375,7 +375,7 @@ object strictModel {
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
-    multipleOf:             MultipleOf
+    multipleOf:             MultipleOf[T]
   ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
   /**
@@ -413,9 +413,9 @@ object strictModel {
     items:                  PrimitivesItems[T],
     @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
     default:                Default[T],
-    maximum:                Maximum,
+    maximum:                Maximum[T],
     exclusiveMaximum:       ExclusiveMaximum,
-    minimum:                Minimum,
+    minimum:                Minimum[T],
     exclusiveMinimum:       ExclusiveMinimum,
     maxLength:              MaxLength,
     minLength:              MinLength,
@@ -424,7 +424,7 @@ object strictModel {
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
-    multipleOf:             MultipleOf,
+    multipleOf:             MultipleOf[T],
     allowEmptyValue:        Boolean = false // unique for form
   ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
@@ -463,9 +463,9 @@ object strictModel {
     items:                  PrimitivesItems[T],
     @JsonScalaEnumeration(classOf[CollectionFormatWithMultiReference]) collectionFormat: CollectionFormatWithMulti.Value,
     default:                Default[T],
-    maximum:                Maximum,
+    maximum:                Maximum[T],
     exclusiveMaximum:       ExclusiveMaximum,
-    minimum:                Minimum,
+    minimum:                Minimum[T],
     exclusiveMinimum:       ExclusiveMinimum,
     maxLength:              MaxLength,
     minLength:              MinLength,
@@ -474,7 +474,7 @@ object strictModel {
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
-    multipleOf:             MultipleOf,
+    multipleOf:             MultipleOf[T],
     allowEmptyValue:        Boolean = false // unique for query and form
   ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormatWithMulti.Value]
 
@@ -512,9 +512,9 @@ object strictModel {
     items:                  PrimitivesItems[T],
     @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
     default:                Default[T],
-    maximum:                Maximum,
+    maximum:                Maximum[T],
     exclusiveMaximum:       ExclusiveMaximum,
-    minimum:                Minimum,
+    minimum:                Minimum[T],
     exclusiveMinimum:       ExclusiveMinimum,
     maxLength:              MaxLength,
     minLength:              MinLength,
@@ -523,7 +523,7 @@ object strictModel {
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
-    multipleOf:             MultipleOf
+    multipleOf:             MultipleOf[T]
   ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
 
   sealed trait ResponseValue
@@ -598,9 +598,9 @@ object strictModel {
     items:                  PrimitivesItems[T],
     @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
     default:                Default[T],
-    maximum:                Maximum,
+    maximum:                Maximum[T],
     exclusiveMaximum:       ExclusiveMaximum,
-    minimum:                Minimum,
+    minimum:                Minimum[T],
     exclusiveMinimum:       ExclusiveMinimum,
     maxLength:              MaxLength,
     minLength:              MinLength,
@@ -609,7 +609,7 @@ object strictModel {
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
-    multipleOf:             MultipleOf
+    multipleOf:             MultipleOf[T]
   ) extends VendorExtensions with AllValidations[T]
 
   /**
@@ -642,9 +642,9 @@ object strictModel {
     val title:                  Title,
     val description:            Description,
     val default:                Default[T],
-    val maximum:                Maximum,
+    val maximum:                Maximum[T],
     val exclusiveMaximum:       ExclusiveMaximum,
-    val minimum:                Minimum,
+    val minimum:                Minimum[T],
     val exclusiveMinimum:       ExclusiveMinimum,
     val maxLength:              MaxLength,
     val minLength:              MinLength,
@@ -653,7 +653,7 @@ object strictModel {
     val minItems:               MinItems,
     val uniqueItems:            UniqueItems,
     val enum:                   Enum[T],
-    val multipleOf:             MultipleOf,
+    val multipleOf:             MultipleOf[T],
     val maxProperties:          MaxProperties,
     val minProperties:          MinProperties,
     val required:               StringArray,
@@ -705,9 +705,9 @@ object strictModel {
     items:                  PrimitivesItems[T],
     collectionFormat:       CollectionFormat.Value,
     default:                Default[T],
-    maximum:                Maximum,
+    maximum:                Maximum[T],
     exclusiveMaximum:       ExclusiveMaximum,
-    minimum:                Minimum,
+    minimum:                Minimum[T],
     exclusiveMinimum:       ExclusiveMinimum,
     maxLength:              MaxLength,
     minLength:              MinLength,
@@ -716,7 +716,7 @@ object strictModel {
     minItems:               MinItems,
     uniqueItems:            UniqueItems,
     enum:                   Enum[T],
-    multipleOf:             MultipleOf
+    multipleOf:             MultipleOf[T]
   ) extends VendorExtensions with AllValidations[T] {
     require(`type` != PrimitiveType.NULL)
     require(`type` != PrimitiveType.OBJECT)
@@ -882,20 +882,20 @@ object strictModel {
    * validations for Int, Long, Double, Float
    */
   object NumberValidation {
-    type MultipleOf             = Option[Double]
-    type Maximum                = Option[Double]
+    type MultipleOf[T]          = Option[BigDecimal]
+    type Maximum[T]             = Option[BigDecimal]
     type ExclusiveMaximum       = Option[Boolean]
-    type Minimum                = Option[Double]
+    type Minimum[T]             = Option[BigDecimal]
     type ExclusiveMinimum       = Option[Boolean]
   }
-  trait NumberValidation extends ValidationBase {
+  trait NumberValidation[T] extends ValidationBase {
     import NumberValidation._
-    def multipleOf:             MultipleOf
-    def maximum:                Maximum
+    def multipleOf:             MultipleOf[T]
+    def maximum:                Maximum[T]
     def exclusiveMaximum:       ExclusiveMaximum
-    def minimum:                Minimum
+    def minimum:                Minimum[T]
     def exclusiveMinimum:       ExclusiveMinimum
-    require(multipleOf.forall(_ > 0))
+    // require(multipleOf.forall(v => v.signum(v)==1)) FIXME repair this requirement
     require(exclusiveMaximum.isEmpty || maximum.isDefined)
     require(exclusiveMinimum.isEmpty || minimum.isDefined)
   }
@@ -942,6 +942,6 @@ object strictModel {
     require(minProperties.forall(_>=0))
   }
 
-  trait AllValidations[T] extends NumberValidation with StringValidation with ArrayValidation[T]
+  trait AllValidations[T] extends NumberValidation[T] with StringValidation with ArrayValidation[T]
 
 }
