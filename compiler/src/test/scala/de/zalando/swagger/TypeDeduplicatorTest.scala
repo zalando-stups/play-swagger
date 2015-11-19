@@ -28,7 +28,7 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
       testCompositionType(OneOf.apply)
     }
     it("should deduplicate TypeReferences") {
-      testTypeReferences(TypeReference.apply)
+      testTypeReferences(TypeReference(_, None))
     }
     it("should deduplicate TypeDefs") {
       testTypeDef(TypeDef.apply)
