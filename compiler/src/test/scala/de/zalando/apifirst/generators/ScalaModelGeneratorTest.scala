@@ -13,9 +13,9 @@ import scala.language.implicitConversions
   */
 class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
-  describe("ScalaModelGeneratorTest") {
+  describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {
-      new ScalaModelGenerator(Map.empty)("test") mustBe ""
+      new ScalaGenerator(Map.empty).model("test") mustBe ""
     }
 
     it("should generate single type alias for an option") {
@@ -23,7 +23,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Opti" -> Opt(Lng(None), None),
         "definitions" / "Stri" -> Opt(Str(None, None), None)
       )
-      new ScalaModelGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).model("test") mustBeAs
         """package test
           |object definitions {
           |
@@ -39,7 +39,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Option" -> Opt(Lng(None), None),
         "definitions" / "String" -> Opt(Str(None, None), None)
       )
-      new ScalaModelGenerator(model)("overloaded") mustBeAs
+      new ScalaGenerator(model).model("overloaded") mustBeAs
         """package overloaded
           |object definitions {
           |
@@ -55,7 +55,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Dbl" -> Arr(Dbl(None), None),
         "definitions" / "Flt" -> Arr(Flt(None), None)
       )
-      new ScalaModelGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).model("test") mustBeAs
         """package test
           |object definitions {
           |
@@ -70,7 +70,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "parameters" / "all" -> CatchAll(Bool(None), None)
       )
-      new ScalaModelGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).model("test") mustBeAs
         """package test
           |object parameters {
           |
@@ -83,7 +83,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "paths" / "/" / "get" / "responses" / "200" -> Null(None)
       )
-      new ScalaModelGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).model("test") mustBeAs
         """"""
     }
 
@@ -95,7 +95,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "User" -> TypeDef("definitions" / "User", fields, None)
       )
-      new ScalaModelGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).model("test") mustBeAs
         """package test
           |object definitions {
           |
@@ -109,7 +109,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "OptionalData" -> Opt(TypeReference("definitions" / "Passwords"), None),
         "definitions" / "Passwords" -> Arr(Password(None), None, None)
       )
-      new ScalaModelGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).model("test") mustBeAs
         """package test
           |object definitions {
           |
@@ -154,7 +154,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val discriminators: DiscriminatorLookupTable = Map(
         "definitions" / "Pet" -> "definitions" / "Pet" / "petType"
       )
-      val result = new ScalaModelGenerator(model, discriminators)("test")
+      val result = new ScalaGenerator(model, discriminators).model("test")
 
       result mustBeAs
         """package test
@@ -187,7 +187,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
             Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)
       )
-      new ScalaModelGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).model("test") mustBeAs
         """package test
           |object definitions {
           |

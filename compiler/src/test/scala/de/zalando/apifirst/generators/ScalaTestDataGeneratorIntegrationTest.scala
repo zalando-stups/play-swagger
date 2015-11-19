@@ -34,7 +34,7 @@ class ScalaTestDataGeneratorIntegrationTest extends FunSpec with MustMatchers wi
       val (base, model) = StrictYamlParser.parse(file)
       val ast         = ModelConverter.fromModel(base, model)
       val flatAst     = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
-      val scalaModel  = new ScalaTestDataGenerator(flatAst.typeDefs).apply(file.getName)
+      val scalaModel  = new ScalaGenerator(flatAst.typeDefs).generators(file.getName)
       val expected    = asInFile(file, "scala")
       if (expected.isEmpty) dump(scalaModel, file, "scala")
       clean(scalaModel) mustBe clean(expected)

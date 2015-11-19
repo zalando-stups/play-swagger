@@ -113,9 +113,11 @@ case class ScalaName(ref: Reference) {
   def packageName = parts.head.toLowerCase.split("/").filter(_.nonEmpty).map(escape).mkString(".")
   def qualifiedName = packageName + "." + className
   def className = escape(capitalize("/", parts.tail.head))
-  def typeAlias(suffix: String = "") = {
-    val allParts = if (suffix.trim.isEmpty) parts.tail else parts.tail.:+(suffix)
-    escape(capitalize("/", allParts.mkString("/")))
+  def typeAlias(prefix: String = "", suffix: String = "") = {
+    val withSuffix = if (suffix.trim.isEmpty) parts.tail else parts.tail.:+(suffix)
+    val (withPrefix, caseTransformer) =
+      if (prefix.trim.isEmpty) (withSuffix, capitalize _) else (prefix :: withSuffix, camelize _)
+    escape(caseTransformer("/", withPrefix.mkString("/")))
   }
   def methodName = escape(camelize("/", parts.last))
   def names = (packageName, className, methodName)

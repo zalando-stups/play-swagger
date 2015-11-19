@@ -11,11 +11,11 @@ import scala.language.implicitConversions
   * @author  slasch 
   * @since   18.11.2015.
   */
-class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
+class ScalaGeneratorsTest extends FunSpec with MustMatchers {
 
-  describe("ScalaTestDataGeneratorTest") {
+  describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {
-      new ScalaTestDataGenerator(Map.empty)("test") mustBe ""
+      new ScalaGenerator(Map.empty).generators("test") mustBe ""
     }
 
     it("should generate single type alias for an option") {
@@ -23,7 +23,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Opti" -> Opt(Lng(None), None),
         "definitions" / "Stri" -> Opt(Str(None, None), None)
       )
-      new ScalaTestDataGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).generators("test") mustBeAs
         """package test
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
@@ -42,7 +42,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Option" -> Opt(Lng(None), None),
         "definitions" / "String" -> Opt(Str(None, None), None)
       )
-      new ScalaTestDataGenerator(model)("overloaded") mustBeAs
+      new ScalaGenerator(model).generators("overloaded") mustBeAs
         """package overloaded
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
@@ -61,7 +61,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Dbl" -> Arr(Dbl(None), None),
         "definitions" / "Flt" -> Arr(Flt(None), None)
       )
-      new ScalaTestDataGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).generators("test") mustBeAs
         """package test
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
@@ -80,7 +80,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "parameters" / "all" -> CatchAll(Bool(None), None)
       )
-      new ScalaTestDataGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).generators("test") mustBeAs
         """package test
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
@@ -95,7 +95,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "paths" / "/" / "get" / "responses" / "200" -> Null(None)
       )
-      new ScalaTestDataGenerator(model)("test") mustBeAs ""
+      new ScalaGenerator(model).generators("test") mustBeAs ""
     }
 
     it("should generate a class file for typeDef") {
@@ -106,7 +106,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "User" -> TypeDef("definitions" / "User", fields, None)
       )
-      new ScalaTestDataGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).generators("test") mustBeAs
         """package test
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
@@ -126,7 +126,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "OptionalData" -> Opt(TypeReference("definitions" / "Passwords"), None),
         "definitions" / "Passwords" -> Arr(Password(None), None, None)
       )
-      new ScalaTestDataGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).generators("test") mustBeAs
         """package test
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
@@ -175,7 +175,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
       val discriminators: DiscriminatorLookupTable = Map(
         "definitions" / "Pet" -> "definitions" / "Pet" / "petType"
       )
-      val result = new ScalaTestDataGenerator(model)("test")
+      val result = new ScalaGenerator(model).generators("test")
 
       result mustBeAs
         s"""package test
@@ -237,7 +237,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
             Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)
       )
-      new ScalaTestDataGenerator(model)("test") mustBeAs
+      new ScalaGenerator(model).generators("test") mustBeAs
         """package test
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
@@ -266,6 +266,7 @@ class ScalaTestDataGeneratorTest extends FunSpec with MustMatchers {
   class StringComparator(s1: String) {
 
     def mustBeAs(s2: String): Unit = {
+      println(s1)
       cleanSpaces(s1) mustBe cleanSpaces(s2.stripMargin)
     }
 

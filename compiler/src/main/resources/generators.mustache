@@ -11,17 +11,17 @@ object {{&package}} {
     import {{&name}}
     {{/imports}}
 
-    {{#classes}}
-    def create{{& name }} = _generate({{& name }})⮐
-    {{/classes}}
-
     {{#aliases}}
-    def create{{& name }} = _generate({{& name }})⮐
+    def {{& creator_method }} = _generate({{& generator }})⮐
     {{/aliases}}
 
     {{#aliases}}
-    val {{& name}} = {{& generator }}⮐
+    val {{& name}} = {{& generator_name }}⮐
     {{/aliases}}⮐
+
+    {{#classes}}
+    def {{& creator_method }} = _generate({{& name }})⮐
+    {{/classes}}
 
     {{#classes}}
     val {{& name}} =⮐

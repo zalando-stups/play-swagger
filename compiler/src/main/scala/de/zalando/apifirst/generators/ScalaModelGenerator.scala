@@ -10,24 +10,119 @@ import org.fusesource.scalate.TemplateEngine
   * @author  slasch 
   * @since   16.11.2015.
   */
-class ScalaTestDataGenerator(allTypes: TypeLookupTable)
-  extends ScalaGenerator(allTypes, Map.empty) {
 
-  val templateName = "generators.mustache"
+class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLookupTable = Map.empty)
+  extends ScalaModelGenerator with ScalaTestDataGenerator {
 
-  val suffix = "Generator"
+  def model(fileName: String) = apply(fileName, modelTemplateName, modelSuffix)
+  def generators(fileName: String) = apply(fileName, generatorsTemplateName, generatorsSuffix)
 
-  val classAugmenter: Field => Map[String, Any] = f =>
-    Map("generator" -> generatorNameForType(f.tpe))
+  private def apply(fileName: String, templateName: String, suffix: String): String = {
+    if (allTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
+    else nonEmptyTemplate(Map("main_package" -> fileName), templateName, suffix)
+  }
 
-  val aliasAugmenter: Container => Map[String, Any] = t =>
-    Map("generator" -> generatorNameForType(t))
+  private def nonEmptyTemplate(map: Map[String, Any], templateName: String, suffix: String): String = {
+    val engine = new TemplateEngine
+    val typesByPackage = allTypes.groupBy(_._1.packageName)
+    val augmented = map ++ Map(
+      "packages" -> typesByPackage.toList.map { case (pckg, typeDefs) =>
+        Map(
+          "package" -> (pckg + suffix),
+          "imports" -> imports(typeDefs, pckg, suffix),
+          "aliases" -> aliases(typeDefs, suffix),
+          "traits"  -> traits(typeDefs, suffix),
+          "classes" -> classes(typeDefs, suffix)
+        )
+      })
+    val output = engine.layout(templateName, augmented)
+    output.replaceAll("\u2B90", "")
+  }
 
-  private def generatorNameForType: (Type) => String = {
+  // TODO for validators, tests and controllers we'll need a chain of dependencies
+  private def imports(typeDefs: Map[Reference, Type], pckg: String, suffix: String) = {
+    val allImports = typeDefs.values.flatMap { v => v +: v.nestedTypes }.filter(_.name.parts.nonEmpty).toSeq.distinct
+    val neededImports = allImports.filterNot(_.name.packageName == pckg + suffix).filterNot(_.name.packageName.isEmpty)
+    val result = neededImports.groupBy(_.name.packageName).flatMap { packageGroup =>
+      if (packageGroup._2.size > 2) Seq(packageGroup._1 + "._")
+      else packageGroup._2.map(_.name.qualifiedName)
+    }
+    val correctedResult = if (suffix.nonEmpty) result ++ result.map(addSuffix(suffix)) else result
+    correctedResult.toSeq.distinct.map(r => Map("name" -> r))
+  }
+
+  // FIXME
+  private def addSuffix(suffix: String)(importStr: String) =
+    if (importStr.endsWith("._")) importStr.substring(importStr.length-2) + suffix + "._"
+    else importStr.substring(0,importStr.lastIndexOf(".")) + suffix + "." + importStr.substring(importStr.lastIndexOf(".")+1,importStr.size) + suffix
+
+  private def traits(types: Map[Reference, Type], suffix: String) =
+    types collect {
+      case (k, t: TypeDef) if discriminators.contains(k) => typeDefProps(k, t, t.fields, suffix)
+    }
+
+  private def aliases(types: Map[Reference, Type], suffix: String) =
+    types collect {
+      case (k, v: Container) =>
+        Map(
+          "name" -> k.typeAlias(suffix = suffix),
+          "creator_method" -> k.typeAlias(prefix = "create", suffix = suffix),
+          "alias" -> v.imports.head,
+          "generator" -> k.typeAlias(suffix = suffix),
+          "generator_name" -> generatorNameForType(v),
+          "underlying_type" -> v.nestedTypes.map(_.name.typeAlias()).mkString(", ")
+        )
+    }
+
+  private def classes(types: Map[Reference, Type], suffix: String) =
+    types collect {
+      case (k, t: TypeDef) if !k.simple.contains("AllOf") && !k.simple.contains("OneOf") =>
+        val traitName = discriminators.get(k).map(_ => Map("name" -> k.typeAlias()))
+        typeDefProps(k, t, t.fields, suffix) + ("trait" -> traitName)
+      case (k, t: Composite) =>
+        val fields = dereferenceFields(t).distinct
+        typeDefProps(k, t, fields, suffix) + ("trait" -> t.root.map(r => Map("name" -> r.className)))
+    }
+
+  private def dereferenceFields(t: Composite): Seq[Field] =
+    t.descendants flatMap {
+      case td: TypeDef => td.fields
+      case r: TypeReference => allTypes.get(r.name) match {
+        case Some(td: TypeDef) => td.fields
+        case Some(c: Composite) => dereferenceFields(c)
+        case other => throw new IllegalStateException(s"Unexpected contents of Composite $r: $other")
+      }
+    }
+
+  private def typeDefProps(k: Reference, t: Type, fields: Seq[Field], suffix: String): Map[String, Object] = {
+    Map(
+      "name" -> k.typeAlias(suffix = suffix),
+      "class_name" -> k.typeAlias(),
+      "creator_method" -> k.typeAlias(prefix = "create", suffix = suffix),
+      "fields" -> fields.zipWithIndex.map { case (f, i) =>
+        Map(
+          "name" -> escape(f.name.simple),
+          "generator" -> generatorNameForType(f.tpe),
+          "typeName" -> f.tpe.name.typeAlias(),
+          "last" -> (i == fields.size - 1)
+        )
+      }
+    )
+  }
+
+}
+
+
+trait ScalaTestDataGenerator {
+
+  val generatorsTemplateName = "generators.mustache"
+
+  val generatorsSuffix = "Generator"
+
+  def generatorNameForType: (Type) => String = {
     case s: PrimitiveType => primitiveType(s)
     case c: Container => containerType(c)
-    case r: TypeReference =>
-      r.name.typeAlias(suffix)
+    case r: TypeReference => r.name.typeAlias(suffix = generatorsSuffix)
     case o => s"generator name for $o"// relativeGeneratorName(tpe, thisType)
   }
 
@@ -54,113 +149,11 @@ class ScalaTestDataGenerator(allTypes: TypeLookupTable)
   */
 
 }
-class ScalaModelGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLookupTable = Map.empty)
-  extends ScalaGenerator(allTypes, discriminators) {
+trait ScalaModelGenerator {
 
-  val suffix = ""
+  val modelSuffix = ""
 
-  val templateName = "model.mustache"
-
-  val classAugmenter: Field     => Map[String, Any] = f =>
-    Map("typeName" -> f.tpe.name.typeAlias())
-
-  val aliasAugmenter: Container => Map[String, Any] = v => Map(
-    "alias" -> v.imports.head,
-    "underlying_type" -> v.nestedTypes.map(_.name.typeAlias()).mkString(", ")
-  )
+  val modelTemplateName = "model.mustache"
 }
 
-abstract class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLookupTable) {
 
-  def templateName: String
-  def suffix: String
-
-  def apply(fileName: String): String = {
-    if (allTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
-    else nonEmptyTemplate(Map("main_package" -> fileName))
-  }
-
-  def classAugmenter: Field => Map[String, Any]
-  def aliasAugmenter: Container => Map[String, Any]
-
-  def nonEmptyTemplate(map: Map[String, Any]): String = {
-    val engine = new TemplateEngine
-    val typesByPackage = allTypes.groupBy(_._1.packageName)
-    val augmented = map ++ Map(
-      "packages" -> typesByPackage.toList.map { case (pckg, typeDefs) =>
-        Map(
-          "package" -> (pckg + suffix),
-          "imports" -> imports(typeDefs, pckg),
-          "aliases" -> aliases(typeDefs, aliasAugmenter),
-          "traits"  -> traits(typeDefs),
-          "classes" -> classes(typeDefs, classAugmenter)
-        )
-      })
-    val output = engine.layout(templateName, augmented)
-    output.replaceAll("\u2B90", "")
-  }
-
-  // TODO for validators, tests and controllers we'll need a chain of dependencies
-  def imports(typeDefs: Map[Reference, Type], pckg: String) = {
-    val allImports = typeDefs.values.flatMap { v => v +: v.nestedTypes }.filter(_.name.parts.nonEmpty).toSeq.distinct
-    val neededImports = allImports.filterNot(_.name.packageName == pckg + suffix).filterNot(_.name.packageName.isEmpty)
-    val result = neededImports.groupBy(_.name.packageName).flatMap { packageGroup =>
-      if (packageGroup._2.size > 2) Seq(packageGroup._1 + "._")
-      else packageGroup._2.map(_.name.qualifiedName)
-    }
-    val correctedResult = if (suffix.nonEmpty) result ++ result.map(addSuffix) else result
-    correctedResult.toSeq.distinct.map(r => Map("name" -> r))
-  }
-
-  // FIXME
-  private def addSuffix(importStr: String) =
-    if (importStr.endsWith("._")) importStr.substring(importStr.length-2) + suffix + "._"
-    else importStr.substring(0,importStr.lastIndexOf(".")) + suffix + "." + importStr.substring(importStr.lastIndexOf(".")+1,importStr.size) + suffix
-
-  private def traits(types: Map[Reference, Type]) =
-    types collect {
-      case (k, t: TypeDef) if discriminators.contains(k) => typeDefProps(k, t, t.fields, classAugmenter)
-    }
-
-  private def aliases(types: Map[Reference, Type], augmenter: Container => Map[String, Any]) =
-    types collect {
-      case (k, v: Container) =>
-        Map(
-          "name" -> k.typeAlias(suffix)
-        ) ++ augmenter(v)
-    }
-
-  def classes(types: Map[Reference, Type], augmenter: Field => Map[String, Any]) =
-    types collect {
-      case (k, t: TypeDef) if !k.simple.contains("AllOf") && !k.simple.contains("OneOf") =>
-        val traitName = discriminators.get(k).map(_ => Map("name" -> k.typeAlias()))
-        typeDefProps(k, t, t.fields, augmenter) + ("trait" -> traitName)
-      case (k, t: Composite) =>
-        val fields = dereferenceFields(t).distinct
-        typeDefProps(k, t, fields, augmenter) + ("trait" -> t.root.map(r => Map("name" -> r.className)))
-    }
-
-  private def dereferenceFields(t: Composite): Seq[Field] =
-    t.descendants flatMap {
-      case td: TypeDef => td.fields
-      case r: TypeReference => allTypes.get(r.name) match {
-        case Some(td: TypeDef) => td.fields
-        case Some(c: Composite) => dereferenceFields(c)
-        case other => throw new IllegalStateException(s"Unexpected contents of Composite $r: $other")
-      }
-    }
-
-  def typeDefProps(k: Reference, t: Type, fields: Seq[Field], augmenter: Field => Map[String, Any]): Map[String, Object] = {
-    Map(
-      "name" -> k.typeAlias(suffix),
-      "class_name" -> k.typeAlias(),
-      "fields" -> fields.zipWithIndex.map { case (f, i) =>
-        Map(
-          "name" -> escape(f.name.simple),
-          "last" -> (i == fields.size - 1)
-        ) ++ augmenter(f)
-      }
-    )
-  }
-
-}
