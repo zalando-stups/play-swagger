@@ -1,0 +1,234 @@
+# Model Definitions
+
+Scala domain model definitions are generated for the data types defined as swagger parameters in an api specification.  Swagger parameters can be of path, query, header, form or body types and consist of either primitive data types or more complex types composed from objects and arrays with these primitives as leaves.  Both primitive data types and complex types are mapped to scala.  As an example, lets take the swagger api specification ```simple.petstore.api.yaml``` that defines the api of a simple petstore which contains a model definition for a pet.
+
+```yaml
+definitions:
+  pet:
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      tag:
+        type: string
+```
+
+This definition consists of an object ```pet``` containing the required properties ```id``` and ```name```, and the optional property ```tag```, the swagger primitive types of these properties are a 64 bit ```integer``` and twice a ```string```.  The play swagger plugin will map this definition on to a generated scala model consisting of the file.
+  
+```scala
+package simple.petstore.api.yaml
+object definitions {
+    type PetTag = Option[String]
+    case class Pet(id: Long, name: String, tag: PetTag) 
+}
+```
+
+This generated file contains a type definition ```PetTag``` that declares a type alias for the optional ```tag``` property and a ```Pet``` case class with the properties as named in the swagger api definition and mapped on the subsequent scala primitive or declared types.  The case class and type alias are generated in an object ```definitions```, taken from swagger's api specification root property with the same name.  This object itself is contained in the package ```simple.petstore.api.yaml```, taken from the api's filename.
+
+Note that the model is generated within the play application as _unmanaged_ code in the target folder.  Generated model code is not intended to be altered by the client programmer, which should perceive the swagger definition as the single source of truth, and indeed, source code that describes the model in itself.  The ```Pet``` case class can, of course, be used from client application code though, after being imported.
+ 
+```
+import simple.petstore.api.yaml.definitions._
+
+val pet = Pet(0L, "Tucker", Some("Greyhound"))
+```        
+         
+## Primitive Types
+         
+Swagger version 2.0 allows for primitive data types based on the types defined by [JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8).  When generated as scala the following mapping applies.
+          
+| Common Name | Swagger Type  | Swagger Format  | Scala Type           |
+| ----------- | ------------- | --------------- | -------------------- |
+| integer     | ```integer``` | ```int32```     | ```scala.Int```      |
+| long        | ```integer``` | ```int64```     | ```scala.Long```     |
+| float       | ```number```  | ```float```     | ```scala.Float```    |
+| double      | ```number```  | ```double```    | ```scala.Double```   |
+| boolean     | ```boolean``` |                 | ```scala.Boolean```  |
+| string      | ```string```  |                 | ```scala.String```   |
+| byte        | ```string```  | ```byte```      | ```scala.Byte```     |
+| binary      | ```string```  | ```binary```    | _unsupported_        |
+| date        | ```string```  | ```date```      | ```java.util.Date``` |
+| datetime    | ```string```  | ```date-time``` | ```java.util.Date``` |
+| password    | ```string```  | ```password```  | ```scala.String```   |
+| file        | ```file```    |                 | ```java.io.File```   |
+
+## Complex Types
+
+Complex types are defined in swagger model definitions as either objects or arrays.
+
+### Objects
+
+Objects are, again, based on the [JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8) specification and defined as swagger [Schema Objects](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#schema-object) for parameter definitions of ```type: "object"```.  For example, given a swagger api definition file ```api.yaml``` containing a model that defines a ```person``` as an object with the properties ```name``` and ```age``` of the primitive types ```string``` and ```integer``` subsequently, this object will be mapped on a scala case class, generated in a scala object (namespace) with the same name as the root swagger property in which it occurs, i.e. ```definitions```, and in a package with the same name as the swagger definition file in which the model is defined, i.e. ```api.yaml```.
+ 
+```yaml
+definitions:
+  person:
+    type: object
+    required:
+      - name
+      - age
+    properties:
+      name:
+        type: string
+      age:
+        type: integer
+        format: int32
+```
+ 
+ ```scala
+ package api.yaml
+ object definitions {
+   case class Person(name: String, age: Int)
+ }
+ ```
+
+#### Optionality
+
+Swagger, by default, defines properties to be optional, which can be overridden by providing a list of ```required``` object properties as already used in the examples above.  Optional properties are mapped upon scala's ```Option``` type for which a type alias is generated for each property that is optional. E.g.
+ 
+```yaml
+definitions:
+  product:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      tag:
+        type: string
+```
+
+```scala
+package api.yaml
+object definitions {
+    type ProductTag = Option[String]
+    case class Product(name: String, tag: ProductTag)
+}
+```
+
+#### Nested Objects
+
+Objects can be nested, in which case the scala case class parameter of the outer object that defines the nested object will be the scala case class type that is generated for that parameter. E.g.
+
+```yaml
+definitions:
+  parent:
+    type: object
+    required:
+      - child
+    properties:
+      child:
+        type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+```
+
+```scala
+package api.yaml
+object definitions {
+  case class Parent(child: Child)
+  case class Child(name: String)
+}
+```
+
+#### Object Extension
+
+Objects can extend other objects through swaggers' ```allOf``` definition.  In the example below the ```ExtendedErrorModel``` inherits _all of_ the properties of the ```ErrorModel``` which it refers to, and _extends_ this model with the proprty ```rootCause```.  Swagger object extension is mapped by duplicating the inherited properties in the object that extends. E.g.
+
+```yaml
+definitions:
+  ErrorModel:
+    type: object
+    required:
+    - message
+    - code
+    properties:
+      message:
+        type: string
+      code:
+        type: integer
+  ExtendedErrorModel:
+    allOf:
+    - $ref: '#/definitions/ErrorModel'
+    - type: object
+      required:
+      - rootCause
+      properties:
+        rootCause:
+          type: string
+```
+
+```scala
+package api.yaml
+object definitions {
+  case class ErrorModel(message: String, code: Int)
+  case class ExtendedErrorModel(message: String, code: Int, rootCause: String)
+}
+```
+
+#### Polymorphism
+
+Polymorphic definitions are possible through employment of the swagger ```discriminator``` definition.  In the example below an abstract ```Pet``` defines that what concrete ```Cat```s and ```Dog```s have in common.  As swagger object models are defining data, a discriminator property is required to distinguish concrete cat and dog instances as they are serialized to and from the api.  The discriminator property works in that sence the same way as a discriminator column works in ORM frameworks when mapping a class hierarchy on a single table.
+
+The generated scala code does not have such a requirement, but as we are modeling data and we cannot predict whether business logic depends on the value of swaggers' discriminator property, we map the "abstract" swagger model definition on a scala trait which contains accessor methods, including the discriminator property, that are implemented by the concrete case classes of the model definitions extending it. I.e.      
+
+```yaml
+definitions:
+  Pet:
+    discriminator: petType
+    properties:
+      name:
+        type: string
+      petType:
+        type: string
+    required:
+    - name
+    - petType
+  Cat:
+    allOf:
+    - $ref: '#/definitions/Pet'
+    - properties:
+        huntingSkill:
+          type: string
+          default: lazy
+          enum:
+          - clueless
+          - lazy
+          - adventurous
+          - aggressive
+      required:
+      - huntingSkill
+  Dog:
+    allOf:
+    - $ref: '#/definitions/Pet'
+    - properties:
+        packSize:
+          type: integer
+          format: int32
+      required:
+      - packSize
+```
+
+```scala
+package basic_polymorphism.yaml
+object definitions {
+  trait IPet {
+    def name: String
+    def petType: String
+  }
+  case class Cat(name: String, petType: String, huntingSkill: String) extends IPet
+  case class Dog(name: String, petType: String, packSize: Int) extends IPet
+}
+```
+
+
+
+
