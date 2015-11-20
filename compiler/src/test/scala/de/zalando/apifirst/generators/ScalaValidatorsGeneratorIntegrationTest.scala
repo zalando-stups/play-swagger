@@ -16,7 +16,7 @@ class ScalaValidatorsGeneratorIntegrationTest extends FunSpec with MustMatchers 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
   def toTest: File => Boolean = f => {
-    f.getName == "heroku.petstore.api.yaml"
+    f.getName.endsWith(".yaml")
   }
 
   describe("ScalaModelGenerator should generate model files") {

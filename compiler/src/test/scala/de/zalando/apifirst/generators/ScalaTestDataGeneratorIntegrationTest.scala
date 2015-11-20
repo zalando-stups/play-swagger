@@ -20,7 +20,7 @@ class ScalaTestDataGeneratorIntegrationTest extends FunSpec with MustMatchers wi
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
   def toTest: File => Boolean = f => {
-    f.getName.endsWith(".yaml") && f.getName != "instagram.api.yaml"
+    f.getName.endsWith(".yaml")
   }
 
   describe("ScalaTestDataGenerator should generate model files") {

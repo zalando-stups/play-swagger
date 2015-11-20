@@ -26,15 +26,17 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
   private def nonEmptyTemplate(map: Map[String, Any], templateName: String, suffix: String): String = {
     val engine = new TemplateEngine
     val typesByPackage = allTypes.groupBy(_._1.packageName)
+
     val augmented = map ++ Map(
       "packages" -> typesByPackage.toList.map { case (pckg, typeDefs) =>
+        val constr = constraints(typeDefs)
         Map(
           "package" -> (pckg + suffix),
           "imports" -> imports(typeDefs, pckg, suffix),
           "aliases" -> aliases(typeDefs, suffix),
-          "traits"  -> traits(typeDefs, suffix),
-          "classes" -> classes(typeDefs, suffix),
-          "constraints" -> constraints(typeDefs)
+          "traits"  -> traits(typeDefs, suffix, constr),
+          "classes" -> classes(typeDefs, suffix, constr),
+          "constraints" -> constr
         )
       })
     val output = engine.layout(templateName, augmented)
@@ -60,9 +62,9 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
     else importStr.substring(0,importStr.lastIndexOf(".")) + suffix + "." +
       importStr.substring(importStr.lastIndexOf(".")+1,importStr.length) + suffix
 
-  private def traits(types: Map[Reference, Type], suffix: String) =
+  private def traits(types: Map[Reference, Type], suffix: String, constraints: Iterable[Map[String, Any]]) =
     types collect {
-      case (k, t: TypeDef) if discriminators.contains(k) => typeDefProps(k, t, t.fields, suffix)
+      case (k, t: TypeDef) if discriminators.contains(k) => typeDefProps(k, t, t.fields, suffix, constraints)
     }
 
   private def aliases(types: Map[Reference, Type], suffix: String) =
@@ -79,14 +81,14 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
         )
     }
 
-  private def classes(types: Map[Reference, Type], suffix: String) =
+  private def classes(types: Map[Reference, Type], suffix: String, constraints: Iterable[Map[String, Any]]) =
     types collect {
       case (k, t: TypeDef) if !k.simple.contains("AllOf") && !k.simple.contains("OneOf") =>
         val traitName = discriminators.get(k).map(_ => Map("name" -> k.typeAlias()))
-        typeDefProps(k, t, t.fields, suffix) + ("trait" -> traitName)
+        typeDefProps(k, t, t.fields, suffix, constraints) + ("trait" -> traitName)
       case (k, t: Composite) =>
         val fields = dereferenceFields(t).distinct
-        typeDefProps(k, t, fields, suffix) + ("trait" -> t.root.map(r => Map("name" -> r.className)))
+        typeDefProps(k, t, fields, suffix, constraints) + ("trait" -> t.root.map(r => Map("name" -> r.className)))
     }
 
   private def dereferenceFields(t: Composite): Seq[Field] =
@@ -99,19 +101,22 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
       }
     }
 
-  private def typeDefProps(k: Reference, t: Type, fields: Seq[Field], suffix: String): Map[String, Object] = {
+  private def typeDefProps(k: Reference, t: Type, fields: Seq[Field], suffix: String,
+                           constraints: Iterable[Map[String, Any]]): Map[String, Object] = {
+
     Map(
       "name" -> k.typeAlias(suffix = suffix),
       "class_name" -> k.typeAlias(),
       "creator_method" -> k.typeAlias(prefix = "create", suffix = suffix),
       "fields" -> fields.zipWithIndex.map { case (f, i) =>
+        val flatValidatoins = bottomValidations(f.name -> f.tpe, constraints)
         Map(
           "name" -> escape(f.name.simple),
           "generator" -> generatorNameForType(f.tpe),
           "typeName" -> f.tpe.name.typeAlias(),
           "last" -> (i == fields.size - 1),
-          "top_validations" -> validations(f.name -> f.tpe),
-          "bottom_validations" -> bottomValidations(f.name -> f.tpe)
+          "top_validations" -> validations(f.name -> f.tpe, flatValidatoins),
+          "bottom_validations" -> flatValidatoins
         )
       }
     )
@@ -161,33 +166,39 @@ trait PlayValidatorsGenerator {
 
   val validatorsTemplateName = "play_validation.mustache"
 
-  def validations(typeDefs: (Reference, Type)) =
-    validations0(typeDefs).flatten
+  def validations(typeDefs: (Reference, Type), flatValidations: Iterable[Map[String, Any]]) =
+    validations0(typeDefs, flatValidations).flatten
 
-  private def validations0(types: (Reference,Type)): Iterable[Iterable[Map[String, Any]]] =
+  private def validations0(types: (Reference,Type), flatValidations: Iterable[Map[String, Any]]):
+  Iterable[Iterable[Map[String, Any]]] =
     Seq(types) collect {
       case (k, t: TypeDef) =>
         Seq.empty
-      case (_, t: TypeRef) =>
-        Seq(Map(
-          "constraint_name" -> t.name.typeAlias(suffix = constraintsSuffix),
-          "field_name" -> t.name.simple
-        ))
+      case (r, t: TypeRef) =>
+        val constraintName = t.name.typeAlias(suffix = constraintsSuffix)
+        val validationName = t.name.typeAlias(suffix = validatorsSuffix)
+        if (flatValidations.exists(_.apply("constraint_name") == validationName))
+          Seq(Map("constraint_name" -> constraintName,"field_name" -> r.simple))
+        else
+          Seq.empty
       case (k, t: Composite) =>
         Seq.empty
       case (k, t: Container) =>
         Seq.empty
     }
 
-  def bottomValidations(typeDefs: (Reference, Type)) =
-    bottomValidations0(typeDefs).flatten
+  def bottomValidations(typeDefs: (Reference, Type), constraints: Iterable[Map[String, Any]]) =
+    if (constraints.exists(_.apply("constraint_name") == typeDefs._1.typeAlias(suffix = constraintsSuffix)))
+      bottomValidations0(typeDefs).flatten
+    else
+      Iterable.empty
 
   private def bottomValidations0(types: (Reference,Type)): Iterable[Iterable[Map[String, Any]]] =
     Seq(types) collect {
       case (k, t: PrimitiveType) =>
         Seq(Map(
-          "constraint_name" -> t.name.typeAlias(suffix = constraintsSuffix),
-          "field_name" -> t.name.simple
+          "constraint_name" -> k.typeAlias(suffix = constraintsSuffix),
+          "field_name" -> k.simple
         ))
     }
 
