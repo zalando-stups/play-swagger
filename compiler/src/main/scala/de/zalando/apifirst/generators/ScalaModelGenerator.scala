@@ -12,10 +12,11 @@ import org.fusesource.scalate.TemplateEngine
   */
 
 class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLookupTable = Map.empty)
-  extends ScalaModelGenerator with ScalaTestDataGenerator {
+  extends ScalaModelGenerator with ScalaTestDataGenerator with PlayValidatorsGenerator {
 
   def model(fileName: String) = apply(fileName, modelTemplateName, modelSuffix)
   def generators(fileName: String) = apply(fileName, generatorsTemplateName, generatorsSuffix)
+  def playValidators(fileName: String) = apply(fileName, validatorsTemplateName, validatorsSuffix)
 
   private def apply(fileName: String, templateName: String, suffix: String): String = {
     if (allTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
@@ -32,7 +33,8 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
           "imports" -> imports(typeDefs, pckg, suffix),
           "aliases" -> aliases(typeDefs, suffix),
           "traits"  -> traits(typeDefs, suffix),
-          "classes" -> classes(typeDefs, suffix)
+          "classes" -> classes(typeDefs, suffix),
+          "constraints" -> constraints(typeDefs)
         )
       })
     val output = engine.layout(templateName, augmented)
@@ -68,6 +70,7 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
       case (k, v: Container) =>
         Map(
           "name" -> k.typeAlias(suffix = suffix),
+          "typeName" -> k.typeAlias(),
           "creator_method" -> k.typeAlias(prefix = "create", suffix = suffix),
           "alias" -> v.imports.head,
           "generator" -> k.typeAlias(suffix = suffix),
@@ -89,7 +92,7 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
   private def dereferenceFields(t: Composite): Seq[Field] =
     t.descendants flatMap {
       case td: TypeDef => td.fields
-      case r: TypeReference => allTypes.get(r.name) match {
+      case r: TypeRef => allTypes.get(r.name) match {
         case Some(td: TypeDef) => td.fields
         case Some(c: Composite) => dereferenceFields(c)
         case other => throw new IllegalStateException(s"Unexpected contents of Composite $r: $other")
@@ -106,7 +109,9 @@ class ScalaGenerator(allTypes: TypeLookupTable, discriminators: DiscriminatorLoo
           "name" -> escape(f.name.simple),
           "generator" -> generatorNameForType(f.tpe),
           "typeName" -> f.tpe.name.typeAlias(),
-          "last" -> (i == fields.size - 1)
+          "last" -> (i == fields.size - 1),
+          "top_validations" -> validations(f.name -> f.tpe),
+          "bottom_validations" -> bottomValidations(f.name -> f.tpe)
         )
       }
     )
@@ -124,7 +129,7 @@ trait ScalaTestDataGenerator {
   def generatorNameForType: (Type) => String = {
     case s: PrimitiveType => primitiveType(s)
     case c: Container => containerType(c)
-    case r: TypeReference => r.name.typeAlias(suffix = generatorsSuffix)
+    case r: TypeRef => r.name.typeAlias(suffix = generatorsSuffix)
     case o => s"generator name for $o"// relativeGeneratorName(tpe, thisType)
   }
 
@@ -148,4 +153,88 @@ trait ScalaModelGenerator {
   val modelTemplateName = "model.mustache"
 }
 
+trait PlayValidatorsGenerator {
+
+  val validatorsSuffix = "Validator"
+
+  val constraintsSuffix = "Constraints"
+
+  val validatorsTemplateName = "play_validation.mustache"
+
+  def validations(typeDefs: (Reference, Type)) =
+    validations0(typeDefs).flatten
+
+  private def validations0(types: (Reference,Type)): Iterable[Iterable[Map[String, Any]]] =
+    Seq(types) collect {
+      case (k, t: TypeDef) =>
+        Seq.empty
+      case (_, t: TypeRef) =>
+        Seq(Map(
+          "constraint_name" -> t.name.typeAlias(suffix = constraintsSuffix),
+          "field_name" -> t.name.simple
+        ))
+      case (k, t: Composite) =>
+        Seq.empty
+      case (k, t: Container) =>
+        Seq.empty
+    }
+
+  def bottomValidations(typeDefs: (Reference, Type)) =
+    bottomValidations0(typeDefs).flatten
+
+  private def bottomValidations0(types: (Reference,Type)): Iterable[Iterable[Map[String, Any]]] =
+    Seq(types) collect {
+      case (k, t: PrimitiveType) =>
+        Seq(Map(
+          "constraint_name" -> t.name.typeAlias(suffix = constraintsSuffix),
+          "field_name" -> t.name.simple
+        ))
+    }
+
+  def constraints(typeDefs: Map[Reference, Type]) =
+    constraints0(typeDefs.toSeq).flatten
+
+  private def constraints0(types: Iterable[(Reference,Type)]): Iterable[Iterable[Map[String, Any]]] =
+    types collect {
+      case (r: Reference, t: PrimitiveType) if t.meta.constraints.nonEmpty =>
+        Seq(Map(
+          "restrictions" -> t.meta.constraints.filterNot(_.isEmpty).zipWithIndex.map { case (c, i) =>
+            Map(
+              "name" -> c,
+              "last" -> (i == t.meta.constraints.length - 1)
+            )
+          },
+          "constraint_name" -> r.typeAlias(suffix = constraintsSuffix),
+          "type_name" -> t.name.typeAlias()
+        ))
+      case (r, t: TypeDef) =>
+        constraints0(t.fields.map{f => (f.name, f.tpe)}).flatten
+      case (r, t: Composite) =>
+        constraints0(t.descendants.map{d => (d.name, d)}).flatten
+      case (r, t: Container) =>
+        constraints0(Seq(r -> t.tpe)).flatten
+    }
+
+  def flatValidations(types: Seq[Type]) = types collect {
+    case t: TypeDef =>
+      val constraintName = t.name.typeAlias(suffix = constraintsSuffix)
+       s"$constraintName.applyConstraints(instance.${t.name.simple})"
+    case t: PrimitiveType =>
+      val constraintName = t.name.typeAlias(suffix = constraintsSuffix)
+      s"$constraintName.applyConstraints(instance.${t.name.simple})"
+    case t: TypeRef =>
+      val constraintName = t.name.typeAlias(suffix = constraintsSuffix)
+      s"$constraintName.applyConstraints(instance.${t.name.simple})"
+  }
+
+  def nestedValidations(types: Seq[Type]) = types collect {
+    case t: Container =>
+      val constraintName = t.name.typeAlias(suffix = constraintsSuffix)
+      s"instance.${t.name.simple} map $constraintName.applyConstraints"
+    case t: Composite =>
+      val validatorName = t.name.typeAlias(suffix = validatorsSuffix)
+      s"instance.${t.name.simple} map { new $validatorName(_) }.result"
+  }
+
+}
 

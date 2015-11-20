@@ -43,8 +43,8 @@ class ParameterDereferencerTest extends FunSpec with MustMatchers {
       reference2 -> Intgr(None)
     )
     val params: ParameterLookupTable = Map(
-      ParameterRef(reference1) -> Parameter("limit", TypeReference(reference1), None, None, "", encode = false, ParameterPlace.BODY),
-      ParameterRef(reference2) -> Parameter("id", TypeReference(reference2), None, None, "", encode = false, ParameterPlace.BODY)
+      ParameterRef(reference1) -> Parameter("limit", TypeRef(reference1), None, None, "", encode = false, ParameterPlace.BODY),
+      ParameterRef(reference2) -> Parameter("id", TypeRef(reference2), None, None, "", encode = false, ParameterPlace.BODY)
     )
     checkExpectations(types)(params)
   }
@@ -59,7 +59,7 @@ class ParameterDereferencerTest extends FunSpec with MustMatchers {
 
   def testCompositionType[T](constructor: (TypeName, TypeMeta, Seq[Type]) => Type): Unit = {
     val descendants: Seq[Type] = Seq(
-      TypeReference(Reference("a")), TypeReference(Reference("b")), TypeReference(Reference("c"))
+      TypeRef(Reference("a")), TypeRef(Reference("b")), TypeRef(Reference("c"))
     )
     val types = Map[Reference, Type](
       reference1 -> constructor(reference1, TypeMeta(None), descendants),
@@ -92,8 +92,8 @@ class ParameterDereferencerTest extends FunSpec with MustMatchers {
     val model = StrictModel(Nil, types, params, Map.empty)
     val result = ParameterDereferencer(model)
     types.foreach { t => result.typeDefs.contains(t._1) mustBe true }
-    result.typeDefs.size mustBe (types.size + params.count(! _._2.typeName.isInstanceOf[TypeReference]))
-    result.params.foreach(_._2.typeName.isInstanceOf[TypeReference] mustBe true)
+    result.typeDefs.size mustBe (types.size + params.count(! _._2.typeName.isInstanceOf[TypeRef]))
+    result.params.foreach(_._2.typeName.isInstanceOf[TypeRef] mustBe true)
     result.params.size mustBe 2
   }
 

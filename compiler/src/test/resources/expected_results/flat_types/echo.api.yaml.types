@@ -6,6 +6,6 @@
 	Null
 -- params --
 
-⌿paths⌿/⌿post⌿name -> Parameter(name,TypeReference(⌿paths⌿/⌿post⌿name),None,None,.+,true,formData)
-⌿paths⌿/⌿post⌿year -> Parameter(year,TypeReference(⌿paths⌿/⌿post⌿name),None,None,.+,true,formData)
+⌿paths⌿/⌿post⌿name -> Parameter(name,TypeRef(⌿paths⌿/⌿post⌿name),None,None,.+,true,formData)
+⌿paths⌿/⌿post⌿year -> Parameter(year,TypeRef(⌿paths⌿/⌿post⌿name),None,None,.+,true,formData)
 ⌿paths⌿/test-path/{id}⌿get⌿id -> Parameter(id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

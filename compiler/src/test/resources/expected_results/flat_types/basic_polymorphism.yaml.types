@@ -1,23 +1,23 @@
 ⌿definitions⌿Cat -> 
 	AllOf(
-		TypeReference(⌿definitions⌿Pet)
-		TypeReference(⌿definitions⌿Cat⌿AllOf1))
+		TypeRef(⌿definitions⌿Pet)
+		TypeRef(⌿definitions⌿Cat⌿AllOf1))
 ⌿definitions⌿Dog -> 
 	AllOf(
-		TypeReference(⌿definitions⌿Pet)
-		TypeReference(⌿definitions⌿Dog⌿AllOf1))
+		TypeRef(⌿definitions⌿Pet)
+		TypeRef(⌿definitions⌿Dog⌿AllOf1))
 ⌿definitions⌿CatNDog -> 
 	AllOf(
-		TypeReference(⌿definitions⌿Dog)
-		TypeReference(⌿definitions⌿Cat))
+		TypeRef(⌿definitions⌿Dog)
+		TypeRef(⌿definitions⌿Cat))
 ⌿definitions⌿Pet -> 
 	TypeDef(⌿definitions⌿Pet, Seq(
 		Field(⌿definitions⌿Pet⌿name, Str), 
 		Field(⌿definitions⌿Pet⌿petType, Str)))
 ⌿definitions⌿Labrador -> 
 	AllOf(
-		TypeReference(⌿definitions⌿Dog)
-		TypeReference(⌿definitions⌿Labrador⌿AllOf1))
+		TypeRef(⌿definitions⌿Dog)
+		TypeRef(⌿definitions⌿Labrador⌿AllOf1))
 ⌿definitions⌿Cat⌿AllOf1 -> 
 	TypeDef(⌿definitions⌿Cat, Seq(
 		Field(⌿definitions⌿Cat⌿huntingSkill, Str)))

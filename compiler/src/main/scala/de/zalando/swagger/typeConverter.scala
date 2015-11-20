@@ -169,7 +169,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   }
 
   private def fromReference(name: Reference, ref: JsonReference, required: Option[Seq[String]]): NamedType = {
-    checkRequired(name, required, name -> TypeReference(base / ref))
+    checkRequired(name, required, name -> TypeRef(base / ref))
   }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {

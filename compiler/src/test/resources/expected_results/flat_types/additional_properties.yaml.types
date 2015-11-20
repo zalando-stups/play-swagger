@@ -1,8 +1,8 @@
 ⌿definitions⌿KeyedArrays -> 
 	TypeDef(⌿definitions⌿KeyedArrays, Seq(
-		Field(⌿definitions⌿KeyedArrays⌿additionalProperties, TypeReference(⌿definitions⌿KeyedArrays⌿additionalProperties))))
+		Field(⌿definitions⌿KeyedArrays⌿additionalProperties, TypeRef(⌿definitions⌿KeyedArrays⌿additionalProperties))))
 ⌿definitions⌿KeyedArrays⌿additionalProperties -> 
-	CatchAll(TypeReference(⌿definitions⌿KeyedArrays⌿additionalProperties⌿CatchAll))
+	CatchAll(TypeRef(⌿definitions⌿KeyedArrays⌿additionalProperties⌿CatchAll))
 ⌿definitions⌿KeyedArrays⌿additionalProperties⌿CatchAll -> 
 	Arr(Intgr)
 -- params --

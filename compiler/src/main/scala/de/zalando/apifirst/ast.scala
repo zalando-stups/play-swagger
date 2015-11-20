@@ -68,7 +68,7 @@ object Domain {
     def toShortString(pad: String) = getClass.getSimpleName
   }
   
-  case class TypeReference(override val name: Reference, override val meta: TypeMeta = None) extends Type(name, meta) {
+  case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None)) {
     override def toShortString(pad: String) = s"${super.toShortString(pad)}(${name})"
   }
   

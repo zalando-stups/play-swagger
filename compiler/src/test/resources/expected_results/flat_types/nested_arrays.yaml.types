@@ -1,25 +1,25 @@
 ⌿definitions⌿Activity -> 
 	TypeDef(⌿definitions⌿Activity, Seq(
-		Field(⌿definitions⌿Activity⌿actions, TypeReference(⌿/definitions/Activity⌿actions))))
+		Field(⌿definitions⌿Activity⌿actions, TypeRef(⌿/definitions/Activity⌿actions))))
 ⌿/definitions/Activity⌿actions -> 
 	Opt(Str)
 ⌿definitions⌿Example -> 
 	TypeDef(⌿definitions⌿Example, Seq(
-		Field(⌿definitions⌿Example⌿messages, TypeReference(⌿definitions⌿Example⌿messages)), 
-		Field(⌿definitions⌿Example⌿nestedArrays, TypeReference(⌿definitions⌿Example⌿nestedArrays))))
+		Field(⌿definitions⌿Example⌿messages, TypeRef(⌿definitions⌿Example⌿messages)), 
+		Field(⌿definitions⌿Example⌿nestedArrays, TypeRef(⌿definitions⌿Example⌿nestedArrays))))
 ⌿definitions⌿Example⌿messages -> 
-	Opt(TypeReference(⌿definitions⌿Example⌿messages⌿Opt))
+	Opt(TypeRef(⌿definitions⌿Example⌿messages⌿Opt))
 ⌿definitions⌿Example⌿nestedArrays -> 
-	Opt(TypeReference(⌿definitions⌿Example⌿nestedArrays⌿Opt))
+	Opt(TypeRef(⌿definitions⌿Example⌿nestedArrays⌿Opt))
 ⌿definitions⌿Example⌿nestedArrays⌿Opt -> 
-	Arr(TypeReference(⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr))
+	Arr(TypeRef(⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr))
 ⌿definitions⌿Example⌿messages⌿Opt -> 
-	Arr(TypeReference(⌿definitions⌿Example⌿messages⌿Opt⌿Arr))
+	Arr(TypeRef(⌿definitions⌿Example⌿messages⌿Opt⌿Arr))
 ⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr -> 
-	Arr(TypeReference(⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr⌿Arr))
+	Arr(TypeRef(⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr⌿Arr))
 ⌿definitions⌿Example⌿messages⌿Opt⌿Arr -> 
-	Arr(TypeReference(⌿definitions⌿Activity))
+	Arr(TypeRef(⌿definitions⌿Activity))
 ⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr⌿Arr -> 
-	Arr(TypeReference(⌿/definitions/Activity⌿actions))
+	Arr(TypeRef(⌿/definitions/Activity⌿actions))
 -- params --
 

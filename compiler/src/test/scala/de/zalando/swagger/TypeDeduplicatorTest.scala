@@ -28,7 +28,7 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
       testCompositionType(OneOf.apply)
     }
     it("should deduplicate TypeReferences") {
-      testTypeReferences(TypeReference(_, None))
+      testTypeReferences(TypeRef)
     }
     it("should deduplicate TypeDefs") {
       testTypeDef(TypeDef.apply)
@@ -51,7 +51,7 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
 
   def testCompositionType[T](constructor: (TypeName, TypeMeta, Seq[Type]) => Type): Unit = {
     val descendants: Seq[Type] = Seq(
-      TypeReference("a"), TypeReference("b"), TypeReference("c")
+      TypeRef("a"), TypeRef("b"), TypeRef("c")
     )
     val duplicates = Map[Reference, Type](
       reference1 -> constructor(reference1, TypeMeta(None), descendants),
@@ -60,7 +60,7 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
     checkExpectations(duplicates)
   }
 
-  def testTypeReferences(constructor: Reference => TypeReference): Unit = {
+  def testTypeReferences(constructor: Reference => TypeRef): Unit = {
     val duplicates = Map[Reference, Type](
       reference1 -> constructor("wohooo"),
       reference2 -> constructor("wohooo")
@@ -101,8 +101,8 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
 
   def checkExpectations[T](types: Map[Reference, Type], discriminators: Application.DiscriminatorLookupTable = Map.empty): Unit = {
     val params: ParameterLookupTable = Map(
-      ParameterRef(reference1) -> Parameter("limit1", TypeReference(reference1), None, None, "", encode = false, ParameterPlace.BODY),
-      ParameterRef(reference2) -> Parameter("limit1", TypeReference(reference2), None, None, "", encode = false, ParameterPlace.BODY)
+      ParameterRef(reference1) -> Parameter("limit1", TypeRef(reference1), None, None, "", encode = false, ParameterPlace.BODY),
+      ParameterRef(reference2) -> Parameter("limit1", TypeRef(reference2), None, None, "", encode = false, ParameterPlace.BODY)
     )
 
     val expectedTypes = types - reference1
@@ -112,7 +112,7 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
 
     // for discriminators check, params are different
     if (discriminators.isEmpty)
-      result.params.foreach(_._2.typeName.asInstanceOf[TypeReference].name mustBe reference2)
+      result.params.foreach(_._2.typeName.asInstanceOf[TypeRef].name mustBe reference2)
   }
 
 }

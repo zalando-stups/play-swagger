@@ -75,7 +75,11 @@ definitions:
     properties:
       name:
         type: string
+        minLength: 3
+        maxLength: 100
       birthday:
         type: integer
         format: int32
+        minimum: 1
+        maximum: 100
 

@@ -106,7 +106,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
     it("should generate a type alias for the TypeReference") {
       val model = Map(
-        "definitions" / "OptionalData" -> Opt(TypeReference("definitions" / "Passwords"), None),
+        "definitions" / "OptionalData" -> Opt(TypeRef("definitions" / "Passwords"), None),
         "definitions" / "Passwords" -> Arr(Password(None), None, None)
       )
       new ScalaGenerator(model).model("test") mustBeAs
@@ -123,24 +123,24 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "Cat" ->
           AllOf("definitions" / "Cat", None,
-            Seq(TypeReference("definitions" / "Pet"),
-              TypeReference("definitions" / "Cat" / "AllOf1")), Some("definitions" / "Pet")),
+            Seq(TypeRef("definitions" / "Pet"),
+              TypeRef("definitions" / "Cat" / "AllOf1")), Some("definitions" / "Pet")),
         "definitions" / "Dog" ->
           AllOf("definitions" / "Dog", None,
-            Seq(TypeReference("definitions" / "Pet"),
-              TypeReference("definitions" / "Dog" / "AllOf1")), Some("definitions" / "Pet")),
+            Seq(TypeRef("definitions" / "Pet"),
+              TypeRef("definitions" / "Dog" / "AllOf1")), Some("definitions" / "Pet")),
         "definitions" / "CatNDog" ->
           AllOf("definitions" / "CatNDog", None,
-            Seq(TypeReference("definitions" / "Dog"),
-              TypeReference("definitions" / "Cat")), Some("definitions" / "Pet")),
+            Seq(TypeRef("definitions" / "Dog"),
+              TypeRef("definitions" / "Cat")), Some("definitions" / "Pet")),
         "definitions" / "Pet" ->
           TypeDef("definitions" / "Pet", Seq(
             Field("definitions" / "Pet" / "name", Str(None, None)),
             Field("definitions" / "Pet" / "petType", Str(None, None))), None),
         "definitions" / "Labrador" ->
           AllOf("definitions" / "Labrador", None,
-            Seq(TypeReference("definitions" / "Dog"),
-              TypeReference("definitions" / "Labrador" / "AllOf1")), Some("definitions" / "Pet")),
+            Seq(TypeRef("definitions" / "Dog"),
+              TypeRef("definitions" / "Labrador" / "AllOf1")), Some("definitions" / "Pet")),
         "definitions" / "Cat" / "AllOf1" ->
           TypeDef("definitions" / "Cat", Seq(
             Field("definitions" / "Cat" / "huntingSkill", Str(None, None))), None),
@@ -181,8 +181,8 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
             Field("definitions" / "ErrorModel" / "code", Intgr(None))), None),
         "definitions" / "ExtendedErrorModel" ->
           AllOf("definitions" / "ExtendedErrorModel", None, Seq(
-            TypeReference("definitions" / "ErrorModel"),
-            TypeReference("definitions" / "ExtendedErrorModel" / "AllOf1"))),
+            TypeRef("definitions" / "ErrorModel"),
+            TypeRef("definitions" / "ExtendedErrorModel" / "AllOf1"))),
         "definitions" / "ExtendedErrorModel" / "AllOf1" ->
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
             Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)

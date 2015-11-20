@@ -41,7 +41,7 @@ object TypeFlattener extends TypeAnalyzer {
       (ref -> newTypeDef) +: extractedTypes
     case c: Container if isComplexType(c.tpe) =>
       val newRef = ref / c.getClass.getSimpleName
-      Seq(ref -> c.withType(TypeReference(newRef, c.tpe.meta)), newRef -> c.tpe)
+      Seq(ref -> c.withType(TypeRef(newRef)), newRef -> c.tpe)
     case c: Composite =>
       val (changedTypes, extractedTypes) = c.descendants.filter(isComplexType).
         zipWithIndex.map(flattenType(c.getClass.getSimpleName, ref)).unzip
@@ -56,14 +56,14 @@ object TypeFlattener extends TypeAnalyzer {
   private def complexField: (Field) => Boolean = f => isComplexType(f.tpe)
 
   private def createTypeFromField(t: TypeDef): (Field) => (Field, (Reference, Type)) = field => {
-    val newReference = TypeReference(t.name / field.name.simple, t.meta)
+    val newReference = TypeRef(t.name / field.name.simple)
     val extractedType = field.tpe
     (field.copy(tpe = newReference), newReference.name -> extractedType)
   }
 
   private def flattenType: (String, Reference) => ((Type, Int)) => (Type, (Reference, Type)) = (name, ref) => pair => {
     val (typeDef, index) = pair
-    val newReference = TypeReference(ref / (name + index), typeDef.meta)
+    val newReference = TypeRef(ref / (name + index))
     (newReference, newReference.name -> typeDef)
   }
 
@@ -100,25 +100,25 @@ object TypeDeduplicator extends TypeAnalyzer {
     tpe match {
       case c: Container =>
         c.tpe match {
-          case r: TypeReference if duplicateRefs.contains(r.name) => c.withType(TypeReference(target, r.meta))
+          case r: TypeRef if duplicateRefs.contains(r.name) => c.withType(TypeRef(target))
           case o => c
         }
 
       case c: Composite =>
         val newDescendants = c.descendants map {
-          case d: TypeReference if duplicateRefs.contains(d.name) => TypeReference(target, d.meta)
+          case d: TypeRef if duplicateRefs.contains(d.name) => TypeRef(target)
           case o => o
         }
         c.withTypes(newDescendants)
 
       case t: TypeDef =>
         val newFields = t.fields.map {
-          case f@Field(_, tpe: TypeReference) if duplicateRefs.contains(tpe.name) => f.copy(tpe = TypeReference(target, tpe.meta))
+          case f@Field(_, tpe: TypeRef) if duplicateRefs.contains(tpe.name) => f.copy(tpe = TypeRef(target))
           case o => o
         }
         t.copy(fields = newFields)
 
-      case n: TypeReference if duplicateRefs.contains(n) => TypeReference(target, n.meta)
+      case n: TypeRef if duplicateRefs.contains(n) => TypeRef(target)
 
       case _ => tpe
     }
@@ -127,7 +127,7 @@ object TypeDeduplicator extends TypeAnalyzer {
   private def replaceReferenceInParameter(duplicateRefs: Seq[Reference], target: Reference):
   ((ParameterRef, Parameter)) => (ParameterRef, Parameter) = {
     case (r: ParameterRef, p: Parameter) if duplicateRefs.contains(p.typeName.name) =>
-      r -> p.copy(typeName = TypeReference(target, p.typeName.meta))
+      r -> p.copy(typeName = TypeRef(target))
     case o => o
   }
 
@@ -153,7 +153,7 @@ object ParameterDereferencer extends TypeAnalyzer {
       definition.typeName match {
         case tpe if isComplexType(tpe) =>
           val newName = name.name / "ref"
-          val newReference = TypeReference(newName)
+          val newReference = TypeRef(newName)
           val tps = app.typeDefs + (newName -> tpe)
           val newParams = app.params.updated(name, definition.copy(typeName = newReference))
           result = result.copy(typeDefs = tps, params = newParams)
@@ -179,7 +179,7 @@ trait TypeAnalyzer {
       sameFields(t1, t2)
     case (t1: ProvidedType, t2: ProvidedType) if t1.getClass == t2.getClass =>
       sameNames(t1, t2)
-    case (r1: TypeReference, r2: TypeReference) =>
+    case (r1: TypeRef, r2: TypeRef) =>
       r1.name == r2.name
     case _ => false
   }

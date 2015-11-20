@@ -1,0 +1,51 @@
+{{#main_package}}
+package {{&main_package}}
+{{/main_package}}
+
+import play.api.mvc.{Action, Controller}
+import play.api.data.validation.Constraint
+import de.zalando.play.controllers._
+import PlayBodyParsing._
+import PlayValidations._
+
+{{#packages}}
+object {{&package}} {
+    {{#imports}}
+    import {{&name}}
+    {{/imports}}
+
+    {{#constraints}}
+        val {{& constraint_name }} = new ValidationBase[{{& type_name }}] {
+            override def constraints: Seq[Constraint[{{& type_name }}]] =
+                Seq({{#restrictions}}{{&name}}{{^last}}, {{/last}}{{/restrictions}})
+        }
+        {{&validation}}
+    {{/constraints}}
+
+
+    {{#classes}}
+        class {{& name }}(instance: {{& class_name }}) {
+
+            val topValidations = Seq(
+            {{#fields}}
+            {{#top_validations}}
+                instance.{{&field_name}} map {{&constraint_name}}.applyConstraints{{^last}}, {{/last}}⮐
+            {{/top_validations}}
+            {{/fields}}
+            )
+            val flatValidations = Seq[scala.Either[scala.Seq[ParsingError], Any]](
+                {{#fields}}
+                    {{#bottom_validations}}
+                        {{&constraint_name}}.applyConstraints(instance.{{&field_name}})
+                    {{/bottom_validations}}
+                {{/fields}}
+            )
+            val allValidations = topValidations.flatten ++ flatValidations
+            val result = {
+                val errors = allValidations.filter(_.isLeft).flatMap(_.left.get)
+                if (errors.nonEmpty) Left(errors) else Right(instance)
+            }
+        }
+    {{/classes}}
+}
+{{/packages}}

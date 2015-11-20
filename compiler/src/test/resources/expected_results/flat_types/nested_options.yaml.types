@@ -1,11 +1,11 @@
 ⌿definitions⌿Basic -> 
 	TypeDef(⌿definitions⌿Basic, Seq(
-		Field(⌿definitions⌿Basic⌿optional, TypeReference(⌿definitions⌿Basic⌿optional))))
+		Field(⌿definitions⌿Basic⌿optional, TypeRef(⌿definitions⌿Basic⌿optional))))
 ⌿definitions⌿Basic⌿optional -> 
-	Opt(TypeReference(⌿definitions⌿Basic⌿optional⌿Opt))
+	Opt(TypeRef(⌿definitions⌿Basic⌿optional⌿Opt))
 ⌿definitions⌿Basic⌿optional⌿Opt -> 
 	TypeDef(⌿definitions⌿Basic⌿optional, Seq(
-		Field(⌿definitions⌿Basic⌿optional⌿nested_optional, TypeReference(⌿definitions⌿Basic⌿optional⌿nested_optional))))
+		Field(⌿definitions⌿Basic⌿optional⌿nested_optional, TypeRef(⌿definitions⌿Basic⌿optional⌿nested_optional))))
 ⌿definitions⌿Basic⌿optional⌿nested_optional -> 
 	Opt(Str)
 -- params --
