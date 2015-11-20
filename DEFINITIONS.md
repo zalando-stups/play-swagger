@@ -1,4 +1,4 @@
-# Model Definitions
+#Model-Definitions
 
 Scala domain model definitions are generated for the data types defined as swagger parameters in an api specification.  Swagger parameters can be of path, query, header, form or body types and consist of either primitive data types or more complex types composed from objects and arrays with these primitives as leaves.  Both primitive data types and complex types are mapped to scala.  As an example, lets take the swagger api specification ```simple.petstore.api.yaml``` that defines the api of a simple petstore which contains a model definition for a pet.
 
@@ -38,7 +38,7 @@ import simple.petstore.api.yaml.definitions._
 val pet = Pet(0L, "Tucker", Some("Greyhound"))
 ```        
          
-## Primitive Types
+##Primitive-Types
          
 Swagger version 2.0 allows for primitive data types based on the types defined by [JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8).  When generated as scala the following mapping applies.
           
@@ -57,11 +57,11 @@ Swagger version 2.0 allows for primitive data types based on the types defined b
 | password    | ```string```  | ```password```  | ```scala.String```   |
 | file        | ```file```    |                 | ```java.io.File```   |
 
-## Complex Types
+##Complex-Types
 
 Complex types are defined in swagger model definitions as either objects or arrays.
 
-### Objects
+###Objects
 
 Objects are, again, based on the [JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8) specification and defined as swagger [Schema Objects](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#schema-object) for parameter definitions of ```type: "object"```.  For example, given a swagger api definition file ```api.yaml``` containing a model that defines a ```person``` as an object with the properties ```name``` and ```age``` of the primitive types ```string``` and ```integer``` subsequently, this object will be mapped on a scala case class, generated in a scala object (namespace) with the same name as the root swagger property in which it occurs.  I.e. ```definitions```, and in a package with the same name as the swagger definition file in which the model is defined, that is, ```api.yaml```.
  
@@ -87,31 +87,7 @@ object definitions {
 }
 ```
 
-#### Optionality
-
-Swagger, by default, defines object properties to be optional, which can be overridden by providing a list of ```required``` object properties as already used in the examples above.  Optional properties are mapped upon scala's ```Option``` type for which a type alias is generated for each property that is optional. E.g.
- 
-```yaml
-definitions:
-  product:
-    required:
-      - name
-    properties:
-      name:
-        type: string
-      tag:
-        type: string
-```
-
-```scala
-package api.yaml
-object definitions {
-    type ProductTag = Option[String]
-    case class Product(name: String, tag: ProductTag)
-}
-```
-
-#### Nested Objects
+####Nested-Objects
 
 Objects can be nested, in which case the scala case class parameter of the outer object that defines the nested object will be the scala case class type that is generated for that parameter. E.g.
 
@@ -139,7 +115,53 @@ object definitions {
 }
 ```
 
-#### Object Extension
+####Optionality
+
+Swagger, by default, defines object properties to be optional, which can be overridden by providing a list of ```required``` object properties as already used in the examples above.  Optional properties are mapped upon scala's ```Option``` type for which a type alias is generated for each property that is optional. E.g.
+
+```yaml
+definitions:
+  product:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      tag:
+        type: string
+```
+
+```scala
+package api.yaml
+object definitions {
+    type ProductTag = Option[String]
+    case class Product(name: String, tag: ProductTag)
+}
+```
+
+As objects can be nested, so can object property optionality.  For this we generate a nested scala ```Option``` type alias. E.g.
+
+```yaml
+definitions:
+  Basic:
+    properties:
+      optional:
+        type: object
+        properties:
+          nested:
+            type: string
+```
+
+```scala
+object definitions {
+  type BasicOptional = Option[BasicOptionalOpt]
+  type BasicOptionalNested = Option[String]
+  case class Basic(optional: BasicOptional)
+  case class BasicOptionalOpt(nested: BasicOptionalNested)
+}
+```
+
+####Object-Extension
 
 Objects can extend other objects via employment of swaggers' ```allOf``` property.  In the example below the ```ExtendedErrorModel``` inherits _all of_ the properties of the ```ErrorModel``` which it refers to, that is, the properties ```message``` and ```code```, and _extends_ this model with the property ```rootCause```.
 
@@ -176,7 +198,7 @@ object definitions {
 }
 ```
 
-#### Polymorphism
+####Polymorphism
 
 Polymorphic definitions are possible through employment of the swagger ```discriminator``` property.  In the example below an abstract ```Pet``` defines that what concrete ```Cat```s and ```Dog```s have in common.  As swagger object models are defining data, a discriminator property is required to distinguish concrete cat and dog instances as they are serialized to and from the api.  The discriminator property works in that sence the same way as a discriminator column works in ORM frameworks when mapping a class hierarchy on a single table.
 
@@ -231,7 +253,32 @@ object definitions {
 }
 ```
 
-### Arrays
+###Additional-Properties
+
+Swagger model definition objects allow for aditional properties to be loosly defined employing the ```additionalProperties``` annotation in order to model dictonaries.  These dictonaries are mapped to scala's ```Map`` type for which a type alias is generated according to the (by now) well known pattern, with the map's key parameter type being a scala ```String```.  A swagger additional property definition takes as its type property the element type of the dictonary which can be primitive as well as complex and which is mapped on scala as the map's value parameter type.  Only one ```additionalProperties``` annotation may occur per object definition so we can generate the scala parameter of the containing case class with the static name ```additionalProperties```.
+
+In the following example we define a swagger model object definition ```KeyedArray``` that uses the ```additionalProperties``` annotation to provide the object with a set of key value mappings from string to array, see [arrays](#Arrays) further on in this document for more information on how arrays themself are mapped. E.g.
+   
+```yaml
+definitions:
+  KeyedArrays:
+    type: object
+    additionalProperties:
+      type: array
+      items:
+        type: integer
+```
+
+```scala
+package api.yaml
+object definitions {
+    type KeyedArraysAdditionalProperties = scala.collection.immutable.Map[String, KeyedArraysAdditionalPropertiesArr]
+    type KeyedArraysAdditionalPropertiesArr = scala.collection.Seq[Int]
+    case class KeyedArrays(additionalProperties: KeyedArraysAdditionalProperties)
+}
+```
+
+###Arrays
 
 Swaggers model ```type: array``` is used to define properties that hold sets or lists of model values, possibly of a primitive type, but complex element types are also allowed.  We map swagger array types on scala's ```Seq``` type, parameterised for the element type that it contains.
   
@@ -266,7 +313,7 @@ object definitions {
 }
 ```
 
-#### Nested Arrays
+####Nested-Arrays
 
 Array definition types can be nested and possibly optional. The following (contrived) snippet depicts the generated scala code when both definition types are employed in a somewhat unusefull manner.  The intend of this example is to show that the case class definitions are rather consisely generated, even though a stack of type aliasses is needed to make sure that we still refer in scala code to an aptly named swagger definition, esspecially in conjunction with the object properties being optional.  Next to its benefits, type safety against ```null``` pointers does have an associated cost as well.
       
@@ -313,6 +360,7 @@ object definitions {
   case class Example(messages: ExampleMessages, nested: ExampleNested)
 }
 ```
+
 
 
 
