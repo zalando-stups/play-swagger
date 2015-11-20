@@ -30,7 +30,7 @@ object definitions {
 
 This generated file contains a type definition ```PetTag``` that declares a type alias for the optional ```tag``` property and a ```Pet``` case class with the properties as named in the swagger api definition and mapped on the subsequent scala primitive or declared types.  The case class and type alias are generated in an object ```definitions```, taken from swagger's api specification root property with the same name.  This object itself is contained in the package ```simple.petstore.api.yaml```, taken from the api's filename.
 
-Note that the model is generated within the play application as _unmanaged_ code in the target folder.  Generated model code is not intended to be altered by the client programmer, which should perceive the swagger definition as the single source of truth, and indeed, source code that describes the model in itself.  The ```Pet``` case class can, of course, be used from client application code though, after being imported.
+Note that models are generated within a play application as _unmanaged_ code in the target folder.  Generated model code is not intended to be altered by the client programmer, which should perceive the swagger definition as the single source of truth, and indeed, as source code that defines the model and is part of the codebase.  The ```Pet``` case class can, of course and after being imported, be used from client application code though.
  
 ```
 import simple.petstore.api.yaml.definitions._
@@ -63,7 +63,7 @@ Complex types are defined in swagger model definitions as either objects or arra
 
 ### Objects
 
-Objects are, again, based on the [JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8) specification and defined as swagger [Schema Objects](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#schema-object) for parameter definitions of ```type: "object"```.  For example, given a swagger api definition file ```api.yaml``` containing a model that defines a ```person``` as an object with the properties ```name``` and ```age``` of the primitive types ```string``` and ```integer``` subsequently, this object will be mapped on a scala case class, generated in a scala object (namespace) with the same name as the root swagger property in which it occurs, i.e. ```definitions```, and in a package with the same name as the swagger definition file in which the model is defined, i.e. ```api.yaml```.
+Objects are, again, based on the [JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8) specification and defined as swagger [Schema Objects](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#schema-object) for parameter definitions of ```type: "object"```.  For example, given a swagger api definition file ```api.yaml``` containing a model that defines a ```person``` as an object with the properties ```name``` and ```age``` of the primitive types ```string``` and ```integer``` subsequently, this object will be mapped on a scala case class, generated in a scala object (namespace) with the same name as the root swagger property in which it occurs.  I.e. ```definitions```, and in a package with the same name as the swagger definition file in which the model is defined, that is, ```api.yaml```.
  
 ```yaml
 definitions:
@@ -80,16 +80,16 @@ definitions:
         format: int32
 ```
  
- ```scala
- package api.yaml
- object definitions {
-   case class Person(name: String, age: Int)
- }
- ```
+```scala
+package api.yaml
+object definitions {
+  case class Person(name: String, age: Int)
+}
+```
 
 #### Optionality
 
-Swagger, by default, defines properties to be optional, which can be overridden by providing a list of ```required``` object properties as already used in the examples above.  Optional properties are mapped upon scala's ```Option``` type for which a type alias is generated for each property that is optional. E.g.
+Swagger, by default, defines object properties to be optional, which can be overridden by providing a list of ```required``` object properties as already used in the examples above.  Optional properties are mapped upon scala's ```Option``` type for which a type alias is generated for each property that is optional. E.g.
  
 ```yaml
 definitions:
@@ -141,7 +141,9 @@ object definitions {
 
 #### Object Extension
 
-Objects can extend other objects through swaggers' ```allOf``` definition.  In the example below the ```ExtendedErrorModel``` inherits _all of_ the properties of the ```ErrorModel``` which it refers to, and _extends_ this model with the proprty ```rootCause```.  Swagger object extension is mapped by duplicating the inherited properties in the object that extends. E.g.
+Objects can extend other objects via employment of swaggers' ```allOf``` property.  In the example below the ```ExtendedErrorModel``` inherits _all of_ the properties of the ```ErrorModel``` which it refers to, that is, the properties ```message``` and ```code```, and _extends_ this model with the property ```rootCause```.
+
+Swagger object extension is mapped by duplicating inherited properties in the object that extends. E.g.
 
 ```yaml
 definitions:
@@ -176,9 +178,9 @@ object definitions {
 
 #### Polymorphism
 
-Polymorphic definitions are possible through employment of the swagger ```discriminator``` definition.  In the example below an abstract ```Pet``` defines that what concrete ```Cat```s and ```Dog```s have in common.  As swagger object models are defining data, a discriminator property is required to distinguish concrete cat and dog instances as they are serialized to and from the api.  The discriminator property works in that sence the same way as a discriminator column works in ORM frameworks when mapping a class hierarchy on a single table.
+Polymorphic definitions are possible through employment of the swagger ```discriminator``` property.  In the example below an abstract ```Pet``` defines that what concrete ```Cat```s and ```Dog```s have in common.  As swagger object models are defining data, a discriminator property is required to distinguish concrete cat and dog instances as they are serialized to and from the api.  The discriminator property works in that sence the same way as a discriminator column works in ORM frameworks when mapping a class hierarchy on a single table.
 
-The generated scala code does not have such a requirement, but as we are modeling data and we cannot predict whether business logic depends on the value of swaggers' discriminator property, we map the "abstract" swagger model definition on a scala trait which contains accessor methods, including the discriminator property, that are implemented by the concrete case classes of the model definitions extending it. I.e.      
+The generated scala code for such a polymorphic definition does not have that serialisation requirement.  But as we are modeling data and we cannot predict whether business logic depends on the value of swaggers' discriminator property, we map the abstract swagger model definition on a scala trait which contains accessor methods for all the properties it defines, including the discriminator property, which are then implemented by the concrete case classes of the model definitions extending this trait. E.g.      
 
 ```yaml
 definitions:
@@ -229,6 +231,88 @@ object definitions {
 }
 ```
 
+### Arrays
+
+Swaggers model ```type: array``` is used to define properties that hold sets or lists of model values, possibly of a primitive type, but complex element types are also allowed.  We map swagger array types on scala's ```Seq``` type, parameterised for the element type that it contains.
+  
+For example, in the snipet below, an ```Activity``` object definition is refered as item element in the ```messages``` property of ```type: array``` of the containing object definition ```Example```.  A scala type alias will be generated for the array type, just as we've seen before with for optional properties, after which the array containg property can be generated within the case class as being of this alias type. E.g. in the swagger definition and code
+
+```yaml
+definitions:
+  Activity:
+    type: object
+    required:
+    - actions
+    properties:
+      actions:
+        type: string
+  Example:
+    type: object
+    required:
+    - messages
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: '#/definitions/Activity'
+```
+
+```scala
+package api.yaml
+object definitions {
+  type ExampleMessagesArr = scala.collection.Seq[Activity]
+  case class Activity(actions: ActivityActions)
+  case class Example(messages: ExampleMessagesArr)
+}
+```
+
+#### Nested Arrays
+
+Array definition types can be nested and possibly optional. The following (contrived) snippet depicts the generated scala code when both definition types are employed in a somewhat unusefull manner.  The intend of this example is to show that the case class definitions are rather consisely generated, even though a stack of type aliasses is needed to make sure that we still refer in scala code to an aptly named swagger definition, esspecially in conjunction with the object properties being optional.  Next to its benefits, type safety against ```null``` pointers does have an associated cost as well.
+      
+```yaml
+definitions:
+  Activity:
+    type: object
+    properties:
+      actions:
+        type: string
+  Example:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          type: array
+          items:
+            $ref: '#/definitions/Activity'
+      nested:
+        type: array
+        items:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: string
+```
+
+```scala
+package api.yaml
+object definitions {
+  type ActivityActions = Option[String]
+  type ExampleNested = Option[ExampleNestedOpt]
+  type ExampleNestedOpt = scala.collection.Seq[ExampleNestedOptArr]
+  type ExampleNestedOptArr = scala.collection.Seq[ExampleNestedOptArrArr]
+  type ExampleNestedOptArrArr = scala.collection.Seq[ActivityActions]
+  type ExampleMessages = Option[ExampleMessagesOpt]
+  type ExampleMessagesOpt = scala.collection.Seq[ExampleMessagesOptArr]
+  type ExampleMessagesOptArr = scala.collection.Seq[Activity]
+  case class Activity(actions: ActivityActions)
+  case class Example(messages: ExampleMessages, nested: ExampleNested)
+}
+```
 
 
 
