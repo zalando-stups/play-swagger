@@ -31,6 +31,7 @@ definitions:
         properties:
           simple:
             type: string
+            pattern: the pattern
       nested:
         type: object
         required:
@@ -38,10 +39,16 @@ definitions:
         properties:
           nested2:
             type: object
+            minItems: 1
+            maxItems: 10
             properties:
               nested3:
                 type: object
+                minItems: 2
+                maxItems: 20
                 properties:
                   bottom:
                     type: string
+                    minLength: 3
+                    maxLength: 30
 
