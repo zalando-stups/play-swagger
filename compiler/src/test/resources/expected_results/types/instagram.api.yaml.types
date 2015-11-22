@@ -223,7 +223,11 @@
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
-					Field(⌿/definitions/Comment⌿from, Opt(TypeRef(⌿/definitions/MiniProfile)))))))))))), 
+					Field(⌿/definitions/Comment⌿from, Opt(TypeDef(⌿/definitions/MiniProfile, Seq(
+						Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
+						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
 			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
@@ -284,7 +288,11 @@
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
-					Field(⌿/definitions/Comment⌿from, Opt(TypeRef(⌿/definitions/MiniProfile)))))))))))), 
+					Field(⌿/definitions/Comment⌿from, Opt(TypeDef(⌿/definitions/MiniProfile, Seq(
+						Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
+						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
 			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
@@ -390,7 +398,11 @@
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
-					Field(⌿/definitions/Comment⌿from, Opt(TypeRef(⌿/definitions/MiniProfile)))))))))))), 
+					Field(⌿/definitions/Comment⌿from, Opt(TypeDef(⌿/definitions/MiniProfile, Seq(
+						Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
+						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
 			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
@@ -451,7 +463,11 @@
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
-					Field(⌿/definitions/Comment⌿from, Opt(TypeRef(⌿/definitions/MiniProfile)))))))))))), 
+					Field(⌿/definitions/Comment⌿from, Opt(TypeDef(⌿/definitions/MiniProfile, Seq(
+						Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
+						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
 			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
@@ -512,7 +528,11 @@
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
-					Field(⌿/definitions/Comment⌿from, Opt(TypeRef(⌿/definitions/MiniProfile)))))))))))), 
+					Field(⌿/definitions/Comment⌿from, Opt(TypeDef(⌿/definitions/MiniProfile, Seq(
+						Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
+						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
+						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
 			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
@@ -588,7 +608,11 @@
 						Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 						Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 						Field(⌿/definitions/Comment⌿text, Opt(Str)), 
-						Field(⌿/definitions/Comment⌿from, Opt(TypeRef(⌿/definitions/MiniProfile)))))))))))), 
+						Field(⌿/definitions/Comment⌿from, Opt(TypeDef(⌿/definitions/MiniProfile, Seq(
+							Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
+							Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
+							Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
+							Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
 				Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 					Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 					Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
@@ -657,7 +681,11 @@
 				Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 				Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 				Field(⌿/definitions/Comment⌿text, Opt(Str)), 
-				Field(⌿/definitions/Comment⌿from, Opt(TypeRef(⌿/definitions/MiniProfile)))))))))))), 
+				Field(⌿/definitions/Comment⌿from, Opt(TypeDef(⌿/definitions/MiniProfile, Seq(
+					Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
+					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
+					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
+					Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
 		Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
@@ -717,7 +745,11 @@
 				Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 				Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 				Field(⌿/definitions/Comment⌿text, Opt(Str)), 
-				Field(⌿/definitions/Comment⌿from, Opt(TypeRef(⌿/definitions/MiniProfile)))))))))))), 
+				Field(⌿/definitions/Comment⌿from, Opt(TypeDef(⌿/definitions/MiniProfile, Seq(
+					Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
+					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
+					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
+					Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
 		Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
