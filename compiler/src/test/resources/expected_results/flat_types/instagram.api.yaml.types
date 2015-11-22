@@ -153,8 +153,6 @@
 	TypeDef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta)), 
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
-⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿data -> 
-	Opt(TypeRef(⌿paths⌿/media/{media-id}/likes⌿delete⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200))
 ⌿paths⌿/users/{user-id}/relationship⌿post⌿responses⌿200⌿Opt -> 
@@ -182,7 +180,7 @@
 ⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200⌿Opt -> 
 	TypeDef(⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
-		Field(⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200⌿data, TypeRef(⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿data))))
+		Field(⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200⌿data, TypeRef(⌿/definitions/Like⌿user_name))))
 ⌿paths⌿/media/search⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data -> 
@@ -200,8 +198,6 @@
 	TypeDef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
 		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿comments:⌿data))))
-⌿paths⌿/media/{media-id}/likes⌿delete⌿responses⌿200⌿data⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}/likes⌿delete⌿responses⌿200⌿data, Seq())
 ⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿meta⌿Opt -> 
 	TypeDef(⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿meta, Seq(
 		Field(⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿meta⌿code, TypeRef(⌿/definitions/Location⌿longitude))))
