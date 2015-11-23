@@ -3,6 +3,12 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object parametersGenerator {
+    import parameters.`User-id-paramUser-id`
+    import parameters.`Tag-nameTag-name`
+    def `createUser-id-paramUser-idGenerator` = _generate(`User-id-paramUser-idGenerator`)
+    def `createTag-nameTag-nameGenerator` = _generate(`Tag-nameTag-nameGenerator`)
+    val `User-id-paramUser-idGenerator` = arbitrary[Double]
+    val `Tag-nameTag-nameGenerator` = arbitrary[String]
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 
     def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
@@ -12,8 +18,6 @@ object parametersGenerator {
 }
 object definitionsGenerator {
     import definitions._
-    import paths._
-    import pathsGenerator._
     def createLikeUser_nameGenerator = _generate(LikeUser_nameGenerator)
     def createMediaUserGenerator = _generate(MediaUserGenerator)
     def createMediaVideosLow_resolutionGenerator = _generate(MediaVideosLow_resolutionGenerator)
@@ -176,6 +180,7 @@ object pathsGenerator {
     import paths._
     import definitionsGenerator._
     def createTagsSearchGetResponses200MetaGenerator = _generate(TagsSearchGetResponses200MetaGenerator)
+    def `createLocationsLocation-iLocation-idGenerator` = _generate(`LocationsLocation-iLocation-idGenerator`)
     def createUsersSelfFeedGetResponses200Generator = _generate(UsersSelfFeedGetResponses200Generator)
     def `createLocationsLocation-iMediaRecentGetResponses200DataGenerator` = _generate(`LocationsLocation-iMediaRecentGetResponses200DataGenerator`)
     def `createMediaMedia-iCommentsDeleteResponses200MetaGenerator` = _generate(`MediaMedia-iCommentsDeleteResponses200MetaGenerator`)
@@ -196,8 +201,10 @@ object pathsGenerator {
     def `createUsersUser-iGetResponses200DataGenerator` = _generate(`UsersUser-iGetResponses200DataGenerator`)
     def `createUsersUser-iGetResponses200Generator` = _generate(`UsersUser-iGetResponses200Generator`)
     def `createMediaMedia-iCommentsGetResponses200Generator` = _generate(`MediaMedia-iCommentsGetResponses200Generator`)
+    def `createGeographiesGeo-iMediaRecentGetResponses200Generator` = _generate(`GeographiesGeo-iMediaRecentGetResponses200Generator`)
     def createLocationsSearchGetResponses200Generator = _generate(LocationsSearchGetResponses200Generator)
     val TagsSearchGetResponses200MetaGenerator = Gen.option(`UsersSelfRequested-byGetResponses200MetaOptGenerator`)
+    val `LocationsLocation-iLocation-idGenerator` = arbitrary[Int]
     val UsersSelfFeedGetResponses200Generator = Gen.option(`UsersUser-iMediaRecentGetResponses200OptGenerator`)
     val `LocationsLocation-iMediaRecentGetResponses200DataGenerator` = Gen.option(`MediaMedia-iGetResponses200Generator`)
     val `MediaMedia-iCommentsDeleteResponses200MetaGenerator` = Gen.option(`MediaMedia-iCommentsPostResponses200MetaOptGenerator`)
@@ -218,6 +225,7 @@ object pathsGenerator {
     val `UsersUser-iGetResponses200DataGenerator` = Gen.option(UserGenerator)
     val `UsersUser-iGetResponses200Generator` = Gen.option(`UsersUser-iGetResponses200OptGenerator`)
     val `MediaMedia-iCommentsGetResponses200Generator` = Gen.option(`MediaMedia-iCommentsGetResponses200OptGenerator`)
+    val `GeographiesGeo-iMediaRecentGetResponses200Generator` = arbitrary[Null]
     val LocationsSearchGetResponses200Generator = Gen.option(LocationsSearchGetResponses200OptGenerator)
     def `createMediaMedia-iLikesGetResponses200OptGenerator` = _generate(`MediaMedia-iLikesGetResponses200OptGenerator`)
     def `createUsersSelfRequested-byGetResponses200OptGenerator` = _generate(`UsersSelfRequested-byGetResponses200OptGenerator`)

@@ -28,6 +28,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
+          |   import definitions.Opti
+          |   import definitions.Stri
           |   def createOptiGenerator = _generate(OptiGenerator)
           |   def createStriGenerator = _generate(StriGenerator)
           |   val OptiGenerator = Gen.option(arbitrary[Long])
@@ -51,6 +53,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
+          |   import definitions.Option
+          |   import definitions.String
           |   def createOptionGenerator = _generate(OptionGenerator)
           |   def createStringGenerator = _generate(StringGenerator)
           |   val OptionGenerator = Gen.option(arbitrary[Long])
@@ -74,6 +78,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
+          |   import definitions._
           |   def createIntGenerator = _generate(IntGenerator)
           |   def createDblGenerator = _generate(DblGenerator)
           |   def createFltGenerator = _generate(FltGenerator)
@@ -97,6 +102,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object parametersGenerator {
+          |   import parameters.All
           |   def createAllGenerator = _generate(AllGenerator)
           |   val AllGenerator = _genMap[String,Boolean](arbitrary[String], arbitrary[Boolean])
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
@@ -152,6 +158,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
+          |   import definitions.OptionalData
           |   import definitions.Passwords
           |   def createOptionalDataGenerator = _generate(OptionalDataGenerator)
           |   def createPasswordsGenerator = _generate(PasswordsGenerator)
@@ -272,7 +279,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
-          |   import definitions._
+          |   import definitions.ErrorModel
+          |   import definitions.ExtendedErrorModel
           |   def createErrorModelGenerator = _generate(ErrorModelGenerator)
           |   def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)
           |   val ErrorModelGenerator =

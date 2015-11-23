@@ -10,7 +10,7 @@ object {{&package}} {
     {{/imports}}
 
     {{#aliases}}
-    type {{& name }} = {{& alias }}[{{& underlying_type }}]⮐
+    type {{& name }} = {{& alias }}{{#underlying_type}}[{{& underlying_type }}]{{/underlying_type}}⮐
     {{/aliases}}
 
     {{#traits}}

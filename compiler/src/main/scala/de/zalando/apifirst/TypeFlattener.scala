@@ -80,7 +80,8 @@ object TypeDeduplicator extends TypeAnalyzer {
     */
   def apply(app: StrictModel): StrictModel = {
     val types = app.typeDefs.values
-    val duplicate = types find { t => types.count(isSameTypeDef(t)) > 1 }
+    val equal = (t1: Type, t2: Type) => isSameTypeDef(t1)(t2) && isSameConstraints(t1)(t2)
+    val duplicate = types find { t => types.count(equal(t, _)) > 1 }
     duplicate map replaceSingle(app) map apply getOrElse app
   }
 
@@ -169,6 +170,9 @@ trait TypeAnalyzer {
     case tpe@(_: TypeDef | _: Composite | _: Container) => true
     case _ => false
   }
+
+  def isSameConstraints(one: Type)(two: Type): Boolean =
+    one.meta.constraints.intersect(two.meta.constraints).size == one.meta.constraints.size
 
   def isSameTypeDef(one: Type)(two: Type): Boolean = (one, two) match {
     case (c1: Container, c2: Container) =>

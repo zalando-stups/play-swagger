@@ -6,34 +6,46 @@ import PlayBodyParsing._
 import PlayValidations._
 
 object definitionsValidator {
-    import definitions.Pet
-    val PetNameConstraints = new ValidationBase[String] {
-            override def constraints: Seq[Constraint[String]] =
-                Seq(maxLength(100), minLength(3))
-        }
-        
-    val PetBirthdayConstraints = new ValidationBase[Int] {
-            override def constraints: Seq[Constraint[Int]] =
-                Seq(max(100, false), min(1, false))
-        }
-        
-    class PetValidator(instance: Pet) {
-
-            val topValidations = Seq(
-            instance.name map PetNameConstraints.applyConstraints, 
-            instance.birthday map PetBirthdayConstraints.applyConstraints
+    import definitions._
+    class PetNameValidator(override val instance: PetName) extends RecursiveValidator[PetName] {
+        override val validators = Seq(
             )
-            val flatValidations = Seq[scala.Either[scala.Seq[ParsingError], Any]](
-                )
-            val allValidations = topValidations.flatten ++ flatValidations
-            val result = {
-                val errors = allValidations.filter(_.isLeft).flatMap(_.left.get)
-                if (errors.nonEmpty) Left(errors) else Right(instance)
-            }
+        }
+    class PetBirthdayValidator(override val instance: PetBirthday) extends RecursiveValidator[PetBirthday] {
+        override val validators = Seq(
+            )
+        }
+    class PetValidator(override val instance: Pet) extends RecursiveValidator[Pet] {
+        override val validators = Seq(
+            new PetNameValidator(instance.name), 
+            new PetBirthdayValidator(instance.birthday)
+            )
         }
     }
 object pathsValidator {
     import definitions.Pet
-    import paths.GetResponses200Opt
+    import paths._
     import definitionsValidator.PetValidator
+    class PetIGetPetIdConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetIGetPetIdValidator(override val instance: String) extends RecursiveValidator[String] {
+      override val validators = Seq(new PetIGetPetIdConstraints(instance))
+    }
+    class PostResponses200Constraints(override val instance: Null) extends ValidationBase[Null] {
+        override def constraints: Seq[Constraint[Null]] =
+        Seq()
+    }
+    class PostResponses200Validator(override val instance: Null) extends RecursiveValidator[Null] {
+      override val validators = Seq(new PostResponses200Constraints(instance))
+    }
+    class GetResponses200OptValidator(override val instance: GetResponses200Opt) extends RecursiveValidator[GetResponses200Opt] {
+        override val validators = Seq(
+            )
+        }
+    class GetResponses200Validator(override val instance: GetResponses200) extends RecursiveValidator[GetResponses200] {
+        override val validators = Seq(
+            )
+        }
     }

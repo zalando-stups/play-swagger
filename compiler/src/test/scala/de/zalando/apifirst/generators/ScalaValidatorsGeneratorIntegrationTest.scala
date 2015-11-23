@@ -19,13 +19,13 @@ class ScalaValidatorsGeneratorIntegrationTest extends FunSpec with MustMatchers 
     f.getName.endsWith(".yaml")
   }
 
-  describe("ScalaModelGenerator should generate model files") {
-    (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>
-      testScalaModelGenerator(file)
+  describe("ScalaValidatorsGenerator should generate model files") {
+    (modelFixtures ++ exampleFixtures).filter(toTest).foreach { file =>
+      testScalaValidatorGenerator(file)
     }
   }
 
-  def testScalaModelGenerator(file: File): Unit = {
+  def testScalaValidatorGenerator(file: File): Unit = {
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val (base, model) = StrictYamlParser.parse(file)
       val ast         = ModelConverter.fromModel(base, model)

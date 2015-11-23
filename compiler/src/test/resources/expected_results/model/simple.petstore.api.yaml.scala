@@ -10,6 +10,8 @@ object paths {
     import definitions._
     type PetsIDeleteResponsesDefault = Option[ErrorModel]
     type PetsPostResponses200 = Option[Pet]
+    type PetsIDeleteResponses204 = Null
+    type PetsIDeleteId = Long
     type PetsGetLimit = Option[Int]
     type PetsGetResponses200 = Option[PetsPostResponses200]
     type PetsGetTags = Option[NewPetTag]

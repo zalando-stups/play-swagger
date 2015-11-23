@@ -78,9 +78,9 @@ object definitionsGenerator {
 }
 object pathsGenerator {
     import definitions._
-    import paths.ProductsGetResponses200Opt
-    import paths.EstimatesPriceGetResponses200Opt
+    import paths._
     import definitionsGenerator._
+    def createEstimatesPriceGetEnd_latitudeGenerator = _generate(EstimatesPriceGetEnd_latitudeGenerator)
     def createProductsGetResponses200OptGenerator = _generate(ProductsGetResponses200OptGenerator)
     def createEstimatesPriceGetResponses200OptGenerator = _generate(EstimatesPriceGetResponses200OptGenerator)
     def createHistoryGetResponsesDefaultGenerator = _generate(HistoryGetResponsesDefaultGenerator)
@@ -88,6 +88,7 @@ object pathsGenerator {
     def createProductsGetResponses200Generator = _generate(ProductsGetResponses200Generator)
     def createMeGetResponses200Generator = _generate(MeGetResponses200Generator)
     def createEstimatesPriceGetResponses200Generator = _generate(EstimatesPriceGetResponses200Generator)
+    val EstimatesPriceGetEnd_latitudeGenerator = arbitrary[Double]
     val ProductsGetResponses200OptGenerator = Gen.containerOf[List,Product](ProductGenerator)
     val EstimatesPriceGetResponses200OptGenerator = Gen.containerOf[List,PriceEstimate](PriceEstimateGenerator)
     val HistoryGetResponsesDefaultGenerator = Gen.option(ErrorGenerator)

@@ -14,6 +14,7 @@ object definitions {
     }
 object paths {
     import definitions._
+    type EstimatesPriceGetEnd_latitude = Double
     type ProductsGetResponses200Opt = scala.collection.Seq[Product]
     type EstimatesPriceGetResponses200Opt = scala.collection.Seq[PriceEstimate]
     type HistoryGetResponsesDefault = Option[Error]

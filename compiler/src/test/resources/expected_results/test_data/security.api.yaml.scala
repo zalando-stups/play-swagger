@@ -3,8 +3,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object definitionsGenerator {
-    import definitions.ErrorModel
-    import definitions.Pet
+    import definitions._
     def createPetTagGenerator = _generate(PetTagGenerator)
     val PetTagGenerator = Gen.option(arbitrary[String])
     def createErrorModelGenerator = _generate(ErrorModelGenerator)
@@ -31,7 +30,7 @@ object definitionsGenerator {
 object pathsGenerator {
     import definitions.ErrorModel
     import definitions.Pet
-    import paths.PetsIGetResponses200Opt
+    import paths._
     import definitionsGenerator.ErrorModelGenerator
     import definitionsGenerator.PetGenerator
     def createPetsIGetResponsesDefaultGenerator = _generate(PetsIGetResponsesDefaultGenerator)

@@ -5,7 +5,6 @@ import org.scalacheck.Arbitrary._
 object definitionsGenerator {
     import definitions._
     import java.util.Date
-    import java.utilGenerator.DateGenerator
     def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
     def createOrderPetIdGenerator = _generate(OrderPetIdGenerator)
     def createOrderStatusGenerator = _generate(OrderStatusGenerator)
@@ -71,19 +70,24 @@ object definitionsGenerator {
 }
 object pathsGenerator {
     import definitions._
-    import paths.PetsPostBody
-    import paths.UsersUsernamPutBody
+    import paths._
     import definitionsGenerator._
+    def createUsersUsernamGetUsernameGenerator = _generate(UsersUsernamGetUsernameGenerator)
+    def createUsersCreateWithListPostResponsesDefaultGenerator = _generate(UsersCreateWithListPostResponsesDefaultGenerator)
     def createPetsFindByStatusGetResponses200Generator = _generate(PetsFindByStatusGetResponses200Generator)
     def createPetsPostBodyGenerator = _generate(PetsPostBodyGenerator)
     def createUsersUsernamPutBodyGenerator = _generate(UsersUsernamPutBodyGenerator)
     def createStoresOrderPostBodyGenerator = _generate(StoresOrderPostBodyGenerator)
+    def createPetsPetIDeletePetIdGenerator = _generate(PetsPetIDeletePetIdGenerator)
     def createUsersCreateWithListPostBodyGenerator = _generate(UsersCreateWithListPostBodyGenerator)
     def createPetsFindByStatusGetStatusGenerator = _generate(PetsFindByStatusGetStatusGenerator)
+    val UsersUsernamGetUsernameGenerator = arbitrary[String]
+    val UsersCreateWithListPostResponsesDefaultGenerator = arbitrary[Null]
     val PetsFindByStatusGetResponses200Generator = Gen.option(PetsPostBodyGenerator)
     val PetsPostBodyGenerator = Gen.option(PetGenerator)
     val UsersUsernamPutBodyGenerator = Gen.option(UserGenerator)
     val StoresOrderPostBodyGenerator = Gen.option(OrderGenerator)
+    val PetsPetIDeletePetIdGenerator = arbitrary[Long]
     val UsersCreateWithListPostBodyGenerator = Gen.option(UsersUsernamPutBodyGenerator)
     val PetsFindByStatusGetStatusGenerator = Gen.option(OrderStatusGenerator)
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample

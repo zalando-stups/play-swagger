@@ -15,37 +15,24 @@ object {{&package}} {
     {{/imports}}
 
     {{#constraints}}
-        val {{& constraint_name }} = new ValidationBase[{{& type_name }}] {
-            override def constraints: Seq[Constraint[{{& type_name }}]] =
-                Seq({{#restrictions}}{{&name}}{{^last}}, {{/last}}{{/restrictions}})
-        }
-        {{&validation}}
+    class {{& constraint_name }}(override val instance: {{& type_name }}) extends ValidationBase[{{& type_name }}] {
+        override def constraints: Seq[Constraint[{{& type_name }}]] =
+        Seq({{#restrictions}}{{&name}}{{^last}}, {{/last}}{{/restrictions}})
+    }
+    class {{& validation_name }}(override val instance: {{& type_name }}) extends RecursiveValidator[{{& type_name }}] {
+      override val validators = Seq(new {{&constraint_name}}(instance))⮐
+    }
     {{/constraints}}
 
-
-    {{#classes}}
-        class {{& name }}(instance: {{& class_name }}) {
-
-            val topValidations = Seq(
+    {{#validations}}
+        class {{& validation_name }}(override val instance: {{& class_name }}) extends RecursiveValidator[{{& class_name }}] {
+        override val validators = Seq(
             {{#fields}}
-            {{#top_validations}}
-                instance.{{&field_name}} map {{&constraint_name}}.applyConstraints{{^last}}, {{/last}}⮐
-            {{/top_validations}}
+            new {{&validation_name}}(instance.{{&field_name}}){{^last}}, {{/last}}⮐
             {{/fields}}
-            )
-            val flatValidations = Seq[scala.Either[scala.Seq[ParsingError], Any]](
-                {{#fields}}
-                    {{#bottom_validations}}
-                        {{&constraint_name}}.applyConstraints(instance.{{&field_name}})
-                    {{/bottom_validations}}
-                {{/fields}}
-            )
-            val allValidations = topValidations.flatten ++ flatValidations
-            val result = {
-                val errors = allValidations.filter(_.isLeft).flatMap(_.left.get)
-                if (errors.nonEmpty) Left(errors) else Right(instance)
-            }
+        )
         }
-    {{/classes}}
+    {{/validations}}
+
 }
 {{/packages}}

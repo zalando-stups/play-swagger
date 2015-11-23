@@ -34,6 +34,7 @@ class TransientJsonContext(file: File, contents: String, factory: ObjectMapperFa
   setUrl(file.toURI.toURL)
   private val rootNode = factory.create().readTree(contents)
   setNode(rootNode)
+  this.setFactory(factory)
 }
 
 class JsonObjectMapperFactory extends ObjectMapperFactory {

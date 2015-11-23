@@ -3,7 +3,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object definitionsGenerator {
-    import definitions.Pet
+    import definitions._
     def createPetNameGenerator = _generate(PetNameGenerator)
     def createPetBirthdayGenerator = _generate(PetBirthdayGenerator)
     val PetNameGenerator = Gen.option(arbitrary[String])
@@ -24,11 +24,15 @@ object definitionsGenerator {
 }
 object pathsGenerator {
     import definitions.Pet
-    import paths.GetResponses200Opt
+    import paths._
     import definitionsGenerator.PetGenerator
+    def createPetIGetPetIdGenerator = _generate(PetIGetPetIdGenerator)
     def createGetResponses200OptGenerator = _generate(GetResponses200OptGenerator)
+    def createPostResponses200Generator = _generate(PostResponses200Generator)
     def createGetResponses200Generator = _generate(GetResponses200Generator)
+    val PetIGetPetIdGenerator = arbitrary[String]
     val GetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
+    val PostResponses200Generator = arbitrary[Null]
     val GetResponses200Generator = Gen.option(GetResponses200OptGenerator)
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

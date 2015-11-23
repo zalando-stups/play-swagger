@@ -1,8 +1,9 @@
 package instagram.api.yaml
 object parameters {
+    type `User-id-paramUser-id` = Double
+    type `Tag-nameTag-name` = String
     }
 object definitions {
-    import paths._
     type LikeUser_name = Option[String]
     type MediaUser = Option[MiniProfile]
     type MediaVideosLow_resolution = Option[Image]
@@ -36,6 +37,7 @@ object definitions {
 object paths {
     import definitions._
     type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses200MetaOpt`]
+    type `LocationsLocation-iLocation-id` = Int
     type UsersSelfFeedGetResponses200 = Option[`UsersUser-iMediaRecentGetResponses200Opt`]
     type `LocationsLocation-iMediaRecentGetResponses200Data` = Option[`MediaMedia-iGetResponses200`]
     type `MediaMedia-iCommentsDeleteResponses200Meta` = Option[`MediaMedia-iCommentsPostResponses200MetaOpt`]
@@ -56,6 +58,7 @@ object paths {
     type `UsersUser-iGetResponses200Data` = Option[User]
     type `UsersUser-iGetResponses200` = Option[`UsersUser-iGetResponses200Opt`]
     type `MediaMedia-iCommentsGetResponses200` = Option[`MediaMedia-iCommentsGetResponses200Opt`]
+    type `GeographiesGeo-iMediaRecentGetResponses200` = Null
     type LocationsSearchGetResponses200 = Option[LocationsSearchGetResponses200Opt]
     case class `MediaMedia-iLikesGetResponses200Opt`(meta: `MediaMedia-iCommentsDeleteResponses200Meta`, data: `MediaMedia-iLikesGetResponses200Data`) 
     case class `UsersSelfRequested-byGetResponses200Opt`(meta: TagsSearchGetResponses200Meta, data: MediaUsers_in_photo) 

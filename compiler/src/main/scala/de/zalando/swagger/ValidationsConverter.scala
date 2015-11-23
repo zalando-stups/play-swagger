@@ -36,7 +36,7 @@ object ValidationsConverter {
       ifDefined(a.maxItems, s"maxItems(${a.maxItems})" ),
       ifDefined(a.minItems, s"minItems(${a.minItems})" ),
       ifDefined(a.uniqueItems, s"uniqueItems(${a.uniqueItems})"),
-      ifDefined(a.enum, s"enum(${a.enum.mkString(",")})" ) // TODO what if parameters contain commas ?
+      ifDefined(a.enum, "enum(\"" + a.enum.get.map(a => a.toString.replaceAll(",",",,")).mkString(",") + "\")" )
     ).flatten
 
   private def toStringValidations(p: StringValidation): Seq[String] = {
