@@ -1,6 +1,6 @@
 # [Model Definitions](#model-definitions)
 
-Scala domain model definitions are generated for the data types defined as swagger parameters in an api specification.  Swagger parameters can be of path, query, header, form or body types and consist of either primitive data types or more complex types composed from objects and arrays with these primitives as leaves.  Both primitive data types and complex types are mapped to scala.  As an example, lets take the swagger api specification ```simple.petstore.api.yaml``` that defines the api of a simple petstore which contains a model definition for a pet.
+Scala domain model definitions are generated for all data types defined as swagger parameters in an api specification.  Swagger parameters can be of path, query, header, form or body types and consist of either primitive data types or more complex types composed from objects and arrays with primitives as leaves.  Both primitive types and complex types are mapped to scala.  As an example, lets look at the swagger api specification file ```simple.petstore.api.yaml``` that defines the api of a simple pet store.  It contains a model definition for a pet.
 
 ```yaml
 definitions:
@@ -18,7 +18,7 @@ definitions:
         type: string
 ```
 
-This definition consists of an object ```pet``` containing the required properties ```id``` and ```name```, and the optional property ```tag```, the swagger primitive types of these properties are a 64 bit ```integer``` and twice a ```string```.  The play swagger plugin will map this definition on to a generated scala model consisting of the file.
+This definition consists of an object ```pet``` containing the required properties ```id``` and ```name```, and the optional property ```tag```, the swagger primitive types of these properties are a 64 bit ```integer``` and twice a ```string``` successively.  The play swagger plugin will map this definition on to a generated scala model.
   
 ```scala
 package simple.petstore.api.yaml
@@ -28,9 +28,9 @@ object definitions {
 }
 ```
 
-This generated file contains a type definition ```PetTag``` that declares a type alias for the optional ```tag``` property and a ```Pet``` case class with the properties as named in the swagger api definition and mapped on the subsequent scala primitive or declared types.  The case class and type alias are generated in an object ```definitions```, taken from swagger's api specification root property with the same name.  This object itself is contained in the package ```simple.petstore.api.yaml```, taken from the api's filename.
+This generated model contains a type definition ```PetTag``` that declares a type alias for the optional ```tag``` property and a ```Pet``` case class with the properties as named in the swagger api definition and mapped on the subsequent scala primitive or declared types.  The case class and type alias are generated in an object ```definitions```, taken from swagger's api specification root property with the same name.  This object itself is contained in the package ```simple.petstore.api.yaml```, which is taken from the api's filename.
 
-Note that models are generated within a play application as _unmanaged_ code in the target folder.  Generated model code is not intended to be altered by the client programmer, which should perceive the swagger definition as the single source of truth, and indeed, as source code that defines the model and is part of the codebase.  The ```Pet``` case class can, of course and after being imported, be used from client application code though.
+Note that models are generated within a play application as _unmanaged_ code in the target folder.  Generated model code is not intended to be altered, we should instead look upon the swagger definition as the single source of truth, and indeed, as the source code that defines our model.  The swagger specification file of our api is in that sense part of the codebase.  Even though the generated ```Pet``` case class is not managed by us but by the plugin instead, it can of course, after being imported, be used in our application codebase.
  
 ```
 import simple.petstore.api.yaml.definitions._
@@ -89,7 +89,7 @@ object definitions {
 
 #### [Nested Objects](#nested-objects)
 
-Objects can be nested, in which case the scala case class parameter of the outer object that defines the nested object will be the scala case class type that is generated for that parameter. E.g.
+Objects can be nested, in which case the scala case class parameter of the outer object that defines the nested object will be the scala case class that is generated for that parameter. E.g.
 
 ```yaml
 definitions:
@@ -139,7 +139,7 @@ object definitions {
 }
 ```
 
-As objects can be nested, so can object property optionality.  For this we generate a nested scala ```Option``` type alias. E.g.
+As objects can be nested, so can be object property optionality.  To facilitate for nested optionality, we generate a nested scala ```Option``` type alias. E.g.
 
 ```yaml
 definitions:
@@ -200,9 +200,9 @@ object definitions {
 
 #### [Polymorphism](#polymorphism)
 
-Polymorphic definitions are possible through employment of the swagger ```discriminator``` property.  In the example below an abstract ```Pet``` defines that what concrete ```Cat```s and ```Dog```s have in common.  As swagger object models are defining data, a discriminator property is required to distinguish concrete cat and dog instances as they are serialized to and from the api.  The discriminator property works in that sence the same way as a discriminator column works in ORM frameworks when mapping a class hierarchy on a single table.
+Polymorphic definitions are possible through employment of the swagger ```discriminator``` property.  In the example definition below an abstract ```Pet``` defines that what concrete ```Cat```s and ```Dog```s have in common.  As swagger object models are defining data, a discriminator property is required to distinguish concrete cat and dog instances as they are serialised to and from the api.  The discriminator property works in that sense the same way as a discriminator column works in ORM frameworks when mapping a class hierarchy onto a single table.  It simply contains a value that maps onto one of the concrete types, for example ```petType: “Cat”``` or ```petType: “Dog”```.
 
-The generated scala code for such a polymorphic definition does not have that serialisation requirement.  But as we are modeling data and we cannot predict whether business logic depends on the value of swaggers' discriminator property, we map the abstract swagger model definition on a scala trait which contains accessor methods for all the properties it defines, including the discriminator property, which are then implemented by the concrete case classes of the model definitions extending this trait. E.g.      
+The generated scala code for polymorphic definitions do not have such ORM serialisation requirements as the generated case classes are data containers within the application’s codebase.  We would like to omit swagger’s discriminator property from the generated code and map the abstract type on an interface.  But as we are modelling data we cannot predict whether business logic depends on the value of of it, we therefor map the abstract swagger model definition on a scala trait which contains accessor methods for all the properties it defines, that is, including the discriminator property, concrete case classes extending from this trait implement it with concrete values. E.g.      
 
 ```yaml
 definitions:
@@ -242,7 +242,7 @@ definitions:
 ```
 
 ```scala
-package basic_polymorphism.yaml
+package api.yaml
 object definitions {
   trait IPet {
     def name: String
@@ -255,9 +255,11 @@ object definitions {
 
 ### [Additional Properties](#additional-properties)
 
-Swagger model definition objects allow for aditional properties to be loosly defined employing the ```additionalProperties``` annotation in order to model dictonaries.  These dictonaries are mapped to scala's ```Map`` type for which a type alias is generated according to the (by now) well known pattern, with the map's key parameter type being a scala ```String```.  A swagger additional property definition takes as its type property the element type of the dictonary which can be primitive as well as complex and which is mapped on scala as the map's value parameter type.  Only one ```additionalProperties``` annotation may occur per object definition so we can generate the scala parameter of the containing case class with the static name ```additionalProperties```.
+Swagger model definition objects allow for additional properties to be loosely defined employing the ```additionalProperties``` annotation in order to model dictionaries.  These dictionaries are mapped to scala's ```Map`` type for which a type alias is generated following the same (by now) well known pattern as for optional properties, with the map's key parameter type being a scala ```String```.
 
-In the following example we define a swagger model object definition ```KeyedArray``` that uses the ```additionalProperties``` annotation to provide the object with a set of key value mappings from string to array, see [arrays](#arrays) further on in this document for more information on how arrays themself are mapped. E.g.
+A swagger additional property definition takes as its type property the element type of the dictionary which can be of primitive or complex type and which is mapped on scala as the map's value parameter type.  Swagger allowss for one ```additionalProperties``` annotation per object definition so we can generate this scala parameter with the static name ```additionalProperties```.
+
+In the following example we define a swagger model object definition ```KeyedArray``` that uses the ```additionalProperties``` annotation to provide the object with a set of key value mappings from string to array. E.g.
    
 ```yaml
 definitions:
@@ -282,7 +284,7 @@ object definitions {
 
 Swaggers model ```type: array``` is used to define properties that hold sets or lists of model values, possibly of a primitive type, but complex element types are also allowed.  We map swagger array types on scala's ```Seq``` type, parameterised for the element type that it contains.
   
-For example, in the snipet below, an ```Activity``` object definition is refered as item element in the ```messages``` property of ```type: array``` of the containing object definition ```Example```.  A scala type alias will be generated for the array type, just as we've seen before with for optional properties, after which the array containg property can be generated within the case class as being of this alias type. E.g. in the swagger definition and code
+For example, in the snippet below, an ```Activity``` object definition is referred as item element in the ```messages``` property of ```type: array``` of the containing object definition ```Example```.  A scala type alias will be generated for the array type, just as we've seen before with for optional properties, after which the array containing property can be generated within the case class as being of this alias type. E.g. in the swagger definition and code
 
 ```yaml
 definitions:
@@ -315,7 +317,7 @@ object definitions {
 
 #### [Nested Arrays](#nested-arrays)
 
-Array definition types can be nested and possibly optional. The following (contrived) snippet depicts the generated scala code when both definition types are employed in a somewhat unusefull manner.  The intend of this example is to show that the case class definitions are rather consisely generated, even though a stack of type aliasses is needed to make sure that we still refer in scala code to an aptly named swagger definition, esspecially in conjunction with the object properties being optional.  Next to its benefits, type safety against ```null``` pointers does have an associated cost as well.
+Array definition types can be nested and possibly optional. The following (contrived) snippet depicts the generated scala code when both definition types are employed in a somewhat unuseful manner.  The intend of this example is to show that the case class definitions are rather concisely generated, even though a stack of type aliases is needed to make sure that we still refer in scala code to an aptly named swagger definition, especially in conjunction with the object properties being optional.  Next to its benefits, type safety against ```null``` pointers does have an associated cost as well.
       
 ```yaml
 definitions:
@@ -360,7 +362,3 @@ object definitions {
   case class Example(messages: ExampleMessages, nested: ExampleNested)
 }
 ```
-
-
-
-
