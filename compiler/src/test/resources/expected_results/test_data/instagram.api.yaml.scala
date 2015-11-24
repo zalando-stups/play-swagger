@@ -180,73 +180,73 @@ object pathsGenerator {
     import paths._
     import definitionsGenerator._
     def createTagsSearchGetResponses200MetaGenerator = _generate(TagsSearchGetResponses200MetaGenerator)
-    def `createLocationsLocation-iLocation-idGenerator` = _generate(`LocationsLocation-iLocation-idGenerator`)
+    def `createLocationsLocation-idLocation-idGenerator` = _generate(`LocationsLocation-idLocation-idGenerator`)
     def createUsersSelfFeedGetResponses200Generator = _generate(UsersSelfFeedGetResponses200Generator)
-    def `createLocationsLocation-iMediaRecentGetResponses200DataGenerator` = _generate(`LocationsLocation-iMediaRecentGetResponses200DataGenerator`)
-    def `createMediaMedia-iCommentsDeleteResponses200MetaGenerator` = _generate(`MediaMedia-iCommentsDeleteResponses200MetaGenerator`)
-    def `createMediaMedia-iLikesGetResponses200DataGenerator` = _generate(`MediaMedia-iLikesGetResponses200DataGenerator`)
-    def `createMediaMedia-iCommentsDeleteResponses200Generator` = _generate(`MediaMedia-iCommentsDeleteResponses200Generator`)
-    def `createUsersUser-iFollowsGetResponses200Generator` = _generate(`UsersUser-iFollowsGetResponses200Generator`)
-    def `createTagsTag-namMediaRecentGetResponses200Generator` = _generate(`TagsTag-namMediaRecentGetResponses200Generator`)
+    def `createLocationsLocation-idMediaRecentGetResponses200DataGenerator` = _generate(`LocationsLocation-idMediaRecentGetResponses200DataGenerator`)
+    def `createMediaMedia-idCommentsDeleteResponses200MetaGenerator` = _generate(`MediaMedia-idCommentsDeleteResponses200MetaGenerator`)
+    def `createMediaMedia-idLikesGetResponses200DataGenerator` = _generate(`MediaMedia-idLikesGetResponses200DataGenerator`)
+    def `createMediaMedia-idCommentsDeleteResponses200Generator` = _generate(`MediaMedia-idCommentsDeleteResponses200Generator`)
+    def `createUsersUser-idFollowsGetResponses200Generator` = _generate(`UsersUser-idFollowsGetResponses200Generator`)
+    def `createTagsTag-nameMediaRecentGetResponses200Generator` = _generate(`TagsTag-nameMediaRecentGetResponses200Generator`)
     def `createUsersSelfRequested-byGetResponses200Generator` = _generate(`UsersSelfRequested-byGetResponses200Generator`)
-    def `createLocationsLocation-iGetResponses200Generator` = _generate(`LocationsLocation-iGetResponses200Generator`)
-    def `createMediaMedia-iLikesGetResponses200DataOptGenerator` = _generate(`MediaMedia-iLikesGetResponses200DataOptGenerator`)
+    def `createLocationsLocation-idGetResponses200Generator` = _generate(`LocationsLocation-idGetResponses200Generator`)
+    def `createMediaMedia-idLikesGetResponses200DataOptGenerator` = _generate(`MediaMedia-idLikesGetResponses200DataOptGenerator`)
     def createLocationsSearchGetResponses200DataGenerator = _generate(LocationsSearchGetResponses200DataGenerator)
     def createMediaSearchGetResponses200DataOptGenerator = _generate(MediaSearchGetResponses200DataOptGenerator)
-    def `createMediaMedia-iLikesGetResponses200Generator` = _generate(`MediaMedia-iLikesGetResponses200Generator`)
+    def `createMediaMedia-idLikesGetResponses200Generator` = _generate(`MediaMedia-idLikesGetResponses200Generator`)
     def createMediaSearchGetResponses200Generator = _generate(MediaSearchGetResponses200Generator)
     def createMediaSearchGetResponses200DataGenerator = _generate(MediaSearchGetResponses200DataGenerator)
     def createTagsSearchGetResponses200Generator = _generate(TagsSearchGetResponses200Generator)
-    def `createMediaMedia-iGetResponses200Generator` = _generate(`MediaMedia-iGetResponses200Generator`)
-    def `createUsersUser-iGetResponses200DataGenerator` = _generate(`UsersUser-iGetResponses200DataGenerator`)
-    def `createUsersUser-iGetResponses200Generator` = _generate(`UsersUser-iGetResponses200Generator`)
-    def `createMediaMedia-iCommentsGetResponses200Generator` = _generate(`MediaMedia-iCommentsGetResponses200Generator`)
-    def `createGeographiesGeo-iMediaRecentGetResponses200Generator` = _generate(`GeographiesGeo-iMediaRecentGetResponses200Generator`)
+    def `createMediaMedia-idGetResponses200Generator` = _generate(`MediaMedia-idGetResponses200Generator`)
+    def `createUsersUser-idGetResponses200DataGenerator` = _generate(`UsersUser-idGetResponses200DataGenerator`)
+    def `createUsersUser-idGetResponses200Generator` = _generate(`UsersUser-idGetResponses200Generator`)
+    def `createMediaMedia-idCommentsGetResponses200Generator` = _generate(`MediaMedia-idCommentsGetResponses200Generator`)
+    def `createGeographiesGeo-idMediaRecentGetResponses200Generator` = _generate(`GeographiesGeo-idMediaRecentGetResponses200Generator`)
     def createLocationsSearchGetResponses200Generator = _generate(LocationsSearchGetResponses200Generator)
     val TagsSearchGetResponses200MetaGenerator = Gen.option(`UsersSelfRequested-byGetResponses200MetaOptGenerator`)
-    val `LocationsLocation-iLocation-idGenerator` = arbitrary[Int]
-    val UsersSelfFeedGetResponses200Generator = Gen.option(`UsersUser-iMediaRecentGetResponses200OptGenerator`)
-    val `LocationsLocation-iMediaRecentGetResponses200DataGenerator` = Gen.option(`MediaMedia-iGetResponses200Generator`)
-    val `MediaMedia-iCommentsDeleteResponses200MetaGenerator` = Gen.option(`MediaMedia-iCommentsPostResponses200MetaOptGenerator`)
-    val `MediaMedia-iLikesGetResponses200DataGenerator` = Gen.option(`MediaMedia-iLikesGetResponses200DataOptGenerator`)
-    val `MediaMedia-iCommentsDeleteResponses200Generator` = Gen.option(`MediaMedia-iLikesPostResponses200OptGenerator`)
-    val `UsersUser-iFollowsGetResponses200Generator` = Gen.option(`UsersUser-iRelationshipPostResponses200OptGenerator`)
-    val `TagsTag-namMediaRecentGetResponses200Generator` = Gen.option(`TagsTag-namMediaRecentGetResponses200OptGenerator`)
+    val `LocationsLocation-idLocation-idGenerator` = arbitrary[Int]
+    val UsersSelfFeedGetResponses200Generator = Gen.option(`UsersUser-idMediaRecentGetResponses200OptGenerator`)
+    val `LocationsLocation-idMediaRecentGetResponses200DataGenerator` = Gen.option(`MediaMedia-idGetResponses200Generator`)
+    val `MediaMedia-idCommentsDeleteResponses200MetaGenerator` = Gen.option(`MediaMedia-idCommentsPostResponses200MetaOptGenerator`)
+    val `MediaMedia-idLikesGetResponses200DataGenerator` = Gen.option(`MediaMedia-idLikesGetResponses200DataOptGenerator`)
+    val `MediaMedia-idCommentsDeleteResponses200Generator` = Gen.option(`MediaMedia-idLikesPostResponses200OptGenerator`)
+    val `UsersUser-idFollowsGetResponses200Generator` = Gen.option(`UsersUser-idRelationshipPostResponses200OptGenerator`)
+    val `TagsTag-nameMediaRecentGetResponses200Generator` = Gen.option(`TagsTag-nameMediaRecentGetResponses200OptGenerator`)
     val `UsersSelfRequested-byGetResponses200Generator` = Gen.option(`UsersSelfRequested-byGetResponses200OptGenerator`)
-    val `LocationsLocation-iGetResponses200Generator` = Gen.option(`LocationsLocation-iGetResponses200OptGenerator`)
-    val `MediaMedia-iLikesGetResponses200DataOptGenerator` = Gen.containerOf[List,Like](LikeGenerator)
+    val `LocationsLocation-idGetResponses200Generator` = Gen.option(`LocationsLocation-idGetResponses200OptGenerator`)
+    val `MediaMedia-idLikesGetResponses200DataOptGenerator` = Gen.containerOf[List,Like](LikeGenerator)
     val LocationsSearchGetResponses200DataGenerator = Gen.option(MediaLocationGenerator)
     val MediaSearchGetResponses200DataOptGenerator = Gen.containerOf[List,MediaSearchGetResponses200DataOptArr](MediaSearchGetResponses200DataOptArrGenerator)
-    val `MediaMedia-iLikesGetResponses200Generator` = Gen.option(`MediaMedia-iLikesGetResponses200OptGenerator`)
+    val `MediaMedia-idLikesGetResponses200Generator` = Gen.option(`MediaMedia-idLikesGetResponses200OptGenerator`)
     val MediaSearchGetResponses200Generator = Gen.option(MediaSearchGetResponses200OptGenerator)
     val MediaSearchGetResponses200DataGenerator = Gen.option(MediaSearchGetResponses200DataOptGenerator)
     val TagsSearchGetResponses200Generator = Gen.option(TagsSearchGetResponses200OptGenerator)
-    val `MediaMedia-iGetResponses200Generator` = Gen.option(MediaGenerator)
-    val `UsersUser-iGetResponses200DataGenerator` = Gen.option(UserGenerator)
-    val `UsersUser-iGetResponses200Generator` = Gen.option(`UsersUser-iGetResponses200OptGenerator`)
-    val `MediaMedia-iCommentsGetResponses200Generator` = Gen.option(`MediaMedia-iCommentsGetResponses200OptGenerator`)
-    val `GeographiesGeo-iMediaRecentGetResponses200Generator` = arbitrary[Null]
+    val `MediaMedia-idGetResponses200Generator` = Gen.option(MediaGenerator)
+    val `UsersUser-idGetResponses200DataGenerator` = Gen.option(UserGenerator)
+    val `UsersUser-idGetResponses200Generator` = Gen.option(`UsersUser-idGetResponses200OptGenerator`)
+    val `MediaMedia-idCommentsGetResponses200Generator` = Gen.option(`MediaMedia-idCommentsGetResponses200OptGenerator`)
+    val `GeographiesGeo-idMediaRecentGetResponses200Generator` = arbitrary[Null]
     val LocationsSearchGetResponses200Generator = Gen.option(LocationsSearchGetResponses200OptGenerator)
-    def `createMediaMedia-iLikesGetResponses200OptGenerator` = _generate(`MediaMedia-iLikesGetResponses200OptGenerator`)
+    def `createMediaMedia-idLikesGetResponses200OptGenerator` = _generate(`MediaMedia-idLikesGetResponses200OptGenerator`)
     def `createUsersSelfRequested-byGetResponses200OptGenerator` = _generate(`UsersSelfRequested-byGetResponses200OptGenerator`)
-    def `createUsersUser-iRelationshipPostResponses200OptGenerator` = _generate(`UsersUser-iRelationshipPostResponses200OptGenerator`)
-    def `createUsersUser-iMediaRecentGetResponses200OptGenerator` = _generate(`UsersUser-iMediaRecentGetResponses200OptGenerator`)
+    def `createUsersUser-idRelationshipPostResponses200OptGenerator` = _generate(`UsersUser-idRelationshipPostResponses200OptGenerator`)
+    def `createUsersUser-idMediaRecentGetResponses200OptGenerator` = _generate(`UsersUser-idMediaRecentGetResponses200OptGenerator`)
     def createTagsSearchGetResponses200OptGenerator = _generate(TagsSearchGetResponses200OptGenerator)
-    def `createTagsTag-namMediaRecentGetResponses200OptGenerator` = _generate(`TagsTag-namMediaRecentGetResponses200OptGenerator`)
+    def `createTagsTag-nameMediaRecentGetResponses200OptGenerator` = _generate(`TagsTag-nameMediaRecentGetResponses200OptGenerator`)
     def createMediaSearchGetResponses200OptGenerator = _generate(MediaSearchGetResponses200OptGenerator)
-    def `createMediaMedia-iCommentsPostResponses200MetaOptGenerator` = _generate(`MediaMedia-iCommentsPostResponses200MetaOptGenerator`)
+    def `createMediaMedia-idCommentsPostResponses200MetaOptGenerator` = _generate(`MediaMedia-idCommentsPostResponses200MetaOptGenerator`)
     def `createUsersSelfRequested-byGetResponses200MetaOptGenerator` = _generate(`UsersSelfRequested-byGetResponses200MetaOptGenerator`)
     def createMediaSearchGetResponses200DataOptArrGenerator = _generate(MediaSearchGetResponses200DataOptArrGenerator)
-    def `createMediaMedia-iLikesPostResponses200OptGenerator` = _generate(`MediaMedia-iLikesPostResponses200OptGenerator`)
+    def `createMediaMedia-idLikesPostResponses200OptGenerator` = _generate(`MediaMedia-idLikesPostResponses200OptGenerator`)
     def createLocationsSearchGetResponses200OptGenerator = _generate(LocationsSearchGetResponses200OptGenerator)
-    def `createLocationsLocation-iGetResponses200OptGenerator` = _generate(`LocationsLocation-iGetResponses200OptGenerator`)
-    def `createUsersUser-iGetResponses200OptGenerator` = _generate(`UsersUser-iGetResponses200OptGenerator`)
-    def `createMediaMedia-iCommentsGetResponses200OptGenerator` = _generate(`MediaMedia-iCommentsGetResponses200OptGenerator`)
-    val `MediaMedia-iLikesGetResponses200OptGenerator` =
+    def `createLocationsLocation-idGetResponses200OptGenerator` = _generate(`LocationsLocation-idGetResponses200OptGenerator`)
+    def `createUsersUser-idGetResponses200OptGenerator` = _generate(`UsersUser-idGetResponses200OptGenerator`)
+    def `createMediaMedia-idCommentsGetResponses200OptGenerator` = _generate(`MediaMedia-idCommentsGetResponses200OptGenerator`)
+    val `MediaMedia-idLikesGetResponses200OptGenerator` =
         for {
-        meta <- `MediaMedia-iCommentsDeleteResponses200MetaGenerator`
-        data <- `MediaMedia-iLikesGetResponses200DataGenerator`
-        } yield `MediaMedia-iLikesGetResponses200Opt`(meta, data)
+        meta <- `MediaMedia-idCommentsDeleteResponses200MetaGenerator`
+        data <- `MediaMedia-idLikesGetResponses200DataGenerator`
+        } yield `MediaMedia-idLikesGetResponses200Opt`(meta, data)
     
     val `UsersSelfRequested-byGetResponses200OptGenerator` =
         for {
@@ -254,15 +254,15 @@ object pathsGenerator {
         data <- MediaUsers_in_photoGenerator
         } yield `UsersSelfRequested-byGetResponses200Opt`(meta, data)
     
-    val `UsersUser-iRelationshipPostResponses200OptGenerator` =
+    val `UsersUser-idRelationshipPostResponses200OptGenerator` =
         for {
         data <- MediaUsers_in_photoGenerator
-        } yield `UsersUser-iRelationshipPostResponses200Opt`(data)
+        } yield `UsersUser-idRelationshipPostResponses200Opt`(data)
     
-    val `UsersUser-iMediaRecentGetResponses200OptGenerator` =
+    val `UsersUser-idMediaRecentGetResponses200OptGenerator` =
         for {
-        data <- `LocationsLocation-iMediaRecentGetResponses200DataGenerator`
-        } yield `UsersUser-iMediaRecentGetResponses200Opt`(data)
+        data <- `LocationsLocation-idMediaRecentGetResponses200DataGenerator`
+        } yield `UsersUser-idMediaRecentGetResponses200Opt`(data)
     
     val TagsSearchGetResponses200OptGenerator =
         for {
@@ -270,20 +270,20 @@ object pathsGenerator {
         data <- MediaTagsGenerator
         } yield TagsSearchGetResponses200Opt(meta, data)
     
-    val `TagsTag-namMediaRecentGetResponses200OptGenerator` =
+    val `TagsTag-nameMediaRecentGetResponses200OptGenerator` =
         for {
         data <- MediaTagsGenerator
-        } yield `TagsTag-namMediaRecentGetResponses200Opt`(data)
+        } yield `TagsTag-nameMediaRecentGetResponses200Opt`(data)
     
     val MediaSearchGetResponses200OptGenerator =
         for {
         data <- MediaSearchGetResponses200DataGenerator
         } yield MediaSearchGetResponses200Opt(data)
     
-    val `MediaMedia-iCommentsPostResponses200MetaOptGenerator` =
+    val `MediaMedia-idCommentsPostResponses200MetaOptGenerator` =
         for {
         code <- LocationLongitudeGenerator
-        } yield `MediaMedia-iCommentsPostResponses200MetaOpt`(code)
+        } yield `MediaMedia-idCommentsPostResponses200MetaOpt`(code)
     
     val `UsersSelfRequested-byGetResponses200MetaOptGenerator` =
         for {
@@ -307,32 +307,32 @@ object pathsGenerator {
         distance <- LocationLongitudeGenerator
         } yield MediaSearchGetResponses200DataOptArr(location, created_time, `comments:`, tags, users_in_photo, filter, likes, id, videos, `type`, images, user, distance)
     
-    val `MediaMedia-iLikesPostResponses200OptGenerator` =
+    val `MediaMedia-idLikesPostResponses200OptGenerator` =
         for {
-        meta <- `MediaMedia-iCommentsDeleteResponses200MetaGenerator`
+        meta <- `MediaMedia-idCommentsDeleteResponses200MetaGenerator`
         data <- LikeUser_nameGenerator
-        } yield `MediaMedia-iLikesPostResponses200Opt`(meta, data)
+        } yield `MediaMedia-idLikesPostResponses200Opt`(meta, data)
     
     val LocationsSearchGetResponses200OptGenerator =
         for {
         data <- LocationsSearchGetResponses200DataGenerator
         } yield LocationsSearchGetResponses200Opt(data)
     
-    val `LocationsLocation-iGetResponses200OptGenerator` =
+    val `LocationsLocation-idGetResponses200OptGenerator` =
         for {
         data <- MediaLocationGenerator
-        } yield `LocationsLocation-iGetResponses200Opt`(data)
+        } yield `LocationsLocation-idGetResponses200Opt`(data)
     
-    val `UsersUser-iGetResponses200OptGenerator` =
+    val `UsersUser-idGetResponses200OptGenerator` =
         for {
-        data <- `UsersUser-iGetResponses200DataGenerator`
-        } yield `UsersUser-iGetResponses200Opt`(data)
+        data <- `UsersUser-idGetResponses200DataGenerator`
+        } yield `UsersUser-idGetResponses200Opt`(data)
     
-    val `MediaMedia-iCommentsGetResponses200OptGenerator` =
+    val `MediaMedia-idCommentsGetResponses200OptGenerator` =
         for {
-        meta <- `MediaMedia-iCommentsDeleteResponses200MetaGenerator`
+        meta <- `MediaMedia-idCommentsDeleteResponses200MetaGenerator`
         data <- `MediaComments:DataGenerator`
-        } yield `MediaMedia-iCommentsGetResponses200Opt`(meta, data)
+        } yield `MediaMedia-idCommentsGetResponses200Opt`(meta, data)
     
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

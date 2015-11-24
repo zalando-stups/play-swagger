@@ -33,12 +33,12 @@ object pathsGenerator {
     import paths._
     import definitionsGenerator.ErrorModelGenerator
     import definitionsGenerator.PetGenerator
-    def createPetsIGetResponsesDefaultGenerator = _generate(PetsIGetResponsesDefaultGenerator)
-    def createPetsIGetResponses200Generator = _generate(PetsIGetResponses200Generator)
-    def createPetsIGetResponses200OptGenerator = _generate(PetsIGetResponses200OptGenerator)
-    val PetsIGetResponsesDefaultGenerator = Gen.option(ErrorModelGenerator)
-    val PetsIGetResponses200Generator = Gen.option(PetsIGetResponses200OptGenerator)
-    val PetsIGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
+    def createPetsIdGetResponsesDefaultGenerator = _generate(PetsIdGetResponsesDefaultGenerator)
+    def createPetsIdGetResponses200Generator = _generate(PetsIdGetResponses200Generator)
+    def createPetsIdGetResponses200OptGenerator = _generate(PetsIdGetResponses200OptGenerator)
+    val PetsIdGetResponsesDefaultGenerator = Gen.option(ErrorModelGenerator)
+    val PetsIdGetResponses200Generator = Gen.option(PetsIdGetResponses200OptGenerator)
+    val PetsIdGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 
     def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {

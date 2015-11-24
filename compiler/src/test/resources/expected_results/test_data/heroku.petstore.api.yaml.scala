@@ -26,11 +26,11 @@ object pathsGenerator {
     import definitions.Pet
     import paths._
     import definitionsGenerator.PetGenerator
-    def createPetIGetPetIdGenerator = _generate(PetIGetPetIdGenerator)
+    def createPetIdGetPetIdGenerator = _generate(PetIdGetPetIdGenerator)
     def createGetResponses200OptGenerator = _generate(GetResponses200OptGenerator)
     def createPostResponses200Generator = _generate(PostResponses200Generator)
     def createGetResponses200Generator = _generate(GetResponses200Generator)
-    val PetIGetPetIdGenerator = arbitrary[String]
+    val PetIdGetPetIdGenerator = arbitrary[String]
     val GetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
     val PostResponses200Generator = arbitrary[Null]
     val GetResponses200Generator = Gen.option(GetResponses200OptGenerator)

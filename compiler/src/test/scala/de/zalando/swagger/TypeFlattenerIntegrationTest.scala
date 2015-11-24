@@ -31,7 +31,7 @@ class TypeFlattenerIntegrationTest extends FunSpec with MustMatchers with Expect
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val (base, model) = StrictYamlParser.parse(file)
       model mustBe a[SwaggerModel]
-      val ast       = ModelConverter.fromModel(base, model)
+      val ast       = ModelConverter.fromModel(base, model, Some(file))
       val flatAst   = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
       val typeDefs  = flatAst.typeDefs
       val typeMap   = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
