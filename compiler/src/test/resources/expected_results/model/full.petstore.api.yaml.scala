@@ -15,13 +15,13 @@ object definitions {
     }
 object paths {
     import definitions._
-    type UsersUsernamGetUsername = String
+    type UsersUsernameGetUsername = String
     type UsersCreateWithListPostResponsesDefault = Null
     type PetsFindByStatusGetResponses200 = Option[PetsPostBody]
     type PetsPostBody = Option[Pet]
-    type UsersUsernamPutBody = Option[User]
+    type UsersUsernamePutBody = Option[User]
     type StoresOrderPostBody = Option[Order]
-    type PetsPetIDeletePetId = Long
-    type UsersCreateWithListPostBody = Option[UsersUsernamPutBody]
+    type PetsPetIdDeletePetId = Long
+    type UsersCreateWithListPostBody = Option[UsersUsernamePutBody]
     type PetsFindByStatusGetStatus = Option[OrderStatus]
     }

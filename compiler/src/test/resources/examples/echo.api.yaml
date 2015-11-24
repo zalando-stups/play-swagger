@@ -11,6 +11,7 @@ schemes:
   - http
 host: mazimi-prod.apigee.net
 basePath: /echo
+x-api-first-package: echo
 paths:
   /:
     get:

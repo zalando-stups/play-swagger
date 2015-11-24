@@ -1,6 +1,6 @@
 package echo.api.yaml
 object paths {
-    type `Test-pathIGetResponses200` = Null
+    type `Test-pathIdGetResponses200` = Null
     type PostName = Option[String]
-    type `Test-pathIGetId` = String
+    type `Test-pathIdGetId` = String
     }

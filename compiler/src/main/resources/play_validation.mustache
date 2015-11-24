@@ -19,13 +19,13 @@ object {{&package}} {
         override def constraints: Seq[Constraint[{{& type_name }}]] =
         Seq({{#restrictions}}{{&name}}{{^last}}, {{/last}}{{/restrictions}})
     }
-    class {{& validation_name }}(override val instance: {{& type_name }}) extends RecursiveValidator[{{& type_name }}] {
+    class {{& validation_name }}(instance: {{& type_name }}) extends RecursiveValidator {
       override val validators = Seq(new {{&constraint_name}}(instance))⮐
     }
     {{/constraints}}
 
     {{#validations}}
-        class {{& validation_name }}(override val instance: {{& class_name }}) extends RecursiveValidator[{{& class_name }}] {
+        class {{& validation_name }}(instance: {{& class_name }}) extends RecursiveValidator {
         override val validators = Seq(
             {{#fields}}
             new {{&validation_name}}(instance.{{&field_name}}){{^last}}, {{/last}}⮐
@@ -34,5 +34,14 @@ object {{&package}} {
         }
     {{/validations}}
 
+    {{#call_validations}}
+    class {{& validation_name }}({{#fields}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/fields}}) extends RecursiveValidator {
+    override val validators = Seq(
+    {{#fields}}
+        new {{&validation_name}}({{&field_name}}){{^last}}, {{/last}}⮐
+    {{/fields}}
+    )
+    }
+    {{/call_validations}}
 }
 {{/packages}}

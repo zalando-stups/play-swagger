@@ -7,22 +7,28 @@ import PlayValidations._
 
 object pathsValidator {
     import paths._
-    class `Test-pathIGetResponses200Constraints`(override val instance: Null) extends ValidationBase[Null] {
+    class `Test-pathIdGetResponses200Constraints`(override val instance: Null) extends ValidationBase[Null] {
         override def constraints: Seq[Constraint[Null]] =
         Seq()
     }
-    class `Test-pathIGetResponses200Validator`(override val instance: Null) extends RecursiveValidator[Null] {
-      override val validators = Seq(new `Test-pathIGetResponses200Constraints`(instance))
+    class `Test-pathIdGetResponses200Validator`(instance: Null) extends RecursiveValidator {
+      override val validators = Seq(new `Test-pathIdGetResponses200Constraints`(instance))
     }
-    class `Test-pathIGetIdConstraints`(override val instance: String) extends ValidationBase[String] {
+    class `Test-pathIdGetIdConstraints`(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
     }
-    class `Test-pathIGetIdValidator`(override val instance: String) extends RecursiveValidator[String] {
-      override val validators = Seq(new `Test-pathIGetIdConstraints`(instance))
+    class `Test-pathIdGetIdValidator`(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new `Test-pathIdGetIdConstraints`(instance))
     }
-    class PostNameValidator(override val instance: PostName) extends RecursiveValidator[PostName] {
+    class PostNameValidator(instance: PostName) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
+    class PostValidator(name: PostName, year: PostName) extends RecursiveValidator {
+    override val validators = Seq(
+    new PostNameValidator(name), 
+    new PostNameValidator(year)
+    )
+    }
     }

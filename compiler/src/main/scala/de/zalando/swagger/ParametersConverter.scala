@@ -14,7 +14,7 @@ import scala.language.postfixOps
  * @author  slasch
  * @since   03.11.2015.
  */
-class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String, typeDefs: ParameterNaming#NamedTypes)
+class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String, typeDefs: ParameterNaming#NamedTypes, val useFileNameAsPackage: Boolean)
   extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
   private val FIXED = None // There is no way to define fixed parameters in swagger spec

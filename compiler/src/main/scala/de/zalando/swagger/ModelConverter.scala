@@ -1,5 +1,6 @@
 package de.zalando.swagger
 
+import java.io.File
 import java.net.URI
 
 import de.zalando.apifirst.Application.StrictModel
@@ -19,12 +20,12 @@ trait ParameterNaming {
 
 object ModelConverter extends ParameterNaming {
 
-  def fromModel(base: URI, model: SwaggerModel, keyPrefix: String = "x-api-first") = {
+  def fromModel(base: URI, model: SwaggerModel, file: Option[File] = None, keyPrefix: String = "x-api-first", autoConvert: Boolean = true) = {
     val converter = new TypeConverter(base, model, keyPrefix)
     val typeDefs = converter.convert
     val discriminators = converter.discriminators.toMap
-    val inlineParameters = new ParametersConverter(base, model, keyPrefix, typeDefs).parameters // TODO add explicitly defined parameters here
-    val apiCalls = new PathsConverter(base, model, keyPrefix, inlineParameters).convert
+    val inlineParameters = new ParametersConverter(base, model, keyPrefix, typeDefs, autoConvert).parameters // TODO add explicitly defined parameters here
+    val apiCalls = new PathsConverter(base, model, keyPrefix, inlineParameters, file.map(_.getName)).convert
     StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators)
   }
 

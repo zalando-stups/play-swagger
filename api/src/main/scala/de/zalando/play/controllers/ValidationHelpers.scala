@@ -7,22 +7,21 @@ import play.api.data.validation._
  */
 // Parsing error to display to the user of the API
 case class ParsingError(messages: Seq[String], args: Seq[Any] = Nil)
+
+trait Validator {
+  def errors: Seq[ParsingError]
+}
 /**
   * This trait allows recursive validation of complex types
   * The idea is like this:
   *   - for primitive types, some {@Constraint}s can be defined
   *   - {@Constraint}s then wrapped into {@ValidationBase}s
   *   - {@ValidationBase}s then combined inside of the {@RecursiveValidator}
-  * @tparam T
   */
-trait RecursiveValidator[T] {
-  def instance: T
-  def validators: Seq[RecursiveValidator[_]]
+trait RecursiveValidator extends Validator {
+  def validators: Seq[RecursiveValidator]
 
-  def errors = validators.map(_.validate).filter(_.isLeft).map(_.left.get).reduce(_ ++ _)
-
-  def validate: Either[Seq[ParsingError], T] =
-    if (errors.nonEmpty) Left(errors) else Right(instance)
+  override def errors: Seq[ParsingError] = validators.flatMap(_.errors)
 
 }
 
@@ -30,11 +29,9 @@ trait RecursiveValidator[T] {
   * This is a wrapper for a constraint for primitive type
   * @tparam T
   */
-trait ValidationBase[T] extends RecursiveValidator[T] {
+trait ValidationBase[T] extends Validator {
   def instance: T
   def constraints: Seq[Constraint[T]]
-
-  override def validators = Seq.empty
 
   // helper to convert failing constraints to errors
   override def errors: Seq[ParsingError] = {

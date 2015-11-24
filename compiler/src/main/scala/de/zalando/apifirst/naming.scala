@@ -105,11 +105,12 @@ trait StringUtil {
 case class ScalaName(ref: Reference) {
   import ScalaName._
   val parts = ref.parts.flatMap(_.split("/").filter(_.nonEmpty)) match {
-    case Nil => throw new IllegalArgumentException("At least one part required to construct a name")
+    case Nil =>
+      throw new IllegalArgumentException("At least one part required to construct a name")
     case single :: Nil => "" :: removeVars(single) :: Nil
     case many => many.map(removeVars)
   }
-  private def removeVars(s: String) = if (s.startsWith("{") && s.endsWith("}")) s.substring(1,s.length-2) else s
+  private def removeVars(s: String) = if (s.startsWith("{") && s.endsWith("}")) s.substring(1,s.length-1) else s
   def packageName = parts.head.toLowerCase.split("/").filter(_.nonEmpty).map(escape).mkString(".")
   def qualifiedName = packageName + "." + typeAlias()
   def className = escape(capitalize("/", parts.tail.head))

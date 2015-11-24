@@ -11,21 +11,21 @@ object definitionsValidator {
         override def constraints: Seq[Constraint[Long]] =
         Seq()
     }
-    class BasicIdValidator(override val instance: Long) extends RecursiveValidator[Long] {
+    class BasicIdValidator(instance: Long) extends RecursiveValidator {
       override val validators = Seq(new BasicIdConstraints(instance))
     }
-    class BasicValidator(override val instance: Basic) extends RecursiveValidator[Basic] {
+    class BasicValidator(instance: Basic) extends RecursiveValidator {
         override val validators = Seq(
             new BasicIdValidator(instance.id), 
             new BasicRequiredValidator(instance.required), 
             new BasicOptionalValidator(instance.optional)
             )
         }
-    class BasicRequiredValidator(override val instance: BasicRequired) extends RecursiveValidator[BasicRequired] {
+    class BasicRequiredValidator(instance: BasicRequired) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class BasicOptionalValidator(override val instance: BasicOptional) extends RecursiveValidator[BasicOptional] {
+    class BasicOptionalValidator(instance: BasicOptional) extends RecursiveValidator {
         override val validators = Seq(
             )
         }

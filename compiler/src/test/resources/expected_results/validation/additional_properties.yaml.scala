@@ -7,16 +7,16 @@ import PlayValidations._
 
 object definitionsValidator {
     import definitions._
-    class KeyedArraysValidator(override val instance: KeyedArrays) extends RecursiveValidator[KeyedArrays] {
+    class KeyedArraysValidator(instance: KeyedArrays) extends RecursiveValidator {
         override val validators = Seq(
             new KeyedArraysAdditionalPropertiesValidator(instance.additionalProperties)
             )
         }
-    class KeyedArraysAdditionalPropertiesValidator(override val instance: KeyedArraysAdditionalProperties) extends RecursiveValidator[KeyedArraysAdditionalProperties] {
+    class KeyedArraysAdditionalPropertiesValidator(instance: KeyedArraysAdditionalProperties) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class KeyedArraysAdditionalPropertiesCatchAllValidator(override val instance: KeyedArraysAdditionalPropertiesCatchAll) extends RecursiveValidator[KeyedArraysAdditionalPropertiesCatchAll] {
+    class KeyedArraysAdditionalPropertiesCatchAllValidator(instance: KeyedArraysAdditionalPropertiesCatchAll) extends RecursiveValidator {
         override val validators = Seq(
             )
         }

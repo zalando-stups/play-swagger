@@ -7,46 +7,46 @@ import PlayValidations._
 
 object definitionsValidator {
     import definitions._
-    class ExampleNestedArraysOptArrValidator(override val instance: ExampleNestedArraysOptArr) extends RecursiveValidator[ExampleNestedArraysOptArr] {
+    class ExampleNestedArraysOptArrValidator(instance: ExampleNestedArraysOptArr) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class ActivityValidator(override val instance: Activity) extends RecursiveValidator[Activity] {
+    class ActivityValidator(instance: Activity) extends RecursiveValidator {
         override val validators = Seq(
             new ActivityActionsValidator(instance.actions)
             )
         }
-    class ExampleNestedArraysOptValidator(override val instance: ExampleNestedArraysOpt) extends RecursiveValidator[ExampleNestedArraysOpt] {
+    class ExampleNestedArraysOptValidator(instance: ExampleNestedArraysOpt) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class ExampleMessagesOptValidator(override val instance: ExampleMessagesOpt) extends RecursiveValidator[ExampleMessagesOpt] {
+    class ExampleMessagesOptValidator(instance: ExampleMessagesOpt) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class ActivityActionsValidator(override val instance: ActivityActions) extends RecursiveValidator[ActivityActions] {
+    class ActivityActionsValidator(instance: ActivityActions) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class ExampleMessagesValidator(override val instance: ExampleMessages) extends RecursiveValidator[ExampleMessages] {
+    class ExampleMessagesValidator(instance: ExampleMessages) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class ExampleMessagesOptArrValidator(override val instance: ExampleMessagesOptArr) extends RecursiveValidator[ExampleMessagesOptArr] {
+    class ExampleMessagesOptArrValidator(instance: ExampleMessagesOptArr) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class ExampleValidator(override val instance: Example) extends RecursiveValidator[Example] {
+    class ExampleValidator(instance: Example) extends RecursiveValidator {
         override val validators = Seq(
             new ExampleMessagesValidator(instance.messages), 
             new ExampleNestedArraysValidator(instance.nestedArrays)
             )
         }
-    class ExampleNestedArraysOptArrArrValidator(override val instance: ExampleNestedArraysOptArrArr) extends RecursiveValidator[ExampleNestedArraysOptArrArr] {
+    class ExampleNestedArraysOptArrArrValidator(instance: ExampleNestedArraysOptArrArr) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class ExampleNestedArraysValidator(override val instance: ExampleNestedArrays) extends RecursiveValidator[ExampleNestedArrays] {
+    class ExampleNestedArraysValidator(instance: ExampleNestedArrays) extends RecursiveValidator {
         override val validators = Seq(
             )
         }

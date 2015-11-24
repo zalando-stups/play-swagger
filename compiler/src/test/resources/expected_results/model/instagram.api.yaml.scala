@@ -37,42 +37,42 @@ object definitions {
 object paths {
     import definitions._
     type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses200MetaOpt`]
-    type `LocationsLocation-iLocation-id` = Int
-    type UsersSelfFeedGetResponses200 = Option[`UsersUser-iMediaRecentGetResponses200Opt`]
-    type `LocationsLocation-iMediaRecentGetResponses200Data` = Option[`MediaMedia-iGetResponses200`]
-    type `MediaMedia-iCommentsDeleteResponses200Meta` = Option[`MediaMedia-iCommentsPostResponses200MetaOpt`]
-    type `MediaMedia-iLikesGetResponses200Data` = Option[`MediaMedia-iLikesGetResponses200DataOpt`]
-    type `MediaMedia-iCommentsDeleteResponses200` = Option[`MediaMedia-iLikesPostResponses200Opt`]
-    type `UsersUser-iFollowsGetResponses200` = Option[`UsersUser-iRelationshipPostResponses200Opt`]
-    type `TagsTag-namMediaRecentGetResponses200` = Option[`TagsTag-namMediaRecentGetResponses200Opt`]
+    type `LocationsLocation-idLocation-id` = Int
+    type UsersSelfFeedGetResponses200 = Option[`UsersUser-idMediaRecentGetResponses200Opt`]
+    type `LocationsLocation-idMediaRecentGetResponses200Data` = Option[`MediaMedia-idGetResponses200`]
+    type `MediaMedia-idCommentsDeleteResponses200Meta` = Option[`MediaMedia-idCommentsPostResponses200MetaOpt`]
+    type `MediaMedia-idLikesGetResponses200Data` = Option[`MediaMedia-idLikesGetResponses200DataOpt`]
+    type `MediaMedia-idCommentsDeleteResponses200` = Option[`MediaMedia-idLikesPostResponses200Opt`]
+    type `UsersUser-idFollowsGetResponses200` = Option[`UsersUser-idRelationshipPostResponses200Opt`]
+    type `TagsTag-nameMediaRecentGetResponses200` = Option[`TagsTag-nameMediaRecentGetResponses200Opt`]
     type `UsersSelfRequested-byGetResponses200` = Option[`UsersSelfRequested-byGetResponses200Opt`]
-    type `LocationsLocation-iGetResponses200` = Option[`LocationsLocation-iGetResponses200Opt`]
-    type `MediaMedia-iLikesGetResponses200DataOpt` = scala.collection.Seq[Like]
+    type `LocationsLocation-idGetResponses200` = Option[`LocationsLocation-idGetResponses200Opt`]
+    type `MediaMedia-idLikesGetResponses200DataOpt` = scala.collection.Seq[Like]
     type LocationsSearchGetResponses200Data = Option[MediaLocation]
     type MediaSearchGetResponses200DataOpt = scala.collection.Seq[MediaSearchGetResponses200DataOptArr]
-    type `MediaMedia-iLikesGetResponses200` = Option[`MediaMedia-iLikesGetResponses200Opt`]
+    type `MediaMedia-idLikesGetResponses200` = Option[`MediaMedia-idLikesGetResponses200Opt`]
     type MediaSearchGetResponses200 = Option[MediaSearchGetResponses200Opt]
     type MediaSearchGetResponses200Data = Option[MediaSearchGetResponses200DataOpt]
     type TagsSearchGetResponses200 = Option[TagsSearchGetResponses200Opt]
-    type `MediaMedia-iGetResponses200` = Option[Media]
-    type `UsersUser-iGetResponses200Data` = Option[User]
-    type `UsersUser-iGetResponses200` = Option[`UsersUser-iGetResponses200Opt`]
-    type `MediaMedia-iCommentsGetResponses200` = Option[`MediaMedia-iCommentsGetResponses200Opt`]
-    type `GeographiesGeo-iMediaRecentGetResponses200` = Null
+    type `MediaMedia-idGetResponses200` = Option[Media]
+    type `UsersUser-idGetResponses200Data` = Option[User]
+    type `UsersUser-idGetResponses200` = Option[`UsersUser-idGetResponses200Opt`]
+    type `MediaMedia-idCommentsGetResponses200` = Option[`MediaMedia-idCommentsGetResponses200Opt`]
+    type `GeographiesGeo-idMediaRecentGetResponses200` = Null
     type LocationsSearchGetResponses200 = Option[LocationsSearchGetResponses200Opt]
-    case class `MediaMedia-iLikesGetResponses200Opt`(meta: `MediaMedia-iCommentsDeleteResponses200Meta`, data: `MediaMedia-iLikesGetResponses200Data`) 
+    case class `MediaMedia-idLikesGetResponses200Opt`(meta: `MediaMedia-idCommentsDeleteResponses200Meta`, data: `MediaMedia-idLikesGetResponses200Data`) 
     case class `UsersSelfRequested-byGetResponses200Opt`(meta: TagsSearchGetResponses200Meta, data: MediaUsers_in_photo) 
-    case class `UsersUser-iRelationshipPostResponses200Opt`(data: MediaUsers_in_photo) 
-    case class `UsersUser-iMediaRecentGetResponses200Opt`(data: `LocationsLocation-iMediaRecentGetResponses200Data`) 
+    case class `UsersUser-idRelationshipPostResponses200Opt`(data: MediaUsers_in_photo) 
+    case class `UsersUser-idMediaRecentGetResponses200Opt`(data: `LocationsLocation-idMediaRecentGetResponses200Data`) 
     case class TagsSearchGetResponses200Opt(meta: TagsSearchGetResponses200Meta, data: MediaTags) 
-    case class `TagsTag-namMediaRecentGetResponses200Opt`(data: MediaTags) 
+    case class `TagsTag-nameMediaRecentGetResponses200Opt`(data: MediaTags) 
     case class MediaSearchGetResponses200Opt(data: MediaSearchGetResponses200Data) 
-    case class `MediaMedia-iCommentsPostResponses200MetaOpt`(code: LocationLongitude) 
+    case class `MediaMedia-idCommentsPostResponses200MetaOpt`(code: LocationLongitude) 
     case class `UsersSelfRequested-byGetResponses200MetaOpt`(code: MediaCreated_time) 
     case class MediaSearchGetResponses200DataOptArr(location: MediaLocation, created_time: MediaCreated_time, `comments:`: `MediaComments:`, tags: MediaTags, users_in_photo: MediaUsers_in_photo, filter: LikeUser_name, likes: MediaLikes, id: MediaCreated_time, videos: MediaVideos, `type`: LikeUser_name, images: MediaImages, user: MediaUser, distance: LocationLongitude) 
-    case class `MediaMedia-iLikesPostResponses200Opt`(meta: `MediaMedia-iCommentsDeleteResponses200Meta`, data: LikeUser_name) 
+    case class `MediaMedia-idLikesPostResponses200Opt`(meta: `MediaMedia-idCommentsDeleteResponses200Meta`, data: LikeUser_name) 
     case class LocationsSearchGetResponses200Opt(data: LocationsSearchGetResponses200Data) 
-    case class `LocationsLocation-iGetResponses200Opt`(data: MediaLocation) 
-    case class `UsersUser-iGetResponses200Opt`(data: `UsersUser-iGetResponses200Data`) 
-    case class `MediaMedia-iCommentsGetResponses200Opt`(meta: `MediaMedia-iCommentsDeleteResponses200Meta`, data: `MediaComments:Data`) 
+    case class `LocationsLocation-idGetResponses200Opt`(data: MediaLocation) 
+    case class `UsersUser-idGetResponses200Opt`(data: `UsersUser-idGetResponses200Data`) 
+    case class `MediaMedia-idCommentsGetResponses200Opt`(meta: `MediaMedia-idCommentsDeleteResponses200Meta`, data: `MediaComments:Data`) 
     }

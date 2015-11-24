@@ -8,22 +8,99 @@ import PlayValidations._
 object definitionsValidator {
     import definitions._
     import java.util.Date
+    class UsersUsernameGetUsernameConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class UsersUsernameGetUsernameValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new UsersUsernameGetUsernameConstraints(instance))
+    }
+    class PetsPetIdPostStatusConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetsPetIdPostStatusValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdPostStatusConstraints(instance))
+    }
+    class PetsPetIdPostPetIdConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetsPetIdPostPetIdValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdPostPetIdConstraints(instance))
+    }
+    class PetsPetIdDeletePetIdConstraints(override val instance: Long) extends ValidationBase[Long] {
+        override def constraints: Seq[Constraint[Long]] =
+        Seq()
+    }
+    class PetsPetIdDeletePetIdValidator(instance: Long) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdDeletePetIdConstraints(instance))
+    }
+    class PetsPetIdDeleteApi_keyConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetsPetIdDeleteApi_keyValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdDeleteApi_keyConstraints(instance))
+    }
+    class PetsPetIdPostNameConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetsPetIdPostNameValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdPostNameConstraints(instance))
+    }
+    class UsersUsernamePutUsernameConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class UsersUsernamePutUsernameValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new UsersUsernamePutUsernameConstraints(instance))
+    }
     class PetNameConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
     }
-    class PetNameValidator(override val instance: String) extends RecursiveValidator[String] {
+    class PetNameValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new PetNameConstraints(instance))
     }
-    class OrderQuantityValidator(override val instance: OrderQuantity) extends RecursiveValidator[OrderQuantity] {
+    class PetsPetIdGetPetIdConstraints(override val instance: Long) extends ValidationBase[Long] {
+        override def constraints: Seq[Constraint[Long]] =
+        Seq()
+    }
+    class PetsPetIdGetPetIdValidator(instance: Long) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdGetPetIdConstraints(instance))
+    }
+    class StoresOrderOrderIdDeleteOrderIdConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class StoresOrderOrderIdDeleteOrderIdValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new StoresOrderOrderIdDeleteOrderIdConstraints(instance))
+    }
+    class StoresOrderOrderIdGetOrderIdConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class StoresOrderOrderIdGetOrderIdValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new StoresOrderOrderIdGetOrderIdConstraints(instance))
+    }
+    class UsersUsernameDeleteUsernameConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class UsersUsernameDeleteUsernameValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new UsersUsernameDeleteUsernameConstraints(instance))
+    }
+    class OrderQuantityValidator(instance: OrderQuantity) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class OrderPetIdValidator(override val instance: OrderPetId) extends RecursiveValidator[OrderPetId] {
+    class OrderPetIdValidator(instance: OrderPetId) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class UserValidator(override val instance: User) extends RecursiveValidator[User] {
+    class UserValidator(instance: User) extends RecursiveValidator {
         override val validators = Seq(
             new OrderStatusValidator(instance.email), 
             new OrderStatusValidator(instance.username), 
@@ -35,7 +112,7 @@ object definitionsValidator {
             new OrderStatusValidator(instance.password)
             )
         }
-    class OrderValidator(override val instance: Order) extends RecursiveValidator[Order] {
+    class OrderValidator(instance: Order) extends RecursiveValidator {
         override val validators = Seq(
             new OrderShipDateValidator(instance.shipDate), 
             new OrderQuantityValidator(instance.quantity), 
@@ -45,33 +122,33 @@ object definitionsValidator {
             new OrderStatusValidator(instance.status)
             )
         }
-    class TagValidator(override val instance: Tag) extends RecursiveValidator[Tag] {
+    class TagValidator(instance: Tag) extends RecursiveValidator {
         override val validators = Seq(
             new OrderPetIdValidator(instance.id), 
             new OrderStatusValidator(instance.name)
             )
         }
-    class OrderStatusValidator(override val instance: OrderStatus) extends RecursiveValidator[OrderStatus] {
+    class OrderStatusValidator(instance: OrderStatus) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class PetTagsValidator(override val instance: PetTags) extends RecursiveValidator[PetTags] {
+    class PetTagsValidator(instance: PetTags) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class OrderCompleteValidator(override val instance: OrderComplete) extends RecursiveValidator[OrderComplete] {
+    class OrderCompleteValidator(instance: OrderComplete) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class PetCategoryValidator(override val instance: PetCategory) extends RecursiveValidator[PetCategory] {
+    class PetCategoryValidator(instance: PetCategory) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class OrderShipDateValidator(override val instance: OrderShipDate) extends RecursiveValidator[OrderShipDate] {
+    class OrderShipDateValidator(instance: OrderShipDate) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class PetValidator(override val instance: Pet) extends RecursiveValidator[Pet] {
+    class PetValidator(instance: Pet) extends RecursiveValidator {
         override val validators = Seq(
             new PetNameValidator(instance.name), 
             new PetTagsValidator(instance.tags), 
@@ -86,49 +163,202 @@ object pathsValidator {
     import definitions._
     import paths._
     import definitionsValidator._
-    class UsersUsernamGetUsernameConstraints(override val instance: String) extends ValidationBase[String] {
+    class UsersUsernameGetUsernameConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
     }
-    class UsersUsernamGetUsernameValidator(override val instance: String) extends RecursiveValidator[String] {
-      override val validators = Seq(new UsersUsernamGetUsernameConstraints(instance))
+    class UsersUsernameGetUsernameValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new UsersUsernameGetUsernameConstraints(instance))
     }
     class UsersCreateWithListPostResponsesDefaultConstraints(override val instance: Null) extends ValidationBase[Null] {
         override def constraints: Seq[Constraint[Null]] =
         Seq()
     }
-    class UsersCreateWithListPostResponsesDefaultValidator(override val instance: Null) extends RecursiveValidator[Null] {
+    class UsersCreateWithListPostResponsesDefaultValidator(instance: Null) extends RecursiveValidator {
       override val validators = Seq(new UsersCreateWithListPostResponsesDefaultConstraints(instance))
     }
-    class PetsPetIDeletePetIdConstraints(override val instance: Long) extends ValidationBase[Long] {
+    class PetsPetIdPostStatusConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetsPetIdPostStatusValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdPostStatusConstraints(instance))
+    }
+    class PetsPetIdPostPetIdConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetsPetIdPostPetIdValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdPostPetIdConstraints(instance))
+    }
+    class PetsPetIdDeletePetIdConstraints(override val instance: Long) extends ValidationBase[Long] {
         override def constraints: Seq[Constraint[Long]] =
         Seq()
     }
-    class PetsPetIDeletePetIdValidator(override val instance: Long) extends RecursiveValidator[Long] {
-      override val validators = Seq(new PetsPetIDeletePetIdConstraints(instance))
+    class PetsPetIdDeletePetIdValidator(instance: Long) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdDeletePetIdConstraints(instance))
     }
-    class PetsFindByStatusGetResponses200Validator(override val instance: PetsFindByStatusGetResponses200) extends RecursiveValidator[PetsFindByStatusGetResponses200] {
+    class PetsPetIdDeleteApi_keyConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetsPetIdDeleteApi_keyValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdDeleteApi_keyConstraints(instance))
+    }
+    class PetsPetIdPostNameConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class PetsPetIdPostNameValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdPostNameConstraints(instance))
+    }
+    class UsersUsernamePutUsernameConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class UsersUsernamePutUsernameValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new UsersUsernamePutUsernameConstraints(instance))
+    }
+    class PetsPetIdGetPetIdConstraints(override val instance: Long) extends ValidationBase[Long] {
+        override def constraints: Seq[Constraint[Long]] =
+        Seq()
+    }
+    class PetsPetIdGetPetIdValidator(instance: Long) extends RecursiveValidator {
+      override val validators = Seq(new PetsPetIdGetPetIdConstraints(instance))
+    }
+    class StoresOrderOrderIdDeleteOrderIdConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class StoresOrderOrderIdDeleteOrderIdValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new StoresOrderOrderIdDeleteOrderIdConstraints(instance))
+    }
+    class StoresOrderOrderIdGetOrderIdConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class StoresOrderOrderIdGetOrderIdValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new StoresOrderOrderIdGetOrderIdConstraints(instance))
+    }
+    class UsersUsernameDeleteUsernameConstraints(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class UsersUsernameDeleteUsernameValidator(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new UsersUsernameDeleteUsernameConstraints(instance))
+    }
+    class PetsFindByStatusGetResponses200Validator(instance: PetsFindByStatusGetResponses200) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class PetsPostBodyValidator(override val instance: PetsPostBody) extends RecursiveValidator[PetsPostBody] {
+    class PetsPostBodyValidator(instance: PetsPostBody) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class UsersUsernamPutBodyValidator(override val instance: UsersUsernamPutBody) extends RecursiveValidator[UsersUsernamPutBody] {
+    class UsersUsernamePutBodyValidator(instance: UsersUsernamePutBody) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class StoresOrderPostBodyValidator(override val instance: StoresOrderPostBody) extends RecursiveValidator[StoresOrderPostBody] {
+    class StoresOrderPostBodyValidator(instance: StoresOrderPostBody) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class UsersCreateWithListPostBodyValidator(override val instance: UsersCreateWithListPostBody) extends RecursiveValidator[UsersCreateWithListPostBody] {
+    class UsersCreateWithListPostBodyValidator(instance: UsersCreateWithListPostBody) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class PetsFindByStatusGetStatusValidator(override val instance: PetsFindByStatusGetStatus) extends RecursiveValidator[PetsFindByStatusGetStatus] {
+    class PetsFindByStatusGetStatusValidator(instance: PetsFindByStatusGetStatus) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
+    class PetsFindByTagsGetValidator(tags: PetsFindByStatusGetStatus) extends RecursiveValidator {
+    override val validators = Seq(
+    new PetsFindByStatusGetStatusValidator(tags)
+    )
+    }
+    class StoresOrderPostValidator(body: StoresOrderPostBody) extends RecursiveValidator {
+    override val validators = Seq(
+    new StoresOrderPostBodyValidator(body)
+    )
+    }
+    class UsersPostValidator(body: UsersUsernamePutBody) extends RecursiveValidator {
+    override val validators = Seq(
+    new UsersUsernamePutBodyValidator(body)
+    )
+    }
+    class UsersCreateWithListPostValidator(body: UsersCreateWithListPostBody) extends RecursiveValidator {
+    override val validators = Seq(
+    new UsersCreateWithListPostBodyValidator(body)
+    )
+    }
+    class UsersUsernameGetValidator(username: String) extends RecursiveValidator {
+    override val validators = Seq(
+    new UsersUsernameGetUsernameValidator(username)
+    )
+    }
+    class UsersUsernamePutValidator(username: String, body: UsersUsernamePutBody) extends RecursiveValidator {
+    override val validators = Seq(
+    new UsersUsernamePutUsernameValidator(username), 
+    new UsersUsernamePutBodyValidator(body)
+    )
+    }
+    class UsersUsernameDeleteValidator(username: String) extends RecursiveValidator {
+    override val validators = Seq(
+    new UsersUsernameDeleteUsernameValidator(username)
+    )
+    }
+    class PetsPutValidator(body: PetsPostBody) extends RecursiveValidator {
+    override val validators = Seq(
+    new PetsPostBodyValidator(body)
+    )
+    }
+    class PetsPostValidator(body: PetsPostBody) extends RecursiveValidator {
+    override val validators = Seq(
+    new PetsPostBodyValidator(body)
+    )
+    }
+    class UsersCreateWithArrayPostValidator(body: UsersCreateWithListPostBody) extends RecursiveValidator {
+    override val validators = Seq(
+    new UsersCreateWithListPostBodyValidator(body)
+    )
+    }
+    class StoresOrderOrderIdGetValidator(orderId: String) extends RecursiveValidator {
+    override val validators = Seq(
+    new StoresOrderOrderIdGetOrderIdValidator(orderId)
+    )
+    }
+    class StoresOrderOrderIdDeleteValidator(orderId: String) extends RecursiveValidator {
+    override val validators = Seq(
+    new StoresOrderOrderIdDeleteOrderIdValidator(orderId)
+    )
+    }
+    class PetsPetIdGetValidator(petId: Long) extends RecursiveValidator {
+    override val validators = Seq(
+    new PetsPetIdGetPetIdValidator(petId)
+    )
+    }
+    class PetsPetIdPostValidator(petId: String, name: String, status: String) extends RecursiveValidator {
+    override val validators = Seq(
+    new PetsPetIdPostPetIdValidator(petId), 
+    new PetsPetIdPostNameValidator(name), 
+    new PetsPetIdPostStatusValidator(status)
+    )
+    }
+    class PetsPetIdDeleteValidator(api_key: String, petId: Long) extends RecursiveValidator {
+    override val validators = Seq(
+    new PetsPetIdDeleteApi_keyValidator(api_key), 
+    new PetsPetIdDeletePetIdValidator(petId)
+    )
+    }
+    class PetsFindByStatusGetValidator(status: PetsFindByStatusGetStatus) extends RecursiveValidator {
+    override val validators = Seq(
+    new PetsFindByStatusGetStatusValidator(status)
+    )
+    }
+    class UsersLoginGetValidator(username: OrderStatus, password: OrderStatus) extends RecursiveValidator {
+    override val validators = Seq(
+    new OrderStatusValidator(username), 
+    new OrderStatusValidator(password)
+    )
+    }
     }

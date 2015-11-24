@@ -6,7 +6,7 @@ object definitions {
     }
 object paths {
     import definitions.Pet
-    type PetIGetPetId = String
+    type PetIdGetPetId = String
     type GetResponses200Opt = scala.collection.Seq[Pet]
     type PostResponses200 = Null
     type GetResponses200 = Option[GetResponses200Opt]

@@ -7,7 +7,7 @@ object definitions {
 object paths {
     import definitions.ErrorModel
     import definitions.Pet
-    type PetsIGetResponsesDefault = Option[ErrorModel]
-    type PetsIGetResponses200 = Option[PetsIGetResponses200Opt]
-    type PetsIGetResponses200Opt = scala.collection.Seq[Pet]
+    type PetsIdGetResponsesDefault = Option[ErrorModel]
+    type PetsIdGetResponses200 = Option[PetsIdGetResponses200Opt]
+    type PetsIdGetResponses200Opt = scala.collection.Seq[Pet]
     }

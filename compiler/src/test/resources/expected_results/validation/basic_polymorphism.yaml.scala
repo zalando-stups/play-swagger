@@ -11,56 +11,56 @@ object definitionsValidator {
         override def constraints: Seq[Constraint[String]] =
         Seq(enum("clueless,lazy,adventurous,aggressive"))
     }
-    class CatHuntingSkillValidator(override val instance: String) extends RecursiveValidator[String] {
+    class CatHuntingSkillValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new CatHuntingSkillConstraints(instance))
     }
     class DogPackSizeConstraints(override val instance: Int) extends ValidationBase[Int] {
         override def constraints: Seq[Constraint[Int]] =
         Seq(min(0, false))
     }
-    class DogPackSizeValidator(override val instance: Int) extends RecursiveValidator[Int] {
+    class DogPackSizeValidator(instance: Int) extends RecursiveValidator {
       override val validators = Seq(new DogPackSizeConstraints(instance))
     }
     class PetNameConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
     }
-    class PetNameValidator(override val instance: String) extends RecursiveValidator[String] {
+    class PetNameValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new PetNameConstraints(instance))
     }
     class PetPetTypeConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
     }
-    class PetPetTypeValidator(override val instance: String) extends RecursiveValidator[String] {
+    class PetPetTypeValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new PetPetTypeConstraints(instance))
     }
     class LabradorCutenessConstraints(override val instance: Int) extends ValidationBase[Int] {
         override def constraints: Seq[Constraint[Int]] =
         Seq(min(0, false))
     }
-    class LabradorCutenessValidator(override val instance: Int) extends RecursiveValidator[Int] {
+    class LabradorCutenessValidator(instance: Int) extends RecursiveValidator {
       override val validators = Seq(new LabradorCutenessConstraints(instance))
     }
-    class CatValidator(override val instance: Cat) extends RecursiveValidator[Cat] {
+    class CatValidator(instance: Cat) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class DogValidator(override val instance: Dog) extends RecursiveValidator[Dog] {
+    class DogValidator(instance: Dog) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class CatNDogValidator(override val instance: CatNDog) extends RecursiveValidator[CatNDog] {
+    class CatNDogValidator(instance: CatNDog) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class PetValidator(override val instance: Pet) extends RecursiveValidator[Pet] {
+    class PetValidator(instance: Pet) extends RecursiveValidator {
         override val validators = Seq(
             new PetNameValidator(instance.name), 
             new PetPetTypeValidator(instance.petType)
             )
         }
-    class LabradorValidator(override val instance: Labrador) extends RecursiveValidator[Labrador] {
+    class LabradorValidator(instance: Labrador) extends RecursiveValidator {
         override val validators = Seq(
             )
         }

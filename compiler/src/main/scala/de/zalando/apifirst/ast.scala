@@ -219,7 +219,6 @@ object Path {
       case _ => false
     }
     override val toString = string { p: InPathParameter => "{" + p.value + "}" }
-
     val camelize = string("by/" + _.value).split("/") map { p =>
       if (p.nonEmpty) p.head.toUpper +: p.tail else p
     } mkString ""
@@ -303,7 +302,9 @@ object Application {
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
     resultTypes:      Iterable[ParameterRef]
-  )
+  ) {
+    def asReference = Reference(path.value.map(_.value).toList).prepend("paths") / verb.toString.toLowerCase
+  }
 
   case class Model(
     calls:            Seq[ApiCall],

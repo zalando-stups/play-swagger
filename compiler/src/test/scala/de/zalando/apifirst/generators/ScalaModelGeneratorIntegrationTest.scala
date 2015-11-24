@@ -28,7 +28,7 @@ class ScalaModelGeneratorIntegrationTest extends FunSpec with MustMatchers with 
   def testScalaModelGenerator(file: File): Unit = {
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val (base, model) = StrictYamlParser.parse(file)
-      val ast         = ModelConverter.fromModel(base, model)
+      val ast         = ModelConverter.fromModel(base, model, Option(file))
       val flatAst     = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
       val scalaModel  = new ScalaGenerator(flatAst.typeDefs, flatAst.discriminators).model(file.getName)
       val expected    = asInFile(file, "scala")

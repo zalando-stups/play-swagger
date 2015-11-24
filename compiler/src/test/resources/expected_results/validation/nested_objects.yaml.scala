@@ -11,47 +11,47 @@ object definitionsValidator {
         override def constraints: Seq[Constraint[String]] =
         Seq(pattern("the pattern".r))
     }
-    class NestedObjectsPlainSimpleValidator(override val instance: String) extends RecursiveValidator[String] {
+    class NestedObjectsPlainSimpleValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new NestedObjectsPlainSimpleConstraints(instance))
     }
-    class NestedObjectsNestedValidator(override val instance: NestedObjectsNested) extends RecursiveValidator[NestedObjectsNested] {
+    class NestedObjectsNestedValidator(instance: NestedObjectsNested) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class NestedObjectsNestedOptValidator(override val instance: NestedObjectsNestedOpt) extends RecursiveValidator[NestedObjectsNestedOpt] {
+    class NestedObjectsNestedOptValidator(instance: NestedObjectsNestedOpt) extends RecursiveValidator {
         override val validators = Seq(
             new NestedObjectsNestedNested2Validator(instance.nested2)
             )
         }
-    class NestedObjectsNestedNested2Nested3BottomValidator(override val instance: NestedObjectsNestedNested2Nested3Bottom) extends RecursiveValidator[NestedObjectsNestedNested2Nested3Bottom] {
+    class NestedObjectsNestedNested2Nested3BottomValidator(instance: NestedObjectsNestedNested2Nested3Bottom) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class NestedObjectsNestedNested2Nested3Validator(override val instance: NestedObjectsNestedNested2Nested3) extends RecursiveValidator[NestedObjectsNestedNested2Nested3] {
+    class NestedObjectsNestedNested2Nested3Validator(instance: NestedObjectsNestedNested2Nested3) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class NestedObjectsNestedNested2Nested3OptValidator(override val instance: NestedObjectsNestedNested2Nested3Opt) extends RecursiveValidator[NestedObjectsNestedNested2Nested3Opt] {
+    class NestedObjectsNestedNested2Nested3OptValidator(instance: NestedObjectsNestedNested2Nested3Opt) extends RecursiveValidator {
         override val validators = Seq(
             new NestedObjectsNestedNested2Nested3BottomValidator(instance.bottom)
             )
         }
-    class NestedObjectsValidator(override val instance: NestedObjects) extends RecursiveValidator[NestedObjects] {
+    class NestedObjectsValidator(instance: NestedObjects) extends RecursiveValidator {
         override val validators = Seq(
             new NestedObjectsPlainValidator(instance.plain), 
             new NestedObjectsNestedValidator(instance.nested)
             )
         }
-    class NestedObjectsPlainValidator(override val instance: NestedObjectsPlain) extends RecursiveValidator[NestedObjectsPlain] {
+    class NestedObjectsPlainValidator(instance: NestedObjectsPlain) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
-    class NestedObjectsPlainOptValidator(override val instance: NestedObjectsPlainOpt) extends RecursiveValidator[NestedObjectsPlainOpt] {
+    class NestedObjectsPlainOptValidator(instance: NestedObjectsPlainOpt) extends RecursiveValidator {
         override val validators = Seq(
             new NestedObjectsPlainSimpleValidator(instance.simple)
             )
         }
-    class NestedObjectsNestedNested2Validator(override val instance: NestedObjectsNestedNested2) extends RecursiveValidator[NestedObjectsNestedNested2] {
+    class NestedObjectsNestedNested2Validator(instance: NestedObjectsNestedNested2) extends RecursiveValidator {
         override val validators = Seq(
             new NestedObjectsNestedNested2Nested3Validator(instance.nested3)
             )

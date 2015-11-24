@@ -1,7 +1,9 @@
 package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.DiscriminatorLookupTable
+import de.zalando.apifirst.Domain
 import de.zalando.apifirst.Domain._
+import de.zalando.apifirst.new_naming.Reference
 import de.zalando.apifirst.new_naming.dsl._
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -15,7 +17,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
   describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {
-      new ScalaGenerator(Map.empty).model("test") mustBe ""
+      new ScalaGenerator(Map.empty[Reference, Domain.Type]).model("test") mustBe ""
     }
 
     it("should generate single type alias for an option") {

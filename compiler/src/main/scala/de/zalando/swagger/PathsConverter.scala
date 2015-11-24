@@ -13,7 +13,7 @@ import de.zalando.swagger.strictModel._
   * @since   20.10.2015.
   */
 class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String, params: ParameterLookupTable,
-                     val definitionFileName: Option[String] = None)
+                     val definitionFileName: Option[String] = None, val useFileNameAsPackage: Boolean = true)
   extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
   lazy val convert = fromPaths(model.paths, model.basePath)
@@ -26,7 +26,7 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
       operationName     <- path.operationNames
       verb              <- verbFromOperationName(operationName)
       operation         = path.operation(operationName)
-      namePrefix        = base / url / operationName
+      namePrefix        = base / "paths" / url / operationName
       params            = parameters(path, operation, namePrefix)
       astPath           = Path.path2path(url, params)
       handlerCall       <- handler(operation, path, params, operationName, astPath).toSeq
@@ -86,6 +86,7 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
 
 // TODO use ScalaName here
 trait HandlerGenerator extends StringUtil {
+  def useFileNameAsPackage: Boolean
   def keyPrefix: String
   def model: SwaggerModel
   def definitionFileName: Option[String]
@@ -101,7 +102,7 @@ trait HandlerGenerator extends StringUtil {
       generateHandlerLine(operation, callPath, verb)
 
   private def generateHandlerLine(operation: Operation, path: FullPath, verb: String): Option[String] = {
-    model.vendorExtensions.get(s"$keyPrefix-package") map { pkg =>
+    model.vendorExtensions.get(s"$keyPrefix-package") orElse packageFromFilename map { pkg =>
       val controller = definitionFileName map { ScalaName.capitalize("\\.", _) } getOrElse {
         throw new IllegalStateException(s"The definition file name must be defined in order to use '$keyPrefix-package' directive")
       }
@@ -111,4 +112,7 @@ trait HandlerGenerator extends StringUtil {
       s"$pkg.$controller.$method"
     }
   }
+
+  private def packageFromFilename: Option[String] =
+    if (useFileNameAsPackage) definitionFileName.map(_.split("\\.").head) else None
 }

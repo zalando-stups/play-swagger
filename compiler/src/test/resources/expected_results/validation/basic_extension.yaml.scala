@@ -12,30 +12,30 @@ object definitionsValidator {
         override def constraints: Seq[Constraint[String]] =
         Seq()
     }
-    class ErrorModelMessageValidator(override val instance: String) extends RecursiveValidator[String] {
+    class ErrorModelMessageValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new ErrorModelMessageConstraints(instance))
     }
     class ErrorModelCodeConstraints(override val instance: Int) extends ValidationBase[Int] {
         override def constraints: Seq[Constraint[Int]] =
         Seq(max(600, false), min(100, false))
     }
-    class ErrorModelCodeValidator(override val instance: Int) extends RecursiveValidator[Int] {
+    class ErrorModelCodeValidator(instance: Int) extends RecursiveValidator {
       override val validators = Seq(new ErrorModelCodeConstraints(instance))
     }
     class ExtendedErrorModelRootCauseConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
     }
-    class ExtendedErrorModelRootCauseValidator(override val instance: String) extends RecursiveValidator[String] {
+    class ExtendedErrorModelRootCauseValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new ExtendedErrorModelRootCauseConstraints(instance))
     }
-    class ErrorModelValidator(override val instance: ErrorModel) extends RecursiveValidator[ErrorModel] {
+    class ErrorModelValidator(instance: ErrorModel) extends RecursiveValidator {
         override val validators = Seq(
             new ErrorModelMessageValidator(instance.message), 
             new ErrorModelCodeValidator(instance.code)
             )
         }
-    class ExtendedErrorModelValidator(override val instance: ExtendedErrorModel) extends RecursiveValidator[ExtendedErrorModel] {
+    class ExtendedErrorModelValidator(instance: ExtendedErrorModel) extends RecursiveValidator {
         override val validators = Seq(
             )
         }
