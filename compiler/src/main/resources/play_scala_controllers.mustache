@@ -22,6 +22,7 @@ object {{&package}} {
             input: ({{#parameters}}{{&type}}{{^last}}, {{/last}}{{/parameters}}) =>
             val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input
             {{/parameters?}}
+            {{#single_parameter?}}({{&name}}: {{&type}}) =>{{/single_parameter?}}⮐
             ???
         }
         {{/methods}}

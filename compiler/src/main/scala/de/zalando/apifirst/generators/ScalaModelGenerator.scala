@@ -174,21 +174,28 @@ trait PlayScalaControllersGenerator {
         "controller" -> escape(controller),
         "base" -> escape(controller + baseControllersSuffix),
         "methods" -> calls.zipWithIndex.map { case (call, i) =>
+          lazy val parameters = Map(
+            "parameters" -> call.handler.parameters.zipWithIndex.map { case (param, ii) =>
+              Map(
+                "name" -> param.simple,
+                "type" -> strictModel.findParameter(param).typeName.name.typeAlias(),
+                "last" -> (ii == call.handler.parameters.size - 1)
+              )
+            },
+            "last" -> (i == calls.size - 1)
+          )
+          lazy val parameter = {
+            val param = call.handler.parameters.head
+            Map("name" -> param.simple, "type" -> strictModel.findParameter(param).typeName.name.typeAlias())
+          }
+          val nameParamPair =
+            if (call.handler.parameters.isEmpty) "" -> None
+            else if (call.handler.parameters.length == 1) "single_parameter?" -> Some(parameter)
+            else "parameters?" -> Some(parameters)
           Map(
             "method" -> escape(call.handler.method),
             "action" -> escape(call.handler.method + controllersSuffix),
-            "parameters?" -> call.handler.parameters.headOption.map { _ =>
-              Map(
-                "parameters" -> call.handler.parameters.zipWithIndex.map { case (param, ii) =>
-                  Map(
-                    "name" -> param.simple,
-                    "type" -> strictModel.findParameter(param).typeName.name.typeAlias(),
-                    "last" -> (ii == call.handler.parameters.size - 1)
-                  )
-                },
-                "last" -> (i == calls.size - 1)
-              )
-            }
+            nameParamPair
           )
         }
       )

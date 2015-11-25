@@ -15,91 +15,83 @@ object pathsAction {
     import definitionsAction._
     class FullPetstoreApiYaml extends FullPetstoreApiYamlBase {
         val findPetsByTags = findPetsByTagsAction {
-            input: (PetsFindByStatusGetStatus) =>
-            val (tags) = input
+            (tags: PetsFindByStatusGetStatus) =>
             ???
         }
         val placeOrder = placeOrderAction {
-            input: (StoresOrderPostBody) =>
-            val (body) = input
+            (body: StoresOrderPostBody) =>
             ???
         }
         val createUser = createUserAction {
-            input: (UsersUsernamePutBody) =>
-            val (body) = input
+            (body: UsersUsernamePutBody) =>
             ???
         }
         val createUsersWithListInput = createUsersWithListInputAction {
-            input: (UsersCreateWithListPostBody) =>
-            val (body) = input
+            (body: UsersCreateWithListPostBody) =>
             ???
         }
         val getUserByName = getUserByNameAction {
-            input: (String) =>
-            val (username) = input
+            (username: String) =>
             ???
         }
         val updateUser = updateUserAction {
             input: (String, UsersUsernamePutBody) =>
             val (username, body) = input
+            
             ???
         }
         val deleteUser = deleteUserAction {
-            input: (String) =>
-            val (username) = input
+            (username: String) =>
             ???
         }
         val updatePet = updatePetAction {
-            input: (PetsPostBody) =>
-            val (body) = input
+            (body: PetsPostBody) =>
             ???
         }
         val addPet = addPetAction {
-            input: (PetsPostBody) =>
-            val (body) = input
+            (body: PetsPostBody) =>
             ???
         }
         val createUsersWithArrayInput = createUsersWithArrayInputAction {
-            input: (UsersCreateWithListPostBody) =>
-            val (body) = input
+            (body: UsersCreateWithListPostBody) =>
             ???
         }
         val getOrderById = getOrderByIdAction {
-            input: (String) =>
-            val (orderId) = input
+            (orderId: String) =>
             ???
         }
         val deleteOrder = deleteOrderAction {
-            input: (String) =>
-            val (orderId) = input
+            (orderId: String) =>
             ???
         }
         val logoutUser = logoutUserAction {
+            
             ???
         }
         val getPetById = getPetByIdAction {
-            input: (Long) =>
-            val (petId) = input
+            (petId: Long) =>
             ???
         }
         val updatePetWithForm = updatePetWithFormAction {
             input: (String, String, String) =>
             val (petId, name, status) = input
+            
             ???
         }
         val deletePet = deletePetAction {
             input: (String, Long) =>
             val (api_key, petId) = input
+            
             ???
         }
         val findPetsByStatus = findPetsByStatusAction {
-            input: (PetsFindByStatusGetStatus) =>
-            val (status) = input
+            (status: PetsFindByStatusGetStatus) =>
             ???
         }
         val loginUser = loginUserAction {
             input: (OrderStatus, OrderStatus) =>
             val (username, password) = input
+            
             ???
         }
         }

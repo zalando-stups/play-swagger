@@ -14,8 +14,7 @@ object pathsAction {
     import definitionsAction._
     class SimplePetstoreApiYaml extends SimplePetstoreApiYamlBase {
         val addPet = addPetAction {
-            input: (NewPet) =>
-            val (pet) = input
+            (pet: NewPet) =>
             ???
         }
         }
@@ -23,16 +22,15 @@ object pathsAction {
         val methodLevel = methodLevelAction {
             input: (PetsGetTags, PetsGetLimit) =>
             val (tags, limit) = input
+            
             ???
         }
         val pathLevel = pathLevelAction {
-            input: (Long) =>
-            val (id) = input
+            (id: Long) =>
             ???
         }
         val pathLevel = pathLevelAction {
-            input: (Long) =>
-            val (id) = input
+            (id: Long) =>
             ???
         }
         }

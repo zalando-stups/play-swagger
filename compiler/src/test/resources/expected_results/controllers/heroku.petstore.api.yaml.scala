@@ -16,23 +16,19 @@ object pathsAction {
     import definitionsAction.PetBirthdayAction
     class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
         val get = getAction {
-            input: (PetBirthday) =>
-            val (limit) = input
+            (limit: PetBirthday) =>
             ???
         }
         val put = putAction {
-            input: (Pet) =>
-            val (pet) = input
+            (pet: Pet) =>
             ???
         }
         val post = postAction {
-            input: (Pet) =>
-            val (pet) = input
+            (pet: Pet) =>
             ???
         }
         val getByPetId = getByPetIdAction {
-            input: (String) =>
-            val (petId) = input
+            (petId: String) =>
             ???
         }
         }

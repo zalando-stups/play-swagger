@@ -9,6 +9,7 @@ object pathsAction {
     import paths.GetResponses200
     class Dashboard extends DashboardBase {
         val index = indexAction {
+            
             ???
         }
         }

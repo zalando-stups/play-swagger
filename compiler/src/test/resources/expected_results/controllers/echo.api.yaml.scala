@@ -9,11 +9,13 @@ object pathsAction {
     import paths._
     class EchoApiYaml extends EchoApiYamlBase {
         val get = getAction {
+            
             ???
         }
         val post = postAction {
             input: (PostName, PostName) =>
             val (name, year) = input
+            
             ???
         }
         }

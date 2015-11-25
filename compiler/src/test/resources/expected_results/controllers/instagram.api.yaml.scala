@@ -20,39 +20,43 @@ object pathsAction {
         val getUsersSearch = getUsersSearchAction {
             input: (String, LikeUser_name) =>
             val (q, count) = input
+            
             ???
         }
         val getUsersSelfMediaLiked = getUsersSelfMediaLikedAction {
             input: (MediaCreated_time, MediaCreated_time) =>
             val (count, max_like_id) = input
+            
             ???
         }
         val getTagsSearch = getTagsSearchAction {
-            input: (LikeUser_name) =>
-            val (q) = input
+            (q: LikeUser_name) =>
             ???
         }
         val getUsersSelfFeed = getUsersSelfFeedAction {
             input: (MediaCreated_time, MediaCreated_time, MediaCreated_time) =>
             val (count, max_id, min_id) = input
+            
             ???
         }
         val getMediaSearch = getMediaSearchAction {
             input: (MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude) =>
             val (MAX_TIMESTAMP, DISTANCE, LNG, MIN_TIMESTAMP, LAT) = input
+            
             ???
         }
         val getMediaByShortcode = getMediaByShortcodeAction {
-            input: (String) =>
-            val (shortcode) = input
+            (shortcode: String) =>
             ???
         }
         val getLocationsSearch = getLocationsSearchAction {
             input: (MediaCreated_time, MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude) =>
             val (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng) = input
+            
             ???
         }
         val getMediaPopular = getMediaPopularAction {
+            
             ???
         }
         }

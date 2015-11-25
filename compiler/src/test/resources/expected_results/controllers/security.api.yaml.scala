@@ -14,8 +14,7 @@ object pathsAction {
     import definitionsAction._
     class SecurityApiYaml extends SecurityApiYamlBase {
         val getPetsById = getPetsByIdAction {
-            input: (PetTag) =>
-            val (id) = input
+            (id: PetTag) =>
             ???
         }
         }

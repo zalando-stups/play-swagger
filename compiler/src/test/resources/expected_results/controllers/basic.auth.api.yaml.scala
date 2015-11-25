@@ -9,6 +9,7 @@ object pathsAction {
     import paths.GetResponses200
     class BasicAuthApiYaml extends BasicAuthApiYamlBase {
         val get = getAction {
+            
             ???
         }
         }
