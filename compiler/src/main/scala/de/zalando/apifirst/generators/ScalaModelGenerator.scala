@@ -12,35 +12,44 @@ import org.fusesource.scalate.TemplateEngine
   * @since   16.11.2015.
   */
 
-class ScalaGenerator(val model: StrictModel)
-  extends ScalaModelGenerator with ScalaTestDataGenerator with PlayValidatorsGenerator {
+class ScalaGenerator(val strictModel: StrictModel)
+  extends ScalaModelGenerator with ScalaTestDataGenerator with PlayValidatorsGenerator with PlayScalaControllersGenerator {
 
   def this(tps: Map[Reference, Domain.Type], discriminators: DiscriminatorLookupTable) =
     this(StrictModel(Nil, tps, Map.empty, discriminators))
 
   def this(tps: Map[Reference, Domain.Type]) = this(tps, Map.empty)
 
-  val StrictModel(calls, allTypes, params, discriminators) = model
+  val StrictModel(modelCalls, modelTypes, params, discriminators) = strictModel
 
-  def model(fileName: String) = apply(fileName, modelTemplateName, modelSuffix)
+  def model(fileName: String) = {
+    if (modelTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
+    else apply(fileName, modelTemplateName, modelSuffix)
+  }
 
   def generators(fileName: String) = apply(fileName, generatorsTemplateName, generatorsSuffix)
 
-  def playValidators(fileName: String) = apply(fileName, validatorsTemplateName, validatorsSuffix)
-
-  private def apply(fileName: String, templateName: String, suffix: String): String = {
-    if (allTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
-    else nonEmptyTemplate(Map("main_package" -> fileName), templateName, suffix)
+  def playValidators(fileName: String) = {
+    if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
+    else apply(fileName, validatorsTemplateName, validatorsSuffix)
   }
+
+  def playScalaControllers(fileName: String) = {
+    if (modelCalls.isEmpty) ""
+    else apply(fileName, controllersTemplateName, controllersSuffix)
+  }
+
+  private def apply(fileName: String, templateName: String, suffix: String): String =
+    nonEmptyTemplate(Map("main_package" -> fileName), templateName, suffix)
 
   private def nonEmptyTemplate(map: Map[String, Any], templateName: String, suffix: String): String = {
     val engine = new TemplateEngine
-    val typesByPackage = allTypes.groupBy(_._1.packageName)
+    val typesByPackage = modelTypes.groupBy(_._1.packageName)
 
     val callsPrimitiveParameters = for {
-      call <- calls if call.handler.parameters.nonEmpty
+      call <- modelCalls if call.handler.parameters.nonEmpty
       parameter <- call.handler.parameters
-      tpe = model.findParameter(parameter).typeName if tpe.isInstanceOf[PrimitiveType]
+      tpe = strictModel.findParameter(parameter).typeName if tpe.isInstanceOf[PrimitiveType]
     } yield parameter.name -> tpe
 
     val allPackages = Map(
@@ -52,8 +61,9 @@ class ScalaGenerator(val model: StrictModel)
           "constraints" -> constraints(typeDefs ++ callsPrimitiveParameters),
           "validations" -> validations(typeDefs)
         )
-        val callValidations = if (pckg == "paths") Some("call_validations" -> validations(calls)) else None
-        val fullPackage = singlePackage ++ callValidations.toSeq.toMap
+        val callValidations = if (pckg == "paths") Some("call_validations" -> validations(modelCalls)) else None
+        val callControllers = if (pckg == "paths") Some("controllers" -> controllers(modelCalls)) else None
+        val fullPackage = singlePackage ++ callValidations.toSeq.toMap ++ callControllers.toSeq.toMap
         fullPackage + ("package" -> (pckg + suffix)) + ("imports" -> imports(fullPackage, pckg, suffix))
       })
 
@@ -72,7 +82,7 @@ class ScalaGenerator(val model: StrictModel)
       else packageGroup._2.map(_.qualifiedName)
     }
     val objectDependencies =
-      if (suffix.nonEmpty) result.filterNot{pkg => pkg.startsWith("scala") || pkg.startsWith("java")}.map(addSuffix(suffix))
+      if (suffix.nonEmpty) result.filterNot { pkg => pkg.startsWith("scala") || pkg.startsWith("java") }.map(addSuffix(suffix))
       else Nil
     val correctedResult = result ++ objectDependencies
     correctedResult.toSeq.distinct.filterNot(_.startsWith(pckg + suffix)).map(r => Map("name" -> r))
@@ -103,7 +113,7 @@ class ScalaGenerator(val model: StrictModel)
       "alias" -> v.imports.headOption.getOrElse(v.name.simple),
       "generator" -> k.typeAlias(suffix = suffix),
       "generator_name" -> generatorNameForType(v),
-      "underlying_type" -> v.imports.headOption.map { _ => v.nestedTypes.map(_.name.typeAlias()).mkString(", ")},
+      "underlying_type" -> v.imports.headOption.map { _ => v.nestedTypes.map(_.name.typeAlias()).mkString(", ") },
       "dependencies" -> (k +: v.nestedTypes.map(_.name))
     )
   }
@@ -121,7 +131,7 @@ class ScalaGenerator(val model: StrictModel)
   private def dereferenceFields(t: Composite): Seq[Field] =
     t.descendants flatMap {
       case td: TypeDef => td.fields
-      case r: TypeRef => allTypes.get(r.name) match {
+      case r: TypeRef => modelTypes.get(r.name) match {
         case Some(td: TypeDef) => td.fields
         case Some(c: Composite) => dereferenceFields(c)
         case other => throw new IllegalStateException(s"Unexpected contents of Composite $r: $other")
@@ -147,123 +157,163 @@ class ScalaGenerator(val model: StrictModel)
 
 }
 
+trait PlayScalaControllersGenerator {
 
-trait ScalaTestDataGenerator {
+  def strictModel: StrictModel
 
-  val generatorsTemplateName = "generators.mustache"
+  val controllersSuffix = "Action"
+  val baseControllersSuffix = "Base"
 
-  val generatorsSuffix = "Generator"
+  val controllersTemplateName = "play_scala_controllers.mustache"
 
-  def generatorNameForType: (Type) => String = {
-    case s: PrimitiveType => primitiveType(s)
-    case c: Container => containerType(c)
-    case r: TypeRef => r.name.typeAlias(suffix = generatorsSuffix)
-    case o => s"generator name for $o" // relativeGeneratorName(tpe, thisType)
-  }
-
-  private def containerType(c: Container): String = {
-    val innerGenerator = generatorNameForType(c.tpe)
-    val className = c.tpe.name.typeAlias()
-    c match {
-      case Opt(tpe, _) => s"Gen.option($innerGenerator)"
-      case Arr(tpe, _, _) => s"Gen.containerOf[List,$className]($innerGenerator)"
-      case c@CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
-    }
-  }
-
-  private def primitiveType(tpe: Type) = s"arbitrary[${tpe.name.className}]"
-
-}
-
-trait ScalaModelGenerator {
-
-  val modelSuffix = ""
-
-  val modelTemplateName = "model.mustache"
-}
-
-trait PlayValidatorsGenerator {
-
-  val validatorsSuffix = "Validator"
-  val constraintsSuffix = "Constraints"
-  val validatorsTemplateName = "play_validation.mustache"
-
-  type Validations = Iterable[Map[String, Any]]
-  def model: StrictModel
-
-  def validations(typeDefs: Map[Reference, Type]) = validations0(typeDefs.toSeq).flatten
-
-  def validations(calls: Seq[ApiCall]) = calls filterNot { _.handler.parameters.isEmpty } map { call =>
-    val fields = call.handler.parameters.zipWithIndex.map { case (p, i) =>
-      val tpe = model.findParameter(p).typeName
+  def controllers(allCalls: Seq[ApiCall]) =
+    allCalls groupBy {
+      _.handler.controller
+    } map { case (controller, calls) =>
       Map(
-        "field_name" -> escape(p.name.simple),
-        "field_type" -> tpe.name.typeAlias(),
-        "field_raw_type" -> tpe.name,
-        "validation_name" -> (if (tpe.isInstanceOf[PrimitiveType]) p.name else tpe.name).typeAlias(suffix = validatorsSuffix),
-        "last" -> (i == call.handler.parameters.size - 1)
+        "controller" -> escape(controller),
+        "base" -> escape(controller + baseControllersSuffix),
+        "methods" -> calls.zipWithIndex.map { case (call, i) =>
+          Map(
+            "method" -> escape(call.handler.method),
+            "action" -> escape(call.handler.method + controllersSuffix),
+            "parameters?" -> call.handler.parameters.headOption.map { _ =>
+              Map(
+                "parameters" -> call.handler.parameters.zipWithIndex.map { case (param, ii) =>
+                  Map(
+                    "name" -> param.simple,
+                    "type" -> strictModel.findParameter(param).typeName.name.typeAlias(),
+                    "last" -> (ii == call.handler.parameters.size - 1)
+                  )
+                },
+                "last" -> (i == calls.size - 1)
+              )
+            }
+          )
+        }
       )
     }
-    Map(
-      "constraint_name" -> call.asReference.typeAlias(suffix = constraintsSuffix),
-      "validation_name" -> call.asReference.typeAlias(suffix = validatorsSuffix),
-      "class_name" -> call.asReference.typeAlias(),
-      "fields" -> fields,
-      "dependencies" -> (call.asReference +: fields.map(_.apply("field_raw_type")))
-    )
   }
 
-  private def validations0(types: Iterable[(Reference, Type)]): Iterable[Validations] =
-    types collect {
-      case (r, t: TypeDef) if !r.simple.contains("AllOf") && !r.simple.contains("OneOf") => // FIXME copy-pasted and fragile, what if this in actual name of the parameter
-        Seq(Map(
-          "constraint_name" -> r.typeAlias(suffix = constraintsSuffix),
-          "validation_name" -> r.typeAlias(suffix = validatorsSuffix),
-          "class_name" -> r.typeAlias(),
-          "fields" -> t.fields.zipWithIndex.map { case (f, i) =>
-            Map(
-              "field_name" -> escape(f.name.simple),
-              "validation_name" -> (if (f.tpe.isInstanceOf[PrimitiveType]) f.name else f.tpe.name).typeAlias(suffix = validatorsSuffix),
-              "last" -> (i == t.fields.size - 1)
-            )
-          }))
-      case (r, t: Composite) =>
-        validatorFromReference(r)
-      case (r, t: Container) =>
-        validatorFromReference(r)
-      case (r, t: TypeRef) =>
-        validatorFromReference(r)
+  trait ScalaTestDataGenerator {
+
+    val generatorsTemplateName = "generators.mustache"
+
+    val generatorsSuffix = "Generator"
+
+    def generatorNameForType: (Type) => String = {
+      case s: PrimitiveType => primitiveType(s)
+      case c: Container => containerType(c)
+      case r: TypeRef => r.name.typeAlias(suffix = generatorsSuffix)
+      case o => s"generator name for $o" // relativeGeneratorName(tpe, thisType)
     }
 
-  def validatorFromReference(r: Reference): Seq[Map[String, String]] = {
-    Seq(Map(
-      "constraint_name" -> r.typeAlias(suffix = constraintsSuffix),
-      "validation_name" -> r.typeAlias(suffix = validatorsSuffix),
-      "field_name" -> r.simple,
-      "class_name" -> r.typeAlias()
-    ))
+    private def containerType(c: Container): String = {
+      val innerGenerator = generatorNameForType(c.tpe)
+      val className = c.tpe.name.typeAlias()
+      c match {
+        case Opt(tpe, _) => s"Gen.option($innerGenerator)"
+        case Arr(tpe, _, _) => s"Gen.containerOf[List,$className]($innerGenerator)"
+        case c@CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
+      }
+    }
+
+    private def primitiveType(tpe: Type) = s"arbitrary[${tpe.name.className}]"
+
   }
 
-  def constraints(typeDefs: Map[Reference, Type]) = constraints0(typeDefs.toSeq).flatten
+  trait ScalaModelGenerator {
 
-  private def constraints0(types: Iterable[(Reference, Type)]): Iterable[Validations] =
-    types collect {
-      case (r: Reference, t: PrimitiveType) =>
-        Seq(Map(
-          "restrictions" -> t.meta.constraints.filterNot(_.isEmpty).zipWithIndex.map { case (c, i) =>
-            Map(
-              "name" -> c,
-              "last" -> (i == t.meta.constraints.length - 1)
-            )
-          },
-          "constraint_name" -> r.typeAlias(suffix = constraintsSuffix),
-          "validation_name" -> r.typeAlias(suffix = validatorsSuffix),
-          "type_name" -> t.name.typeAlias(),
-          "class_name" -> r.typeAlias()
-        ))
-      case (r, t: TypeDef) =>
-        constraints0(t.fields.map { f => f.name -> f.tpe }).flatten
+    val modelSuffix = ""
+
+    val modelTemplateName = "model.mustache"
+  }
+
+  trait PlayValidatorsGenerator {
+
+    val validatorsSuffix = "Validator"
+    val constraintsSuffix = "Constraints"
+    val validatorsTemplateName = "play_validation.mustache"
+
+    type Validations = Iterable[Map[String, Any]]
+
+    def strictModel: StrictModel
+
+    def validations(typeDefs: Map[Reference, Type]) = validations0(typeDefs.toSeq).flatten
+
+    def validations(calls: Seq[ApiCall]) = calls filterNot {
+      _.handler.parameters.isEmpty
+    } map { call =>
+      val fields = call.handler.parameters.zipWithIndex.map { case (p, i) =>
+        val tpe = strictModel.findParameter(p).typeName
+        Map(
+          "field_name" -> escape(p.name.simple),
+          "field_type" -> tpe.name.typeAlias(),
+          "field_raw_type" -> tpe.name,
+          "validation_name" -> (if (tpe.isInstanceOf[PrimitiveType]) p.name else tpe.name).typeAlias(suffix = validatorsSuffix),
+          "last" -> (i == call.handler.parameters.size - 1)
+        )
+      }
+      Map(
+        "constraint_name" -> call.asReference.typeAlias(suffix = constraintsSuffix),
+        "validation_name" -> call.asReference.typeAlias(suffix = validatorsSuffix),
+        "class_name" -> call.asReference.typeAlias(),
+        "fields" -> fields,
+        "dependencies" -> (call.asReference +: fields.map(_.apply("field_raw_type")))
+      )
     }
 
-}
+    private def validations0(types: Iterable[(Reference, Type)]): Iterable[Validations] =
+      types collect {
+        case (r, t: TypeDef) if !r.simple.contains("AllOf") && !r.simple.contains("OneOf") => // FIXME copy-pasted and fragile, what if this in actual name of the parameter
+          Seq(Map(
+            "constraint_name" -> r.typeAlias(suffix = constraintsSuffix),
+            "validation_name" -> r.typeAlias(suffix = validatorsSuffix),
+            "class_name" -> r.typeAlias(),
+            "fields" -> t.fields.zipWithIndex.map { case (f, i) =>
+              Map(
+                "field_name" -> escape(f.name.simple),
+                "validation_name" -> (if (f.tpe.isInstanceOf[PrimitiveType]) f.name else f.tpe.name).typeAlias(suffix = validatorsSuffix),
+                "last" -> (i == t.fields.size - 1)
+              )
+            }))
+        case (r, t: Composite) =>
+          validatorFromReference(r)
+        case (r, t: Container) =>
+          validatorFromReference(r)
+        case (r, t: TypeRef) =>
+          validatorFromReference(r)
+      }
+
+    def validatorFromReference(r: Reference): Seq[Map[String, String]] = {
+      Seq(Map(
+        "constraint_name" -> r.typeAlias(suffix = constraintsSuffix),
+        "validation_name" -> r.typeAlias(suffix = validatorsSuffix),
+        "field_name" -> r.simple,
+        "class_name" -> r.typeAlias()
+      ))
+    }
+
+    def constraints(typeDefs: Map[Reference, Type]) = constraints0(typeDefs.toSeq).flatten
+
+    private def constraints0(types: Iterable[(Reference, Type)]): Iterable[Validations] =
+      types collect {
+        case (r: Reference, t: PrimitiveType) =>
+          Seq(Map(
+            "restrictions" -> t.meta.constraints.filterNot(_.isEmpty).zipWithIndex.map { case (c, i) =>
+              Map(
+                "name" -> c,
+                "last" -> (i == t.meta.constraints.length - 1)
+              )
+            },
+            "constraint_name" -> r.typeAlias(suffix = constraintsSuffix),
+            "validation_name" -> r.typeAlias(suffix = validatorsSuffix),
+            "type_name" -> t.name.typeAlias(),
+            "class_name" -> r.typeAlias()
+          ))
+        case (r, t: TypeDef) =>
+          constraints0(t.fields.map { f => f.name -> f.tpe }).flatten
+      }
+
+  }
 
