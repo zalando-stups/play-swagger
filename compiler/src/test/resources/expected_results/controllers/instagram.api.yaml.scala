@@ -41,7 +41,7 @@ object pathsAction {
         }
         val getMediaSearch = getMediaSearchAction {
             input: (MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude) =>
-            val (MAX_TIMESTAMP, DISTANCE, LNG, MIN_TIMESTAMP, LAT) = input
+            val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
             
             ???
         }
