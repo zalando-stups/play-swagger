@@ -90,11 +90,20 @@ object TypeDeduplicator extends TypeAnalyzer {
     val duplicateNames = sortByDiscriminatorOrPathLength(model.discriminators, duplicates)
     val bestMatch :: refsToRemove = duplicateNames
     val typesToRewrite = model.typeDefs filterNot { t => refsToRemove.contains(t._1) }
+    val callsWithCorrectRefs = model.calls map { c => replaceReferenceInCall(refsToRemove, bestMatch)(c) }
     val typesWithCorrectRefs = typesToRewrite map { d => replaceReferencesInTypes(refsToRemove, bestMatch)(d._1, d._2) }
     val newParams = model.params map replaceReferenceInParameter(refsToRemove, bestMatch)
-    model.copy(typeDefs = typesWithCorrectRefs, params = newParams)
+    model.copy(typeDefs = typesWithCorrectRefs, params = newParams, calls = callsWithCorrectRefs)
   }
 
+  private def replaceReferenceInCall(duplicateRefs: Seq[Reference], target: Reference): ApiCall => ApiCall = call => {
+    val (resultTypesToReplace, resultTypesToHold) = call.resultTypes.partition { t => duplicateRefs.contains(t.name) }
+    val resultTypesReplacement = resultTypesToReplace map { tr =>
+      ParameterRef(target)
+    }
+    val resultTypes = resultTypesToHold ++ resultTypesReplacement
+    call.copy(resultTypes = resultTypes)
+  }
 
   private def replaceReferencesInTypes(duplicateRefs: Seq[Reference], target: Reference):
   (Reference, Type) => (Reference, Type) = (ref, tpe) => ref -> {
