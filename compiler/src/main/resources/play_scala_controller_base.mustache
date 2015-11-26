@@ -27,12 +27,12 @@ object {{&package}} {
 
         private val {{&error_to_status}}: PartialFunction[Throwable, Status] = {{^error_mappings}}PartialFunction.empty[Throwable, Status]{{/error_mappings}}⮐
         {{#error_mappings}} { {{/error_mappings}}{{#error_mappings}}
-            case _: {{&exception_name}} => Status({{&exception_code}})
+            case _: {{&exception_name}} => Status({{&exception_code}})⮐
         {{/error_mappings}}{{#error_mappings}} } {{/error_mappings}}
 
-        {{#parser_definitions}}
-            private val {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&action_request_type}}]("{{&method}}", "Invalid {{&method}}", maxLength)
-        {{/parser_definitions}}
+        {{#body_param}}
+            private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&action_request_type}}]("{{&method}}", "Invalid {{&method}}", maxLength)
+        {{/body_param}}
 
         def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#body_param?}}request =>{{/body_param?}}⮐
             {{#body_param}}

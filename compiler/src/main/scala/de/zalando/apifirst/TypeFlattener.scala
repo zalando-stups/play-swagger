@@ -184,9 +184,9 @@ trait TypeAnalyzer {
     one.meta.constraints.intersect(two.meta.constraints).size == one.meta.constraints.size
 
   def isSameTypeDef(one: Type)(two: Type): Boolean = (one, two) match {
-    case (c1: Container, c2: Container) =>
+    case (c1: Container, c2: Container) if c1.getClass == c2.getClass =>
       isSameTypeDef(c1.tpe)(c2.tpe)
-    case (c1: Composite, c2: Composite) if c1.descendants.size == c2.descendants.size =>
+    case (c1: Composite, c2: Composite) if c1.getClass == c2.getClass && c1.descendants.size == c2.descendants.size =>
       sameDescendants(c1, c2)
     case (t1: TypeDef, t2: TypeDef) if t1.fields.size == t2.fields.size =>
       sameFields(t1, t2)

@@ -16,16 +16,16 @@ class ScalaControllerGeneratorIntegrationTest extends FunSpec with MustMatchers 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
   def toTest: File => Boolean = f => {
-    f.getName.endsWith(".yaml") && f.getName.startsWith("echo")
+    f.getName.endsWith(".yaml") && f.getName.startsWith("simple")
   }
 
   describe("ScalaPlayControllerGenerator should generate controller and base controller files") {
     (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>
-      testScalaModelGenerator(file)
+      testScalaControllerGenerator(file)
     }
   }
 
-  def testScalaModelGenerator(file: File): Unit = {
+  def testScalaControllerGenerator(file: File): Unit = {
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val (base, model) = StrictYamlParser.parse(file)
       val ast         = ModelConverter.fromModel(base, model, Option(file))
@@ -35,14 +35,10 @@ class ScalaControllerGeneratorIntegrationTest extends FunSpec with MustMatchers 
       val bases       = processor.playScalaControllerBases(file.getName)
       val expectedC   = asInFile(file, "scala")
       val expectedB   = asInFile(file, "base.scala")
-      // if (expectedC.isEmpty)
-        dump(controllers, file, "scala")
-      // clean(controllers) mustBe clean(expectedC)
-
-      //if (expectedB.isEmpty)
-        dump(bases, file, "base.scala")
-      // clean(bases) mustBe clean(expectedB)
-
+      if (expectedC.isEmpty) dump(controllers, file, "scala")
+      if (expectedB.isEmpty) dump(bases, file, "base.scala")
+      clean(controllers) mustBe clean(expectedC)
+      clean(bases) mustBe clean(expectedB)
     }
   }
 

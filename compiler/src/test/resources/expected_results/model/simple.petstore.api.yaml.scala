@@ -7,12 +7,14 @@ object definitions {
     case class NewPet(name: String, id: NewPetId, tag: NewPetTag) 
     }
 object paths {
-    import definitions.{ErrorModel, NewPetTag, Pet}
+    import definitions.{ErrorModel, Pet}
     type PetsIdDeleteResponsesDefault = Option[ErrorModel]
     type PetsPostResponses200 = Option[Pet]
     type PetsIdDeleteResponses204 = Null
     type PetsIdDeleteId = Long
     type PetsGetLimit = Option[Int]
-    type PetsGetResponses200 = Option[PetsPostResponses200]
-    type PetsGetTags = Option[NewPetTag]
+    type PetsGetTagsOpt = scala.collection.Seq[String]
+    type PetsGetResponses200Opt = scala.collection.Seq[Pet]
+    type PetsGetResponses200 = Option[PetsGetResponses200Opt]
+    type PetsGetTags = Option[PetsGetTagsOpt]
     }

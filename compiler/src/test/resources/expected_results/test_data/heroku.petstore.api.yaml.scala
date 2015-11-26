@@ -24,7 +24,7 @@ object definitionsGenerator {
 }
 object pathsGenerator {
     import definitions.Pet
-    import paths.{GetResponses200, GetResponses200Opt}
+    import paths.GetResponses200Opt
     import definitionsGenerator.PetGenerator
     def createPetIdGetPetIdGenerator = _generate(PetIdGetPetIdGenerator)
     def createGetResponses200OptGenerator = _generate(GetResponses200OptGenerator)

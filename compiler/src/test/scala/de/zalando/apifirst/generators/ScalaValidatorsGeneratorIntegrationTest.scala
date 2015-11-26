@@ -16,7 +16,7 @@ class ScalaValidatorsGeneratorIntegrationTest extends FunSpec with MustMatchers 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
   def toTest: File => Boolean = f => {
-    f.getName.endsWith(".yaml")
+    f.getName.endsWith(".yaml") && f.getName.startsWith("simple")
   }
 
   describe("ScalaValidatorsGenerator should generate model files") {

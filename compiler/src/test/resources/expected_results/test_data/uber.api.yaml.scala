@@ -78,7 +78,7 @@ object definitionsGenerator {
 }
 object pathsGenerator {
     import definitions._
-    import paths._
+    import paths.{EstimatesPriceGetResponses200Opt, ProductsGetResponses200Opt}
     import definitionsGenerator._
     def createEstimatesPriceGetEnd_latitudeGenerator = _generate(EstimatesPriceGetEnd_latitudeGenerator)
     def createProductsGetResponses200OptGenerator = _generate(ProductsGetResponses200OptGenerator)

@@ -29,11 +29,13 @@ object definitionsGenerator {
 }
 object pathsGenerator {
     import definitions.{ErrorModel, Pet}
-    import paths.{PetsIdGetResponses200, PetsIdGetResponses200Opt, PetsIdGetResponsesDefault}
+    import paths.{PetsIdGetId, PetsIdGetResponses200Opt}
     import definitionsGenerator.{ErrorModelGenerator, PetGenerator}
+    def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
     def createPetsIdGetResponsesDefaultGenerator = _generate(PetsIdGetResponsesDefaultGenerator)
     def createPetsIdGetResponses200Generator = _generate(PetsIdGetResponses200Generator)
     def createPetsIdGetResponses200OptGenerator = _generate(PetsIdGetResponses200OptGenerator)
+    val PetsIdGetIdGenerator = Gen.containerOf[List,String](arbitrary[String])
     val PetsIdGetResponsesDefaultGenerator = Gen.option(ErrorModelGenerator)
     val PetsIdGetResponses200Generator = Gen.option(PetsIdGetResponses200OptGenerator)
     val PetsIdGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)

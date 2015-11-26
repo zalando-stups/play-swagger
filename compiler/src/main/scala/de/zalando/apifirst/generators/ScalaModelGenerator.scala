@@ -77,14 +77,17 @@ class ScalaGenerator(val strictModel: StrictModel)
     val allPackages = Map(
       "packages" -> typesByPackage.toList.map { case (pckg, typeDefs) =>
         implicit val pckgName = pckg + suffix
+        val inputParameters = typeDefs.filterNot { case (ref, typeDef) =>
+            ref.parent.simple == "responses" // OMG, FIXME - check parameter list of api calls instead
+        }
         val singlePackage = Map(
           "classes" -> classes(typeDefs, suffix),
           "aliases" -> aliases(typeDefs, suffix),
           "traits" -> traits(typeDefs, suffix),
-          "constraints" -> constraints(typeDefs ++ callsPrimitiveParameters),
-          "validations" -> validations(typeDefs)
+          "constraints" -> constraints(inputParameters ++ (if (pckg == "paths") callsPrimitiveParameters else Nil)),
+          "validations" -> validations(inputParameters)
         )
-        val callValidations = if (pckg == "paths") Some("call_validations" -> validations(modelCalls)) else None
+        val callValidations = if (pckg == "paths") Some("call_validations" -> validations(modelCalls.filter(_.handler.parameters.nonEmpty))) else None
         val callControllers = if (pckg == "paths") Some("controllers" -> controllers(modelCalls)) else None
         val fullPackage = singlePackage ++ callValidations.toSeq.toMap ++ callControllers.toSeq.toMap
         fullPackage + ("package" -> pckgName) + ("imports" -> imports(pckgName))
@@ -169,7 +172,6 @@ trait PlayScalaControllersGenerator extends ImportSupport {
   val baseControllersSuffix = "Base"
 
   val controllersTemplateName = "play_scala_controller.mustache"
-
   val controllerBaseTemplateName = "play_scala_controller_base.mustache"
 
   // TODO this part is where it's getting ugly.
@@ -203,7 +205,15 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         val nonBodyParams = parametersValidations(call.handler.parameters.filterNot(strictModel.findParameter(_).place == ParameterPlace.BODY))
         val validations = callValidations(call)
 
-        val actionResultType = call.resultTypes.headOption.map(t => useType(strictModel.findType(t.name).name, "", ""))
+        // FIXME should be already implemented in AST
+        val actionResultType = call.resultTypes.headOption.map { t =>
+          val tpe = strictModel.findType(t.name)
+          tpe match {
+            case c: Container => c.imports.head + "[" + c.tpe.name.typeAlias() + "]" // FIXME won't work with MAP
+            case p: ProvidedType => p.name.typeAlias()
+            case o => o.name.className
+          }
+        }
         Map(
           "response_mime_type_value" -> call.mimeOut.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
           "action_result_type_value" -> actionResultType, // TODO implement content negotiation
@@ -220,7 +230,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
           "process_valid_request" -> escape("processValid" + call.handler.method + "Request"),
           "response_mime_type_name" -> escape(call.handler.method + "ResponseMimeType"),
           "error_to_status" -> escape("errorToStatus" + call.handler.method),
-          "error_mappings" -> call.errorMapping.flatMap { case (k, v) => v.map { _.getCanonicalName -> k }},
+          "error_mappings" -> call.errorMapping.flatMap { case (k, v) => v.map { _.getCanonicalName -> k } },
           "validations" -> validations,
           "validations?" -> validations.nonEmpty,
           "body_param" -> bodyParam,
@@ -346,7 +356,8 @@ trait PlayScalaControllersGenerator extends ImportSupport {
       ))
     }
 
-    def constraints(typeDefs: Map[Reference, Type])(implicit pckg: String) = constraints0(typeDefs.toSeq).flatten
+    def constraints(typeDefs: Map[Reference, Type])(implicit pckg: String) =
+      constraints0(typeDefs.toSeq).flatten
 
     private def constraints0(types: Iterable[(Reference, Type)])(implicit pckg: String): Iterable[Validations] =
       types collect {
@@ -371,6 +382,12 @@ trait PlayScalaControllersGenerator extends ImportSupport {
 
 
 trait ImportSupport {
+
+  val dependencies = Map(
+    "Base" -> Set("Validator"),
+    "Action" -> Set("Validator", "Base"),
+    "Test" -> Seq("Validator", "Base")
+  )
 
   protected case class TypePlacement(packageName: Option[String], typeName: String) {
     val qualifiedName = packageName.map(_ + "." + typeName).getOrElse(typeName)
@@ -399,7 +416,9 @@ trait ImportSupport {
   def useType(ref: Reference, suffix: String, prefix: String)(implicit pckg: String) = {
     val fullName = ref.qualifiedName(prefix, suffix)
     val importDef = TypePlacement.fromParts(fullName)
-    if (pckg.endsWith(suffix)) importDef.packageName.foreach { _ =>
+    val key = pckg.replace(ref.packageName, "")
+    val moduleDependent = dependencies.get(key).exists(_.exists(_ == suffix))
+    if (pckg.endsWith(suffix) || moduleDependent) importDef.packageName.foreach { _ =>
       typeUsages.synchronized {
         val toUpdate = typeUsages.getOrElse(pckg, Set.empty[TypePlacement])
         val updated = toUpdate + importDef

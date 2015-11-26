@@ -6,7 +6,91 @@ import PlayBodyParsing._
 import PlayValidations._
 
 object parametersValidator {
-    import pathsValidator.{MediaShortcodeGetShortcodeValidator, UsersSearchGetQValidator}
+    import pathsValidator._
+    class `UsersUser-idFollowsGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idFollowsGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idFollowsGetUser-idConstraints`(instance))
+    }
+    class `TagsTag-nameMediaRecentGetTag-nameConstraints`(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class `TagsTag-nameMediaRecentGetTag-nameValidator`(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new `TagsTag-nameMediaRecentGetTag-nameConstraints`(instance))
+    }
+    class `LocationsLocation-idGetLocation-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `LocationsLocation-idGetLocation-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `LocationsLocation-idGetLocation-idConstraints`(instance))
+    }
+    class `MediaMedia-idCommentsDeleteMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idCommentsDeleteMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsDeleteMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idLikesGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesGetMedia-idConstraints`(instance))
+    }
+    class `TagsTag-nameGetTag-nameConstraints`(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class `TagsTag-nameGetTag-nameValidator`(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new `TagsTag-nameGetTag-nameConstraints`(instance))
+    }
+    class `MediaMedia-idLikesDeleteMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesDeleteMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesDeleteMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idCommentsGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idCommentsGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsGetMedia-idConstraints`(instance))
+    }
+    class `LocationsLocation-idMediaRecentGetLocation-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `LocationsLocation-idMediaRecentGetLocation-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `LocationsLocation-idMediaRecentGetLocation-idConstraints`(instance))
+    }
+    class `UsersUser-idFollowed-byGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idFollowed-byGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idFollowed-byGetUser-idConstraints`(instance))
+    }
+    class `MediaMedia-idGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idGetMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idCommentsPostMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idCommentsPostMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsPostMedia-idConstraints`(instance))
+    }
     class MediaShortcodeGetShortcodeConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
@@ -14,12 +98,26 @@ object parametersValidator {
     class MediaShortcodeGetShortcodeValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new MediaShortcodeGetShortcodeConstraints(instance))
     }
-    class `User-id-paramUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+    class `UsersUser-idGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
         override def constraints: Seq[Constraint[Double]] =
         Seq()
     }
-    class `User-id-paramUser-idValidator`(instance: Double) extends RecursiveValidator {
-      override val validators = Seq(new `User-id-paramUser-idConstraints`(instance))
+    class `UsersUser-idGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idGetUser-idConstraints`(instance))
+    }
+    class `GeographiesGeo-idMediaRecentGetGeo-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `GeographiesGeo-idMediaRecentGetGeo-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `GeographiesGeo-idMediaRecentGetGeo-idConstraints`(instance))
+    }
+    class `MediaMedia-idLikesPostMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesPostMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesPostMedia-idConstraints`(instance))
     }
     class UsersSearchGetQConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
@@ -28,23 +126,135 @@ object parametersValidator {
     class UsersSearchGetQValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new UsersSearchGetQConstraints(instance))
     }
-    class `Tag-nameTag-nameConstraints`(override val instance: String) extends ValidationBase[String] {
-        override def constraints: Seq[Constraint[String]] =
+    class `UsersUser-idRelationshipPostUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
         Seq()
     }
-    class `Tag-nameTag-nameValidator`(instance: String) extends RecursiveValidator {
-      override val validators = Seq(new `Tag-nameTag-nameConstraints`(instance))
+    class `UsersUser-idRelationshipPostUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idRelationshipPostUser-idConstraints`(instance))
+    }
+    class `UsersUser-idMediaRecentGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idMediaRecentGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idMediaRecentGetUser-idConstraints`(instance))
     }
     }
 object definitionsValidator {
     import definitions._
-    import pathsValidator.{MediaShortcodeGetShortcodeValidator, UsersSearchGetQValidator}
+    import pathsValidator._
+    class `UsersUser-idFollowsGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idFollowsGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idFollowsGetUser-idConstraints`(instance))
+    }
+    class `TagsTag-nameMediaRecentGetTag-nameConstraints`(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class `TagsTag-nameMediaRecentGetTag-nameValidator`(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new `TagsTag-nameMediaRecentGetTag-nameConstraints`(instance))
+    }
+    class `LocationsLocation-idGetLocation-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `LocationsLocation-idGetLocation-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `LocationsLocation-idGetLocation-idConstraints`(instance))
+    }
+    class `MediaMedia-idCommentsDeleteMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idCommentsDeleteMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsDeleteMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idLikesGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesGetMedia-idConstraints`(instance))
+    }
+    class `TagsTag-nameGetTag-nameConstraints`(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class `TagsTag-nameGetTag-nameValidator`(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new `TagsTag-nameGetTag-nameConstraints`(instance))
+    }
+    class `MediaMedia-idLikesDeleteMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesDeleteMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesDeleteMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idCommentsGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idCommentsGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsGetMedia-idConstraints`(instance))
+    }
+    class `LocationsLocation-idMediaRecentGetLocation-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `LocationsLocation-idMediaRecentGetLocation-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `LocationsLocation-idMediaRecentGetLocation-idConstraints`(instance))
+    }
+    class `UsersUser-idFollowed-byGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idFollowed-byGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idFollowed-byGetUser-idConstraints`(instance))
+    }
+    class `MediaMedia-idGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idGetMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idCommentsPostMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idCommentsPostMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsPostMedia-idConstraints`(instance))
+    }
     class MediaShortcodeGetShortcodeConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
     }
     class MediaShortcodeGetShortcodeValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new MediaShortcodeGetShortcodeConstraints(instance))
+    }
+    class `UsersUser-idGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idGetUser-idConstraints`(instance))
+    }
+    class `GeographiesGeo-idMediaRecentGetGeo-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `GeographiesGeo-idMediaRecentGetGeo-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `GeographiesGeo-idMediaRecentGetGeo-idConstraints`(instance))
+    }
+    class `MediaMedia-idLikesPostMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesPostMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesPostMedia-idConstraints`(instance))
     }
     class UsersSearchGetQConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
@@ -53,193 +263,108 @@ object definitionsValidator {
     class UsersSearchGetQValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new UsersSearchGetQConstraints(instance))
     }
-    class LikeUser_nameValidator(instance: LikeUser_name) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaUserValidator(instance: MediaUser) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaVideosLow_resolutionValidator(instance: MediaVideosLow_resolution) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class LocationLongitudeValidator(instance: LocationLongitude) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaImagesValidator(instance: MediaImages) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class UserValidator(instance: User) extends RecursiveValidator {
-        override val validators = Seq(
-            new LikeUser_nameValidator(instance.website), 
-            new LikeUser_nameValidator(instance.profile_picture), 
-            new LikeUser_nameValidator(instance.username), 
-            new LikeUser_nameValidator(instance.full_name), 
-            new LikeUser_nameValidator(instance.bio), 
-            new MediaCreated_timeValidator(instance.id), 
-            new UserCountsValidator(instance.counts)
-            )
-        }
-    class ImageValidator(instance: Image) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaCreated_timeValidator(instance.width), 
-            new MediaCreated_timeValidator(instance.height), 
-            new LikeUser_nameValidator(instance.url)
-            )
-        }
-    class TagValidator(instance: Tag) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaCreated_timeValidator(instance.media_count), 
-            new LikeUser_nameValidator(instance.name)
-            )
-        }
-    class MediaTagsOptValidator(instance: MediaTagsOpt) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaLikesValidator(instance: MediaLikes) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaVideosValidator(instance: MediaVideos) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class CommentValidator(instance: Comment) extends RecursiveValidator {
-        override val validators = Seq(
-            new LikeUser_nameValidator(instance.id), 
-            new LikeUser_nameValidator(instance.created_time), 
-            new LikeUser_nameValidator(instance.text), 
-            new MediaUserValidator(instance.from)
-            )
-        }
-    class MediaValidator(instance: Media) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaLocationValidator(instance.location), 
-            new MediaCreated_timeValidator(instance.created_time), 
-            new `MediaComments:Validator`(instance.`comments:`), 
-            new MediaTagsValidator(instance.tags), 
-            new MediaUsers_in_photoValidator(instance.users_in_photo), 
-            new LikeUser_nameValidator(instance.filter), 
-            new MediaLikesValidator(instance.likes), 
-            new MediaCreated_timeValidator(instance.id), 
-            new MediaVideosValidator(instance.videos), 
-            new LikeUser_nameValidator(instance.`type`), 
-            new MediaImagesValidator(instance.images), 
-            new MediaUserValidator(instance.user)
-            )
-        }
-    class MediaCreated_timeValidator(instance: MediaCreated_time) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaLocationValidator(instance: MediaLocation) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaVideosOptValidator(instance: MediaVideosOpt) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaVideosLow_resolutionValidator(instance.low_resolution), 
-            new MediaVideosLow_resolutionValidator(instance.standard_resolution)
-            )
-        }
-    class MediaTagsValidator(instance: MediaTags) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class LikeValidator(instance: Like) extends RecursiveValidator {
-        override val validators = Seq(
-            new LikeUser_nameValidator(instance.first_name), 
-            new LikeUser_nameValidator(instance.id), 
-            new LikeUser_nameValidator(instance.last_name), 
-            new LikeUser_nameValidator(instance.`type`), 
-            new LikeUser_nameValidator(instance.user_name)
-            )
-        }
-    class `MediaComments:DataOptValidator`(instance: `MediaComments:DataOpt`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaComments:Validator`(instance: `MediaComments:`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaLikesOptValidator(instance: MediaLikesOpt) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaCreated_timeValidator(instance.count), 
-            new MediaUsers_in_photoValidator(instance.data)
-            )
-        }
-    class MediaUsers_in_photoValidator(instance: MediaUsers_in_photo) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class LocationValidator(instance: Location) extends RecursiveValidator {
-        override val validators = Seq(
-            new LikeUser_nameValidator(instance.id), 
-            new LikeUser_nameValidator(instance.name), 
-            new LocationLongitudeValidator(instance.latitude), 
-            new LocationLongitudeValidator(instance.longitude)
-            )
-        }
-    class MiniProfileValidator(instance: MiniProfile) extends RecursiveValidator {
-        override val validators = Seq(
-            new LikeUser_nameValidator(instance.user_name), 
-            new LikeUser_nameValidator(instance.full_name), 
-            new MediaCreated_timeValidator(instance.id), 
-            new LikeUser_nameValidator(instance.profile_picture)
-            )
-        }
-    class MediaImagesOptValidator(instance: MediaImagesOpt) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaVideosLow_resolutionValidator(instance.low_resolution), 
-            new MediaVideosLow_resolutionValidator(instance.thumbnail), 
-            new MediaVideosLow_resolutionValidator(instance.standard_resolution)
-            )
-        }
-    class UserCountsValidator(instance: UserCounts) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaComments:DataValidator`(instance: `MediaComments:Data`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class UserCountsOptValidator(instance: UserCountsOpt) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaCreated_timeValidator(instance.media), 
-            new MediaCreated_timeValidator(instance.follows), 
-            new MediaCreated_timeValidator(instance.follwed_by)
-            )
-        }
-    class `MediaComments:OptValidator`(instance: `MediaComments:Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaCreated_timeValidator(instance.count), 
-            new `MediaComments:DataValidator`(instance.data)
-            )
-        }
+    class `UsersUser-idRelationshipPostUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idRelationshipPostUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idRelationshipPostUser-idConstraints`(instance))
+    }
+    class `UsersUser-idMediaRecentGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idMediaRecentGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idMediaRecentGetUser-idConstraints`(instance))
+    }
     }
 object pathsValidator {
     import definitions._
     import paths._
-    import definitionsValidator._
-    class `LocationsLocation-idLocation-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+    import definitionsValidator.{LikeUser_nameValidator, LocationLongitudeValidator, MediaCreated_timeValidator}
+    class `UsersUser-idFollowsGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idFollowsGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idFollowsGetUser-idConstraints`(instance))
+    }
+    class `TagsTag-nameMediaRecentGetTag-nameConstraints`(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class `TagsTag-nameMediaRecentGetTag-nameValidator`(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new `TagsTag-nameMediaRecentGetTag-nameConstraints`(instance))
+    }
+    class `LocationsLocation-idGetLocation-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
         override def constraints: Seq[Constraint[Int]] =
         Seq()
     }
-    class `LocationsLocation-idLocation-idValidator`(instance: Int) extends RecursiveValidator {
-      override val validators = Seq(new `LocationsLocation-idLocation-idConstraints`(instance))
+    class `LocationsLocation-idGetLocation-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `LocationsLocation-idGetLocation-idConstraints`(instance))
     }
-    class `GeographiesGeo-idMediaRecentGetResponses200Constraints`(override val instance: Null) extends ValidationBase[Null] {
-        override def constraints: Seq[Constraint[Null]] =
+    class `MediaMedia-idCommentsDeleteMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
         Seq()
     }
-    class `GeographiesGeo-idMediaRecentGetResponses200Validator`(instance: Null) extends RecursiveValidator {
-      override val validators = Seq(new `GeographiesGeo-idMediaRecentGetResponses200Constraints`(instance))
+    class `MediaMedia-idCommentsDeleteMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsDeleteMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idLikesGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesGetMedia-idConstraints`(instance))
+    }
+    class `TagsTag-nameGetTag-nameConstraints`(override val instance: String) extends ValidationBase[String] {
+        override def constraints: Seq[Constraint[String]] =
+        Seq()
+    }
+    class `TagsTag-nameGetTag-nameValidator`(instance: String) extends RecursiveValidator {
+      override val validators = Seq(new `TagsTag-nameGetTag-nameConstraints`(instance))
+    }
+    class `MediaMedia-idLikesDeleteMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesDeleteMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesDeleteMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idCommentsGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idCommentsGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsGetMedia-idConstraints`(instance))
+    }
+    class `LocationsLocation-idMediaRecentGetLocation-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `LocationsLocation-idMediaRecentGetLocation-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `LocationsLocation-idMediaRecentGetLocation-idConstraints`(instance))
+    }
+    class `UsersUser-idFollowed-byGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idFollowed-byGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idFollowed-byGetUser-idConstraints`(instance))
+    }
+    class `MediaMedia-idGetMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idGetMedia-idConstraints`(instance))
+    }
+    class `MediaMedia-idCommentsPostMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idCommentsPostMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idCommentsPostMedia-idConstraints`(instance))
     }
     class MediaShortcodeGetShortcodeConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
@@ -248,6 +373,27 @@ object pathsValidator {
     class MediaShortcodeGetShortcodeValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new MediaShortcodeGetShortcodeConstraints(instance))
     }
+    class `UsersUser-idGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idGetUser-idConstraints`(instance))
+    }
+    class `GeographiesGeo-idMediaRecentGetGeo-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `GeographiesGeo-idMediaRecentGetGeo-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `GeographiesGeo-idMediaRecentGetGeo-idConstraints`(instance))
+    }
+    class `MediaMedia-idLikesPostMedia-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
+        override def constraints: Seq[Constraint[Int]] =
+        Seq()
+    }
+    class `MediaMedia-idLikesPostMedia-idValidator`(instance: Int) extends RecursiveValidator {
+      override val validators = Seq(new `MediaMedia-idLikesPostMedia-idConstraints`(instance))
+    }
     class UsersSearchGetQConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
@@ -255,173 +401,45 @@ object pathsValidator {
     class UsersSearchGetQValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new UsersSearchGetQConstraints(instance))
     }
-    class TagsSearchGetResponses200MetaValidator(instance: TagsSearchGetResponses200Meta) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaMedia-idLikesGetResponses200OptValidator`(instance: `MediaMedia-idLikesGetResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new `MediaMedia-idCommentsDeleteResponses200MetaValidator`(instance.meta), 
-            new `MediaMedia-idLikesGetResponses200DataValidator`(instance.data)
-            )
-        }
-    class `UsersSelfRequested-byGetResponses200OptValidator`(instance: `UsersSelfRequested-byGetResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new TagsSearchGetResponses200MetaValidator(instance.meta), 
-            new MediaUsers_in_photoValidator(instance.data)
-            )
-        }
-    class UsersSelfFeedGetResponses200Validator(instance: UsersSelfFeedGetResponses200) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `LocationsLocation-idMediaRecentGetResponses200DataValidator`(instance: `LocationsLocation-idMediaRecentGetResponses200Data`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `UsersUser-idRelationshipPostResponses200OptValidator`(instance: `UsersUser-idRelationshipPostResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaUsers_in_photoValidator(instance.data)
-            )
-        }
-    class `UsersUser-idMediaRecentGetResponses200OptValidator`(instance: `UsersUser-idMediaRecentGetResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new `LocationsLocation-idMediaRecentGetResponses200DataValidator`(instance.data)
-            )
-        }
-    class `MediaMedia-idCommentsDeleteResponses200MetaValidator`(instance: `MediaMedia-idCommentsDeleteResponses200Meta`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class TagsSearchGetResponses200OptValidator(instance: TagsSearchGetResponses200Opt) extends RecursiveValidator {
-        override val validators = Seq(
-            new TagsSearchGetResponses200MetaValidator(instance.meta), 
-            new MediaTagsValidator(instance.data)
-            )
-        }
-    class `MediaMedia-idLikesGetResponses200DataValidator`(instance: `MediaMedia-idLikesGetResponses200Data`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaMedia-idCommentsDeleteResponses200Validator`(instance: `MediaMedia-idCommentsDeleteResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `TagsTag-nameMediaRecentGetResponses200OptValidator`(instance: `TagsTag-nameMediaRecentGetResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaTagsValidator(instance.data)
-            )
-        }
-    class `UsersUser-idFollowsGetResponses200Validator`(instance: `UsersUser-idFollowsGetResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaSearchGetResponses200OptValidator(instance: MediaSearchGetResponses200Opt) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaSearchGetResponses200DataValidator(instance.data)
-            )
-        }
-    class `TagsTag-nameMediaRecentGetResponses200Validator`(instance: `TagsTag-nameMediaRecentGetResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaMedia-idCommentsPostResponses200MetaOptValidator`(instance: `MediaMedia-idCommentsPostResponses200MetaOpt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new LocationLongitudeValidator(instance.code)
-            )
-        }
-    class `UsersSelfRequested-byGetResponses200Validator`(instance: `UsersSelfRequested-byGetResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `UsersSelfRequested-byGetResponses200MetaOptValidator`(instance: `UsersSelfRequested-byGetResponses200MetaOpt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaCreated_timeValidator(instance.code)
-            )
-        }
-    class MediaSearchGetResponses200DataOptArrValidator(instance: MediaSearchGetResponses200DataOptArr) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `LocationsLocation-idGetResponses200Validator`(instance: `LocationsLocation-idGetResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaMedia-idLikesGetResponses200DataOptValidator`(instance: `MediaMedia-idLikesGetResponses200DataOpt`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class LocationsSearchGetResponses200DataValidator(instance: LocationsSearchGetResponses200Data) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaSearchGetResponses200DataOptValidator(instance: MediaSearchGetResponses200DataOpt) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaMedia-idLikesPostResponses200OptValidator`(instance: `MediaMedia-idLikesPostResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new `MediaMedia-idCommentsDeleteResponses200MetaValidator`(instance.meta), 
-            new LikeUser_nameValidator(instance.data)
-            )
-        }
-    class `MediaMedia-idLikesGetResponses200Validator`(instance: `MediaMedia-idLikesGetResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaSearchGetResponses200Validator(instance: MediaSearchGetResponses200) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class MediaSearchGetResponses200DataValidator(instance: MediaSearchGetResponses200Data) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class TagsSearchGetResponses200Validator(instance: TagsSearchGetResponses200) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaMedia-idGetResponses200Validator`(instance: `MediaMedia-idGetResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `UsersUser-idGetResponses200DataValidator`(instance: `UsersUser-idGetResponses200Data`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `UsersUser-idGetResponses200Validator`(instance: `UsersUser-idGetResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaMedia-idCommentsGetResponses200Validator`(instance: `MediaMedia-idCommentsGetResponses200`) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class LocationsSearchGetResponses200OptValidator(instance: LocationsSearchGetResponses200Opt) extends RecursiveValidator {
-        override val validators = Seq(
-            new LocationsSearchGetResponses200DataValidator(instance.data)
-            )
-        }
-    class `LocationsLocation-idGetResponses200OptValidator`(instance: `LocationsLocation-idGetResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new MediaLocationValidator(instance.data)
-            )
-        }
-    class `UsersUser-idGetResponses200OptValidator`(instance: `UsersUser-idGetResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new `UsersUser-idGetResponses200DataValidator`(instance.data)
-            )
-        }
-    class LocationsSearchGetResponses200Validator(instance: LocationsSearchGetResponses200) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class `MediaMedia-idCommentsGetResponses200OptValidator`(instance: `MediaMedia-idCommentsGetResponses200Opt`) extends RecursiveValidator {
-        override val validators = Seq(
-            new `MediaMedia-idCommentsDeleteResponses200MetaValidator`(instance.meta), 
-            new `MediaComments:DataValidator`(instance.data)
-            )
-        }
+    class `UsersUser-idRelationshipPostUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idRelationshipPostUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idRelationshipPostUser-idConstraints`(instance))
+    }
+    class `UsersUser-idMediaRecentGetUser-idConstraints`(override val instance: Double) extends ValidationBase[Double] {
+        override def constraints: Seq[Constraint[Double]] =
+        Seq()
+    }
+    class `UsersUser-idMediaRecentGetUser-idValidator`(instance: Double) extends RecursiveValidator {
+      override val validators = Seq(new `UsersUser-idMediaRecentGetUser-idConstraints`(instance))
+    }
+    class `MediaMedia-idLikesGetValidator`(`media-id`: Int) extends RecursiveValidator {
+    override val validators = Seq(
+    new `MediaMedia-idLikesGetMedia-idValidator`(`media-id`)
+    )
+    }
+    class `MediaMedia-idLikesPostValidator`(`media-id`: Int) extends RecursiveValidator {
+    override val validators = Seq(
+    new `MediaMedia-idLikesPostMedia-idValidator`(`media-id`)
+    )
+    }
+    class `MediaMedia-idLikesDeleteValidator`(`media-id`: Int) extends RecursiveValidator {
+    override val validators = Seq(
+    new `MediaMedia-idLikesDeleteMedia-idValidator`(`media-id`)
+    )
+    }
+    class `UsersUser-idFollowsGetValidator`(`user-id`: Double) extends RecursiveValidator {
+    override val validators = Seq(
+    new `UsersUser-idFollowsGetUser-idValidator`(`user-id`)
+    )
+    }
+    class `LocationsLocation-idGetValidator`(`location-id`: Int) extends RecursiveValidator {
+    override val validators = Seq(
+    new `LocationsLocation-idGetLocation-idValidator`(`location-id`)
+    )
+    }
     class UsersSearchGetValidator(q: String, count: LikeUser_name) extends RecursiveValidator {
     override val validators = Seq(
     new UsersSearchGetQValidator(q), 
@@ -434,9 +452,46 @@ object pathsValidator {
     new MediaCreated_timeValidator(max_like_id)
     )
     }
+    class `TagsTag-nameGetValidator`(`tag-name`: String) extends RecursiveValidator {
+    override val validators = Seq(
+    new `TagsTag-nameGetTag-nameValidator`(`tag-name`)
+    )
+    }
     class TagsSearchGetValidator(q: LikeUser_name) extends RecursiveValidator {
     override val validators = Seq(
     new LikeUser_nameValidator(q)
+    )
+    }
+    class `UsersUser-idFollowed-byGetValidator`(`user-id`: Double) extends RecursiveValidator {
+    override val validators = Seq(
+    new `UsersUser-idFollowed-byGetUser-idValidator`(`user-id`)
+    )
+    }
+    class `MediaMedia-idCommentsGetValidator`(`media-id`: Int) extends RecursiveValidator {
+    override val validators = Seq(
+    new `MediaMedia-idCommentsGetMedia-idValidator`(`media-id`)
+    )
+    }
+    class `MediaMedia-idCommentsPostValidator`(`media-id`: Int, TEXT: LocationLongitude) extends RecursiveValidator {
+    override val validators = Seq(
+    new `MediaMedia-idCommentsPostMedia-idValidator`(`media-id`), 
+    new LocationLongitudeValidator(TEXT)
+    )
+    }
+    class `MediaMedia-idCommentsDeleteValidator`(`media-id`: Int) extends RecursiveValidator {
+    override val validators = Seq(
+    new `MediaMedia-idCommentsDeleteMedia-idValidator`(`media-id`)
+    )
+    }
+    class `TagsTag-nameMediaRecentGetValidator`(`tag-name`: String) extends RecursiveValidator {
+    override val validators = Seq(
+    new `TagsTag-nameMediaRecentGetTag-nameValidator`(`tag-name`)
+    )
+    }
+    class `UsersUser-idRelationshipPostValidator`(`user-id`: Double, action: LikeUser_name) extends RecursiveValidator {
+    override val validators = Seq(
+    new `UsersUser-idRelationshipPostUser-idValidator`(`user-id`), 
+    new LikeUser_nameValidator(action)
     )
     }
     class UsersSelfFeedGetValidator(count: MediaCreated_time, max_id: MediaCreated_time, min_id: MediaCreated_time) extends RecursiveValidator {
@@ -446,6 +501,11 @@ object pathsValidator {
     new MediaCreated_timeValidator(min_id)
     )
     }
+    class `UsersUser-idGetValidator`(`user-id`: Double) extends RecursiveValidator {
+    override val validators = Seq(
+    new `UsersUser-idGetUser-idValidator`(`user-id`)
+    )
+    }
     class MediaSearchGetValidator(MAX_TIMESTAMP: MediaCreated_time, DISTANCE: MediaCreated_time, LNG: LocationLongitude, MIN_TIMESTAMP: MediaCreated_time, LAT: LocationLongitude) extends RecursiveValidator {
     override val validators = Seq(
     new MediaCreated_timeValidator(MAX_TIMESTAMP), 
@@ -453,6 +513,13 @@ object pathsValidator {
     new LocationLongitudeValidator(LNG), 
     new MediaCreated_timeValidator(MIN_TIMESTAMP), 
     new LocationLongitudeValidator(LAT)
+    )
+    }
+    class `GeographiesGeo-idMediaRecentGetValidator`(`geo-id`: Int, count: MediaCreated_time, min_id: MediaCreated_time) extends RecursiveValidator {
+    override val validators = Seq(
+    new `GeographiesGeo-idMediaRecentGetGeo-idValidator`(`geo-id`), 
+    new MediaCreated_timeValidator(count), 
+    new MediaCreated_timeValidator(min_id)
     )
     }
     class MediaShortcodeGetValidator(shortcode: String) extends RecursiveValidator {
@@ -468,6 +535,30 @@ object pathsValidator {
     new LocationLongitudeValidator(lat), 
     new MediaCreated_timeValidator(foursquare_id), 
     new LocationLongitudeValidator(lng)
+    )
+    }
+    class `MediaMedia-idGetValidator`(`media-id`: Int) extends RecursiveValidator {
+    override val validators = Seq(
+    new `MediaMedia-idGetMedia-idValidator`(`media-id`)
+    )
+    }
+    class `LocationsLocation-idMediaRecentGetValidator`(`location-id`: Int, max_timestamp: MediaCreated_time, min_timestamp: MediaCreated_time, min_id: LikeUser_name, max_id: LikeUser_name) extends RecursiveValidator {
+    override val validators = Seq(
+    new `LocationsLocation-idMediaRecentGetLocation-idValidator`(`location-id`), 
+    new MediaCreated_timeValidator(max_timestamp), 
+    new MediaCreated_timeValidator(min_timestamp), 
+    new LikeUser_nameValidator(min_id), 
+    new LikeUser_nameValidator(max_id)
+    )
+    }
+    class `UsersUser-idMediaRecentGetValidator`(`user-id`: Double, max_timestamp: MediaCreated_time, min_id: LikeUser_name, min_timestamp: MediaCreated_time, max_id: LikeUser_name, count: MediaCreated_time) extends RecursiveValidator {
+    override val validators = Seq(
+    new `UsersUser-idMediaRecentGetUser-idValidator`(`user-id`), 
+    new MediaCreated_timeValidator(max_timestamp), 
+    new LikeUser_nameValidator(min_id), 
+    new MediaCreated_timeValidator(min_timestamp), 
+    new LikeUser_nameValidator(max_id), 
+    new MediaCreated_timeValidator(count)
     )
     }
     }

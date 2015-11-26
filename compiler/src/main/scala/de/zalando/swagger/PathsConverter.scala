@@ -97,7 +97,7 @@ trait HandlerGenerator extends StringUtil {
 
   private def getOrGenerateHandlerLine(operation: Operation, path: PathItem, verb: String, callPath: FullPath): Option[String] =
     operation.vendorExtensions.get(s"$keyPrefix-handler") orElse
-      path.vendorExtensions.get(s"$keyPrefix-handler") orElse
+      path.vendorExtensions.get(s"$keyPrefix-handler").map(_ + ScalaName.capitalize("/", verb)) orElse
       generateHandlerLine(operation, callPath, verb)
 
   private def generateHandlerLine(operation: Operation, path: FullPath, verb: String): Option[String] = {
@@ -106,7 +106,7 @@ trait HandlerGenerator extends StringUtil {
         throw new IllegalStateException(s"The definition file name must be defined in order to use '$keyPrefix-package' directive")
       }
       val method = Option(operation.operationId).map(ScalaName.camelize(" ", _)) getOrElse {
-        verb.toLowerCase + ScalaName.capitalize("/", path.string("by/" + _.value))
+        verb.toLowerCase + ScalaName.capitalize("/", path.string("by/" + _.value).replace('-','_'))
       }
       s"$pkg.$controller.$method"
     }

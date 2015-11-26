@@ -64,7 +64,7 @@
 ⌿/definitions/Media⌿comments: -> 
 	Opt(TypeRef(⌿/definitions/Media⌿comments:⌿Opt))
 ⌿/definitions/Media⌿users_in_photo -> 
-	Opt(TypeRef(⌿/definitions/Media⌿user))
+	Opt(TypeRef(⌿/definitions/Media⌿users_in_photo⌿Opt))
 ⌿definitions⌿Location -> 
 	TypeDef(⌿definitions⌿Location, Seq(
 		Field(⌿definitions⌿Location⌿id, TypeRef(⌿/definitions/Like⌿user_name)), 
@@ -79,6 +79,8 @@
 		Field(⌿definitions⌿MiniProfile⌿profile_picture, TypeRef(⌿/definitions/Like⌿user_name))))
 ⌿/definitions/User⌿counts -> 
 	Opt(TypeRef(⌿/definitions/User⌿counts⌿Opt))
+⌿/definitions/Media⌿users_in_photo⌿Opt -> 
+	Arr(TypeRef(⌿definitions⌿MiniProfile))
 ⌿/definitions/Media⌿tags⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Tag))
 ⌿/definitions/Media⌿videos⌿Opt -> 
@@ -125,6 +127,8 @@
 	Opt(TypeRef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿Opt))
 ⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200 -> 
 	Opt(TypeRef(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200⌿Opt))
+⌿paths⌿/tags/{tag-name}⌿get⌿responses⌿200 -> 
+	Opt(TypeRef(⌿definitions⌿Tag))
 ⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200 -> 
 	Opt(TypeRef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿Opt))
 ⌿paths⌿/media/search⌿get⌿responses⌿200 -> 
@@ -154,7 +158,7 @@
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta)), 
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
 ⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data -> 
-	Opt(TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200))
+	Opt(TypeRef(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/users/{user-id}/relationship⌿post⌿responses⌿200⌿Opt -> 
 	TypeDef(⌿paths⌿/users/{user-id}/relationship⌿post⌿responses⌿200, Seq(
 		Field(⌿paths⌿/users/{user-id}/relationship⌿post⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
@@ -176,7 +180,7 @@
 	TypeDef(⌿paths⌿/media/search⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data))))
 ⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data -> 
-	Opt(TypeRef(⌿/definitions/Media⌿location))
+	Opt(TypeRef(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200⌿Opt -> 
 	TypeDef(⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
@@ -198,6 +202,8 @@
 	TypeDef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
 		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿comments:⌿data))))
+⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿Opt -> 
+	Arr(TypeRef(⌿definitions⌿Media))
 ⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿meta⌿Opt -> 
 	TypeDef(⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿meta, Seq(
 		Field(⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿meta⌿code, TypeRef(⌿/definitions/Location⌿longitude))))
@@ -208,6 +214,8 @@
 	Arr(TypeRef(⌿definitions⌿Like))
 ⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt -> 
 	Arr(TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt⌿Arr))
+⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data⌿Opt -> 
+	Arr(TypeRef(⌿definitions⌿Location))
 ⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt⌿Arr -> 
 	AllOf(
 		TypeRef(⌿definitions⌿Media)

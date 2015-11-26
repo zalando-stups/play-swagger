@@ -15,24 +15,10 @@ object definitionsValidator {
     class PetIdGetPetIdValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new PetIdGetPetIdConstraints(instance))
     }
-    class PetNameValidator(instance: PetName) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class PetBirthdayValidator(instance: PetBirthday) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class PetValidator(instance: Pet) extends RecursiveValidator {
-        override val validators = Seq(
-            new PetNameValidator(instance.name), 
-            new PetBirthdayValidator(instance.birthday)
-            )
-        }
     }
 object pathsValidator {
     import definitions.{Pet, PetBirthday}
-    import paths.{GetResponses200, GetResponses200Opt}
+    import paths.GetResponses200Opt
     import definitionsValidator.{PetBirthdayValidator, PetValidator}
     class PetIdGetPetIdConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
@@ -41,21 +27,6 @@ object pathsValidator {
     class PetIdGetPetIdValidator(instance: String) extends RecursiveValidator {
       override val validators = Seq(new PetIdGetPetIdConstraints(instance))
     }
-    class PostResponses200Constraints(override val instance: Null) extends ValidationBase[Null] {
-        override def constraints: Seq[Constraint[Null]] =
-        Seq()
-    }
-    class PostResponses200Validator(instance: Null) extends RecursiveValidator {
-      override val validators = Seq(new PostResponses200Constraints(instance))
-    }
-    class GetResponses200OptValidator(instance: GetResponses200Opt) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
-    class GetResponses200Validator(instance: GetResponses200) extends RecursiveValidator {
-        override val validators = Seq(
-            )
-        }
     class GetValidator(limit: PetBirthday) extends RecursiveValidator {
     override val validators = Seq(
     new PetBirthdayValidator(limit)
