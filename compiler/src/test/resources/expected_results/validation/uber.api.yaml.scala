@@ -7,6 +7,7 @@ import PlayValidations._
 
 object definitionsValidator {
     import definitions._
+    import pathsValidator._
     class EstimatesPriceGetEnd_latitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
         override def constraints: Seq[Constraint[Double]] =
         Seq()
@@ -136,7 +137,7 @@ object definitionsValidator {
 object pathsValidator {
     import definitions._
     import paths._
-    import definitionsValidator._
+    import definitionsValidator.{ActivitiesLimitValidator, ProfileLast_nameValidator}
     class EstimatesPriceGetEnd_latitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
         override def constraints: Seq[Constraint[Double]] =
         Seq()

@@ -6,7 +6,7 @@ import PlayBodyParsing._
 import PlayValidations._
 
 object pathsAction {
-    import paths._
+    import paths.PostName
     class EchoApiYaml extends EchoApiYamlBase {
         val get = getAction {
             

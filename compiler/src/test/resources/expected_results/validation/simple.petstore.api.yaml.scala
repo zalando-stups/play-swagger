@@ -7,6 +7,7 @@ import PlayValidations._
 
 object definitionsValidator {
     import definitions._
+    import pathsValidator.{PetsIdDeleteIdValidator, PetsIdGetIdValidator}
     class PetsIdDeleteIdConstraints(override val instance: Long) extends ValidationBase[Long] {
         override def constraints: Seq[Constraint[Long]] =
         Seq()
@@ -88,7 +89,7 @@ object definitionsValidator {
 object pathsValidator {
     import definitions._
     import paths._
-    import definitionsValidator._
+    import definitionsValidator.NewPetValidator
     class PetsIdDeleteResponses204Constraints(override val instance: Null) extends ValidationBase[Null] {
         override def constraints: Seq[Constraint[Null]] =
         Seq()

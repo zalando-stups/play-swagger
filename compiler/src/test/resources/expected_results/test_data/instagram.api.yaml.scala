@@ -3,7 +3,6 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object parametersGenerator {
-    import parameters.{`Tag-nameTag-name`, `User-id-paramUser-id`}
     def `createUser-id-paramUser-idGenerator` = _generate(`User-id-paramUser-idGenerator`)
     def `createTag-nameTag-nameGenerator` = _generate(`Tag-nameTag-nameGenerator`)
     val `User-id-paramUser-idGenerator` = arbitrary[Double]

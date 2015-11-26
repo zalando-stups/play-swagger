@@ -6,7 +6,8 @@ import PlayBodyParsing._
 import PlayValidations._
 
 object definitionsValidator {
-    import definitions._
+    import definitions.{Pet, PetBirthday, PetName}
+    import pathsValidator.PetIdGetPetIdValidator
     class PetIdGetPetIdConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
@@ -30,11 +31,9 @@ object definitionsValidator {
         }
     }
 object pathsValidator {
-    import definitions.Pet
-    import definitions.PetBirthday
-    import paths._
-    import definitionsValidator.PetValidator
-    import definitionsValidator.PetBirthdayValidator
+    import definitions.{Pet, PetBirthday}
+    import paths.{GetResponses200, GetResponses200Opt}
+    import definitionsValidator.{PetBirthdayValidator, PetValidator}
     class PetIdGetPetIdConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()

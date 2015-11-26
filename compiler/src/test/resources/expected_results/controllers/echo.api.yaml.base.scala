@@ -6,7 +6,7 @@ import PlayBodyParsing._
 import scala.util._
 
 object pathsBase {
-    import paths._
+    import paths.PostName
     trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         private val getResponseMimeType    = "application/json"
         private val getActionSuccessStatus = Status(200)

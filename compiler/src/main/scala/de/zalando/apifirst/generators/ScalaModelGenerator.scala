@@ -199,10 +199,8 @@ trait PlayScalaControllersGenerator extends ImportSupport {
           else if (call.handler.parameters.length == 1) "single_parameter?" -> Some(parameter)
           else "parameters?" -> Some(parameters)
 
-
         val bodyParam = parametersValidations(call.handler.parameters.filter(strictModel.findParameter(_).place == ParameterPlace.BODY))
         val nonBodyParams = parametersValidations(call.handler.parameters.filterNot(strictModel.findParameter(_).place == ParameterPlace.BODY))
-        val allParams = bodyParam ++ nonBodyParams
         val validations = callValidations(call)
 
         val actionResultType = call.resultTypes.headOption.map(t => useType(strictModel.findType(t.name).name, "", ""))
@@ -298,7 +296,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         Map(
           "constraint_name" -> useType(call.asReference, constraintsSuffix, ""),
           "validation_name" -> useType(call.asReference, validatorsSuffix, ""),
-          "class_name" -> useType(call.asReference, "", ""),
+          "class_name" -> call.asReference.typeAlias(), //useType(call.asReference, "", ""),
           "fields" -> fields
         )
       }
@@ -311,7 +309,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
           "field_name" -> escape(p.name.simple),
           "field_type" -> tpe.name.typeAlias(),
           "field_raw_type" -> tpe.name,
-          "validation_name" -> useType(validation, validatorsSuffix, ""), // TODO maybe register type ?
+          "validation_name" -> useType(validation, validatorsSuffix, ""),
           "last" -> (i == parameters.size - 1)
         )
       }
@@ -362,8 +360,8 @@ trait PlayScalaControllersGenerator extends ImportSupport {
             },
             "constraint_name" -> useType(r, constraintsSuffix, ""),
             "validation_name" -> useType(r, validatorsSuffix, ""),
-            "type_name" -> t.name.typeAlias(), // useType(t.name, "", ""),
-            "class_name" -> useType(r, "", "")
+            "type_name" -> t.name.typeAlias(),
+            "class_name" -> r.typeAlias()
           ))
         case (r, t: TypeDef) =>
           constraints0(t.fields.map { f => f.name -> f.tpe }).flatten

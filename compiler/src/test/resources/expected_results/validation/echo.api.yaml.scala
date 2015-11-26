@@ -6,7 +6,7 @@ import PlayBodyParsing._
 import PlayValidations._
 
 object pathsValidator {
-    import paths._
+    import paths.PostName
     class `Test-pathIdGetResponses200Constraints`(override val instance: Null) extends ValidationBase[Null] {
         override def constraints: Seq[Constraint[Null]] =
         Seq()

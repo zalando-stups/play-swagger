@@ -3,7 +3,6 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object pathsGenerator {
-    import paths.GetResponses200
     def createGetResponses200Generator = _generate(GetResponses200Generator)
     val GetResponses200Generator = arbitrary[Null]
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample

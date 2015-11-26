@@ -6,7 +6,7 @@ import PlayBodyParsing._
 import PlayValidations._
 
 object definitionsValidator {
-    import definitions._
+    import definitions.{ErrorModel, Pet, PetTag}
     class ErrorModelCodeConstraints(override val instance: Int) extends ValidationBase[Int] {
         override def constraints: Seq[Constraint[Int]] =
         Seq()
@@ -46,9 +46,9 @@ object definitionsValidator {
         }
     }
 object pathsValidator {
-    import definitions._
-    import paths._
-    import definitionsValidator._
+    import definitions.{ErrorModel, Pet, PetTag}
+    import paths.{PetsIdGetResponses200, PetsIdGetResponses200Opt, PetsIdGetResponsesDefault}
+    import definitionsValidator.PetTagValidator
     class PetsIdGetResponsesDefaultValidator(instance: PetsIdGetResponsesDefault) extends RecursiveValidator {
         override val validators = Seq(
             )

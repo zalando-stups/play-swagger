@@ -3,7 +3,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object definitionsGenerator {
-    import definitions._
+    import definitions.{Basic, BasicOptional, BasicRequired}
     def createBasicRequiredGenerator = _generate(BasicRequiredGenerator)
     def createBasicOptionalGenerator = _generate(BasicOptionalGenerator)
     val BasicRequiredGenerator = Gen.containerOf[List,String](arbitrary[String])

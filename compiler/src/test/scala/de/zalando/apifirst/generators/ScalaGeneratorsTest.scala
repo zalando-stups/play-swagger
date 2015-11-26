@@ -123,7 +123,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object pathsGenerator {
-          |import paths.GetResponses200
           |def createGetResponses200Generator = _generate(GetResponses200Generator)
           | val GetResponses200Generator = arbitrary[Null]
           | def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
@@ -147,7 +146,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
-          |   import definitions.{User, UserId, UserName}
+          |   import definitions.User
           |   def createUserGenerator = _generate(UserGenerator)
           |   val UserGenerator =
           |     for {
@@ -292,7 +291,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |object definitionsGenerator {
-          |   import definitions._
+          |   import definitions.{ErrorModel, ExtendedErrorModel}
           |   def createErrorModelGenerator = _generate(ErrorModelGenerator)
           |   def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)
           |   val ErrorModelGenerator =

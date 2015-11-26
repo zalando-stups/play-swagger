@@ -8,6 +8,7 @@ import PlayValidations._
 object definitionsValidator {
     import definitions._
     import java.util.Date
+    import pathsValidator._
     class UsersUsernameGetUsernameConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
@@ -162,7 +163,7 @@ object definitionsValidator {
 object pathsValidator {
     import definitions._
     import paths._
-    import definitionsValidator._
+    import definitionsValidator.OrderStatusValidator
     class UsersUsernameGetUsernameConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()

@@ -6,8 +6,7 @@ import PlayBodyParsing._
 import PlayValidations._
 
 object parametersValidator {
-    import parameters.`User-id-paramUser-id`
-    import parameters.`Tag-nameTag-name`
+    import pathsValidator.{MediaShortcodeGetShortcodeValidator, UsersSearchGetQValidator}
     class MediaShortcodeGetShortcodeConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()
@@ -39,6 +38,7 @@ object parametersValidator {
     }
 object definitionsValidator {
     import definitions._
+    import pathsValidator.{MediaShortcodeGetShortcodeValidator, UsersSearchGetQValidator}
     class MediaShortcodeGetShortcodeConstraints(override val instance: String) extends ValidationBase[String] {
         override def constraints: Seq[Constraint[String]] =
         Seq()

@@ -19,7 +19,7 @@ class ScalaControllerGeneratorIntegrationTest extends FunSpec with MustMatchers 
     f.getName.endsWith(".yaml") && f.getName.startsWith("echo")
   }
 
-  describe("ScalaPlayGenerator should generate model files") {
+  describe("ScalaPlayControllerGenerator should generate controller and base controller files") {
     (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>
       testScalaModelGenerator(file)
     }
