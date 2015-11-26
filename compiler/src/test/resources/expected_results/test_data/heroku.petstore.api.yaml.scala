@@ -3,7 +3,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object definitionsGenerator {
-    import definitions._
+    import definitions.{Pet, PetBirthday, PetName}
     def createPetNameGenerator = _generate(PetNameGenerator)
     def createPetBirthdayGenerator = _generate(PetBirthdayGenerator)
     val PetNameGenerator = Gen.option(arbitrary[String])

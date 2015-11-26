@@ -3,7 +3,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object definitionsGenerator {
-    import definitions._
+    import definitions.{KeyedArrays, KeyedArraysAdditionalProperties, KeyedArraysAdditionalPropertiesCatchAll}
     def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditionalPropertiesGenerator)
     def createKeyedArraysAdditionalPropertiesCatchAllGenerator = _generate(KeyedArraysAdditionalPropertiesCatchAllGenerator)
     val KeyedArraysAdditionalPropertiesGenerator = _genMap[String,KeyedArraysAdditionalPropertiesCatchAll](arbitrary[String], KeyedArraysAdditionalPropertiesCatchAllGenerator)

@@ -24,7 +24,7 @@ class ScalaNameTest extends FunSpec with MustMatchers {
   }
 
   it("must be able to produce import statemets") {
-    ("java.util" / "date").qualifiedName mustBe "java.util.Date"
+    ("java.util" / "date").qualifiedName("", "") mustBe "java.util.Date"
   }
 
   it("must correctly concat names") {

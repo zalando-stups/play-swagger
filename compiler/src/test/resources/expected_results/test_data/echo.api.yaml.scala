@@ -3,7 +3,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object pathsGenerator {
-    import paths._
+    import paths.{PostName, `Test-pathIdGetId`, `Test-pathIdGetResponses200`}
     def `createTest-pathIdGetResponses200Generator` = _generate(`Test-pathIdGetResponses200Generator`)
     def createPostNameGenerator = _generate(PostNameGenerator)
     def `createTest-pathIdGetIdGenerator` = _generate(`Test-pathIdGetIdGenerator`)

@@ -7,7 +7,7 @@ object definitions {
     case class NewPet(name: String, id: NewPetId, tag: NewPetTag) 
     }
 object paths {
-    import definitions._
+    import definitions.{ErrorModel, NewPetTag, Pet}
     type PetsIdDeleteResponsesDefault = Option[ErrorModel]
     type PetsPostResponses200 = Option[Pet]
     type PetsIdDeleteResponses204 = Null

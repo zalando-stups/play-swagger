@@ -39,9 +39,9 @@ object definitionsGenerator {
     } yield keys.zip(values).toMap
 }
 object pathsGenerator {
-    import definitions._
+    import definitions.{ErrorModel, NewPetTag, Pet}
     import paths._
-    import definitionsGenerator._
+    import definitionsGenerator.{ErrorModelGenerator, NewPetTagGenerator, PetGenerator}
     def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponsesDefaultGenerator)
     def createPetsPostResponses200Generator = _generate(PetsPostResponses200Generator)
     def createPetsIdDeleteResponses204Generator = _generate(PetsIdDeleteResponses204Generator)

@@ -112,7 +112,7 @@ case class ScalaName(ref: Reference) {
   }
   private def removeVars(s: String) = if (s.startsWith("{") && s.endsWith("}")) s.substring(1,s.length-1) else s
   def packageName = parts.head.toLowerCase.split("/").filter(_.nonEmpty).map(escape).mkString(".")
-  def qualifiedName = packageName + "." + typeAlias()
+  def qualifiedName(prefix: String, suffix: String) = (packageName + suffix, typeAlias(prefix, suffix))
   def className = escape(capitalize("/", parts.tail.head))
   def typeAlias(prefix: String = "", suffix: String = "") = {
     val withSuffix = if (suffix.trim.isEmpty) parts.tail else parts.tail.:+(suffix)
@@ -120,6 +120,7 @@ case class ScalaName(ref: Reference) {
       if (prefix.trim.isEmpty) (withSuffix, capitalize _) else (prefix :: withSuffix, camelize _)
     escape(caseTransformer("/", withPrefix.mkString("/")))
   }
+
   def methodName = escape(camelize("/", parts.last))
   def names = (packageName, className, methodName)
 

@@ -3,8 +3,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 
 object definitionsGenerator {
-    import definitions.ErrorModel
-    import definitions.ExtendedErrorModel
+    import definitions._
     def createErrorModelGenerator = _generate(ErrorModelGenerator)
     def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)
     val ErrorModelGenerator =
