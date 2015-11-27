@@ -121,7 +121,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
         checkRequired(name, required, wrapInArray(types.head, None)) +: types.tail
       case PrimitiveType.OBJECT =>
         val obj = param.allOf map {
-          extensionType(name, required)
+          extensionType(name, None) // "None" means that everything defined as a part of the composition is required
         } getOrElse {
           val typeName = typeNameFromInlinedReference(param) getOrElse name
           val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
