@@ -29,8 +29,9 @@ object SwaggerCompiler {
     implicit val flatAst = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply)(initialAst)
     val namespace     = task.definitionFile.getName
 
+    val allImports    = ((namespace + "._") +: routesImport).distinct
     val playRules     = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList
-    val playTask      = RoutesCompilerTask(task.definitionFile, routesImport, forwardsRouter = true, reverseRouter, namespaceReverseRouter = true)
+    val playTask      = RoutesCompilerTask(task.definitionFile, allImports, forwardsRouter = true, reverseRouter, namespaceReverseRouter = false)
     val generated     = task.generator.generate(playTask, Some(namespace), playRules)
     val routesFiles   = generated map writeToFile(outputDir, writeOver = true).tupled
 

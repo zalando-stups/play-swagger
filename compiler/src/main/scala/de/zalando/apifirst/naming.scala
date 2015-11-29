@@ -2,6 +2,8 @@ package de.zalando.apifirst
 
 import java.net.URI
 
+import de.zalando.apifirst.Application.StrictModel
+import de.zalando.apifirst.Domain.ProvidedType
 import de.zalando.apifirst.new_naming.Reference
 import de.zalando.apifirst.new_naming.dsl.NameDsl
 
@@ -120,6 +122,8 @@ case class ScalaName(ref: Reference) {
       if (prefix.trim.isEmpty) (withSuffix, capitalize _) else (prefix :: withSuffix, camelize _)
     escape(caseTransformer("/", withPrefix.mkString("/")))
   }
+
+//   def fullyDereference(implicit m: StrictModel) = m.findType(ref).fullAlias // TODO tightly coupled with Type
 
   def methodName = escape(camelize("/", parts.last))
   def names = (packageName, className, methodName)

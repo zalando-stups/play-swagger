@@ -31,9 +31,10 @@ object RuleGenerator {
   private def parameters2parameters(call: ApiCall)(implicit model: StrictModel): Seq[Parameter] = {
     val params = call.handler.parameters flatMap { param =>
       val p = model.findParameter(param)
-      if (p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER)
+      if (p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER) {
+        // val paramType = model.findType(p).fullyDereference
         Some(Parameter(p.name, p.typeName.name.typeAlias(), p.fixed, p.default))
-      else
+      } else
         None
     }
     params

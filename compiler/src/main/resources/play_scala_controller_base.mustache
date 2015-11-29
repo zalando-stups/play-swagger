@@ -12,10 +12,9 @@ import scala.util._
 {{#packages}}
 
     {{#controllers}}
-    package {{&effective_package}} {
-    {{#imports}}
+    {{!imports}}
     {{!import {{&name}}
-    {{/imports}}
+    {{!imports}}
 
 
     trait {{&base}} extends Controller with PlayBodyParsing {
@@ -67,6 +66,5 @@ import scala.util._
     }
 
 
-    }
     {{/controllers}}
 {{/packages}}

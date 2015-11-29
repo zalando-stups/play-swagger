@@ -1,6 +1,6 @@
-{{#main_package}}
-package {{&main_package}}
-{{/main_package}}
+{{!main_package}}
+{{!package {{&main_package}}
+{{!main_package}}
 
 import play.api.mvc.{Action, Controller}
 import play.api.data.validation.Constraint
@@ -12,11 +12,11 @@ import PlayValidations._
 {{#controllers}}
 
 
-package {{&effective_package}} {
+package {{&main_package}} {
 
-{{#imports}}
-    {{!import {{&name}}
-{{/imports}}
+{{!imports}}
+{{!    import {{&name}}
+{{!imports}}
 
     class {{&controller}} extends {{&base}} {
         {{#methods}}

@@ -121,7 +121,7 @@ class ScalaGenerator(val strictModel: StrictModel)
       "name" -> useType(k, suffix, ""),
       "typeName" -> useType(k, "", "")(pckg.replace(suffix, "")),
       "creator_method" -> useType(k, suffix, "create"),
-      "alias" -> v.imports.headOption.getOrElse(v.name.simple),
+      "alias" -> v.alias,
       "generator" -> useType(k, suffix, ""),
       "generator_name" -> generatorNameForType(pckg)(v),
       "underlying_type" -> v.imports.headOption.map { _ => v.nestedTypes.map { t => useType(t.name, "", "")}.mkString(", ") }
@@ -255,7 +255,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         )
       }
       Map(
-        "effective_package" -> escape(controller._1),
+        "effective_package" -> escape(controller._1), // TODO currently, the package name just ignored
         "controller" -> escape(controller._2),
         "base" -> escape(controller._2 + baseControllersSuffix),
         "methods" -> methods

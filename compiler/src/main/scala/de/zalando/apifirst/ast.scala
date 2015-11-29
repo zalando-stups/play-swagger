@@ -1,5 +1,6 @@
 package de.zalando.apifirst
 
+import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.apifirst.new_naming.{Reference, TypeName}
 
@@ -63,9 +64,16 @@ object Domain {
   trait PrimitiveType
 
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
+    import ScalaName._
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
     def toShortString(pad: String) = getClass.getSimpleName
+    def alias = imports.headOption.getOrElse(name.simple)
+/*
+    def fullAlias(implicit m: StrictModel): String =
+      imports.headOption.map { _ + "[" + name.fullyDereference + "]" } getOrElse name.simple // FIXME won't work with MAP
+    // FIXME this should not depend on the model, move somewhere else
+*/
   }
   
   case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None)) {
