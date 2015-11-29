@@ -5,7 +5,8 @@ import de.zalando.apifirst.{ParameterPlace, Domain}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.new_naming.Reference
-import org.fusesource.scalate.TemplateEngine
+import org.fusesource.scalate.{TemplateSource, TemplateEngine}
+import org.fusesource.scalate.util.{FileResourceLoader, Resource}
 
 /**
   * @author  slasch 
@@ -22,16 +23,16 @@ class ScalaGenerator(val strictModel: StrictModel)
 
   val StrictModel(modelCalls, modelTypes, params, discriminators) = strictModel
 
-  def model(fileName: String) = generate(fileName)._1
-  def generators(fileName: String) = generate(fileName)._2
+  def model(fileName: String) = generate(fileName)(0)
+  def generators(fileName: String) = generate(fileName)(1)
 
   // TODO the order here is importante because of the typeDefinitions lookup table
-  def generate(fileName: String) =
-    (
+  def generate(fileName: String) = Seq(
       generateModel(fileName),
       generateGenerators(fileName),
       playValidators(fileName),
       playScalaControllerBases(fileName),
+      "", // placeholder for tests
       playScalaControllers(fileName)
     )
 
@@ -60,8 +61,14 @@ class ScalaGenerator(val strictModel: StrictModel)
     else apply(fileName, controllerBaseTemplateName, baseControllersSuffix)
   }
 
-  private def apply(fileName: String, templateName: String, suffix: String): String =
-    nonEmptyTemplate(Map("main_package" -> fileName), templateName, suffix)
+  private def apply(fileName: String, templateName: String, suffix: String): String = {
+    val packages = Map(
+      "main_package" -> fileName,
+      "main_package_prefix" -> fileName.split('.').init.mkString("."),
+      "main_package_suffix" -> fileName.split('.').last
+    )
+    nonEmptyTemplate(packages, templateName, suffix)
+  }
 
   private def nonEmptyTemplate(map: Map[String, Any], templateName: String, suffix: String): String = {
     cleanImportTable()
@@ -92,9 +99,10 @@ class ScalaGenerator(val strictModel: StrictModel)
         val fullPackage = singlePackage ++ callValidations.toSeq.toMap ++ callControllers.toSeq.toMap
         fullPackage + ("package" -> pckgName) + ("imports" -> imports(pckgName))
       })
-
-    val output = engine.layout(templateName, map ++ allPackages)
-    output.replaceAll("\u2B90", "")
+    val template = getClass.getClassLoader.getResource(templateName)
+    val templateSource = TemplateSource.fromURL(template)
+    val output = engine.layout(templateSource, map ++ allPackages)
+    output.replaceAll("\u2B90", "\n")
   }
 
   private def traits(types: Map[Reference, Type], suffix: String)(implicit pckg: String) =
@@ -136,7 +144,11 @@ class ScalaGenerator(val strictModel: StrictModel)
       case r: TypeRef => modelTypes.get(r.name) match {
         case Some(td: TypeDef) => td.fields
         case Some(c: Composite) => dereferenceFields(c)
-        case other => throw new IllegalStateException(s"Unexpected contents of Composite $r: $other")
+        case Some(other) =>
+          throw new IllegalStateException(s"Unexpected contents of Composite $r: $other")
+        case None =>
+          throw new IllegalStateException(s"Could not find type definition for reference $r")
+
       }
     }
 
@@ -176,8 +188,8 @@ trait PlayScalaControllersGenerator extends ImportSupport {
 
   // TODO this part is where it's getting ugly.
   def controllers(allCalls: Seq[ApiCall])(implicit pckg: String) =
-    allCalls groupBy {
-      _.handler.controller
+    allCalls groupBy { c =>
+      (c.handler.packageName, c.handler.controller)
     } map { case (controller, calls) =>
       val methods = calls.zipWithIndex.map { case (call, i) =>
         lazy val parameters = Map(
@@ -230,7 +242,9 @@ trait PlayScalaControllersGenerator extends ImportSupport {
           "process_valid_request" -> escape("processValid" + call.handler.method + "Request"),
           "response_mime_type_name" -> escape(call.handler.method + "ResponseMimeType"),
           "error_to_status" -> escape("errorToStatus" + call.handler.method),
-          "error_mappings" -> call.errorMapping.flatMap { case (k, v) => v.map { _.getCanonicalName -> k } },
+          "error_mappings" -> call.errorMapping.flatMap { case (k, v) => v.map { ex =>
+            Map("exception_name" -> ex.getCanonicalName, "exception_code" -> k)
+          } },
           "validations" -> validations,
           "validations?" -> validations.nonEmpty,
           "body_param" -> bodyParam,
@@ -241,8 +255,9 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         )
       }
       Map(
-        "controller" -> escape(controller),
-        "base" -> escape(controller + baseControllersSuffix),
+        "effective_package" -> escape(controller._1),
+        "controller" -> escape(controller._2),
+        "base" -> escape(controller._2 + baseControllersSuffix),
         "methods" -> methods
       )
     }
@@ -418,7 +433,7 @@ trait ImportSupport {
     val importDef = TypePlacement.fromParts(fullName)
     val key = pckg.replace(ref.packageName, "")
     val moduleDependent = dependencies.get(key).exists(_.exists(_ == suffix))
-    if (pckg.endsWith(suffix) || moduleDependent) importDef.packageName.foreach { _ =>
+    if (suffix.nonEmpty && (pckg.endsWith(suffix) || moduleDependent)) importDef.packageName.foreach { _ =>
       typeUsages.synchronized {
         val toUpdate = typeUsages.getOrElse(pckg, Set.empty[TypePlacement])
         val updated = toUpdate + importDef

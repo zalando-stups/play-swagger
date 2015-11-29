@@ -113,5 +113,5 @@ trait HandlerGenerator extends StringUtil {
   }
 
   private def packageFromFilename: Option[String] =
-    if (useFileNameAsPackage) definitionFileName.map(_.split("\\.").head) else None
+    if (useFileNameAsPackage) definitionFileName else None
 }

@@ -1,8 +1,11 @@
 package de.zalando.play.compiler
 
 import java.io.File
-import de.zalando.apifirst.Application.Model
-import de.zalando.swagger.{StrictJsonParser, StrictYamlParser}
+
+import de.zalando.apifirst.Application.StrictModel
+import de.zalando.apifirst.{TypeDeduplicator, TypeFlattener, ParameterDereferencer}
+import de.zalando.apifirst.generators.ScalaGenerator
+import de.zalando.swagger.{ModelConverter, StrictJsonParser, StrictYamlParser}
 import org.apache.commons.io.FileUtils
 import play.routes.compiler.RoutesCompiler.RoutesCompilerTask
 import play.routes.compiler.RoutesGenerator
@@ -19,52 +22,39 @@ object SwaggerCompiler {
 
     outputDir.mkdirs()
 
-    val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
+    val parser        = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
 
-    val (uri, swaggerModel) = parser.parse(task.definitionFile)
+    val (uri, model)  = parser.parse(task.definitionFile)
+    val initialAst    = ModelConverter.fromModel(uri, model, Option(task.definitionFile))
+    implicit val flatAst = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply)(initialAst)
+    val namespace     = task.definitionFile.getName
 
-    implicit val ast = Model(Nil, Nil)  // FIXME Swagger2Ast.convert(keyPrefix, task.definitionFile)(swaggerModel)
+    val playRules     = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList
+    val playTask      = RoutesCompilerTask(task.definitionFile, routesImport, forwardsRouter = true, reverseRouter, namespaceReverseRouter = true)
+    val generated     = task.generator.generate(playTask, Some(namespace), playRules)
+    val routesFiles   = generated map writeToFile(outputDir, writeOver = true).tupled
 
-    val basePath = Option(swaggerModel.basePath).getOrElse("/")
+    val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "controllers/")
 
-    val namespace = task.definitionFile.getName.takeWhile(_ != '.')
-    /*
-        val generateFiles = generate(namespace, task, outputDir) _
+    val artifacts     = new ScalaGenerator(flatAst).generate(task.definitionFile.getName) zip places
 
-        val playRules = RuleGenerator.apiCalls2PlayRules(ast.calls: _*).toList
+    val persister     = persist(namespace, task, outputDir) _
 
-        val playTask = RoutesCompilerTask(task.definitionFile, routesImport,
-          forwardsRouter = true, reverseRouter, namespaceReverseRouter = true)
+    val files         = artifacts map { persister.tupled } map { Seq(_) }
 
-        val generated = task.generator.generate(playTask, Some(namespace), playRules)
+    val allFiles      = routesFiles +: files
 
-        val routesFiles = generated map writeToFile(outputDir, true).tupled
+    SwaggerCompilationResult(allFiles:_*)
 
-        val model = generateFiles(ModelGenerator, "model/", true)
-
-        val generators = generateFiles(ModelFactoryGenerator, "generators/", true)
-
-        val baseControllers = generateFiles(BaseControllersGenerator, "controllers/", true)
-
-        val validators = generateFiles(ValidatorsGenerator, "validators/", true)
-
-        val tests = generateFiles(new TestsGenerator(basePath), "../../../../test/", true)
-
-        val controllerFiles = generateFiles(ControllersGenerator, "../../../../controller_skeletons/", false)
-
-        SwaggerCompilationResult(routesFiles, model, generators, baseControllers, controllerFiles, validators, tests)*/
-    null // FIXME
   }
 
 
-/*  def generate(namespace: String, task: SwaggerCompilationTask, outputDir: File)
-      (generator: GeneratorBase, directory: String, writeOver: Boolean)(implicit ast: Model) = {
-    val generatedContent = generator.generate(namespace)
+  def persist(namespace: String, task: SwaggerCompilationTask, outputDir: File)
+              (content: String, directory: String)(implicit ast: StrictModel) = {
+    val writeOver = ! directory.contains("app") // FIXME
     val modelFileName = directory + task.definitionFile.getName + ".scala"
-    generatedContent.headOption.map(_._2).map { content =>
-      writeToFile(outputDir, writeOver)(modelFileName, content)
-    }.toSeq
-  }*/
+    writeToFile(outputDir, writeOver)(modelFileName, content)
+  }
 
   def writeToFile(outputDir: File, writeOver: Boolean) = (filename: String, content: String) => {
     val file = new File(outputDir, filename)
@@ -94,10 +84,10 @@ case class SwaggerCompilationResult(
   routesFiles: Seq[File],
   modelFiles: Seq[File],
   testDataGeneratorFiles: Seq[File],
-  controllerBaseFiles: Seq[File],
-  controllerFiles: Seq[File],
   validatorFiles: Seq[File],
-  testFiles: Seq[File]
+  controllerBaseFiles: Seq[File],
+  testFiles: Seq[File],
+  controllerFiles: Seq[File]
 ) {
   // for incremental sync we do not include controller files
   // because they should be generated only once
@@ -107,4 +97,8 @@ case class SwaggerCompilationResult(
       validatorFiles ++ controllerBaseFiles ++
       controllerFiles
     ).toSet
+}
+object SwaggerCompilationResult {
+  def apply(files: Seq[File]*) =
+    new SwaggerCompilationResult(files.head, files(1), files(2), files(3), files(4), files(5), files(6))
 }

@@ -201,6 +201,7 @@ object Domain {
 
 }
 
+// TODO should be replaced by References
 object Path {
 
   import scala.language.{implicitConversions, postfixOps}
@@ -275,7 +276,6 @@ object Application {
     val simple = name.simple
   }
 
-  // Play definition
   case class Parameter(
     name:             String,
     typeName:         Domain.Type,
@@ -305,11 +305,6 @@ object Application {
   ) {
     def asReference = Reference(path.value.map(_.value).toList).prepend("paths") / verb.toString.toLowerCase
   }
-
-  case class Model(
-    calls:            Seq[ApiCall],
-    definitions:      Iterable[Domain.Type]
-  )
 
   type ParameterLookupTable     = Map[ParameterRef, Parameter]
   type TypeLookupTable          = Map[Reference, Domain.Type]

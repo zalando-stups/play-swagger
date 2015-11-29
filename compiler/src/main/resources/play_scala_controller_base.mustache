@@ -3,18 +3,20 @@ package {{&main_package}}
 {{/main_package}}
 
 import play.api.mvc.{Action, Controller, Results}
+import play.api.http.Writeable
 import Results.Status
-import de.zalando.play.controllers.PlayBodyParsing
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
 
 {{#packages}}
-object {{&package}} {
-    {{#imports}}
-    import {{&name}}
-    {{/imports}}
 
     {{#controllers}}
+    package {{&effective_package}} {
+    {{#imports}}
+    {{!import {{&name}}
+    {{/imports}}
+
 
     trait {{&base}} extends Controller with PlayBodyParsing {
         {{#methods}}
@@ -28,23 +30,24 @@ object {{&package}} {
         private val {{&error_to_status}}: PartialFunction[Throwable, Status] = {{^error_mappings}}PartialFunction.empty[Throwable, Status]{{/error_mappings}}⮐
         {{#error_mappings}} { {{/error_mappings}}{{#error_mappings}}
             case _: {{&exception_name}} => Status({{&exception_code}})⮐
-        {{/error_mappings}}{{#error_mappings}} } {{/error_mappings}}
+        {{/error_mappings}}{{#error_mappings}} } {{/error_mappings}}⮐
 
         {{#body_param}}
             private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&action_request_type}}]("{{&method}}", "Invalid {{&method}}", maxLength)
-        {{/body_param}}
+        {{/body_param}}⮐
 
         def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#body_param?}}request =>{{/body_param?}}⮐
             {{#body_param}}
             val {{&field_name}} = request.body
             {{/body_param}}
-            implicit val marshaller = parsingErrors2Writable({{&response_mime_type_name}})
             val result = {{^validations?}}{{&process_valid_request}}(f){{/validations?}}⮐
                 {{#validations?}}
                 {{#validations}}
                     new {{&validation_name}}({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}).errors match {
-                        case e if e.isEmpty => {{&process_valid_request}}(f)
-                        case l => l.map(BadRequest(_))
+                        case e if e.isEmpty => {{&process_valid_request}}(f)(({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{&response_mime_type_name}})
+                            BadRequest(l)
                     }⮐
                 {{/validations}}
                 {{/validations?}}
@@ -58,12 +61,12 @@ object {{&package}} {
                 case Success(result) => {{&action_success_status_name}}
             }
             implicit val {{&writable_json}} = anyToWritable[{{&action_result_type}}]({{&response_mime_type_name}})
-            status(callerResult)
+            status
         }
         {{/methods}}
     }
 
-    {{/controllers}}
 
-}
+    }
+    {{/controllers}}
 {{/packages}}

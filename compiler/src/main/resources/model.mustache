@@ -1,10 +1,11 @@
 {{#main_package}}
-package {{&main_package}}
+package {{&main_package_prefix}}
+package object {{&main_package_suffix}} {
 {{/main_package}}
 
 
 {{#packages}}
-object {{&package}} {
+{{!object {{&package}}
     {{#imports}}
     import {{&name}}
     {{/imports}}
@@ -23,5 +24,6 @@ object {{&package}} {
 
     {{#classes}}
     case class {{& name }}({{#fields}}{{&name}}: {{&typeName}}{{^last}}, {{/last}}⮐{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
-    {{/classes}}⮐}
+    {{/classes}}⮐
 {{/packages}}
+}

@@ -24,7 +24,7 @@ object ModelConverter extends ParameterNaming {
     val converter = new TypeConverter(base, model, keyPrefix)
     val typeDefs = converter.convert
     val discriminators = converter.discriminators.toMap
-    val inlineParameters = new ParametersConverter(base, model, keyPrefix, typeDefs, autoConvert).parameters // TODO add explicitly defined parameters here
+    val inlineParameters = new ParametersConverter(base, model, keyPrefix, typeDefs, autoConvert).parameters
     val apiCalls = new PathsConverter(base, model, keyPrefix, inlineParameters, file.map(_.getName)).convert
     StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators)
   }

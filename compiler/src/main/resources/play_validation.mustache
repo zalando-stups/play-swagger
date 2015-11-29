@@ -9,7 +9,7 @@ import PlayBodyParsing._
 import PlayValidations._
 
 {{#packages}}
-object {{&package}} {
+    package expanded{{&effective_package}} { {{!FIXME}}
     {{#imports}}
     import {{&name}}
     {{/imports}}
