@@ -1,12 +1,12 @@
 package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.{ParameterRef, ApiCall, DiscriminatorLookupTable, StrictModel}
+import de.zalando.apifirst.Path.InPathParameter
 import de.zalando.apifirst.{ParameterPlace, Domain}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.new_naming.Reference
 import org.fusesource.scalate.{TemplateSource, TemplateEngine}
-import org.fusesource.scalate.util.{FileResourceLoader, Resource}
 
 /**
   * @author  slasch 
@@ -14,7 +14,8 @@ import org.fusesource.scalate.util.{FileResourceLoader, Resource}
   */
 
 class ScalaGenerator(val strictModel: StrictModel)
-  extends ScalaModelGenerator with ScalaTestDataGenerator with PlayValidatorsGenerator with PlayScalaControllersGenerator with ImportSupport {
+  extends ScalaModelGenerator with ScalaTestDataGenerator with PlayValidatorsGenerator
+    with PlayScalaControllersGenerator with ImportSupport with PlayScalaTestsGenerator {
 
   def this(tps: Map[Reference, Domain.Type], discriminators: DiscriminatorLookupTable) =
     this(StrictModel(Nil, tps, Map.empty, discriminators))
@@ -25,6 +26,7 @@ class ScalaGenerator(val strictModel: StrictModel)
 
   def model(fileName: String) = generate(fileName)(0)
   def generators(fileName: String) = generate(fileName)(1)
+  def tests(fileName: String) = generate(fileName)(4)
 
   // TODO the order here is importante because of the typeDefinitions lookup table
   def generate(fileName: String) = Seq(
@@ -32,7 +34,7 @@ class ScalaGenerator(val strictModel: StrictModel)
       generateGenerators(fileName),
       playValidators(fileName),
       playScalaControllerBases(fileName),
-      "", // placeholder for tests
+      playScalaTests(fileName),
       playScalaControllers(fileName)
     )
 
@@ -50,6 +52,12 @@ class ScalaGenerator(val strictModel: StrictModel)
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
     else apply(fileName, validatorsTemplateName, validatorsSuffix)
   }
+
+  def playScalaTests(fileName: String) = {
+    if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
+    else apply(fileName, testsTemplateName, testsSuffix)
+  }
+
 
   def playScalaControllers(fileName: String) = {
     if (modelCalls.isEmpty) ""
@@ -72,6 +80,7 @@ class ScalaGenerator(val strictModel: StrictModel)
 
   private def nonEmptyTemplate(map: Map[String, Any], templateName: String, suffix: String): String = {
     cleanImportTable()
+    val namespace = "" // FIXME
     val engine = new TemplateEngine
     val typesByPackage = modelTypes.groupBy(_._1.packageName)
 
@@ -96,7 +105,8 @@ class ScalaGenerator(val strictModel: StrictModel)
         )
         val callValidations = if (pckg == "paths") Some("call_validations" -> validations(modelCalls.filter(_.handler.parameters.nonEmpty))) else None
         val callControllers = if (pckg == "paths") Some("controllers" -> controllers(modelCalls)) else None
-        val fullPackage = singlePackage ++ callValidations.toSeq.toMap ++ callControllers.toSeq.toMap
+        val callTests = if (pckg == "paths") Some("tests" -> tests(modelCalls, namespace)) else None
+        val fullPackage = singlePackage ++ callValidations.toSeq.toMap ++ callControllers.toSeq.toMap ++ callTests.toSeq.toMap
         fullPackage + ("package" -> pckgName) + ("imports" -> imports(pckgName))
       })
     val template = getClass.getClassLoader.getResource(templateName)
@@ -295,6 +305,103 @@ trait PlayScalaControllersGenerator extends ImportSupport {
     val modelSuffix = ""
 
     val modelTemplateName = "model.mustache"
+  }
+
+  trait PlayScalaTestsGenerator extends ImportSupport {
+    def strictModel: StrictModel
+    val testsTemplateName = "play_scala_test.mustache"
+    val testsSuffix = "Spec"
+    def validatorsSuffix: String
+    def generatorsSuffix: String
+
+    def tests(calls: Seq[ApiCall], namespace: String)(implicit pckg: String) =
+      calls filterNot { _.handler.parameters.isEmpty } map callTest(namespace)
+
+    def callTest(namespace: String)(call: ApiCall)(implicit pckg: String): Map[String, Object] = {
+        Map(
+          "spec_name" -> useType(call.asReference, testsSuffix, ""),
+          "verb_name" -> call.verb.name,
+          "full_path" -> fullPath(namespace, call.path.toString),
+          "full_url" -> fullUrl(namespace, call),
+          "validation_name" -> useType(call.asReference, validatorsSuffix, ""),
+          "body?" -> bodyParameter(call),
+          "expected_code" -> "200", // FIXME
+          expectedResultType(call),
+          parameters(call)
+        )
+    }
+
+    def expectedResultType(call: ApiCall) = "expected_result_type" -> call.mimeOut.headOption.map(_.name.toLowerCase).getOrElse("application/json")
+
+    def bodyParameter(call: ApiCall)(implicit pckg: String) = {
+      call.handler.parameters.map {
+        strictModel.findParameter
+      }.find {
+        _.place == ParameterPlace.BODY
+      }.map { p =>
+        Map("body_parameter_name" -> p.name, expectedResultType(call))
+      }
+    }
+
+    def parameters(call: ApiCall)(implicit pckg: String) = {
+      lazy val parameters = Map(
+        "parameters" -> call.handler.parameters.zipWithIndex.map { case (param, ii) =>
+          val typeName = strictModel.findParameter(param).typeName.name
+          Map(
+            "name" -> escape(camelize("\\.", param.simple)),
+            "type" -> useType(typeName, "", ""),
+            "generator" -> param.name.fullName("", generatorsSuffix),
+            "last" -> (ii == call.handler.parameters.size - 1)
+          )
+        }
+      )
+      lazy val parameter = {
+        val param = call.handler.parameters.head
+        val typeName = strictModel.findParameter(param).typeName.name
+        Map(
+          "name" -> escape(camelize("\\.", param.simple)),
+          "type" -> useType(typeName, "", ""),
+          "generator" -> param.name.fullName("", generatorsSuffix)
+        )
+      }
+      val nameParamPair =
+        if (call.handler.parameters.isEmpty) "" -> None
+        else if (call.handler.parameters.length == 1) "single_parameter?" -> Some(parameter)
+        else "parameters?" -> Some(parameters)
+      nameParamPair
+    }
+
+
+    private def fullUrl(namespace: String, call: ApiCall) = {
+      val pathSuffix = call.path.string { p: InPathParameter => "${" + p.value + "}" }
+      val query = call.handler.parameters.filter { p =>
+        strictModel.findParameter(p).place == ParameterPlace.QUERY
+      } map { p =>
+        val param = strictModel.findParameter(p)
+        singleQueryParam(param.name, param.typeName)
+      }
+      val fullQuery = if (query.isEmpty) "" else query.mkString("?", "&", "")
+      "s\"\"\"" +  fullPath(namespace, pathSuffix) + fullQuery + "\"\"\""
+    }
+
+    private def singleQueryParam(name: String, typeName: Type): String = typeName match {
+      case c: Domain.Opt =>
+        containerParam(name) + "getOrElse(\"\")}"
+      case c: Domain.Arr =>
+        containerParam(name) + "mkString(\"&\")}"
+      case d: Domain.CatchAll =>
+        "" // TODO no marshalling / unmarshalling yet
+      case d: Domain.TypeDef =>
+        "" // TODO no marshalling / unmarshalling yet
+      case o =>
+        name + "=${URLEncoder.encode(" + name + ".toString, \"UTF-8\")}"
+    }
+    private def containerParam(name: String) =
+      "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."
+
+    private def fullPath(namespace: String, pathSuffix: String) =
+      namespace + (if (pathSuffix == "/") "" else pathSuffix)
+
   }
 
   trait PlayValidatorsGenerator extends ImportSupport {
