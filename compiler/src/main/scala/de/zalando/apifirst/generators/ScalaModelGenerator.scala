@@ -313,6 +313,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
     val testsSuffix = "Spec"
     def validatorsSuffix: String
     def generatorsSuffix: String
+    def generatorNameForType(implicit pckg: String): (Type) => String
 
     def tests(calls: Seq[ApiCall], namespace: String)(implicit pckg: String) =
       calls filterNot { _.handler.parameters.isEmpty } map callTest(namespace)
@@ -346,22 +347,28 @@ trait PlayScalaControllersGenerator extends ImportSupport {
     def parameters(call: ApiCall)(implicit pckg: String) = {
       lazy val parameters = Map(
         "parameters" -> call.handler.parameters.zipWithIndex.map { case (param, ii) =>
-          val typeName = strictModel.findParameter(param).typeName.name
-          Map(
+          val paramName = strictModel.findParameter(param)
+          val typeName = paramName.typeName
+          val genName = generatorNameForType(pckg)(typeName)
+          val genPckg = if (genName.indexOf(']')>0) "" else typeName.name.qualifiedName("", generatorsSuffix)._1 + "."
+            Map(
             "name" -> escape(camelize("\\.", param.simple)),
-            "type" -> useType(typeName, "", ""),
-            "generator" -> param.name.fullName("", generatorsSuffix),
+            "type" -> useType(typeName.name, "", ""),
+            "generator" -> (genPckg + genName),
             "last" -> (ii == call.handler.parameters.size - 1)
           )
         }
       )
       lazy val parameter = {
         val param = call.handler.parameters.head
-        val typeName = strictModel.findParameter(param).typeName.name
-        Map(
+        val paramName = strictModel.findParameter(param)
+        val typeName = paramName.typeName
+        val genName = generatorNameForType(pckg)(typeName)
+        val genPckg = if (genName.indexOf(']')>0) "" else typeName.name.qualifiedName("", generatorsSuffix)._1 + "."
+          Map(
           "name" -> escape(camelize("\\.", param.simple)),
-          "type" -> useType(typeName, "", ""),
-          "generator" -> param.name.fullName("", generatorsSuffix)
+          "type" -> useType(typeName.name, "", ""),
+          "generator" -> (genPckg + genName)
         )
       }
       val nameParamPair =
@@ -402,6 +409,9 @@ trait PlayScalaControllersGenerator extends ImportSupport {
     private def fullPath(namespace: String, pathSuffix: String) =
       namespace + (if (pathSuffix == "/") "" else pathSuffix)
 
+    private def generatorNameForType(tpe: TypeRef) = {
+
+    }
   }
 
   trait PlayValidatorsGenerator extends ImportSupport {
