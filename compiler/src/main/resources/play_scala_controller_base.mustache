@@ -54,12 +54,12 @@ import scala.util._
         }
 
         private def {{&process_valid_request}}(f: {{&action_type}})(request: {{&action_request_type}}) = {
+            implicit val {{&writable_json}} = anyToWritable[{{&action_result_type}}]({{&response_mime_type_name}})
             val callerResult = f(request)
             val status = callerResult match {
                 case Failure(error) => ({{&error_to_status}} orElse defaultErrorMapping)(error)
-                case Success(result) => {{&action_success_status_name}}
+                case Success(result) => {{&action_success_status_name}}(result)
             }
-            implicit val {{&writable_json}} = anyToWritable[{{&action_result_type}}]({{&response_mime_type_name}})
             status
         }
         {{/methods}}

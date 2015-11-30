@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import play.api.Logger
 import play.api.http.Status._
-import play.api.http.{LazyHttpErrorHandler, Writeable}
+import play.api.http.{Writeable, LazyHttpErrorHandler}
 import play.api.libs.iteratee._
 import play.api.mvc.Results.Status
 import play.api.mvc.{BodyParser, BodyParsers, RequestHeader, Result}
@@ -68,10 +68,14 @@ object PlayBodyParsing extends PlayBodyParsing {
   def parsingErrors2Writable(mimeType: String): Writeable[Seq[ParsingError]] =
     Writeable(parsingErrors2Bytes(mimeType), Some(mimeType))
 
+
+  def anyToWritable[T](mimeType: String): Writeable[T] =
+    Writeable(jacksonMapper(mimeType).writeValueAsBytes, Some(mimeType))
+
   /**
    * Converts anything of type Either[Throwable, T] to Writeable
    */
-  def anyToWritable[T](mimeType: String): Writeable[Either[Throwable, T]] =
+  def eitherToWritable[T](mimeType: String): Writeable[Either[Throwable, T]] =
     Writeable(eitherToT(mimeType), Some(mimeType))
 
   private def eitherToT[T](mimeType: String): (Either[Throwable, T]) => Array[Byte] =

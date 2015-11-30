@@ -17,6 +17,8 @@ import scala.io.Codec
  */
 object SwaggerCompiler {
 
+  val controllerDir = "generated_controllers/"
+
   def compile(task: SwaggerCompilationTask, outputDir: File,
     reverseRouter: Boolean, namespaceReverseRouter: Boolean, routesImport: Seq[String], keyPrefix: String): SwaggerCompilationResult = {
 
@@ -35,7 +37,8 @@ object SwaggerCompiler {
     val generated     = task.generator.generate(playTask, Some(namespace), playRules)
     val routesFiles   = generated map writeToFile(outputDir, writeOver = true).tupled
 
-    val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "controllers/")
+
+    val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "../../../../" + controllerDir)
 
     val artifacts     = new ScalaGenerator(flatAst).generate(task.definitionFile.getName) zip places
 
@@ -49,10 +52,9 @@ object SwaggerCompiler {
 
   }
 
-
   def persist(namespace: String, task: SwaggerCompilationTask, outputDir: File)
               (content: String, directory: String)(implicit ast: StrictModel) = {
-    val writeOver = ! directory.contains("app") // FIXME
+    val writeOver = ! directory.contains(controllerDir)
     val modelFileName = directory + task.definitionFile.getName + ".scala"
     writeToFile(outputDir, writeOver)(modelFileName, content)
   }
@@ -90,8 +92,7 @@ case class SwaggerCompilationResult(
   testFiles: Seq[File],
   controllerFiles: Seq[File]
 ) {
-  // for incremental sync we do not include controller files
-  // because they should be generated only once
+
   def allFiles: Set[File] = (
     routesFiles ++ modelFiles ++
       testDataGeneratorFiles ++ testFiles ++
