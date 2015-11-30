@@ -17,7 +17,7 @@ import scala.io.Codec
  */
 object SwaggerCompiler {
 
-  val controllerDir = "generated_controllers/"
+  val controllerDir = "app/controllers/"
 
   def compile(task: SwaggerCompilationTask, outputDir: File,
     reverseRouter: Boolean, namespaceReverseRouter: Boolean, routesImport: Seq[String], keyPrefix: String): SwaggerCompilationResult = {
@@ -96,8 +96,8 @@ case class SwaggerCompilationResult(
   def allFiles: Set[File] = (
     routesFiles ++ modelFiles ++
       testDataGeneratorFiles ++ testFiles ++
-      validatorFiles ++ controllerBaseFiles ++
-      controllerFiles
+      validatorFiles ++ controllerBaseFiles
+      // ++ controllerFiles
     ).toSet
 }
 object SwaggerCompilationResult {
