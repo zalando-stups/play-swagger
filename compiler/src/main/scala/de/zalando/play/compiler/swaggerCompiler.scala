@@ -29,20 +29,21 @@ object SwaggerCompiler {
     val (uri, model)  = parser.parse(task.definitionFile)
     val initialAst    = ModelConverter.fromModel(uri, model, Option(task.definitionFile))
     implicit val flatAst = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply)(initialAst)
+
     val namespace     = task.definitionFile.getName
 
     val allImports    = ((namespace + "._") +: routesImport).distinct
     val playRules     = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList
-    val playTask      = RoutesCompilerTask(task.definitionFile, allImports, forwardsRouter = true, reverseRouter, namespaceReverseRouter = false)
-    val generated     = task.generator.generate(playTask, Some(namespace), playRules)
+    val playTask      = RoutesCompilerTask(task.definitionFile, allImports, forwardsRouter = true, reverseRouter = true, namespaceReverseRouter = false)
+    val playNameSpace = Some(namespace)
+    val generated     = task.generator.generate(playTask, playNameSpace, playRules)
     val routesFiles   = generated map writeToFile(outputDir, writeOver = true).tupled
-
 
     val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "../../../../" + controllerDir)
 
     val artifacts     = new ScalaGenerator(flatAst).generate(task.definitionFile.getName) zip places
 
-    val persister     = persist(namespace, task, outputDir) _
+    val persister     = persist(task, outputDir) _
 
     val files         = artifacts map { persister.tupled } map { Seq(_) }
 
@@ -52,7 +53,7 @@ object SwaggerCompiler {
 
   }
 
-  def persist(namespace: String, task: SwaggerCompilationTask, outputDir: File)
+  def persist(task: SwaggerCompilationTask, outputDir: File)
               (content: String, directory: String)(implicit ast: StrictModel) = {
     val writeOver = ! directory.contains(controllerDir)
     val modelFileName = directory + task.definitionFile.getName + ".scala"

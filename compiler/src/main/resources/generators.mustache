@@ -16,7 +16,7 @@ object {{&package}} {
     {{/aliases}}
 
     {{#aliases}}
-    val {{& name}} = {{& generator_name }}⮐
+    def {{& name}} = {{& generator_name }}⮐
     {{/aliases}}
 
     {{#classes}}
@@ -24,7 +24,7 @@ object {{&package}} {
     {{/classes}}
 
     {{#classes}}
-    val {{& name}} =⮐
+    def {{& name}} =⮐
         for {⮐
         {{#fields}}
              {{& name}} <- {{& generator}}⮐

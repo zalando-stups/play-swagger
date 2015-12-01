@@ -13,7 +13,7 @@ lazy val api = (project in file("api"))
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "org.scalacheck" %% "scalacheck" % "1.12.4",
-      "org.specs2" %% "specs2-scalacheck" % "3.6.5"
+      "org.specs2" %% "specs2-scalacheck" % "3.6"
     ),
     scalaVersion :=  "2.10.5",
     crossScalaVersions := Seq(scalaVersion.value, ScalaVersion)
@@ -39,8 +39,8 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "org.scala-lang" % "scala-library" % scalaVersion.value,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalacheck" %% "scalacheck" % "1.12.4",
-      "me.andrz.jackson" % "jackson-json-reference" % "0.1.2",
+      "org.scalacheck" %% "scalacheck" % "1.12.5",
+      "me.andrz.jackson" % "jackson-json-reference" % "0.1.3",
       "org.scalatra.scalate" %% "scalate-core" % "1.7.0"
     )
   )
@@ -86,7 +86,8 @@ def common: Seq[Setting[_]] = Seq(
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
-    Resolver.bintrayRepo("slavaschmidt","maven")
+    //Resolver.bintrayRepo("slavaschmidt","maven")
+    Resolver.mavenLocal
   )
 )
 

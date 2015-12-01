@@ -90,7 +90,7 @@ object PlaySwagger extends AutoPlugin {
 
     watchSources in Defaults.ConfigGlobal <++= sources in swagger,
 
-    managedSources ++= swagger.value.filter(_.getName.endsWith(".scala")),  //.filterNot(unManaged),
+    managedSources ++= swagger.value.filter(_.getName.endsWith(".scala")).filterNot(unManaged).filterNot(test),
 
     managedSourceDirectories <+= target in swagger,
 

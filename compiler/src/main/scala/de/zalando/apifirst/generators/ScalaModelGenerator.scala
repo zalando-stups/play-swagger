@@ -73,7 +73,8 @@ class ScalaGenerator(val strictModel: StrictModel)
     val packages = Map(
       "main_package" -> fileName,
       "main_package_prefix" -> fileName.split('.').init.mkString("."),
-      "main_package_suffix" -> fileName.split('.').last
+      "main_package_suffix" -> fileName.split('.').last,
+      "spec_name" -> escape(capitalize("\\.", fileName) + testsSuffix)
     )
     nonEmptyTemplate(packages, templateName, suffix)
   }
@@ -320,7 +321,6 @@ trait PlayScalaControllersGenerator extends ImportSupport {
 
     def callTest(namespace: String)(call: ApiCall)(implicit pckg: String): Map[String, Object] = {
         Map(
-          "spec_name" -> useType(call.asReference, testsSuffix, ""),
           "verb_name" -> call.verb.name,
           "full_path" -> fullPath(namespace, call.path.toString),
           "full_url" -> fullUrl(namespace, call),
