@@ -8,11 +8,15 @@ import de.zalando.apifirst.new_naming.Reference
 import org.scalatest.{FunSpec, MustMatchers}
 import new_naming.dsl._
 
+import scala.language.implicitConversions
+
 /**
   * @author  slasch
   * @since   15.11.2015.
   */
 class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
+
+  implicit def types2model(types: TypeLookupTable): StrictModel = StrictModel.apply(Nil, types, Map.empty, Map.empty, "")
 
   private val noMeta = TypeMeta(None)
 
@@ -32,7 +36,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
       val nested = Map[Reference, Type](
         reference1 -> Opt(Opt(Intgr(None), noMeta), noMeta)
       )
-      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 2
       flat.typeDefs mustBe Map(
         reference1 -> Opt(TypeRef(reference1 / "Opt"), noMeta),
@@ -43,7 +47,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
       val nested = Map[Reference, Type](
         reference1 -> Arr(Arr(Arr(Intgr(None), noMeta), noMeta), noMeta)
       )
-      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 3
       flat.typeDefs mustBe Map(
         reference1 -> Arr(TypeRef(reference1 / "Arr"), noMeta),
@@ -55,7 +59,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
       val nested = Map[Reference, Type](
         reference1 -> CatchAll(Opt(Intgr(None), noMeta), noMeta)
       )
-      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 2
       flat.typeDefs mustBe Map(
         reference1 -> CatchAll(TypeRef(reference1 / "CatchAll"), noMeta),
@@ -71,7 +75,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
             Arr(Str(None, None), noMeta)
           )
         ))
-      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 3
       flat.typeDefs mustBe Map(
         reference1 -> OneOf(reference1, noMeta,
@@ -90,7 +94,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
         reference1 -> AllOf(reference1, noMeta,
           Seq(wohooo2, TypeDef("wohooo3", fields, noMeta))
         ))
-      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 5
       flat.typeDefs mustBe Map(
         reference1 -> AllOf(reference1, noMeta, List(TypeRef(reference1 / "AllOf0"), TypeRef(reference1 / "AllOf1"))),
@@ -112,7 +116,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
       val nested = Map[Reference, Type](
         reference1 -> wohooo1
       )
-      val flat = TypeFlattener(StrictModel(Nil, nested, Map.empty, Map.empty))
+      val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 3
       flat.typeDefs mustBe Map(
         reference1 -> TypeDef("wohooo1",

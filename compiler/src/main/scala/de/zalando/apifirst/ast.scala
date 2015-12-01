@@ -318,7 +318,8 @@ object Application {
   type TypeLookupTable          = Map[Reference, Domain.Type]
   type DiscriminatorLookupTable = Map[Reference, Reference]
 
-  case class StrictModel(calls: Seq[ApiCall], typeDefs: TypeLookupTable, params: ParameterLookupTable, discriminators: DiscriminatorLookupTable) {
+  case class StrictModel(calls: Seq[ApiCall], typeDefs: TypeLookupTable,
+                         params: ParameterLookupTable, discriminators: DiscriminatorLookupTable, basePath: String) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
     def findType(ref: Reference) = typeDefs(ref)

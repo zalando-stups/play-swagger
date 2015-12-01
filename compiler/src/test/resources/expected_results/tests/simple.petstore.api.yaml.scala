@@ -8,8 +8,9 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
+import org.junit.runner.RunWith
+import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
-
 
     @RunWith(classOf[JUnitRunner])
     class SimplePetstoreApiYamlSpec extends Specification {
@@ -18,14 +19,16 @@ import java.net.URLEncoder
         Test.check(Test.Parameters.default, props).status match {
           case Failed(_, labels) => failure(labels.mkString("\\n"))
           case Proved(_) | Exhausted | Passed => success
-          case PropException(_, _, labels) => failure(labels.mkString("\\n"))
+          case PropException(_, e, labels) =>
+            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\\n")
+            failure(error)
         }
 
-"GET /pets" should {
+"GET /api/pets" should {
             def testInvalidInput(input: (PetsGetTags, PetsGetLimit)) = {
 
                 val (tags, limit) = input
-                val url = s"""/pets?tags=${URLEncoder.encode(tags.toString, "UTF-8")}&limit=${URLEncoder.encode(limit.toString, "UTF-8")}"""
+                val url = s"""/api/pets?tags=${tags.map { i => URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&limit=${limit.map { i => URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
 
                 val path = route(FakeRequest(GET, url)).get
                 val errors = new PetsGetValidator(tags, limit).errors
@@ -43,7 +46,7 @@ import java.net.URLEncoder
             def testValidInput(input: (PetsGetTags, PetsGetLimit)) = {
 
                 val (tags, limit) = input
-                val url = s"""/pets?tags=${URLEncoder.encode(tags.toString, "UTF-8")}&limit=${URLEncoder.encode(limit.toString, "UTF-8")}"""
+                val url = s"""/api/pets?tags=${tags.map { i => URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&limit=${limit.map { i => URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
                 val path = route(FakeRequest(GET, url)).get
                 ("given an URL: [" + url + "]") |: (status(path) ?= OK)
             }
@@ -77,10 +80,10 @@ import java.net.URLEncoder
             }
 
         }
-    "POST /pets" should {
+    "POST /api/pets" should {
             def testInvalidInput(pet: NewPet) = {
 
-                val url = s"""/pets"""
+                val url = s"""/api/pets"""
 
                 val body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
                 val path = route(FakeRequest(POST, url).withBody(body)).get
@@ -99,9 +102,9 @@ import java.net.URLEncoder
             def testValidInput(pet: NewPet) = {
 
                 val body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
-                val url = s"""/pets"""
+                val url = s"""/api/pets"""
                 val path = route(FakeRequest(POST, url).withBody(body)).get
-                ("given an URL: [" + url + "]"+ "and body [" + body + "]") |: (status(path) ?= OK)
+                ("given an URL: [" + url + "]"+ " and body [" + body + "]") |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
                 val genInputs = for {
@@ -129,10 +132,10 @@ import java.net.URLEncoder
             }
 
         }
-    "GET /pets/{id}" should {
+    "GET /api/pets/{id}" should {
             def testInvalidInput(id: Long) = {
 
-                val url = s"""/pets/${id}"""
+                val url = s"""/api/pets/${id}"""
 
                 val path = route(FakeRequest(GET, url)).get
                 val errors = new PetsIdGetValidator(id).errors
@@ -149,7 +152,7 @@ import java.net.URLEncoder
             }
             def testValidInput(id: Long) = {
 
-                val url = s"""/pets/${id}"""
+                val url = s"""/api/pets/${id}"""
                 val path = route(FakeRequest(GET, url)).get
                 ("given an URL: [" + url + "]") |: (status(path) ?= OK)
             }
@@ -179,10 +182,10 @@ import java.net.URLEncoder
             }
 
         }
-    "DELETE /pets/{id}" should {
+    "DELETE /api/pets/{id}" should {
             def testInvalidInput(id: Long) = {
 
-                val url = s"""/pets/${id}"""
+                val url = s"""/api/pets/${id}"""
 
                 val path = route(FakeRequest(DELETE, url)).get
                 val errors = new PetsIdDeleteValidator(id).errors
@@ -199,7 +202,7 @@ import java.net.URLEncoder
             }
             def testValidInput(id: Long) = {
 
-                val url = s"""/pets/${id}"""
+                val url = s"""/api/pets/${id}"""
                 val path = route(FakeRequest(DELETE, url)).get
                 ("given an URL: [" + url + "]") |: (status(path) ?= OK)
             }

@@ -19,7 +19,9 @@ import java.net.URLEncoder
         Test.check(Test.Parameters.default, props).status match {
           case Failed(_, labels) => failure(labels.mkString("\\n"))
           case Proved(_) | Exhausted | Passed => success
-          case PropException(_, _, labels) => failure(labels.mkString("\\n"))
+          case PropException(_, e, labels) =>
+            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\\n")
+            failure(error)
         }
 
 {{#packages}}
@@ -57,7 +59,7 @@ import java.net.URLEncoder
                 {{/body?}}
                 val url = {{&full_url}}
                 val path = route(FakeRequest({{verb_name}}, url){{#body?}}.withBody(body){{/body?}}).get
-                ("given an URL: [" + url + "]"{{#body?}}+ "and body [" + body + "]"{{/body?}}) |: (status(path) ?= OK)
+                ("given an URL: [" + url + "]"{{#body?}}+ " and body [" + body + "]"{{/body?}}) |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
                 val genInputs = for {

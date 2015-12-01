@@ -17,12 +17,7 @@ class ScalaGenerator(val strictModel: StrictModel)
   extends ScalaModelGenerator with ScalaTestDataGenerator with PlayValidatorsGenerator
     with PlayScalaControllersGenerator with ImportSupport with PlayScalaTestsGenerator {
 
-  def this(tps: Map[Reference, Domain.Type], discriminators: DiscriminatorLookupTable) =
-    this(StrictModel(Nil, tps, Map.empty, discriminators))
-
-  def this(tps: Map[Reference, Domain.Type]) = this(tps, Map.empty)
-
-  val StrictModel(modelCalls, modelTypes, params, discriminators) = strictModel
+  val StrictModel(modelCalls, modelTypes, _, discriminators, _) = strictModel
 
   def model(fileName: String) = generate(fileName)(0)
   def generators(fileName: String) = generate(fileName)(1)
@@ -81,7 +76,6 @@ class ScalaGenerator(val strictModel: StrictModel)
 
   private def nonEmptyTemplate(map: Map[String, Any], templateName: String, suffix: String): String = {
     cleanImportTable()
-    val namespace = "" // FIXME
     val engine = new TemplateEngine
     val typesByPackage = modelTypes.groupBy(_._1.packageName)
 
@@ -106,7 +100,7 @@ class ScalaGenerator(val strictModel: StrictModel)
         )
         val callValidations = if (pckg == "paths") Some("call_validations" -> validations(modelCalls.filter(_.handler.parameters.nonEmpty))) else None
         val callControllers = if (pckg == "paths") Some("controllers" -> controllers(modelCalls)) else None
-        val callTests = if (pckg == "paths") Some("tests" -> tests(modelCalls, namespace)) else None
+        val callTests = if (pckg == "paths") Some("tests" -> tests(modelCalls)) else None
         val fullPackage = singlePackage ++ callValidations.toSeq.toMap ++ callControllers.toSeq.toMap ++ callTests.toSeq.toMap
         fullPackage + ("package" -> pckgName) + ("imports" -> imports(pckgName))
       })
@@ -316,10 +310,11 @@ trait PlayScalaControllersGenerator extends ImportSupport {
     def generatorsSuffix: String
     def generatorNameForType(implicit pckg: String): (Type) => String
 
-    def tests(calls: Seq[ApiCall], namespace: String)(implicit pckg: String) =
-      calls filterNot { _.handler.parameters.isEmpty } map callTest(namespace)
+    def tests(calls: Seq[ApiCall])(implicit pckg: String) =
+      calls filterNot { _.handler.parameters.isEmpty } map callTest
 
-    def callTest(namespace: String)(call: ApiCall)(implicit pckg: String): Map[String, Object] = {
+    def callTest(call: ApiCall)(implicit pckg: String): Map[String, Object] = {
+        val namespace = if (strictModel.basePath == "/") "" else strictModel.basePath
         Map(
           "verb_name" -> call.verb.name,
           "full_path" -> fullPath(namespace, call.path.toString),
@@ -391,9 +386,18 @@ trait PlayScalaControllersGenerator extends ImportSupport {
       "s\"\"\"" +  fullPath(namespace, pathSuffix) + fullQuery + "\"\"\""
     }
 
+    def defaultValue(tpe: Type): Any = tpe match {
+      case _: Nmbr => "0"
+      case _: Str => ""
+      case _: Bool => "false"
+      case _ => ""
+    }
+
     private def singleQueryParam(name: String, typeName: Type): String = typeName match {
+      case r@ TypeRef(ref) =>
+        singleQueryParam(name, strictModel.findType(ref))
       case c: Domain.Opt =>
-        containerParam(name) + "getOrElse(\"\")}"
+        containerParam(name) + "getOrElse(" + defaultValue(c.tpe) + ")}"
       case c: Domain.Arr =>
         containerParam(name) + "mkString(\"&\")}"
       case d: Domain.CatchAll =>
@@ -404,14 +408,11 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         name + "=${URLEncoder.encode(" + name + ".toString, \"UTF-8\")}"
     }
     private def containerParam(name: String) =
-      "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."
+      name + "=${" + name + ".map { i => URLEncoder.encode(i.toString, \"UTF-8\")}."
 
     private def fullPath(namespace: String, pathSuffix: String) =
       namespace + (if (pathSuffix == "/") "" else pathSuffix)
 
-    private def generatorNameForType(tpe: TypeRef) = {
-
-    }
   }
 
   trait PlayValidatorsGenerator extends ImportSupport {
