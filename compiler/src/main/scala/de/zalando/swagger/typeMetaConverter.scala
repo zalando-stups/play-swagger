@@ -13,13 +13,13 @@ object TypeMetaConverter extends ParameterNaming {
   implicit def arrayTypeMeta[T](comment: String, items: ArrayValidation[T]): TypeMeta =
     TypeMeta(Option(comment), toArrayValidations(items))
 
-  implicit def schemaTypeMeta[T](param: Schema[_]): TypeMeta =
+  implicit def schemaTypeMeta[T](param: Schema[T]): TypeMeta =
     TypeMeta(Option(param.description).orElse(Option(param.format)), toValidations(param))
 
   implicit def primitivesItemsTypeMeta[T](param: PrimitivesItems[T]): TypeMeta =
     TypeMeta(Option(param.format).orElse(Option(param.collectionFormat).map(_.toString)), toValidations(param))
 
-  implicit def nonBodyParameterCommonsTypeMeta(nb: NonBodyParameterCommons[_, _]): TypeMeta =
+  implicit def nonBodyParameterCommonsTypeMeta[T, CF](nb: NonBodyParameterCommons[T, CF]): TypeMeta =
     TypeMeta(Option(nb.format), toValidations(nb))
 
   implicit def schemaArrayTypeMeta(nb: SchemaArray): TypeMeta =

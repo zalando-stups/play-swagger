@@ -41,12 +41,12 @@ import java.net.URLEncoder
                 val path = route(FakeRequest({{verb_name}}, url){{#body?}}.withBody(body){{/body?}}).get
                 val errors = new {{&validation_name}}({{#parameters?}}{{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}{{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}}).errors⮐
 
-                lazy val validations = errors map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
                 ("given an URL: [" + url + "]" {{#body?}}+ "and body [" + body + "]"{{/body?}}) |: all(
-                    status(path) ?= {{&expected_code}},
+                    status(path) ?= BAD_REQUEST {{!expected_code}},
                     contentType(path) ?= Some("{{&expected_result_type}}"),
-                    validations.nonEmpty ?= true,
+                    errors.nonEmpty ?= true,
                     all(validations:_*)
                 )
             }

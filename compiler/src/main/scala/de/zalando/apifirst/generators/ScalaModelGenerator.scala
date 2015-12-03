@@ -386,18 +386,11 @@ trait PlayScalaControllersGenerator extends ImportSupport {
       "s\"\"\"" +  fullPath(namespace, pathSuffix) + fullQuery + "\"\"\""
     }
 
-    def defaultValue(tpe: Type): Any = tpe match {
-      case _: Nmbr => "0"
-      case _: Str => ""
-      case _: Bool => "false"
-      case _ => ""
-    }
-
     private def singleQueryParam(name: String, typeName: Type): String = typeName match {
       case r@ TypeRef(ref) =>
         singleQueryParam(name, strictModel.findType(ref))
       case c: Domain.Opt =>
-        containerParam(name) + "getOrElse(" + defaultValue(c.tpe) + ")}"
+        containerParam(name) + "getOrElse(\"\")}"
       case c: Domain.Arr =>
         containerParam(name) + "mkString(\"&\")}"
       case d: Domain.CatchAll =>
@@ -408,7 +401,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         name + "=${URLEncoder.encode(" + name + ".toString, \"UTF-8\")}"
     }
     private def containerParam(name: String) =
-      name + "=${" + name + ".map { i => URLEncoder.encode(i.toString, \"UTF-8\")}."
+      "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."
 
     private def fullPath(namespace: String, pathSuffix: String) =
       namespace + (if (pathSuffix == "/") "" else pathSuffix)

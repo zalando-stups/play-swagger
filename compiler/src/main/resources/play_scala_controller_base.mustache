@@ -22,7 +22,7 @@ import scala.util._
         private val {{&response_mime_type_name}}    = "{{&response_mime_type_value}}"
         private val {{&action_success_status_name}} = Status({{&action_success_status_value}})
 
-        private type {{&action_request_type}}       = ({{#validations}}{{#fields}}{{&field_type}}{{^last}}, {{/last}}{{/fields}}{{/validations}})
+        private type {{&action_request_type}}       = ({{#validations}}{{#fields}}{{&field_type}}{{^last}}, {{/last}}{{/fields}}{{/validations}}{{^validations}}Unit{{/validations}})
         private type {{&action_result_type}}        = {{&action_result_type_value}}
         private type {{&action_type}}              = {{&action_request_type}} => Try[{{&action_result_type}}]
 

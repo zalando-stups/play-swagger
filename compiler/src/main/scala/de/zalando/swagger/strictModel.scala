@@ -899,6 +899,7 @@ object strictModel {
     def exclusiveMaximum:       ExclusiveMaximum
     def minimum:                Minimum[T]
     def exclusiveMinimum:       ExclusiveMinimum
+    def format: String
     // require(multipleOf.forall(v => v.signum(v)==1)) FIXME repair this requirement
     require(exclusiveMaximum.isEmpty || maximum.isDefined)
     require(exclusiveMinimum.isEmpty || minimum.isDefined)
