@@ -1,6 +1,6 @@
 ## Swagger Reference `$ref`
 
-Within Swagger, the Reference Object is a JSON Reference that uses a JSON Pointer as its string value.  The values that a Reference Object points to are canonically dereferenced.
+Within Swagger, a Reference Object is a JSON Reference that uses JSON Pointer as its string value. Values that the Reference Object points to are canonically dereferenced.
 
 ### JSON Reference
 A JSON Object containing a `$ref` attribute with a string value.  The "$ref" string value contains a URI, which identifies the location of the JSON value being referenced.  The JSON Reference [specification](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03) in itself does not require the string value to be a JSON Pointer, but Swagger definitions limit valid JSON References to those that are.  Informally spoken this means that the Swagger Reference Object's string value contains a URI with a URI fragment part containing a JSON Pointer or a URI without a fragment part, that identifies some rooted JSON document value.  Note that the URI may be relative.
@@ -16,7 +16,7 @@ Question: should the ID keyword (paragraph 7.2.2) also be handled?
 
 ### Examples
 
-```
+```yaml
 $ref: 'pet.yaml'                            // relative rooted reference
 $ref: '#/definitions/Pet'                   // relative fragment reference
 $ref: 'definitions.yaml#/Pet'               // relative file fragment reference
@@ -33,7 +33,7 @@ The methods on JSON Pointer and Reference provide for hierarchical naming for AS
 
 For example, the minimal `file:/echo.yaml` specification containing:
 
-```
+```yaml
 paths:
   /:
     get:
@@ -66,7 +66,7 @@ paths:
           description: Echo test-path
 ```
 
-Has a path definitions for the root `/` and `/test-path/{id}` accepting a GET and POST operation that accept a body or different primitive types of path and form data parameters. This definition will converted into the following full qualified named type definitions:
+Has path definitions for the root `/` and `/test-path/{id}` accepting `GET` and `POST` operations that accept a body or different primitive types of path and form data parameters. This definition will be converted into the following fully qualified named type definitions:
 
 ```
 file:/echo.yaml#/paths//get/responses/200 ->
@@ -115,7 +115,7 @@ This utility value contains the last token string as a name or the empty string 
 
 The pointer value gives access to the reference its pointer, providing a way to create new reference names to the same pointer but in different documents, e.g.:
 
-```
+```scala
 val ref1 = Reference("file/a.yaml#/foo/bar")
 val ref2 = Reference("file/b.yaml")
 println(ref2 / ref1.pointer) // prints file/b.yaml#/foo/bar
