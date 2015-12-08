@@ -33,17 +33,17 @@ import java.net.URLEncoder
                     val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input
                 {{/parameters?}}
                 val url = {{&full_url}}
-
+                val headers = Seq({{#headers}}"{{&name}}" -> {{&name}}{{/headers}})
                 {{#body?}}
-                    val body = PlayBodyParsing.jacksonMapper("{{&expected_result_type}}").writeValueAsString({{&body_parameter_name}})
+                    val parsed_{{&body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{&expected_result_type}}").writeValueAsString({{&body_parameter_name}})
                 {{/body?}}
 
-                val path = route(FakeRequest({{verb_name}}, url){{#body?}}.withBody(body){{/body?}}).get
+                val path = route(FakeRequest({{verb_name}}, url).withHeaders(headers:_*){{#body?}}.withBody(parsed_{{&body_parameter_name}}){{/body?}}).get
                 val errors = new {{&validation_name}}({{#parameters?}}{{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}{{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}}).errors⮐
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given an URL: [" + url + "]" {{#body?}}+ "and body [" + body + "]"{{/body?}}) |: all(
+                ("given an URL: [" + url + "]" {{#body?}}+ "and body [" + parsed_{{&body_parameter_name}} + "]"{{/body?}}) |: all(
                     status(path) ?= BAD_REQUEST {{!expected_code}},
                     contentType(path) ?= Some("{{&expected_result_type}}"),
                     errors.nonEmpty ?= true,
@@ -55,11 +55,11 @@ import java.net.URLEncoder
                     val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input
                 {{/parameters?}}
                 {{#body?}}
-                    val body = PlayBodyParsing.jacksonMapper("{{&expected_result_type}}").writeValueAsString({{&body_parameter_name}})
+                    val parsed_{{&body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{&expected_result_type}}").writeValueAsString({{&body_parameter_name}})
                 {{/body?}}
                 val url = {{&full_url}}
-                val path = route(FakeRequest({{verb_name}}, url){{#body?}}.withBody(body){{/body?}}).get
-                ("given an URL: [" + url + "]"{{#body?}}+ " and body [" + body + "]"{{/body?}}) |: (status(path) ?= OK)
+                val path = route(FakeRequest({{verb_name}}, url){{#body?}}.withBody(parsed_{{&body_parameter_name}}){{/body?}}).get
+                ("given an URL: [" + url + "]"{{#body?}}+ " and body [" + parsed_{{&body_parameter_name}} + "]"{{/body?}}) |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
                 val genInputs = for {

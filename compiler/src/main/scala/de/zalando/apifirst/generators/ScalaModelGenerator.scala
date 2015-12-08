@@ -219,7 +219,11 @@ trait PlayScalaControllersGenerator extends ImportSupport {
           else "parameters?" -> Some(parameters)
 
         val bodyParam = parametersValidations(call.handler.parameters.filter(strictModel.findParameter(_).place == ParameterPlace.BODY))
-        val nonBodyParams = parametersValidations(call.handler.parameters.filterNot(strictModel.findParameter(_).place == ParameterPlace.BODY))
+        val headerParams = parametersValidations(call.handler.parameters.filter(strictModel.findParameter(_).place == ParameterPlace.HEADER))
+        val nonBodyParams = parametersValidations(call.handler.parameters.filterNot { p =>
+          val place = strictModel.findParameter(p).place
+          place == ParameterPlace.BODY || place == ParameterPlace.HEADER
+        })
         val validations = callValidations(call)
 
         // FIXME should be already implemented in AST
@@ -255,7 +259,9 @@ trait PlayScalaControllersGenerator extends ImportSupport {
           "body_param" -> bodyParam,
           "non_body_params" -> nonBodyParams,
           "non_body_params?" -> nonBodyParams.nonEmpty,
+          "header_params" -> headerParams,
           "body_param?" -> bodyParam.nonEmpty,
+          "request_needed?" -> (bodyParam.nonEmpty || headerParams.nonEmpty),
           nameParamPair
         )
       }
@@ -323,7 +329,8 @@ trait PlayScalaControllersGenerator extends ImportSupport {
           "body?" -> bodyParameter(call),
           "expected_code" -> "200", // FIXME
           expectedResultType(call),
-          parameters(call)
+          parameters(call),
+          "headers" -> headers(call).toMap
         )
     }
 
@@ -336,6 +343,14 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         _.place == ParameterPlace.BODY
       }.map { p =>
         Map("body_parameter_name" -> p.name, expectedResultType(call))
+      }
+    }
+
+    def headers(call: ApiCall)(implicit pckg: String) = {
+      call.handler.parameters.filter { p =>
+        strictModel.findParameter(p).place == ParameterPlace.HEADER
+      }.map {
+        "name" -> _.name.simple
       }
     }
 
@@ -444,6 +459,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         Map(
           "field_name" -> escape(p.name.simple),
           "field_type" -> tpe.name.typeAlias(),
+          "method" -> (if (tpe.isInstanceOf[Container]) "get" else "apply"),
           "field_raw_type" -> tpe.name,
           "validation_name" -> useType(validation, validatorsSuffix, ""),
           "last" -> (i == parameters.size - 1)

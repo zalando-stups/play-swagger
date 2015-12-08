@@ -32,14 +32,17 @@ import scala.util._
         {{/error_mappings}}{{#error_mappings}} } {{/error_mappings}}⮐
 
         {{#body_param}}
-            private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&action_request_type}}]("{{&method}}", "Invalid {{&method}}", maxLength)
+            private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&field_type}}]("{{&method}}", "Invalid {{&method}}", maxLength)
         {{/body_param}}⮐
 
-        def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#body_param?}}request =>{{/body_param?}}⮐
+        def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#request_needed?}}request =>{{/request_needed?}}⮐
             {{#body_param}}
             val {{&field_name}} = request.body
             {{/body_param}}
-            val result = {{^validations?}}{{&process_valid_request}}(f){{/validations?}}⮐
+            {{#header_params}}
+            val {{&field_name}} = request.headers.{{&method}}("{{&field_name}}")
+            {{/header_params}}
+            val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
                 {{#validations?}}
                 {{#validations}}
                     new {{&validation_name}}({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}).errors match {
