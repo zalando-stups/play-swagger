@@ -19,38 +19,46 @@ object SwaggerCompiler {
 
   val controllerDir = "app/controllers/"
 
-  def compile(task: SwaggerCompilationTask, outputDir: File,
-    reverseRouter: Boolean, namespaceReverseRouter: Boolean, routesImport: Seq[String], keyPrefix: String): SwaggerCompilationResult = {
-
+  def compileSpec(task: SwaggerCompilationTask, outputDir: File, routesImport: Seq[String], keyPrefix: String): SwaggerCompilationResult = {
     outputDir.mkdirs()
+    implicit val flatAst          = readFlatAst(task)
+    val swaggerFiles              = compileSwagger(task, outputDir)
+    SwaggerCompilationResult.fromSwagger(swaggerFiles)
+  }
 
-    val parser        = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
+  def compileConf(task: SwaggerCompilationTask, outputDir: File, routesImport: Seq[String], keyPrefix: String): SwaggerCompilationResult = {
+    outputDir.mkdirs()
+    implicit val flatAst  = readFlatAst(task)
+    val routesFiles       = compileRoutes(task, outputDir, routesImport)
+    SwaggerCompilationResult.fromRoutes(routesFiles)
+  }
 
-    val (uri, model)  = parser.parse(task.definitionFile)
-    val initialAst    = ModelConverter.fromModel(uri, model, Option(task.definitionFile))
-    implicit val flatAst = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply)(initialAst)
+  private def compileSwagger(task: SwaggerCompilationTask, outputDir: File)(implicit flatAst: StrictModel) = {
+    val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "../../../../" + controllerDir)
+    val artifacts     = new ScalaGenerator(flatAst).generate(task.definitionFile.getName) zip places
+    val persister     = persist(task, outputDir) _
+    val swaggerFiles  = artifacts map { persister.tupled } map { Seq(_) }
+    swaggerFiles
+  }
 
+  private def compileRoutes(task: SwaggerCompilationTask, outputDir: File, routesImport: Seq[String])(implicit flatAst: StrictModel) = {
     val namespace     = task.definitionFile.getName
-
     val allImports    = ((namespace + "._") +: routesImport).distinct
+    val playNameSpace = Some(namespace)
     val playRules     = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList
     val playTask      = RoutesCompilerTask(task.definitionFile, allImports, forwardsRouter = true, reverseRouter = true, namespaceReverseRouter = false)
-    val playNameSpace = Some(namespace)
     val generated     = task.generator.generate(playTask, playNameSpace, playRules)
     val routesFiles   = generated map writeToFile(outputDir, writeOver = true).tupled
+    routesFiles
+  }
 
-    val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "../../../../" + controllerDir)
 
-    val artifacts     = new ScalaGenerator(flatAst).generate(task.definitionFile.getName) zip places
-
-    val persister     = persist(task, outputDir) _
-
-    val files         = artifacts map { persister.tupled } map { Seq(_) }
-
-    val allFiles      = routesFiles +: files
-
-    SwaggerCompilationResult(allFiles:_*)
-
+  def readFlatAst(task: SwaggerCompilationTask): StrictModel = {
+    val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
+    val (uri, model) = parser.parse(task.definitionFile)
+    val initialAst = ModelConverter.fromModel(uri, model, Option(task.definitionFile))
+    implicit val flatAst = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (initialAst)
+    flatAst
   }
 
   def persist(task: SwaggerCompilationTask, outputDir: File)
@@ -102,6 +110,12 @@ case class SwaggerCompilationResult(
     ).toSet
 }
 object SwaggerCompilationResult {
+  def fromRoutes(routes: Seq[File]) =
+    new SwaggerCompilationResult(routes, Nil, Nil, Nil, Nil, Nil, Nil)
+
+  def fromSwagger(files: Seq[Seq[File]]) =
+    new SwaggerCompilationResult(Nil, files.head, files(1), files(2), files(3), files(4), files(5))
+
   def apply(files: Seq[File]*) =
     new SwaggerCompilationResult(files.head, files(1), files(2), files(3), files(4), files(5), files(6))
 }
