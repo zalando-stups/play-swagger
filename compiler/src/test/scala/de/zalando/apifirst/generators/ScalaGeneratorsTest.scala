@@ -1,6 +1,6 @@
 package de.zalando.apifirst.generators
 
-import de.zalando.apifirst.Application.DiscriminatorLookupTable
+import de.zalando.apifirst.Application.{TypeLookupTable, StrictModel, DiscriminatorLookupTable}
 import de.zalando.apifirst.Domain
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.new_naming.Reference
@@ -14,6 +14,8 @@ import scala.language.implicitConversions
   * @since   18.11.2015.
   */
 class ScalaGeneratorsTest extends FunSpec with MustMatchers {
+
+  implicit def types2model(types: TypeLookupTable): StrictModel = StrictModel.apply(Nil, types, Map.empty, Map.empty, "")
 
   describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {

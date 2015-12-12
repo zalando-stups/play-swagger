@@ -9,10 +9,6 @@ import PlayBodyParsing._
 import PlayValidations._
 
 {{#packages}}
-object {{&package}} {
-    {{#imports}}
-    import {{&name}}
-    {{/imports}}
 
     {{#constraints}}
     class {{& constraint_name }}(override val instance: {{& type_name }}) extends ValidationBase[{{& type_name }}] {
@@ -43,5 +39,4 @@ object {{&package}} {
     )
     }
     {{/call_validations}}
-}
 {{/packages}}

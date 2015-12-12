@@ -90,11 +90,7 @@ object PlaySwagger extends AutoPlugin {
 
     watchSources in Defaults.ConfigGlobal <++= sources in swagger,
 
-    unmanagedSources ++= swagger.value.filter(_.getName.endsWith(".scala")).filter(unManaged),
-
-    managedSources in Compile ++= swagger.value.filter(_.getName.endsWith(".scala")).filterNot(unManaged).filterNot(test),
-
-    managedSources in Test ++= swagger.value.filter(_.getName.endsWith(".scala")).filterNot(unManaged).filter(test),
+    managedSources ++= swagger.value.filter(_.getName.endsWith(".scala")).filterNot(unManaged).filterNot(test),
 
     managedSourceDirectories <+= target in swagger,
 
@@ -123,14 +119,17 @@ object PlaySwagger extends AutoPlugin {
 
       val results = tasksToRun.map { task =>
         task -> Try {
-          SwaggerCompiler.compile(task, outputDirectory, genRevRoutes, namespaceRevRoutes, routesImport, keyPrefix.value)
+          Set(
+            SwaggerCompiler.compileSpec(task, outputDirectory, routesImport, keyPrefix.value),
+            SwaggerCompiler.compileConf(task, outputDirectory, routesImport, keyPrefix.value)
+          )
         }
       }
 
       // Collect the results into a map of task to OpResult for syncIncremental
       val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
         case (task, Success(result)) =>
-          task -> OpSuccess(Set(task.definitionFile), result.allFiles)
+          task -> OpSuccess(Set(task.definitionFile), result.flatMap(_.allFiles))
         case (op, Failure(_)) => op -> OpFailure
       }.toMap
 

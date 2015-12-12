@@ -1,0 +1,54 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Echo
+  description: |
+    Echoes back every URL, method, parameter and header
+    Feel free to make a path or an operation and use **Try Operation** to test it. The echo server will
+    render back everything.
+schemes:
+  - http
+host: localhost:9000
+basePath: /echo
+paths:
+  /:
+    get:
+      responses:
+        200:
+          description: Echo GET
+          schema:
+            type: string
+
+    post:
+      responses:
+        200:
+          description: Echo POST
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              year:
+                type: string
+      parameters:
+        - name: name
+          in: query
+          description: name
+          type: string
+        - name: year
+          in: query
+          description: year
+          type: string
+  /test-path/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          description: ID
+          type: string
+          required: true
+      responses:
+        200:
+          description: Echo test-path
+          schema:
+            type: string

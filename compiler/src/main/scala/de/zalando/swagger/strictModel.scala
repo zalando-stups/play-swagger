@@ -285,7 +285,11 @@ object strictModel {
     @JsonProperty(value = "$ref", required = true) $ref: Ref
   ) extends ParametersListItem with ResponseValue with RefChecker
 
-  implicit def jsonReferenceToPointer(ref: JsonReference): Pointer = Pointer.deref(ref.$ref)
+  implicit def jsonReferenceToPointer(ref: JsonReference): Pointer =
+    if (ref != null && ref.$ref != null)
+      Pointer.deref(ref.$ref)
+    else
+      throw new IllegalArgumentException("Can not dereference null reference")
 
   sealed trait Parameter[T] extends ParametersListItem {
     def name: String
@@ -895,6 +899,7 @@ object strictModel {
     def exclusiveMaximum:       ExclusiveMaximum
     def minimum:                Minimum[T]
     def exclusiveMinimum:       ExclusiveMinimum
+    def format: String
     // require(multipleOf.forall(v => v.signum(v)==1)) FIXME repair this requirement
     require(exclusiveMaximum.isEmpty || maximum.isDefined)
     require(exclusiveMinimum.isEmpty || minimum.isDefined)

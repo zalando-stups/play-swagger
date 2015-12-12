@@ -1,4 +1,6 @@
-val PlayVersion = "2.4.3"
+import bintray.Keys._
+
+val PlayVersion  = "2.4.3"
 val ScalaVersion = "2.11.7"
 
 // This is the API project, it gets added to the runtime dependencies of any
@@ -13,7 +15,7 @@ lazy val api = (project in file("api"))
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "org.scalacheck" %% "scalacheck" % "1.12.4",
-      "org.specs2" %% "specs2-scalacheck" % "3.6.5"
+      "org.specs2" %% "specs2-scalacheck" % "3.6"
     ),
     scalaVersion :=  "2.10.5",
     crossScalaVersions := Seq(scalaVersion.value, ScalaVersion)
@@ -39,8 +41,8 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "org.scala-lang" % "scala-library" % scalaVersion.value,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalacheck" %% "scalacheck" % "1.12.4",
-      "me.andrz.jackson" % "jackson-json-reference" % "0.1.2",
+      "org.scalacheck" %% "scalacheck" % "1.12.5",
+      "me.andrz.jackson" % "jackson-json-reference" % "0.1.3",
       "org.scalatra.scalate" %% "scalate-core" % "1.7.0"
     )
   )
@@ -81,13 +83,19 @@ lazy val root = (project in file("."))
   )
   .aggregate(api, compiler, plugin)
 
-def common: Seq[Setting[_]] = Seq(
+def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   organization := "de.zalando",
+  version      := "0.1.0",
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
-    Resolver.bintrayRepo("slavaschmidt","maven")
-  )
+    //Resolver.bintrayRepo("slavaschmidt","maven")
+    Resolver.mavenLocal
+  ),
+  licenses                       += ("MIT", url("http://opensource.org/licenses/MIT")),
+  publishMavenStyle              := false,
+  repository in bintray          := "sbt-plugins",
+  bintrayOrganization in bintray := Some("zalando")
 )
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60

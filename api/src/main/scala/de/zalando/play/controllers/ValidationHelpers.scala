@@ -19,7 +19,7 @@ trait Validator {
   *   - {@ValidationBase}s then combined inside of the {@RecursiveValidator}
   */
 trait RecursiveValidator extends Validator {
-  def validators: Seq[RecursiveValidator]
+  def validators: Seq[Validator]
 
   override def errors: Seq[ParsingError] = validators.flatMap(_.errors)
 

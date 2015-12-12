@@ -1,7 +1,8 @@
 package simple.petstore.api.yaml
 import play.api.mvc.{Action, Controller, Results}
+import play.api.http.Writeable
 import Results.Status
-import de.zalando.play.controllers.PlayBodyParsing
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
 
@@ -23,13 +24,14 @@ object pathsBase {
 
         private val errorToStatusaddPet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[addPetActionRequestType]("addPet", "Invalid addPet", maxLength)
-        def addPetAction = (f: addPetActionType) => Action (addPetParser()){ request =>
+        val addPetAction = (f: addPetActionType) => Action (addPetParser()){ request =>
             val pet = request.body
-            implicit val marshaller = parsingErrors2Writable(addPetResponseMimeType)
             val result = 
                 new PetsPostValidator(pet).errors match {
-                        case e if e.isEmpty => processValidaddPetRequest(f)
-                        case l => l.map(BadRequest(_))
+                        case e if e.isEmpty => processValidaddPetRequest(f)((pet))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(addPetResponseMimeType)
+                            BadRequest(l)
                     }
                 result
         }
@@ -41,7 +43,7 @@ object pathsBase {
                 case Success(result) => addPetActionSuccessStatus
             }
             implicit val addPetWritableJson = anyToWritable[addPetActionResultType](addPetResponseMimeType)
-            status(callerResult)
+            status
         }
         }
 
@@ -54,12 +56,13 @@ object pathsBase {
         private type methodLevelActionType              = methodLevelActionRequestType => Try[methodLevelActionResultType]
 
         private val errorToStatusmethodLevel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
-        def methodLevelAction = (f: methodLevelActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action { 
-            implicit val marshaller = parsingErrors2Writable(methodLevelResponseMimeType)
+        val methodLevelAction = (f: methodLevelActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action { 
             val result = 
                 new PetsGetValidator(tags, limit).errors match {
-                        case e if e.isEmpty => processValidmethodLevelRequest(f)
-                        case l => l.map(BadRequest(_))
+                        case e if e.isEmpty => processValidmethodLevelRequest(f)((tags, limit))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(methodLevelResponseMimeType)
+                            BadRequest(l)
                     }
                 result
         }
@@ -71,7 +74,7 @@ object pathsBase {
                 case Success(result) => methodLevelActionSuccessStatus
             }
             implicit val methodLevelWritableJson = anyToWritable[methodLevelActionResultType](methodLevelResponseMimeType)
-            status(callerResult)
+            status
         }
         private val pathLevelGetResponseMimeType    = "application/json"
         private val pathLevelGetActionSuccessStatus = Status(200)
@@ -81,12 +84,13 @@ object pathsBase {
         private type pathLevelGetActionType              = pathLevelGetActionRequestType => Try[pathLevelGetActionResultType]
 
         private val errorToStatuspathLevelGet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
-        def pathLevelGetAction = (f: pathLevelGetActionType) => (id: Long) => Action { 
-            implicit val marshaller = parsingErrors2Writable(pathLevelGetResponseMimeType)
+        val pathLevelGetAction = (f: pathLevelGetActionType) => (id: Long) => Action { 
             val result = 
                 new PetsIdGetValidator(id).errors match {
-                        case e if e.isEmpty => processValidpathLevelGetRequest(f)
-                        case l => l.map(BadRequest(_))
+                        case e if e.isEmpty => processValidpathLevelGetRequest(f)((id))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(pathLevelGetResponseMimeType)
+                            BadRequest(l)
                     }
                 result
         }
@@ -98,7 +102,7 @@ object pathsBase {
                 case Success(result) => pathLevelGetActionSuccessStatus
             }
             implicit val pathLevelGetWritableJson = anyToWritable[pathLevelGetActionResultType](pathLevelGetResponseMimeType)
-            status(callerResult)
+            status
         }
         private val pathLevelDeleteResponseMimeType    = "application/json"
         private val pathLevelDeleteActionSuccessStatus = Status(200)
@@ -108,12 +112,13 @@ object pathsBase {
         private type pathLevelDeleteActionType              = pathLevelDeleteActionRequestType => Try[pathLevelDeleteActionResultType]
 
         private val errorToStatuspathLevelDelete: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
-        def pathLevelDeleteAction = (f: pathLevelDeleteActionType) => (id: Long) => Action { 
-            implicit val marshaller = parsingErrors2Writable(pathLevelDeleteResponseMimeType)
+        val pathLevelDeleteAction = (f: pathLevelDeleteActionType) => (id: Long) => Action { 
             val result = 
                 new PetsIdDeleteValidator(id).errors match {
-                        case e if e.isEmpty => processValidpathLevelDeleteRequest(f)
-                        case l => l.map(BadRequest(_))
+                        case e if e.isEmpty => processValidpathLevelDeleteRequest(f)((id))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(pathLevelDeleteResponseMimeType)
+                            BadRequest(l)
                     }
                 result
         }
@@ -125,7 +130,7 @@ object pathsBase {
                 case Success(result) => pathLevelDeleteActionSuccessStatus
             }
             implicit val pathLevelDeleteWritableJson = anyToWritable[pathLevelDeleteActionResultType](pathLevelDeleteResponseMimeType)
-            status(callerResult)
+            status
         }
         }
 

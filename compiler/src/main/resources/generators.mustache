@@ -4,6 +4,8 @@ package {{&main_package}}
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
+import java.util.Date
+import java.io.File
 
 {{#packages}}
 object {{&package}} {
@@ -16,7 +18,7 @@ object {{&package}} {
     {{/aliases}}
 
     {{#aliases}}
-    val {{& name}} = {{& generator_name }}⮐
+    def {{& name}} = {{& generator_name }}⮐
     {{/aliases}}
 
     {{#classes}}
@@ -24,7 +26,7 @@ object {{&package}} {
     {{/classes}}
 
     {{#classes}}
-    val {{& name}} =⮐
+    def {{& name}} =⮐
         for {⮐
         {{#fields}}
              {{& name}} <- {{& generator}}⮐

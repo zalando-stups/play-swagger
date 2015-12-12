@@ -8,7 +8,7 @@ package de.zalando.swagger
 import java.io.File
 import java.net.URI
 
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.fasterxml.jackson.databind.{JsonMappingException, DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml
 import com.fasterxml.jackson.module.scala.DefaultScalaModule

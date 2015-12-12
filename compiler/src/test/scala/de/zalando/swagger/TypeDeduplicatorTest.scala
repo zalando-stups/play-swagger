@@ -106,7 +106,7 @@ class TypeDeduplicatorTest extends FunSpec with MustMatchers with ExpectedResult
     )
 
     val expectedTypes = types - reference1
-    val model = StrictModel(Nil, types, params, discriminators)
+    val model = StrictModel(Nil, types, params, discriminators, "")
     val result = TypeDeduplicator(model)
     result.typeDefs mustBe expectedTypes
 

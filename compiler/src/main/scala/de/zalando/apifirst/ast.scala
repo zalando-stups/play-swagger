@@ -1,5 +1,6 @@
 package de.zalando.apifirst
 
+import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.apifirst.new_naming.{Reference, TypeName}
 
@@ -63,9 +64,16 @@ object Domain {
   trait PrimitiveType
 
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
+    import ScalaName._
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
     def toShortString(pad: String) = getClass.getSimpleName
+    def alias = imports.headOption.getOrElse(name.simple)
+/*
+    def fullAlias(implicit m: StrictModel): String =
+      imports.headOption.map { _ + "[" + name.fullyDereference + "]" } getOrElse name.simple // FIXME won't work with MAP
+    // FIXME this should not depend on the model, move somewhere else
+*/
   }
   
   case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None)) {
@@ -201,6 +209,7 @@ object Domain {
 
 }
 
+// TODO should be replaced by References
 object Path {
 
   import scala.language.{implicitConversions, postfixOps}
@@ -275,7 +284,6 @@ object Application {
     val simple = name.simple
   }
 
-  // Play definition
   case class Parameter(
     name:             String,
     typeName:         Domain.Type,
@@ -306,16 +314,12 @@ object Application {
     def asReference = Reference(path.value.map(_.value).toList).prepend("paths") / verb.toString.toLowerCase
   }
 
-  case class Model(
-    calls:            Seq[ApiCall],
-    definitions:      Iterable[Domain.Type]
-  )
-
   type ParameterLookupTable     = Map[ParameterRef, Parameter]
   type TypeLookupTable          = Map[Reference, Domain.Type]
   type DiscriminatorLookupTable = Map[Reference, Reference]
 
-  case class StrictModel(calls: Seq[ApiCall], typeDefs: TypeLookupTable, params: ParameterLookupTable, discriminators: DiscriminatorLookupTable) {
+  case class StrictModel(calls: Seq[ApiCall], typeDefs: TypeLookupTable,
+                         params: ParameterLookupTable, discriminators: DiscriminatorLookupTable, basePath: String) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
     def findType(ref: Reference) = typeDefs(ref)

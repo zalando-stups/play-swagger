@@ -53,12 +53,21 @@ object ValidationsConverter {
     ).flatten
   }
 
-  private def toNumberValidations[T](p: NumberValidation[T]): Seq[String] = {
+  private def toNumberValidations(p: NumberValidation[_]): Seq[String] = {
     val strictMax = p.exclusiveMaximum.getOrElse(false)
     val strictMin = p.exclusiveMinimum.getOrElse(false)
+    val typeCoerce = p.format match {
+      case "int32" => "Int"
+      case "int64" => "Long"
+      case "float" => "Float"
+      case "double" => "Double"
+      case "byte" => "Byte"
+      case _ => ""
+    }
+    val converter = if (typeCoerce.nonEmpty) ".to" + typeCoerce else ""
     Seq(
-      ifDefined(p.maximum, s"max(${p.maximum.get}, $strictMax)"),
-      ifDefined(p.minimum, s"min(${p.minimum.get}, $strictMin)"),
+      ifDefined(p.maximum, s"max(${p.maximum.get}$converter, $strictMax)"),
+      ifDefined(p.minimum, s"min(${p.minimum.get}$converter, $strictMin)"),
       ifDefined(p.multipleOf, s"multipleOf(${p.multipleOf.get})")
     ).flatten
   }
