@@ -1,20 +1,31 @@
 <html lang="en">
 <head>
-    <title>Play Scala Tutorial</title>
+    <title>Play-Swagger Tutorial</title>
 </head>
 <body>
 
 <div>
-    <h2>Welcome to Play %PLAY_VERSION%</h2>
+    <h2>Welcome to Play-Swagger</h2>
 
     <p>
-        <em>Congratulations, you’ve just created a new Play application!</em>
+        <em>Congratulations, you’ve just created a new Play-Swagger application!</em>
     </p>
     <p>
-        <a href="http://www.playframework.com/">Play Framework</a> makes it easy to build web applications with Java &amp; Scala. Play is based on a lightweight, stateless, web-friendly architecture. Built on <a href="http://akka.io">Akka</a>, Play provides predictable and minimal resource consumption for highly-scalable applications.
+        The <a href="http://www.playframework.com/">Play Framework</a> with the <a href="https://github.com/zalando/play-swagger/">Play-Swagger</a> plugin make it easy to build restful web services from a Swagger API specification as the single source of truth. Play is based on a lightweight, stateless, web-friendly architecture. Built on <a href="http://akka.io">Akka</a>, Play provides predictable and minimal resource consumption for highly-scalable applications.  The Play-Swagger plugin takes Swagger API definitions and treats them as the single source of truth of your rest services.
     </p>
     <p>
-        This tutorial introduces you to the essentials of your new Play application.
+        Play-Swagger supports round-trip regeneration and compilation of:
+    </p>
+    <ul>
+        <li>Play routes definitions (unmanaged).</li>
+        <li>Swagger domain model definitions and parameters onto Scala case classes (unmanaged).</li>
+        <li>Swagger domain model constraints onto Play validations (unmanaged).</li>
+        <li>Generators for random test data generation of parameter values (unmanaged).</li>
+        <li>Unit tests for validating the service at API boundary (unmanaged).</li>
+        <li>Swagger path definitions onto skeletons for Play controller implementations (managed). </li>
+    </ul>
+    <p>
+        Unmannaged in the list above means that the code does not need to be managed by you, the programmer of the rest service. The plugin takes your swagger API definition as the single source of truth and will regenerate the code in a consistent manner.  You'll instead be focusing on implementing the services' business logic in a managed Play controller class which is generated once, or regenerated if it can not be found.
     </p>
 </div>
 
