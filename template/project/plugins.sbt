@@ -1,4 +1,4 @@
-resolvers += "zalando-bintray" at "https://dl.bintray.com/zalando/sbt-plugins/de.zalando"
+resolvers += Resolver.url("sbt-plugins", url("http://dl.bintray.com/zalando/sbt-plugins"))(Resolver.ivyStylePatterns)
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.3")
 
