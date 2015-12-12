@@ -1,0 +1,14 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET         /spec/:name     controllers.Swagger.swaggerSpec(name: String)
+
+GET         /               controllers.Assets.versioned(path="/public/swagger", file: Asset = "index.html")
+
+GET         /index.html     controllers.Assets.versioned(path="/public/swagger", file: Asset = "index.html")
+
+GET         /api/*file      controllers.Assets.versioned(path="/public/swagger", file: Asset)
+
+->          /echo/          echo.yaml.Routes
+

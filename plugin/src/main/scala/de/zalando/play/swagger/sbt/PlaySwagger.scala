@@ -109,20 +109,27 @@ object PlaySwagger extends AutoPlugin {
     val outputDirectory = (target in swagger).value
 
     // Read the detailed scaladoc for syncIncremental to see how it works
-    val (swaggerProducts, swaggerErrors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
+    val (products, errors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
+
+      val genRevRoutes = RoutesCompiler.autoImport.generateReverseRouter.value
+
+      val namespaceRevRoutes = RoutesCompiler.autoImport.namespaceReverseRouter.value
 
       val routesImport = RoutesCompiler.autoImport.routesImport.value
 
       val results = tasksToRun.map { task =>
         task -> Try {
-          SwaggerCompiler.compileSpec(task, outputDirectory, routesImport, keyPrefix.value)
+          Set(
+            SwaggerCompiler.compileSpec(task, outputDirectory, routesImport, keyPrefix.value),
+            SwaggerCompiler.compileConf(task, outputDirectory, routesImport, keyPrefix.value)
+          )
         }
       }
 
       // Collect the results into a map of task to OpResult for syncIncremental
       val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
         case (task, Success(result)) =>
-          task -> OpSuccess(Set(task.definitionFile), result.allFiles)
+          task -> OpSuccess(Set(task.definitionFile), result.flatMap(_.allFiles))
         case (op, Failure(_)) => op -> OpFailure
       }.toMap
 
@@ -133,39 +140,9 @@ object PlaySwagger extends AutoPlugin {
       (taskResults, errors)
     }
 
-    if (swaggerErrors.nonEmpty) {
-      throw swaggerErrors.head
+    if (errors.nonEmpty) {
+      throw errors.head
     }
-
-    val (confProducts, confErrors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
-
-      val routesImport = RoutesCompiler.autoImport.routesImport.value
-
-      val results = tasksToRun.map { task =>
-        task -> Try {
-          SwaggerCompiler.compileConf(task, outputDirectory, routesImport, keyPrefix.value)
-        }
-      }
-
-      // Collect the results into a map of task to OpResult for syncIncremental
-      val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
-        case (task, Success(result)) =>
-          task -> OpSuccess(Set(task.definitionFile), result.allFiles)
-        case (op, Failure(_)) => op -> OpFailure
-      }.toMap
-
-      // Collect the errors for our own error reporting
-      val errors = results.collect {
-        case (_, Failure(e)) => e
-      }
-      (taskResults, errors)
-    }
-
-    if (confErrors.nonEmpty) {
-      throw confErrors.head
-    }
-
-    val products = swaggerProducts ++ confProducts
 
     // Return all the files that were or have in the past been compiled
     products.to[Seq]
