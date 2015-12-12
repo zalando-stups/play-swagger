@@ -1,4 +1,6 @@
-val PlayVersion = "2.4.3"
+import bintray.Keys._
+
+val PlayVersion  = "2.4.3"
 val ScalaVersion = "2.11.7"
 
 // This is the API project, it gets added to the runtime dependencies of any
@@ -81,14 +83,19 @@ lazy val root = (project in file("."))
   )
   .aggregate(api, compiler, plugin)
 
-def common: Seq[Setting[_]] = Seq(
+def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   organization := "de.zalando",
+  version      := "0.1.0",
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
     //Resolver.bintrayRepo("slavaschmidt","maven")
     Resolver.mavenLocal
-  )
+  ),
+  licenses                       += ("MIT", url("http://opensource.org/licenses/MIT")),
+  publishMavenStyle              := false,
+  repository in bintray          := "sbt-plugins",
+  bintrayOrganization in bintray := Some("zalando")
 )
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60
