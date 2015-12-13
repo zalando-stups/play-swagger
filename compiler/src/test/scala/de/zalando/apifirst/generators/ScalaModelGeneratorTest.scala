@@ -19,7 +19,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
   describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {
-      new ScalaGenerator(Map.empty[Reference, Domain.Type]).model("test") mustBe ""
+      new ScalaGenerator(Map.empty[Reference, Domain.Type]).model("test.scala") mustBe ""
     }
 
     it("should generate single type alias for an option") {
@@ -27,10 +27,11 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Opti" -> Opt(Lng(None), None),
         "definitions" / "Stri" -> Opt(Str(None, None), None)
       )
-      new ScalaGenerator(model).model("test") mustBeAs
+      new ScalaGenerator(model).model("test.scala") mustBeAs
         """package test
-          |object definitions {
-          |
+          |package object scala {
+          |import java.util.Date
+          |import java.io.File
           |type Opti = Option[Long]
           |type Stri = Option[String]
           |}
@@ -43,10 +44,11 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Option" -> Opt(Lng(None), None),
         "definitions" / "String" -> Opt(Str(None, None), None)
       )
-      new ScalaGenerator(model).model("overloaded") mustBeAs
+      new ScalaGenerator(model).model("overloaded.txt") mustBeAs
         """package overloaded
-          |object definitions {
-          |
+          |package object txt {
+          |import java.util.Date
+          |import java.io.File
           |type Option = Option[Long]
           |type String = Option[String]
           |}
@@ -59,10 +61,11 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Dbl" -> Arr(Dbl(None), None),
         "definitions" / "Flt" -> Arr(Flt(None), None)
       )
-      new ScalaGenerator(model).model("test") mustBeAs
+      new ScalaGenerator(model).model("test.scala") mustBeAs
         """package test
-          |object definitions {
-          |
+          |package object scala {
+          |import java.util.Date
+          |import java.io.File
           |type Int = scala.collection.Seq[Int]
           |type Dbl = scala.collection.Seq[Double]
           |type Flt = scala.collection.Seq[Float]
@@ -74,10 +77,11 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "parameters" / "all" -> CatchAll(Bool(None), None)
       )
-      new ScalaGenerator(model).model("test") mustBeAs
+      new ScalaGenerator(model).model("test.scala") mustBeAs
         """package test
-          |object parameters {
-          |
+          |package object scala {
+          |import java.util.Date
+          |import java.io.File
           |type All = scala.collection.immutable.Map[String, Boolean]
           |}
           | """
@@ -87,7 +91,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "paths" / "/" / "get" / "responses" / "200" -> Null(None)
       )
-      new ScalaGenerator(model).model("test") mustBeAs
+      new ScalaGenerator(model).model("test.scala") mustBeAs
         """"""
     }
 
@@ -99,11 +103,14 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "User" -> TypeDef("definitions" / "User", fields, None)
       )
-      new ScalaGenerator(model).model("test") mustBeAs
+      new ScalaGenerator(model).model("test.scala") mustBeAs
         """package test
-          |object definitions {
-          |
-          |case class User(name: String, id: Long)
+          |package object scala {
+          |import java.util.Date
+          |import java.io.File
+          |case class User(name: String,
+          |id: Long
+          |)
           |}
           | """
     }
@@ -113,10 +120,11 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "OptionalData" -> Opt(TypeRef("definitions" / "Passwords"), None),
         "definitions" / "Passwords" -> Arr(Password(None), None, None)
       )
-      new ScalaGenerator(model).model("test") mustBeAs
+      new ScalaGenerator(model).model("test.scala") mustBeAs
         """package test
-          |object definitions {
-          |
+          |package object scala {
+          |import java.util.Date
+          |import java.io.File
           |type OptionalData = Option[Passwords]
           |type Passwords = scala.collection.Seq[String]
           |}
@@ -160,21 +168,38 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       val strictModel = StrictModel(Nil, model, Map.empty, discriminators, "")
 
-      val result = new ScalaGenerator(strictModel).model("test")
+      val result = new ScalaGenerator(strictModel).model("test.scala")
 
       result mustBeAs
         """package test
-          |object definitions {
-          |
+          |package object scala {
+          |import java.util.Date
+          |import java.io.File
           |trait IPet {
           |    def name: String
           |    def petType: String
           |}
-          |case class Cat(name: String, petType: String, huntingSkill: String) extends IPet
-          |case class Dog(name: String, petType: String, packSize: Int) extends IPet
-          |case class CatNDog(name: String, petType: String, packSize: Int, huntingSkill: String) extends IPet
-          |case class Pet(name: String, petType: String) extends IPet
-          |case class Labrador(name: String, petType: String, packSize: Int, cuteness: Int) extends IPet
+          |case class Cat(name: String,
+          |petType: String,
+          |huntingSkill: String
+          |) extends IPet
+          |case class Dog(name: String,
+          |petType: String,
+          |packSize: Int
+          |) extends IPet
+          |case class CatNDog(name: String,
+          |petType: String,
+          |packSize: Int,
+          |huntingSkill: String
+          |) extends IPet
+          |case class Pet(name: String,
+          |petType: String
+          |) extends IPet
+          |case class Labrador(name: String,
+          |petType: String,
+          |packSize: Int,
+          |cuteness: Int
+          |) extends IPet
           |}
           | """
     }
@@ -193,12 +218,18 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
             Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)
       )
-      new ScalaGenerator(model).model("test") mustBeAs
+      new ScalaGenerator(model).model("test.scala") mustBeAs
         """package test
-          |object definitions {
-          |
-          |case class ErrorModel(message: String, code: Int)
-          |case class ExtendedErrorModel(message: String, code: Int, rootCause: String)
+          |package object scala {
+          |import java.util.Date
+          |import java.io.File
+          |case class ErrorModel(message: String,
+          |code: Int
+          |)
+          |case class ExtendedErrorModel(message: String,
+          |code: Int,
+          |rootCause: String
+          |)
           |}
           | """
     }

@@ -144,7 +144,10 @@ object TypeDeduplicator extends TypeAnalyzer {
   private def sortByDiscriminatorOrPathLength(discriminators: DiscriminatorLookupTable,
                                               duplicates: TypeLookupTable): List[Reference] =
     duplicates.toSeq.sortBy { p =>
-      val factor = if (discriminators.keySet.contains(p._2.name)) 1 else 1000
+      val factor =
+        if (discriminators.keySet.contains(p._2.name)) 1
+        else if (p._1.pointer.tokens.contains("responses")) 100000
+        else 100
       p._1.pointer.tokens.size * factor
     }.map(_._1).toList
 

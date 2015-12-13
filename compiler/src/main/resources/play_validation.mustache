@@ -26,17 +26,25 @@ import PlayValidations._
             {{#fields}}
             new {{&validation_name}}(instance.{{&field_name}}){{^last}}, {{/last}}⮐
             {{/fields}}
-        )
+        ) ++ Seq(
+            {{#container_fields}}
+                instance.{{&field_name}}.toSeq map { new {{&validation_name}}(_)}{{^last}}, {{/last}}
+            {{/container_fields}}
+        ).flatten
         }
     {{/validations}}
 
     {{#call_validations}}
-    class {{& validation_name }}({{#fields}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/fields}}) extends RecursiveValidator {
+    class {{& validation_name }}({{#all_fields}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/all_fields}}) extends RecursiveValidator {
     override val validators = Seq(
     {{#fields}}
         new {{&validation_name}}({{&field_name}}){{^last}}, {{/last}}⮐
     {{/fields}}
-    )
+    )  ++ Seq(
+        {{#container_fields}}
+            {{&field_name}}.toSeq map { new {{&validation_name}}(_)}{{^last}}, {{/last}}
+        {{/container_fields}}
+        ).flatten
     }
     {{/call_validations}}
 {{/packages}}

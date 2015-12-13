@@ -35,7 +35,10 @@ object SwaggerCompiler {
 
   private def compileSwagger(task: SwaggerCompilationTask, outputDir: File)(implicit flatAst: StrictModel) = {
     val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "../../../../" + controllerDir)
-    val artifacts     = new ScalaGenerator(flatAst).generate(task.definitionFile.getName) zip places
+    val generator     = new ScalaGenerator(flatAst)
+    val currentCtrlr  = readFile(outputDir, fullFileName(task, places.last))
+    val (code, imports) = generator.analyzeController(currentCtrlr)
+    val artifacts     = generator.generate(task.definitionFile.getName, code, imports) zip places
     val persister     = persist(task, outputDir) _
     val swaggerFiles  = artifacts map { persister.tupled } map { Seq(_) }
     swaggerFiles
@@ -48,7 +51,7 @@ object SwaggerCompiler {
     val playRules     = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList
     val playTask      = RoutesCompilerTask(task.definitionFile, allImports, forwardsRouter = true, reverseRouter = true, namespaceReverseRouter = false)
     val generated     = task.generator.generate(playTask, playNameSpace, playRules)
-    val routesFiles   = generated map writeToFile(outputDir, writeOver = true).tupled
+    val routesFiles   = generated map writeToFile(outputDir).tupled
     routesFiles
   }
 
@@ -63,16 +66,27 @@ object SwaggerCompiler {
 
   def persist(task: SwaggerCompilationTask, outputDir: File)
               (content: String, directory: String)(implicit ast: StrictModel) = {
-    val writeOver = ! directory.contains(controllerDir)
-    val modelFileName = directory + task.definitionFile.getName + ".scala"
-    writeToFile(outputDir, writeOver)(modelFileName, content)
+    val fileName: String = fullFileName(task, directory)
+    writeToFile(outputDir)(fileName, content)
   }
 
-  def writeToFile(outputDir: File, writeOver: Boolean) = (filename: String, content: String) => {
+  def fullFileName(task: SwaggerCompilationTask, directory: String): String = {
+    val fileName = directory + task.definitionFile.getName + ".scala"
+    fileName
+  }
+
+  def writeToFile(outputDir: File) = (filename: String, content: String) => {
     val file = new File(outputDir, filename)
-    if (writeOver || !file.exists())
-      FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
+    FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
     file
+  }
+
+  def readFile(outputDir: File, fileName: String) = {
+    val file = new File(outputDir, fileName)
+    if (file.exists() && file.canRead)
+      FileUtils.readFileToString(file)
+    else
+      ""
   }
 }
 
