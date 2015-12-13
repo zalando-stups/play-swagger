@@ -85,7 +85,7 @@ lazy val root = (project in file("."))
 
 def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   organization := "de.zalando",
-  version      := "0.1.2",
+  version      := "0.1.3",
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
