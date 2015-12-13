@@ -493,8 +493,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
     private def containerParam(name: String) =
       "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."
 
-    private def fullPath(namespace: String, pathSuffix: String) =
-      namespace + (if (pathSuffix == "/") "" else pathSuffix)
+    private def fullPath(namespace: String, pathSuffix: String) = namespace + pathSuffix
 
   }
 
