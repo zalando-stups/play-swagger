@@ -28,25 +28,25 @@ import java.net.URLEncoder
             def testInvalidInput(input: (PetsGetTags, PetsGetLimit)) = {
 
                 val (tags, limit) = input
-                val url = s"""/api/pets?tags=${tags.map { i => URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&limit=${limit.map { i => URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-
-                val path = route(FakeRequest(GET, url)).get
+                val url = s"""/api/pets?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+                val headers = Seq()
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
                 val errors = new PetsGetValidator(tags, limit).errors
 
 
-                lazy val validations = errors map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
                 ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= 200,
+                    status(path) ?= BAD_REQUEST ,
                     contentType(path) ?= Some("application/json"),
-                    validations.nonEmpty ?= true,
+                    errors.nonEmpty ?= true,
                     all(validations:_*)
                 )
             }
             def testValidInput(input: (PetsGetTags, PetsGetLimit)) = {
 
                 val (tags, limit) = input
-                val url = s"""/api/pets?tags=${tags.map { i => URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&limit=${limit.map { i => URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+                val url = s"""/api/pets?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
                 val path = route(FakeRequest(GET, url)).get
                 ("given an URL: [" + url + "]") |: (status(path) ?= OK)
             }
@@ -84,27 +84,27 @@ import java.net.URLEncoder
             def testInvalidInput(pet: NewPet) = {
 
                 val url = s"""/api/pets"""
-
-                val body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
-                val path = route(FakeRequest(POST, url).withBody(body)).get
+                val headers = Seq()
+                val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
                 val errors = new PetsPostValidator(pet).errors
 
 
-                lazy val validations = errors map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given an URL: [" + url + "]" + "and body [" + body + "]") |: all(
-                    status(path) ?= 200,
+                ("given an URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
+                    status(path) ?= BAD_REQUEST ,
                     contentType(path) ?= Some("application/json"),
-                    validations.nonEmpty ?= true,
+                    errors.nonEmpty ?= true,
                     all(validations:_*)
                 )
             }
             def testValidInput(pet: NewPet) = {
 
-                val body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
+                val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
                 val url = s"""/api/pets"""
-                val path = route(FakeRequest(POST, url).withBody(body)).get
-                ("given an URL: [" + url + "]"+ " and body [" + body + "]") |: (status(path) ?= OK)
+                val path = route(FakeRequest(POST, url).withBody(parsed_pet)).get
+                ("given an URL: [" + url + "]"+ " and body [" + parsed_pet + "]") |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
                 val genInputs = for {
@@ -136,17 +136,17 @@ import java.net.URLEncoder
             def testInvalidInput(id: Long) = {
 
                 val url = s"""/api/pets/${id}"""
-
-                val path = route(FakeRequest(GET, url)).get
+                val headers = Seq()
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
                 val errors = new PetsIdGetValidator(id).errors
 
 
-                lazy val validations = errors map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
                 ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= 200,
+                    status(path) ?= BAD_REQUEST ,
                     contentType(path) ?= Some("application/json"),
-                    validations.nonEmpty ?= true,
+                    errors.nonEmpty ?= true,
                     all(validations:_*)
                 )
             }
@@ -186,17 +186,17 @@ import java.net.URLEncoder
             def testInvalidInput(id: Long) = {
 
                 val url = s"""/api/pets/${id}"""
-
-                val path = route(FakeRequest(DELETE, url)).get
+                val headers = Seq()
+                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
                 val errors = new PetsIdDeleteValidator(id).errors
 
 
-                lazy val validations = errors map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
                 ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= 200,
+                    status(path) ?= BAD_REQUEST ,
                     contentType(path) ?= Some("application/json"),
-                    validations.nonEmpty ?= true,
+                    errors.nonEmpty ?= true,
                     all(validations:_*)
                 )
             }

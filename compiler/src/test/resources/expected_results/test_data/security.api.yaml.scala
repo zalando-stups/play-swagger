@@ -1,48 +1,79 @@
 package security.api.yaml
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
+import java.util.Date
+import java.io.File
 
 object definitionsGenerator {
-    import definitions.{ErrorModel, Pet, PetTag}
     def createPetTagGenerator = _generate(PetTagGenerator)
-    val PetTagGenerator = Gen.option(arbitrary[String])
+
+    def PetTagGenerator = Gen.option(arbitrary[String])
+
     def createErrorModelGenerator = _generate(ErrorModelGenerator)
+
     def createPetGenerator = _generate(PetGenerator)
-    val ErrorModelGenerator =
+
+    def ErrorModelGenerator =
+
         for {
+
         code <- arbitrary[Int]
+
         message <- arbitrary[String]
+
         } yield ErrorModel(code, message)
+
     
-    val PetGenerator =
+
+    def PetGenerator =
+
         for {
+
         name <- arbitrary[String]
+
         tag <- PetTagGenerator
+
         } yield Pet(name, tag)
+
     
+
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 
     def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
+
         keys <- Gen.containerOf[List,K](keyGen)
+
         values <- Gen.containerOfN[List,V](keys.size, valGen)
+
     } yield keys.zip(values).toMap
+
 }
 object pathsGenerator {
-    import definitions.{ErrorModel, Pet}
-    import paths.{PetsIdGetId, PetsIdGetResponses200Opt}
     import definitionsGenerator.{ErrorModelGenerator, PetGenerator}
     def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
+
     def createPetsIdGetResponsesDefaultGenerator = _generate(PetsIdGetResponsesDefaultGenerator)
+
     def createPetsIdGetResponses200Generator = _generate(PetsIdGetResponses200Generator)
+
     def createPetsIdGetResponses200OptGenerator = _generate(PetsIdGetResponses200OptGenerator)
-    val PetsIdGetIdGenerator = Gen.containerOf[List,String](arbitrary[String])
-    val PetsIdGetResponsesDefaultGenerator = Gen.option(ErrorModelGenerator)
-    val PetsIdGetResponses200Generator = Gen.option(PetsIdGetResponses200OptGenerator)
-    val PetsIdGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
+
+    def PetsIdGetIdGenerator = Gen.containerOf[List,String](arbitrary[String])
+
+    def PetsIdGetResponsesDefaultGenerator = Gen.option(ErrorModelGenerator)
+
+    def PetsIdGetResponses200Generator = Gen.option(PetsIdGetResponses200OptGenerator)
+
+    def PetsIdGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
+
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 
     def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
+
         keys <- Gen.containerOf[List,K](keyGen)
+
         values <- Gen.containerOfN[List,V](keys.size, valGen)
+
     } yield keys.zip(values).toMap
+
 }

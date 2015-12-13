@@ -22,7 +22,7 @@ import scala.util._
         private val {{&response_mime_type_name}}    = "{{&response_mime_type_value}}"
         private val {{&action_success_status_name}} = Status({{&action_success_status_value}})
 
-        private type {{&action_request_type}}       = ({{#validations}}{{#fields}}{{&field_type}}{{^last}}, {{/last}}{{/fields}}{{/validations}}{{^validations}}Unit{{/validations}})
+        private type {{&action_request_type}}       = ({{#validations}}{{#all_fields}}{{&field_type}}{{^last}}, {{/last}}{{/all_fields}}{{/validations}}{{^validations}}Unit{{/validations}})
         private type {{&action_result_type}}        = {{&action_result_type_value}}
         private type {{&action_type}}              = {{&action_request_type}} => Try[{{&action_result_type}}]
 
@@ -45,8 +45,8 @@ import scala.util._
             val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
                 {{#validations?}}
                 {{#validations}}
-                    new {{&validation_name}}({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}).errors match {
-                        case e if e.isEmpty => {{&process_valid_request}}(f)(({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}))
+                    new {{&validation_name}}({{#all_fields}}{{&field_name}}{{^last}}, {{/last}}{{/all_fields}}).errors match {
+                        case e if e.isEmpty => {{&process_valid_request}}(f)(({{#all_fields}}{{&field_name}}{{^last}}, {{/last}}{{/all_fields}}))
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{&response_mime_type_name}})
                             BadRequest(l)

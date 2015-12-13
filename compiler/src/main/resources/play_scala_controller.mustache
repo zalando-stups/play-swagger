@@ -2,11 +2,13 @@
 {{!package {{&main_package}}
 {{!main_package}}
 
-import play.api.mvc.{Action, Controller}
-import play.api.data.validation.Constraint
-import de.zalando.play.controllers._
-import PlayBodyParsing._
-import PlayValidations._
+{{#controller_imports}}
+import {{&name}}
+{{/controller_imports}}
+
+{{#unmanaged_imports}}
+import {{&name}}
+{{/unmanaged_imports}}
 
 {{#packages}}
 {{#controllers}}
@@ -19,16 +21,17 @@ package {{&main_package}} {
 {{!imports}}
 
     class {{&controller}} extends {{&base}} {
-        {{#methods}}
-        val {{&method}} = {{&action}} {
+    {{#methods}}
+        {{&signature}}
             {{#parameters?}}
             input: ({{#parameters}}{{&type}}{{^last}}, {{/last}}{{/parameters}}) =>
-            val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input
+            val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input⮐
             {{/parameters?}}
-            {{#single_parameter?}}({{&name}}: {{&type}}) =>{{/single_parameter?}}⮐
-            ???
-        }
-        {{/methods}}
+            {{#single_parameter?}}({{&name}}: {{&type}}) =>⮐{{/single_parameter?}}
+            {{&implementation}}
+            {{&dead_code}}
+        } {{&comment}}
+    {{/methods}}
     }
 }
 
