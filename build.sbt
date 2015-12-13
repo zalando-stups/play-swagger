@@ -90,7 +90,9 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   autoScalaLibrary := true,
   resolvers ++= Seq(
     //Resolver.bintrayRepo("slavaschmidt","maven")
-    Resolver.mavenLocal
+    Resolver.mavenLocal,
+    "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
+    "jackson-json-reference" at "https://dl.bintray.com/slavaschmidt/maven"
   ),
   licenses                       += ("MIT", url("http://opensource.org/licenses/MIT")),
   publishMavenStyle              := false,
