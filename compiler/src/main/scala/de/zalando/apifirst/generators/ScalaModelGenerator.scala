@@ -72,7 +72,7 @@ class ScalaGenerator(val strictModel: StrictModel)
   private def apply(fileName: String, templateName: String, suffix: String,
                     unmanagedParts: Map[ApiCall, UnmanagedPart] = Map.empty, unmanagedImports: Seq[String] = Seq.empty): String = {
     val packages = Map(
-      "main_package" -> fileName,
+      "main_package" -> fileName.split('.').map(escape).mkString("."),
       "main_package_prefix" -> fileName.split('.').init.mkString("."),
       "main_package_suffix" -> fileName.split('.').last,
       "spec_name" -> escape(capitalize("\\.", fileName) + testsSuffix)
