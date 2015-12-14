@@ -58,7 +58,8 @@ import java.net.URLEncoder
                     val parsed_{{&body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{&expected_result_type}}").writeValueAsString({{&body_parameter_name}})
                 {{/body?}}
                 val url = {{&full_url}}
-                val path = route(FakeRequest({{verb_name}}, url){{#body?}}.withBody(parsed_{{&body_parameter_name}}){{/body?}}).get
+                val headers = Seq({{#headers}}"{{&name}}" -> {{&name}}{{/headers}})
+                val path = route(FakeRequest({{verb_name}}, url).withHeaders(headers:_*){{#body?}}.withBody(parsed_{{&body_parameter_name}}){{/body?}}).get
                 ("given an URL: [" + url + "]"{{#body?}}+ " and body [" + parsed_{{&body_parameter_name}} + "]"{{/body?}}) |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
