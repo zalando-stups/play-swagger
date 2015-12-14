@@ -32,7 +32,7 @@ class ScalaPlayTestsGeneratorIntegrationTest extends FunSpec with MustMatchers w
       val flatAst     = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
       val scalaTests  = new ScalaGenerator(flatAst).tests(file.getName)
       val expected    = asInFile(file, "scala")
-      //if (expected.isEmpty)
+      if (expected.isEmpty)
         dump(scalaTests, file, "scala")
       clean(scalaTests) mustBe clean(expected)
     }
