@@ -566,7 +566,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
               Map(
                 "field_name" -> escape(f.name.simple),
                 "validation_name" -> useType(validation, validatorsSuffix, ""),
-                "last" -> (i == t.fields.size - 1)
+                "last" -> (i == fields.size - 1)
               )
             },
             "container_fields" -> containerFields.zipWithIndex.map { case (f, i) =>
@@ -574,7 +574,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
               Map(
                 "field_name" -> escape(f.name.simple),
                 "validation_name" -> useType(validation, validatorsSuffix, ""),
-                "last" -> (i == t.fields.size - 1)
+                "last" -> (i == containerFields.size - 1)
               )
             }
           ))

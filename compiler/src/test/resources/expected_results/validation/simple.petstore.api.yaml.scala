@@ -74,17 +74,17 @@ class NewPetTagConstraints(override val instance: String) extends ValidationBase
         override val validators = Seq(
             new PetIdValidator(instance.id), 
 
-            new PetNameValidator(instance.name), 
+            new PetNameValidator(instance.name)
 
             ) ++ Seq(
-            instance.tag.toSeq map { new NewPetTagValidator(_)}, ).flatten
+            instance.tag.toSeq map { new NewPetTagValidator(_)}).flatten
         }
     class NewPetValidator(instance: NewPet) extends RecursiveValidator {
         override val validators = Seq(
-            new NewPetNameValidator(instance.name), 
+            new NewPetNameValidator(instance.name)
 
             ) ++ Seq(
-            instance.id.toSeq map { new NewPetIdValidator(_)}, instance.tag.toSeq map { new NewPetTagValidator(_)}, ).flatten
+            instance.id.toSeq map { new NewPetIdValidator(_)}, instance.tag.toSeq map { new NewPetTagValidator(_)}).flatten
         }
     class PetsIdDeleteResponses204Constraints(override val instance: Null) extends ValidationBase[Null] {
         override def constraints: Seq[Constraint[Null]] =
