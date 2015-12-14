@@ -47,7 +47,8 @@ import java.net.URLEncoder
 
                 val (tags, limit) = input
                 val url = s"""/api/pets?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val path = route(FakeRequest(GET, url)).get
+                val headers = Seq()
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
                 ("given an URL: [" + url + "]") |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
@@ -103,7 +104,8 @@ import java.net.URLEncoder
 
                 val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
                 val url = s"""/api/pets"""
-                val path = route(FakeRequest(POST, url).withBody(parsed_pet)).get
+                val headers = Seq()
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
                 ("given an URL: [" + url + "]"+ " and body [" + parsed_pet + "]") |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
@@ -153,7 +155,8 @@ import java.net.URLEncoder
             def testValidInput(id: Long) = {
 
                 val url = s"""/api/pets/${id}"""
-                val path = route(FakeRequest(GET, url)).get
+                val headers = Seq()
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
                 ("given an URL: [" + url + "]") |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
@@ -203,7 +206,8 @@ import java.net.URLEncoder
             def testValidInput(id: Long) = {
 
                 val url = s"""/api/pets/${id}"""
-                val path = route(FakeRequest(DELETE, url)).get
+                val headers = Seq()
+                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
                 ("given an URL: [" + url + "]") |: (status(path) ?= OK)
             }
             "discard invalid data" in new WithApplication {
