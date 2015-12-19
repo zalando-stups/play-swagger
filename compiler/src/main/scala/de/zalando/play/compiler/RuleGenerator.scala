@@ -1,10 +1,10 @@
 package de.zalando.play.compiler
 
-import de.zalando.apifirst.Application.{StrictModel, ApiCall}
+import de.zalando.apifirst.Application.{ApiCall, StrictModel}
 import de.zalando.apifirst.ParameterPlace
-import de.zalando.apifirst.Path.{InPathParameter, Segment, Root}
-import play.routes.compiler._
 import de.zalando.apifirst.ScalaName._
+import de.zalando.apifirst.new_naming.{Path, Reference}
+import play.routes.compiler._
 
 /**
   * @author  slasch 
@@ -21,7 +21,8 @@ object RuleGenerator {
     val handlerCall = HandlerCall(packageName(call), call.handler.controller, call.handler.instantiate,
       call.handler.method, Some(parameters2parameters(call)))
 
-    val path = PathPattern(path2path(call))
+    val path = convertPath(call.path)
+
     val comments = List.empty
     Route(verb, path, handlerCall, comments)
   }
@@ -39,27 +40,38 @@ object RuleGenerator {
     params
   }
 
-  def path2path(call: ApiCall)(implicit model: StrictModel): Seq[PathPart] = {
-    val result = call.path.value.flatMap {
-      case Root => Some(StaticPart(Root.value))
-      case s : Segment => Some(StaticPart(s.value + Root.value))
-      case p : InPathParameter =>
-        val pRef = call.handler.parameters.find(_.simple == p.simple).get
-        val param = model.findParameter(pRef)
-        Some(DynamicPart(p.value, param.constraint, param.encode))
-    }.dropWhile(_ == StaticPart(Root.value))
-    // oh my
-    result match {
-      case head :: StaticPart(name) :: StaticPart(Root.value) :: Nil  =>
-        head :: StaticPart(name) :: Nil
-      case head :: StaticPart(name) :: Nil if name.nonEmpty =>
-        head :: StaticPart(name.init) :: Nil
-      case StaticPart(name) :: StaticPart(Root.value) :: Nil  =>
-        StaticPart(name) :: Nil
-      case StaticPart(name) :: Nil if name.nonEmpty =>
-        StaticPart(name.init) :: Nil
-      case _ => result
-    }
+  /**
+    * See `RuleGeneratorTest` for Play path conversion rules:
+    * @param path   a path to convert
+    * @param model  the model used to look up parameters
+    * @return
+    */
+  def convertPath(path: Path)(implicit model: StrictModel): PathPattern = {
+    val playParts = path.ref.parts.foldLeft(Seq.empty[PathPart]) { case (url, current) => url match {
+      case Nil => Seq(convertSingle(current))
+      case head :: tail => head match {
+        case StaticPart(value) if ! Path.pathParam(current) =>
+          convertSingle(value + "/" + current) :: tail
+        case StaticPart(value) => convertSingle(current) :: convertSingle(value + "/") :: tail
+        case DynamicPart(name, constraint, encode) if ! Path.pathParam(current) =>
+          convertSingle("/" + current) :: head :: tail
+        case DynamicPart(name, constraint, encode) =>
+          convertSingle(current) :: StaticPart("/") :: head :: tail
+      }
+
+    }}
+    if (playParts == Seq(StaticPart(""))) PathPattern(Nil) else PathPattern(playParts.reverse)
   }
 
+  private def convertSingle(part: String)(implicit model: StrictModel): PathPart =
+    if (Path.pathParam(part)) {
+      val name = Path.strip(part)
+      val (constraint, encode) = model.findParameter(Reference(name)) match {
+        case Some(param) => (param.constraint, param.encode)
+        case None => ("""[^/]+""", true)
+      }
+      DynamicPart(name, constraint, encode)
+    } else {
+      StaticPart(part)
+    }
 }

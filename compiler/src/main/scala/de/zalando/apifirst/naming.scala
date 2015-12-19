@@ -2,8 +2,6 @@ package de.zalando.apifirst
 
 import java.net.URI
 
-import de.zalando.apifirst.Application.StrictModel
-import de.zalando.apifirst.Domain.ProvidedType
 import de.zalando.apifirst.new_naming.Reference
 import de.zalando.apifirst.new_naming.dsl.NameDsl
 
@@ -21,8 +19,10 @@ object new_naming {
     def deref(jstr: String) = Reference(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
   }
 
-  implicit def uriToReference(uri: URI): Reference = {
-    Reference(Option(uri.getFragment).map(_.split("/").mkString(Reference.delimiter)).getOrElse(""))
+  implicit def uriToReference(uri: URI): Reference = uriFragmentToReference(uri.getFragment)
+
+  def uriFragmentToReference(fragment: String): Reference = {
+    Reference(Option(fragment).map(_.split("/").mkString(Reference.delimiter)).getOrElse(""))
   }
   object dsl {
     import scala.language.implicitConversions
@@ -53,18 +53,52 @@ object new_naming {
   object Reference {
     val delimiter = "⌿"
     val root: Reference = Reference(List.empty)
-    def apply(base: String, s: String): Reference = parse(s)
+    def apply(base: String, s: String): Reference = parse(s, delimiter)
     def apply(base: String, s: Reference): Reference = s
-    def apply(s: String): Reference = parse(s)
+    def fromUrl(url: String): Reference = parse(url, "/")
+    def apply(ref: String): Reference = parse(ref, delimiter)
     def apply()         : Reference = Reference.root
-    private def parse(s: String) = {
-      val normalized = s.dropWhile(_.toString == delimiter).split(delimiter, -1).toList
+    private def parse(s: String, delim: String) = {
+      val normalized = s.dropWhile(_.toString == delim).split(delim, -1).toList
       val parts = if (normalized.length == 1 && normalized.head.isEmpty) List.empty else normalized
-//      require(!parts.exists(_.isEmpty), "empty names are not allowed: " + parts.mkString("[", ",", "]"))
       Reference(parts)
     }
   }
+
+  case class Path(private val reference: Reference) {
+    val ref = reference match {
+      case Reference(Nil) => Reference(List(""))
+      case Reference(parts) => Reference(parts map clean)
+    }
+    private def sep(c: Char) = c == '/'
+    val asPlay = (ref.parts map Path.toString(":", "")).mkString("/", "/", "")
+    lazy val asSwagger = ref.parts.mkString("/", "/", "")
+    val interpolated = (ref.parts map Path.toString("${", "}")).mkString("/", "/", "")
+    val asMethod = {
+      val newParts = ref.parts map { p => Path.toString("By", "", s => s.capitalize)(p).replace('-','_') }
+      val method = newParts.mkString
+      if (method.nonEmpty) method.head.toLower + method.tail else method
+    }
+    def prepend(prefix: String) = if (prefix != null) Path(ref.prepend(clean(prefix))) else this
+    def /(suffix: String) = if (suffix != null && suffix.nonEmpty) Path(ref / clean(suffix)) else this
+    private def clean(prefix: String) =
+      if (prefix != null && prefix.nonEmpty) prefix.dropWhile(sep).reverse.dropWhile(sep).reverse else prefix
+    def map[That](f: String => That) = ref.parts.map(f)
+    def nonEmpty = ref.parts.nonEmpty
+    def last = ref.parts.last
+  }
+
+  object Path {
+    def apply(s: String):Path = Path(Reference.fromUrl(s))
+    def pathParam(part: String) = part != null && part.nonEmpty && part.startsWith("{") && part.endsWith("}")
+    def strip(part: String) = if (pathParam(part)) part.tail.dropRight(1) else part
+    def toString(prefix: String, suffix: String, transform: String => String = identity)(part: String) =
+      if (pathParam(part)) s"$prefix${transform(strip(part))}$suffix" else transform(part)
+
+  }
 }
+
+
 
 /**
   * Represents scala name converted from the ast pointer
@@ -108,7 +142,7 @@ case class ScalaName(ref: Reference) {
   import ScalaName._
   val parts = ref.parts.flatMap(_.split("/").filter(_.nonEmpty)) match {
     case Nil =>
-      throw new IllegalArgumentException("At least one part required to construct a name")
+      throw new IllegalArgumentException(s"At least one part required to construct a name, but got $ref")
     case single :: Nil => "" :: removeVars(single) :: Nil
     case many => many.map(removeVars)
   }
@@ -123,8 +157,6 @@ case class ScalaName(ref: Reference) {
       if (prefix.trim.isEmpty) (withSuffix, capitalize _) else (prefix :: withSuffix, camelize _)
     escape(caseTransformer("/", withPrefix.mkString("/")))
   }
-
-//   def fullyDereference(implicit m: StrictModel) = m.findType(ref).fullAlias // TODO tightly coupled with Type
 
   def methodName = escape(camelize("/", parts.last))
   def names = (packageName, className, methodName)
