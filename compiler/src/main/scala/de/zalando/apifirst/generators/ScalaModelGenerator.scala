@@ -1,12 +1,11 @@
 package de.zalando.apifirst.generators
 
-import de.zalando.apifirst.Application.{ParameterRef, ApiCall, StrictModel}
-import de.zalando.apifirst.Path.InPathParameter
-import de.zalando.apifirst.{ParameterPlace, Domain}
+import de.zalando.apifirst.Application.{ApiCall, ParameterRef, StrictModel}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.new_naming.Reference
-import org.fusesource.scalate.{TemplateSource, TemplateEngine}
+import de.zalando.apifirst.{Domain, ParameterPlace}
+import org.fusesource.scalate.{TemplateEngine, TemplateSource}
 
 /**
   * @author  slasch 
@@ -72,7 +71,7 @@ class ScalaGenerator(val strictModel: StrictModel)
   private def apply(fileName: String, templateName: String, suffix: String,
                     unmanagedParts: Map[ApiCall, UnmanagedPart] = Map.empty, unmanagedImports: Seq[String] = Seq.empty): String = {
     val packages = Map(
-      "main_package" -> fileName,
+      "main_package" -> fileName.split('.').map(escape).mkString("."),
       "main_package_prefix" -> fileName.split('.').init.mkString("."),
       "main_package_suffix" -> fileName.split('.').last,
       "spec_name" -> escape(capitalize("\\.", fileName) + testsSuffix)
@@ -398,7 +397,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         val namespace = if (strictModel.basePath == "/") "" else strictModel.basePath
         Map(
           "verb_name" -> call.verb.name,
-          "full_path" -> fullPath(namespace, call.path.toString),
+          "full_path" -> call.path.prepend(namespace).asSwagger,
           "full_url" -> fullUrl(namespace, call),
           "validation_name" -> useType(call.asReference, validatorsSuffix, ""),
           "body?" -> bodyParameter(call),
@@ -465,7 +464,6 @@ trait PlayScalaControllersGenerator extends ImportSupport {
 
 
     private def fullUrl(namespace: String, call: ApiCall) = {
-      val pathSuffix = call.path.string { p: InPathParameter => "${" + p.value + "}" }
       val query = call.handler.parameters.filter { p =>
         strictModel.findParameter(p).place == ParameterPlace.QUERY
       } map { p =>
@@ -473,7 +471,8 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         singleQueryParam(param.name, param.typeName)
       }
       val fullQuery = if (query.isEmpty) "" else query.mkString("?", "&", "")
-      "s\"\"\"" +  fullPath(namespace, pathSuffix) + fullQuery + "\"\"\""
+      val url = call.path.prepend(namespace).interpolated
+      "s\"\"\"" + url + fullQuery + "\"\"\""
     }
 
     private def singleQueryParam(name: String, typeName: Type): String = typeName match {
@@ -492,9 +491,6 @@ trait PlayScalaControllersGenerator extends ImportSupport {
     }
     private def containerParam(name: String) =
       "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."
-
-    private def fullPath(namespace: String, pathSuffix: String) = namespace + pathSuffix
-
   }
 
   trait PlayValidatorsGenerator extends ImportSupport {

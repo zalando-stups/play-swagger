@@ -5,7 +5,7 @@ import java.net.URI
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef, ApiCall, HandlerCall}
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst._
-import Path.FullPath
+import de.zalando.apifirst.new_naming.{Path, Reference}
 import de.zalando.swagger.strictModel._
 
 /**
@@ -27,13 +27,13 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
       verb              <- verbFromOperationName(operationName)
       operation         = path.operation(operationName)
       namePrefix        = base / "paths" / url / operationName
+      astPath           = uriFragmentToReference(url)
       params            = parameters(path, operation, namePrefix)
-      astPath           = Path.path2path(url, params)
       handlerCall       <- handler(operation, path, params, operationName, astPath).toSeq
       results           = resultTypes(namePrefix, operation)
       (mimeIn, mimeOut) = mimeTypes(operation)
       errMappings       = errorMappings(path, operation)
-    } yield ApiCall(verb, astPath, handlerCall, mimeIn, mimeOut, errMappings, results)
+    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, results)
   }
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
@@ -89,24 +89,24 @@ trait HandlerGenerator extends StringUtil {
   def keyPrefix: String
   def model: SwaggerModel
   def definitionFileName: Option[String]
-  def handler(operation: Operation, path: PathItem, params: Seq[Application.ParameterRef], verb: String, callPath: FullPath): Option[HandlerCall] = for {
-    handlerText <- getOrGenerateHandlerLine(operation, path, verb, callPath)
+  def handler(operation: Operation, path: PathItem, params: Seq[Application.ParameterRef], verb: String, url: Reference): Option[HandlerCall] = for {
+    handlerText <- getOrGenerateHandlerLine(operation, path, verb, url)
     parseResult = HandlerParser.parse(handlerText)
     handler <- if (parseResult.successful) Some(parseResult.get) else None
   } yield handler.copy(parameters = params, packageName = packageFromFilename.getOrElse(handler.packageName))
 
-  private def getOrGenerateHandlerLine(operation: Operation, path: PathItem, verb: String, callPath: FullPath): Option[String] =
+  private def getOrGenerateHandlerLine(operation: Operation, path: PathItem, verb: String, callPath: Reference): Option[String] =
     operation.vendorExtensions.get(s"$keyPrefix-handler") orElse
       path.vendorExtensions.get(s"$keyPrefix-handler").map(_ + ScalaName.capitalize("/", verb)) orElse
       generateHandlerLine(operation, callPath, verb)
 
-  private def generateHandlerLine(operation: Operation, path: FullPath, verb: String): Option[String] = {
+  private def generateHandlerLine(operation: Operation, path: Reference, verb: String): Option[String] = {
     /*model.vendorExtensions.get(s"$keyPrefix-package") orElse*/ packageFromFilename map { pkg =>
       val controller = definitionFileName map { ScalaName.capitalize("\\.", _) } getOrElse {
         throw new IllegalStateException(s"The definition file name must be defined in order to use '$keyPrefix-package' directive")
       }
       val method = Option(operation.operationId).map(ScalaName.camelize(" ", _)) getOrElse {
-        verb.toLowerCase + ScalaName.capitalize("/", path.string("by/" + _.value).replace('-','_'))
+        verb.toLowerCase + Path(path).asMethod
       }
       s"$pkg.$controller.$method"
     }

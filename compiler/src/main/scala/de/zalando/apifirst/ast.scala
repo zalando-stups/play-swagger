@@ -1,8 +1,7 @@
 package de.zalando.apifirst
 
-import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.apifirst.new_naming.{Reference, TypeName}
+import de.zalando.apifirst.new_naming.{Path, Reference, TypeName}
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -64,20 +63,14 @@ object Domain {
   trait PrimitiveType
 
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
-    import ScalaName._
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
     def toShortString(pad: String) = getClass.getSimpleName
     def alias = imports.headOption.getOrElse(name.simple)
-/*
-    def fullAlias(implicit m: StrictModel): String =
-      imports.headOption.map { _ + "[" + name.fullyDereference + "]" } getOrElse name.simple // FIXME won't work with MAP
-    // FIXME this should not depend on the model, move somewhere else
-*/
   }
   
   case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None)) {
-    override def toShortString(pad: String) = s"${super.toShortString(pad)}(${name})"
+    override def toShortString(pad: String) = s"${super.toShortString(pad)}($name)"
   }
   
   abstract class ProvidedType(name: String, override val meta: TypeMeta)
@@ -123,9 +116,6 @@ object Domain {
    * It is different from the Container because it
    * has more than one underlying Type
    *
-   * @param name
-   * @param meta
-   * @param descendants
    */
   abstract class Composite(override val name: TypeName,
                            override val meta: TypeMeta,
@@ -154,13 +144,9 @@ object Domain {
   }
 
   /**
-    * Container is just a wrapper for another single type with some unique properties
+   * Container is just a wrapper for another single type with some unique properties
    *
-    * @param name
-    * @param tpe
-    * @param meta
-    * @param imports
-    */
+   */
   abstract class Container(name: String, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
     extends ProvidedType(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
@@ -209,66 +195,6 @@ object Domain {
 
 }
 
-// TODO should be replaced by References
-object Path {
-
-  import scala.language.{implicitConversions, postfixOps}
-
-  abstract class PathElem(val value: String) extends Expr
-
-  case object Root extends PathElem(value = "/")
-
-  case class Segment(override val value: String) extends PathElem(value)
-
-  case class InPathParameter(val simple: String) extends PathElem(simple)
-
-  case class FullPath(value: Seq[PathElem]) extends Expr {
-    def isAbsolute = value match {
-      case Root :: segments => true
-      case _ => false
-    }
-    override val toString = string { p: InPathParameter => "{" + p.value + "}" }
-    val camelize = string("by/" + _.value).split("/") map { p =>
-      if (p.nonEmpty) p.head.toUpper +: p.tail else p
-    } mkString ""
-
-    def string(inPath2Str: InPathParameter => String) = {
-      value match {
-        case Nil => ""
-        case Root :: Nil => "/"
-        case other => other map {
-          case Root => ""
-          case Segment(v) => v
-          case i: InPathParameter => inPath2Str(i)
-        } mkString "/"
-      }
-    }
-
-  }
-
-  object FullPath {
-    def is(elements: PathElem*): FullPath = FullPath(elements.toList)
-  }
-
-  def path2path(path: String, parameters: Seq[Application.ParameterRef]): FullPath = {
-    def path2segments(path: String, parameters: Seq[Application.ParameterRef]) = {
-      path.trim split Root.value map {
-        case seg if seg.startsWith("{") && seg.endsWith("}") =>
-          val name = seg.tail.init
-          parameters.find(_.simple == name) map { p => InPathParameter(p.name.simple) }
-        case seg if seg.nonEmpty =>
-          Some(Segment(seg))
-        case seg if seg.isEmpty =>
-          Some(Root)
-      }
-    }
-    val segments = path2segments(path, parameters).toList.flatten
-    val elements = if (path.endsWith("/")) segments :+ Root else segments
-    FullPath(elements)
-  }
-
-}
-
 case object ParameterPlace extends Enumeration {
   type ParameterPlace = Value
   val PATH    = Value("path")
@@ -304,14 +230,14 @@ object Application {
 
   case class ApiCall(
     verb:             Http.Verb,
-    path:             Path.FullPath,
+    path:             Path,
     handler:          HandlerCall,
     mimeIn:           Set[MimeType],  // can be empty for swagger specification
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
     resultTypes:      Iterable[ParameterRef]
   ) {
-    def asReference = Reference(path.value.map(_.value).toList).prepend("paths") / verb.toString.toLowerCase
+    def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
 
   type ParameterLookupTable     = Map[ParameterRef, Parameter]
