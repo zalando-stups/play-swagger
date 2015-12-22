@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.{JsonProperty, JsonAnySetter}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
-import de.zalando.apifirst.new_naming.Pointer
+import de.zalando.apifirst.naming.Pointer
 
 import scala.collection.mutable
 import scala.util.Try

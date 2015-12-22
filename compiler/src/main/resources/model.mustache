@@ -7,7 +7,6 @@ import java.util.Date
 import java.io.File
 
 {{#packages}}
-{{!object {{&package}}
     {{#imports}}
     import {{&name}}
     {{/imports}}
@@ -19,13 +18,13 @@ import java.io.File
     {{#traits}}
     trait I{{& name}} {⮐
     {{#fields}}
-        def {{&name}}: {{&typeName}}⮐
+        def {{&name}}: {{&type_name}}⮐
     {{/fields}}
     }⮐
     {{/traits}}
 
     {{#classes}}
-    case class {{& name }}({{#fields}}{{&name}}: {{&typeName}}{{^last}}, {{/last}}⮐{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
+    case class {{& name }}({{#fields}}{{&name}}: {{&type_name}}{{^last}}, {{/last}}{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
     {{/classes}}⮐
 {{/packages}}
 }

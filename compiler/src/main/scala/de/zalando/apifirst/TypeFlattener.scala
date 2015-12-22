@@ -2,25 +2,112 @@ package de.zalando.apifirst
 
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.new_naming.Reference
+import de.zalando.apifirst.naming.Reference
 
 import scala.annotation.tailrec
 import scala.language.reflectiveCalls
+
+object TypeNormaliser {
+  val flatten = ParameterDereferencer.apply _ andThen TypeDeduplicator.apply andThen TypeFlattener.apply andThen TypeDeduplicator.apply
+}
+object TypeDeduplicator extends TypeAnalyzer {
+
+  /**
+    * Removes redundant type definitions changing pointing references
+    *
+    * @param app
+    * @return
+    */
+  private[apifirst] def apply(app: StrictModel): StrictModel = {
+    val types = app.typeDefs.values
+    val equal = (t1: Type, t2: Type) => isSameTypeDef(t1)(t2) && isSameConstraints(t1)(t2)
+    val duplicate = types find { t => types.count(equal(t, _)) > 1 }
+    duplicate map replaceSingle(app) map apply getOrElse app
+  }
+
+  private def replaceSingle(model: StrictModel): Type => StrictModel = tpe => {
+    val duplicates = model.typeDefs.filter { d => isSameTypeDef(tpe)(d._2) }
+    val duplicateNames = sortByDiscriminatorOrPathLength(model.discriminators, duplicates)
+    val bestMatch :: refsToRemove = duplicateNames
+    val typesToRewrite = model.typeDefs filterNot { t => refsToRemove.contains(t._1) }
+    val callsWithCorrectRefs = model.calls map { c => replaceReferenceInCall(refsToRemove, bestMatch)(c) }
+    val typesWithCorrectRefs = typesToRewrite map { d => replaceReferencesInTypes(refsToRemove, bestMatch)(d._1, d._2) }
+    val newParams = model.params map replaceReferenceInParameter(refsToRemove, bestMatch)
+    model.copy(typeDefs = typesWithCorrectRefs, params = newParams, calls = callsWithCorrectRefs)
+  }
+
+  private def replaceReferenceInCall(duplicateRefs: Seq[Reference], target: Reference): ApiCall => ApiCall = call => {
+    val (resultTypesToReplace, resultTypesToHold) = call.resultTypes.partition { t => duplicateRefs.contains(t.name) }
+    val resultTypesReplacement = resultTypesToReplace map { tr =>
+      ParameterRef(target)
+    }
+    val resultTypes = resultTypesToHold ++ resultTypesReplacement
+    call.copy(resultTypes = resultTypes)
+  }
+
+  private def replaceReferencesInTypes(duplicateRefs: Seq[Reference], target: Reference):
+  (Reference, Type) => (Reference, Type) = (ref, tpe) => ref -> {
+    tpe match {
+      case c: Container =>
+        c.tpe match {
+          case r: TypeRef if duplicateRefs.contains(r.name) => c.withType(TypeRef(target))
+          case o => c
+        }
+
+      case c: Composite =>
+        val newDescendants = c.descendants map {
+          case d: TypeRef if duplicateRefs.contains(d.name) => TypeRef(target)
+          case o => o
+        }
+        c.withTypes(newDescendants)
+
+      case t: TypeDef =>
+        val newFields = t.fields.map {
+          case f@Field(_, tpe: TypeRef) if duplicateRefs.contains(tpe.name) => f.copy(tpe = TypeRef(target))
+          case o => o
+        }
+        val newName = if (duplicateRefs.contains(t.name)) target else t.name
+        t.copy(name = newName, fields = newFields)
+
+      case n: TypeRef if duplicateRefs.contains(n.name) => TypeRef(target)
+
+      case _ => tpe
+    }
+  }
+
+  private def replaceReferenceInParameter(duplicateRefs: Seq[Reference], target: Reference):
+  ((ParameterRef, Parameter)) => (ParameterRef, Parameter) = {
+    case (r: ParameterRef, p: Parameter) if duplicateRefs.contains(p.typeName.name) =>
+      r -> p.copy(typeName = TypeRef(target))
+    case o => o
+  }
+
+  private def sortByDiscriminatorOrPathLength(discriminators: DiscriminatorLookupTable,
+                                              duplicates: TypeLookupTable): List[Reference] =
+    duplicates.toSeq.sortBy { p =>
+      val factor =
+        if (discriminators.keySet.contains(p._2.name)) 1
+        else if (p._1.pointer.tokens.contains("responses")) 100000
+        else 100
+      p._1.pointer.tokens.size * factor
+    }.map(_._1).toList
+
+}
 
 /**
   * Flattens types by recursively replacing nested type definitions with references
   *
   * This implementation relies on {@ParameterDereferencer} to extract all non-primitive types from parameter definitions
   *
-  * Because of that, the {@ParameterDereferencer} MUST be applied before using {@TypeFlattener},
+  * Because of that, the {@ParameterDereferencer} MUST be applied before using `TypeFlattener`,
   * otherwise results will be inconsistent parameter definitions
   *
-  * @author  slasch 
+  * @author  slasch
   * @since   11.11.2015.
   */
 object TypeFlattener extends TypeAnalyzer {
 
-  def apply(app: StrictModel): StrictModel = {
+  private[apifirst] def apply(app: StrictModel): StrictModel = {
     val flatTypeDefs = flatten0(app.typeDefs)
     app.copy(typeDefs = flatTypeDefs)
   }
@@ -70,89 +157,6 @@ object TypeFlattener extends TypeAnalyzer {
 
 }
 
-object TypeDeduplicator extends TypeAnalyzer {
-
-  /**
-    * Removes redundant type definitions changing pointing references
-    *
-    * @param app
-    * @return
-    */
-  def apply(app: StrictModel): StrictModel = {
-    val types = app.typeDefs.values
-    val equal = (t1: Type, t2: Type) => isSameTypeDef(t1)(t2) && isSameConstraints(t1)(t2)
-    val duplicate = types find { t => types.count(equal(t, _)) > 1 }
-    duplicate map replaceSingle(app) map apply getOrElse app
-  }
-
-  private def replaceSingle(model: StrictModel): Type => StrictModel = tpe => {
-    val duplicates = model.typeDefs.filter { d => isSameTypeDef(tpe)(d._2) }
-    val duplicateNames = sortByDiscriminatorOrPathLength(model.discriminators, duplicates)
-    val bestMatch :: refsToRemove = duplicateNames
-    val typesToRewrite = model.typeDefs filterNot { t => refsToRemove.contains(t._1) }
-    val callsWithCorrectRefs = model.calls map { c => replaceReferenceInCall(refsToRemove, bestMatch)(c) }
-    val typesWithCorrectRefs = typesToRewrite map { d => replaceReferencesInTypes(refsToRemove, bestMatch)(d._1, d._2) }
-    val newParams = model.params map replaceReferenceInParameter(refsToRemove, bestMatch)
-    model.copy(typeDefs = typesWithCorrectRefs, params = newParams, calls = callsWithCorrectRefs)
-  }
-
-  private def replaceReferenceInCall(duplicateRefs: Seq[Reference], target: Reference): ApiCall => ApiCall = call => {
-    val (resultTypesToReplace, resultTypesToHold) = call.resultTypes.partition { t => duplicateRefs.contains(t.name) }
-    val resultTypesReplacement = resultTypesToReplace map { tr =>
-      ParameterRef(target)
-    }
-    val resultTypes = resultTypesToHold ++ resultTypesReplacement
-    call.copy(resultTypes = resultTypes)
-  }
-
-  private def replaceReferencesInTypes(duplicateRefs: Seq[Reference], target: Reference):
-  (Reference, Type) => (Reference, Type) = (ref, tpe) => ref -> {
-    tpe match {
-      case c: Container =>
-        c.tpe match {
-          case r: TypeRef if duplicateRefs.contains(r.name) => c.withType(TypeRef(target))
-          case o => c
-        }
-
-      case c: Composite =>
-        val newDescendants = c.descendants map {
-          case d: TypeRef if duplicateRefs.contains(d.name) => TypeRef(target)
-          case o => o
-        }
-        c.withTypes(newDescendants)
-
-      case t: TypeDef =>
-        val newFields = t.fields.map {
-          case f@Field(_, tpe: TypeRef) if duplicateRefs.contains(tpe.name) => f.copy(tpe = TypeRef(target))
-          case o => o
-        }
-        t.copy(fields = newFields)
-
-      case n: TypeRef if duplicateRefs.contains(n) => TypeRef(target)
-
-      case _ => tpe
-    }
-  }
-
-  private def replaceReferenceInParameter(duplicateRefs: Seq[Reference], target: Reference):
-  ((ParameterRef, Parameter)) => (ParameterRef, Parameter) = {
-    case (r: ParameterRef, p: Parameter) if duplicateRefs.contains(p.typeName.name) =>
-      r -> p.copy(typeName = TypeRef(target))
-    case o => o
-  }
-
-  private def sortByDiscriminatorOrPathLength(discriminators: DiscriminatorLookupTable,
-                                              duplicates: TypeLookupTable): List[Reference] =
-    duplicates.toSeq.sortBy { p =>
-      val factor =
-        if (discriminators.keySet.contains(p._2.name)) 1
-        else if (p._1.pointer.tokens.contains("responses")) 100000
-        else 100
-      p._1.pointer.tokens.size * factor
-    }.map(_._1).toList
-
-}
-
 object ParameterDereferencer extends TypeAnalyzer {
   /**
     * Converts inline type definitions into type references
@@ -160,7 +164,7 @@ object ParameterDereferencer extends TypeAnalyzer {
     * @return
     */
   @tailrec
-  def apply(app: StrictModel): StrictModel = {
+  private[apifirst] def apply(app: StrictModel): StrictModel = {
     var result = app
     result.params foreach { case (name, definition) =>
       definition.typeName match {
