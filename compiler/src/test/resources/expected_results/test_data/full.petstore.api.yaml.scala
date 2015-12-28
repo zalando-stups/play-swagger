@@ -4,10 +4,24 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object definitionsGenerator {
-    def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
+object Generators {
+def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
+
+    def createStringGenerator = _generate(StringGenerator)
+
+    def createNullGenerator = _generate(NullGenerator)
+
+    def createUsersCreateWithListPostBodyOptGenerator = _generate(UsersCreateWithListPostBodyOptGenerator)
 
     def createOrderPetIdGenerator = _generate(OrderPetIdGenerator)
+
+    def createPetsFindByStatusGetResponses200Generator = _generate(PetsFindByStatusGetResponses200Generator)
+
+    def createPetsPostBodyGenerator = _generate(PetsPostBodyGenerator)
+
+    def createUsersUsernamePutBodyGenerator = _generate(UsersUsernamePutBodyGenerator)
+
+    def createStoresOrderPostBodyGenerator = _generate(StoresOrderPostBodyGenerator)
 
     def createOrderStatusGenerator = _generate(OrderStatusGenerator)
 
@@ -15,17 +29,39 @@ object definitionsGenerator {
 
     def createOrderCompleteGenerator = _generate(OrderCompleteGenerator)
 
+    def createLongGenerator = _generate(LongGenerator)
+
     def createPetTagsOptGenerator = _generate(PetTagsOptGenerator)
+
+    def createPetsFindByStatusGetResponses200OptGenerator = _generate(PetsFindByStatusGetResponses200OptGenerator)
 
     def createPetCategoryGenerator = _generate(PetCategoryGenerator)
 
     def createOrderShipDateGenerator = _generate(OrderShipDateGenerator)
 
+    def createUsersCreateWithListPostBodyGenerator = _generate(UsersCreateWithListPostBodyGenerator)
+
+    def createPetsFindByStatusGetStatusGenerator = _generate(PetsFindByStatusGetStatusGenerator)
+
     def createPetPhotoUrlsGenerator = _generate(PetPhotoUrlsGenerator)
 
     def OrderQuantityGenerator = Gen.option(arbitrary[Int])
 
+    def StringGenerator = arbitrary[String]
+
+    def NullGenerator = arbitrary[Null]
+
+    def UsersCreateWithListPostBodyOptGenerator = Gen.containerOf[List,User](UserGenerator)
+
     def OrderPetIdGenerator = Gen.option(arbitrary[Long])
+
+    def PetsFindByStatusGetResponses200Generator = Gen.option(PetsFindByStatusGetResponses200OptGenerator)
+
+    def PetsPostBodyGenerator = Gen.option(PetGenerator)
+
+    def UsersUsernamePutBodyGenerator = Gen.option(UserGenerator)
+
+    def StoresOrderPostBodyGenerator = Gen.option(OrderGenerator)
 
     def OrderStatusGenerator = Gen.option(arbitrary[String])
 
@@ -33,11 +69,19 @@ object definitionsGenerator {
 
     def OrderCompleteGenerator = Gen.option(arbitrary[Boolean])
 
+    def LongGenerator = arbitrary[Long]
+
     def PetTagsOptGenerator = Gen.containerOf[List,Tag](TagGenerator)
+
+    def PetsFindByStatusGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
 
     def PetCategoryGenerator = Gen.option(TagGenerator)
 
     def OrderShipDateGenerator = Gen.option(arbitrary[Date])
+
+    def UsersCreateWithListPostBodyGenerator = Gen.option(UsersCreateWithListPostBodyOptGenerator)
+
+    def PetsFindByStatusGetStatusGenerator = Gen.option(PetPhotoUrlsGenerator)
 
     def PetPhotoUrlsGenerator = Gen.containerOf[List,String](arbitrary[String])
 
@@ -49,138 +93,39 @@ object definitionsGenerator {
 
     def createPetGenerator = _generate(PetGenerator)
 
-    def UserGenerator =
-
-        for {
-
+    def UserGenerator = for {
         email <- OrderStatusGenerator
-
         username <- OrderStatusGenerator
-
         userStatus <- OrderQuantityGenerator
-
         lastName <- OrderStatusGenerator
-
         firstName <- OrderStatusGenerator
-
         id <- OrderPetIdGenerator
-
         phone <- OrderStatusGenerator
-
         password <- OrderStatusGenerator
-
         } yield User(email, username, userStatus, lastName, firstName, id, phone, password)
 
-    
-
-    def OrderGenerator =
-
-        for {
-
+    def OrderGenerator = for {
         shipDate <- OrderShipDateGenerator
-
         quantity <- OrderQuantityGenerator
-
         petId <- OrderPetIdGenerator
-
         id <- OrderPetIdGenerator
-
         complete <- OrderCompleteGenerator
-
         status <- OrderStatusGenerator
-
         } yield Order(shipDate, quantity, petId, id, complete, status)
 
-    
-
-    def TagGenerator =
-
-        for {
-
+    def TagGenerator = for {
         id <- OrderPetIdGenerator
-
         name <- OrderStatusGenerator
-
         } yield Tag(id, name)
 
-    
-
-    def PetGenerator =
-
-        for {
-
+    def PetGenerator = for {
         name <- arbitrary[String]
-
         tags <- PetTagsGenerator
-
         photoUrls <- PetPhotoUrlsGenerator
-
         id <- OrderPetIdGenerator
-
         status <- OrderStatusGenerator
-
         category <- PetCategoryGenerator
-
         } yield Pet(name, tags, photoUrls, id, status, category)
-
-    
-
-    def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
-}
-object pathsGenerator {
-    import definitionsGenerator._
-    def createUsersUsernameGetUsernameGenerator = _generate(UsersUsernameGetUsernameGenerator)
-
-    def createUsersCreateWithListPostResponsesDefaultGenerator = _generate(UsersCreateWithListPostResponsesDefaultGenerator)
-
-    def createUsersCreateWithListPostBodyOptGenerator = _generate(UsersCreateWithListPostBodyOptGenerator)
-
-    def createPetsFindByStatusGetResponses200Generator = _generate(PetsFindByStatusGetResponses200Generator)
-
-    def createPetsPostBodyGenerator = _generate(PetsPostBodyGenerator)
-
-    def createUsersUsernamePutBodyGenerator = _generate(UsersUsernamePutBodyGenerator)
-
-    def createStoresOrderPostBodyGenerator = _generate(StoresOrderPostBodyGenerator)
-
-    def createPetsFindByTagsGetResponses200OptGenerator = _generate(PetsFindByTagsGetResponses200OptGenerator)
-
-    def createPetsPetIdDeletePetIdGenerator = _generate(PetsPetIdDeletePetIdGenerator)
-
-    def createUsersCreateWithListPostBodyGenerator = _generate(UsersCreateWithListPostBodyGenerator)
-
-    def createPetsFindByStatusGetStatusGenerator = _generate(PetsFindByStatusGetStatusGenerator)
-
-    def UsersUsernameGetUsernameGenerator = arbitrary[String]
-
-    def UsersCreateWithListPostResponsesDefaultGenerator = arbitrary[Null]
-
-    def UsersCreateWithListPostBodyOptGenerator = Gen.containerOf[List,User](UserGenerator)
-
-    def PetsFindByStatusGetResponses200Generator = Gen.option(PetsFindByTagsGetResponses200OptGenerator)
-
-    def PetsPostBodyGenerator = Gen.option(PetGenerator)
-
-    def UsersUsernamePutBodyGenerator = Gen.option(UserGenerator)
-
-    def StoresOrderPostBodyGenerator = Gen.option(OrderGenerator)
-
-    def PetsFindByTagsGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
-
-    def PetsPetIdDeletePetIdGenerator = arbitrary[Long]
-
-    def UsersCreateWithListPostBodyGenerator = Gen.option(UsersCreateWithListPostBodyOptGenerator)
-
-    def PetsFindByStatusGetStatusGenerator = Gen.option(PetPhotoUrlsGenerator)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

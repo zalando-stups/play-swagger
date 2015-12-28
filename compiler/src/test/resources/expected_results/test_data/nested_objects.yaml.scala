@@ -4,8 +4,8 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object definitionsGenerator {
-    def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)
+object Generators {
+def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)
 
     def createNestedObjectsNestedNested2Nested3BottomGenerator = _generate(NestedObjectsNestedNested2Nested3BottomGenerator)
 
@@ -31,57 +31,26 @@ object definitionsGenerator {
 
     def createNestedObjectsNestedNested2Generator = _generate(NestedObjectsNestedNested2Generator)
 
-    def NestedObjectsNestedOptGenerator =
-
-        for {
-
+    def NestedObjectsNestedOptGenerator = for {
         nested2 <- NestedObjectsNestedNested2Generator
-
         } yield NestedObjectsNestedOpt(nested2)
 
-    
-
-    def NestedObjectsNestedNested2Nested3OptGenerator =
-
-        for {
-
+    def NestedObjectsNestedNested2Nested3OptGenerator = for {
         bottom <- NestedObjectsNestedNested2Nested3BottomGenerator
-
         } yield NestedObjectsNestedNested2Nested3Opt(bottom)
 
-    
-
-    def NestedObjectsGenerator =
-
-        for {
-
+    def NestedObjectsGenerator = for {
         plain <- NestedObjectsPlainGenerator
-
         nested <- NestedObjectsNestedGenerator
-
         } yield NestedObjects(plain, nested)
 
-    
-
-    def NestedObjectsPlainOptGenerator =
-
-        for {
-
+    def NestedObjectsPlainOptGenerator = for {
         simple <- arbitrary[String]
-
         } yield NestedObjectsPlainOpt(simple)
 
-    
-
-    def NestedObjectsNestedNested2Generator =
-
-        for {
-
+    def NestedObjectsNestedNested2Generator = for {
         nested3 <- NestedObjectsNestedNested2Nested3Generator
-
         } yield NestedObjectsNestedNested2(nested3)
-
-    
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

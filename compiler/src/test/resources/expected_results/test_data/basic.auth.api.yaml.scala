@@ -4,10 +4,10 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object pathsGenerator {
-    def createGetResponses200Generator = _generate(GetResponses200Generator)
+object Generators {
+def createNullGenerator = _generate(NullGenerator)
 
-    def GetResponses200Generator = arbitrary[Null]
+    def NullGenerator = arbitrary[Null]
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

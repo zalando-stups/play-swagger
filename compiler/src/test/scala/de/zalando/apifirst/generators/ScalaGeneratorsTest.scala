@@ -3,8 +3,8 @@ package de.zalando.apifirst.generators
 import de.zalando.apifirst.Application.{TypeLookupTable, StrictModel, DiscriminatorLookupTable}
 import de.zalando.apifirst.Domain
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.new_naming.Reference
-import de.zalando.apifirst.new_naming.dsl._
+import de.zalando.apifirst.naming.Reference
+import de.zalando.apifirst.naming.dsl._
 import org.scalatest.{FunSpec, MustMatchers}
 
 import scala.language.implicitConversions
@@ -27,13 +27,14 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "definitions" / "Opti" -> Opt(Lng(None), None),
         "definitions" / "Stri" -> Opt(Str(None, None), None)
       )
-      new ScalaGenerator(model).generators("test") mustBeAs
-        """package test
+      val result = new ScalaGenerator(model).generators("test.yaml")
+      result mustBeAs
+        """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object definitionsGenerator {
+          |object Generators {
           |   def createOptiGenerator = _generate(OptiGenerator)
           |   def createStriGenerator = _generate(StriGenerator)
           |   def OptiGenerator = Gen.option(arbitrary[Long])
@@ -52,13 +53,13 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "definitions" / "Option" -> Opt(Lng(None), None),
         "definitions" / "String" -> Opt(Str(None, None), None)
       )
-      new ScalaGenerator(model).generators("overloaded") mustBeAs
-        """package overloaded
+      new ScalaGenerator(model).generators("overloaded.yaml") mustBeAs
+        """package overloaded.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object definitionsGenerator {
+          |object Generators {
           |   def createOptionGenerator = _generate(OptionGenerator)
           |   def createStringGenerator = _generate(StringGenerator)
           |   def OptionGenerator = Gen.option(arbitrary[Long])
@@ -77,13 +78,13 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "definitions" / "Dbl" -> Arr(Dbl(None), None),
         "definitions" / "Flt" -> Arr(Flt(None), None)
       )
-      new ScalaGenerator(model).generators("test") mustBeAs
-        """package test
+      new ScalaGenerator(model).generators("test.yaml") mustBeAs
+        """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object definitionsGenerator {
+          |object Generators {
           |   def createIntGenerator = _generate(IntGenerator)
           |   def createDblGenerator = _generate(DblGenerator)
           |   def createFltGenerator = _generate(FltGenerator)
@@ -102,13 +103,13 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       val model = Map(
         "parameters" / "all" -> CatchAll(Bool(None), None)
       )
-      new ScalaGenerator(model).generators("test") mustBeAs
-        """package test
+      new ScalaGenerator(model).generators("test.yaml") mustBeAs
+        """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object parametersGenerator {
+          |object Generators {
           |   def createAllGenerator = _generate(AllGenerator)
           |   def AllGenerator = _genMap[String,Boolean](arbitrary[String], arbitrary[Boolean])
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
@@ -121,18 +122,22 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
 
     it("should generate single type alias for top-level primitive type") {
       val model = Map(
-        "paths" / "/" / "get" / "responses" / "200" -> Null(None)
+        "paths" / "/" / "get" / "responses" / "200" -> Null(None),
+        "paths" / "/" / "put" / "responses" / "200" -> Null(None)
       )
-      new ScalaGenerator(model).generators("test") mustBeAs
+      val result = new ScalaGenerator(model).generators("test.yaml")
+      result mustBeAs
         """|
-          |package test
+          |package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object pathsGenerator {
-          |def createGetResponses200Generator = _generate(GetResponses200Generator)
-          | def GetResponses200Generator = arbitrary[Null]
+          |object Generators {
+          |def createNullGenerator = _generate(NullGenerator)
+          |def createNullNameClashGenerator = _generate(NullNameClashGenerator)
+          |def NullGenerator = arbitrary[Null]
+          |def NullNameClashGenerator = arbitrary[Null]
           | def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
           | def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
           |   keys <- Gen.containerOf[List,K](keyGen)
@@ -149,16 +154,16 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "User" -> TypeDef("definitions" / "User", fields, None)
       )
-      new ScalaGenerator(model).generators("test") mustBeAs
-        """package test
+      val result = new ScalaGenerator(model).generators("test.yaml")
+      result mustBeAs
+        """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object definitionsGenerator {
+          |object Generators {
           |   def createUserGenerator = _generate(UserGenerator)
-          |   def UserGenerator =
-          |     for {
+          |   def UserGenerator = for {
           |       name <- arbitrary[String]
           |       id <- arbitrary[Long]
           |     } yield User(name, id)
@@ -175,13 +180,15 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "definitions" / "OptionalData" -> Opt(TypeRef("definitions" / "Passwords"), None),
         "definitions" / "Passwords" -> Arr(Password(None), None, None)
       )
-      new ScalaGenerator(model).generators("test") mustBeAs
-        """package test
+      val result = new ScalaGenerator(model).generators("test.yaml")
+
+      result mustBeAs
+        """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object definitionsGenerator {
+          |object Generators {
           |   def createOptionalDataGenerator = _generate(OptionalDataGenerator)
           |   def createPasswordsGenerator = _generate(PasswordsGenerator)
           |   def OptionalDataGenerator = Gen.option(PasswordsGenerator)
@@ -229,46 +236,41 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       val discriminators: DiscriminatorLookupTable = Map(
         "definitions" / "Pet" -> "definitions" / "Pet" / "petType"
       )
-      val result = new ScalaGenerator(model).generators("test")
+      val result = new ScalaGenerator(model).generators("test.yaml")
 
       result mustBeAs
-        s"""package test
+        s"""package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object definitionsGenerator {
+          |object Generators {
           |   def createCatGenerator = _generate(CatGenerator)
           |   def createDogGenerator = _generate(DogGenerator)
           |   def createCatNDogGenerator = _generate(CatNDogGenerator)
           |   def createPetGenerator = _generate(PetGenerator)
           |   def createLabradorGenerator = _generate(LabradorGenerator)
-          |   def CatGenerator =
-          |     for {
+          |   def CatGenerator = for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |       huntingSkill <- arbitrary[String]
           |     } yield Cat(name, petType, huntingSkill)
-          |   def DogGenerator =
-          |     for {
+          |   def DogGenerator = for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |       packSize <- arbitrary[Int]
           |     } yield Dog(name, petType, packSize)
-          |   def CatNDogGenerator =
-          |     for {
+          |   def CatNDogGenerator = for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |       packSize <- arbitrary[Int]
           |       huntingSkill <- arbitrary[String]
           |     } yield CatNDog(name, petType, packSize, huntingSkill)
-          |   def PetGenerator =
-          |     for {
+          |   def PetGenerator = for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |     } yield Pet(name, petType)
-          |   def LabradorGenerator =
-          |     for {
+          |   def LabradorGenerator = for {
           |       name <- arbitrary[String]
           |       petType <- arbitrary[String]
           |       packSize <- arbitrary[Int]
@@ -296,22 +298,22 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
             Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)
       )
-      new ScalaGenerator(model).generators("test") mustBeAs
-        """package test
+      val result = new ScalaGenerator(model).generators("test.yaml")
+
+      result mustBeAs
+        """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
           |import java.util.Date
           |import java.io.File
-          |object definitionsGenerator {
+          |object Generators {
           |   def createErrorModelGenerator = _generate(ErrorModelGenerator)
           |   def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)
-          |   def ErrorModelGenerator =
-          |     for {
+          |   def ErrorModelGenerator = for {
           |       message <- arbitrary[String]
           |       code <- arbitrary[Int]
           |     } yield ErrorModel(message, code)
-          |   def ExtendedErrorModelGenerator =
-          |     for {
+          |   def ExtendedErrorModelGenerator = for {
           |       message <- arbitrary[String]
           |       code <- arbitrary[Int]
           |       rootCause <- arbitrary[String]

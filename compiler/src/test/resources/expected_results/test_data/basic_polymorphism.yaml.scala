@@ -4,8 +4,8 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object definitionsGenerator {
-    def createCatGenerator = _generate(CatGenerator)
+object Generators {
+def createCatGenerator = _generate(CatGenerator)
 
     def createDogGenerator = _generate(DogGenerator)
 
@@ -15,77 +15,36 @@ object definitionsGenerator {
 
     def createLabradorGenerator = _generate(LabradorGenerator)
 
-    def CatGenerator =
-
-        for {
-
+    def CatGenerator = for {
         name <- arbitrary[String]
-
         petType <- arbitrary[String]
-
         huntingSkill <- arbitrary[String]
-
         } yield Cat(name, petType, huntingSkill)
 
-    
-
-    def DogGenerator =
-
-        for {
-
+    def DogGenerator = for {
         name <- arbitrary[String]
-
         petType <- arbitrary[String]
-
         packSize <- arbitrary[Int]
-
         } yield Dog(name, petType, packSize)
 
-    
-
-    def CatNDogGenerator =
-
-        for {
-
+    def CatNDogGenerator = for {
         name <- arbitrary[String]
-
         petType <- arbitrary[String]
-
         packSize <- arbitrary[Int]
-
         huntingSkill <- arbitrary[String]
-
         } yield CatNDog(name, petType, packSize, huntingSkill)
 
-    
-
-    def PetGenerator =
-
-        for {
-
+    def PetGenerator = for {
         name <- arbitrary[String]
-
         petType <- arbitrary[String]
-
         } yield Pet(name, petType)
 
-    
-
-    def LabradorGenerator =
-
-        for {
-
+    def LabradorGenerator = for {
         name <- arbitrary[String]
-
         petType <- arbitrary[String]
-
         packSize <- arbitrary[Int]
-
         cuteness <- arbitrary[Int]
-
         } yield Labrador(name, petType, packSize, cuteness)
-
-    
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

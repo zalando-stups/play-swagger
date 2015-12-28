@@ -4,8 +4,8 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object definitionsGenerator {
-    def createExampleNestedArraysOptArrGenerator = _generate(ExampleNestedArraysOptArrGenerator)
+object Generators {
+def createExampleNestedArraysOptArrGenerator = _generate(ExampleNestedArraysOptArrGenerator)
 
     def createExampleNestedArraysOptGenerator = _generate(ExampleNestedArraysOptGenerator)
 
@@ -45,27 +45,14 @@ object definitionsGenerator {
 
     def createExampleGenerator = _generate(ExampleGenerator)
 
-    def ActivityGenerator =
-
-        for {
-
+    def ActivityGenerator = for {
         actions <- ActivityActionsGenerator
-
         } yield Activity(actions)
 
-    
-
-    def ExampleGenerator =
-
-        for {
-
+    def ExampleGenerator = for {
         messages <- ExampleMessagesGenerator
-
         nestedArrays <- ExampleNestedArraysGenerator
-
         } yield Example(messages, nestedArrays)
-
-    
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

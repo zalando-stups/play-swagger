@@ -4,8 +4,8 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object definitionsGenerator {
-    def createBasicOptionalGenerator = _generate(BasicOptionalGenerator)
+object Generators {
+def createBasicOptionalGenerator = _generate(BasicOptionalGenerator)
 
     def createBasicOptionalNested_optionalGenerator = _generate(BasicOptionalNested_optionalGenerator)
 
@@ -17,25 +17,13 @@ object definitionsGenerator {
 
     def createBasicOptionalOptGenerator = _generate(BasicOptionalOptGenerator)
 
-    def BasicGenerator =
-
-        for {
-
+    def BasicGenerator = for {
         optional <- BasicOptionalGenerator
-
         } yield Basic(optional)
 
-    
-
-    def BasicOptionalOptGenerator =
-
-        for {
-
+    def BasicOptionalOptGenerator = for {
         nested_optional <- BasicOptionalNested_optionalGenerator
-
         } yield BasicOptionalOpt(nested_optional)
-
-    
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

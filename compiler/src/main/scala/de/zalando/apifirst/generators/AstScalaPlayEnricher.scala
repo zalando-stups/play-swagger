@@ -28,9 +28,11 @@ object AstScalaPlayEnricher {
 /**
   * Enriches AST with information needed to generate scala based model
   */
-class ScalaModelEnricher(val app: StrictModel) extends AliasesStep with TraitsStep with ClassesStep with TypesStep {
+class ScalaModelEnricher(val app: StrictModel) extends DataGeneratorsStep with
+  AliasesStep with TraitsStep with ClassesStep with TypesStep {
 
   private val modelTypes = app.typeDefs.toSeq
+
   /**
     * Applies all steps to all types to enrich given denotation table
     *
@@ -60,7 +62,7 @@ trait TypesStep extends EnrichmentStep {
   override def steps = types +: super.steps
 
   private def avoidClashes(table: DenotationTable, name: String)
-                          (names: Iterable[String] = table.values.map(_(COMMON)(TYPE_NAME).toString)): String =
+                          (names: Iterable[String] = table.values.map(_ (COMMON)(TYPE_NAME).toString)): String =
     if (names.exists(_ == name)) avoidClashes(table, name + "NameClash")(names) else name
 
   /**
@@ -70,8 +72,24 @@ trait TypesStep extends EnrichmentStep {
   protected def types: SingleStep = typeDef => table => typeDef match {
     case (ref, t) =>
       val name = avoidClashes(table, typeName(t, ref))()
-      Map(COMMON -> Map(TYPE_NAME -> name))
+      val fields = t match {
+        case c: Composite => dereferenceFields(c).distinct
+        case c: TypeDef => c.fields
+        case _ => Seq.empty[Field]
+      }
+      Map(COMMON -> Map(TYPE_NAME -> name, FIELDS -> fields))
   }
+
+  private def dereferenceFields(t: Composite): Seq[Field] =
+    t.descendants flatMap {
+      case td: TypeDef => td.fields
+      case r: TypeRef => app.findType(r.name) match {
+        case td: TypeDef => td.fields
+        case c: Composite => dereferenceFields(c)
+        case other =>
+          throw new IllegalStateException(s"Unexpected contents of Composite $r: $other")
+      }
+    }
 
   private def typeName(t: Type, r: Reference, suffix: String = "") = t match {
     case TypeRef(ref) => useType(ref, suffix, "")
@@ -97,18 +115,17 @@ trait ClassesStep extends EnrichmentStep {
   protected def classes: SingleStep = typeDef => table => typeDef match {
     case (ref, t: TypeDef) if !ref.simple.contains("AllOf") && !ref.simple.contains("OneOf") =>
       val traitName = app.discriminators.get(ref).map(_ => Map("name" -> typeNameDenotation(table, ref)))
-      Map("classes" -> (typeDefProps(ref, t, t.fields)(table) + ("trait" -> traitName)))
+      Map("classes" -> (typeDefProps(ref, t)(table) + ("trait" -> traitName)))
     case (ref, t: Composite) =>
-      val fields = dereferenceFields(t).distinct
-      Map("classes" -> (typeDefProps(ref, t, fields)(table) + ("trait" -> t.root.map(r => Map("name" -> r.className)))))
+      Map("classes" -> (typeDefProps(ref, t)(table) + ("trait" -> t.root.map(r => Map("name" -> r.className)))))
     case _ => AstScalaPlayEnricher.empty
   }
 
-  protected def typeDefProps(k: Reference, t: Type, fields: Seq[Field])(table: DenotationTable): Map[String, Any] = {
+  protected def typeDefProps(k: Reference, t: Type)(table: DenotationTable): Map[String, Any] = {
     Map(
       "name" -> typeNameDenotation(table, k),
       //      "creator_method" -> useType(k, "", "create"),
-      "fields" -> fields.map { f =>
+      "fields" -> typeFields(table, k).map { f =>
         Map(
           "name" -> escape(f.name.simple),
           //          "generator" -> generatorNameForType(f.tpe),
@@ -118,16 +135,7 @@ trait ClassesStep extends EnrichmentStep {
     )
   }
 
-  private def dereferenceFields(t: Composite): Seq[Field] =
-    t.descendants flatMap {
-      case td: TypeDef => td.fields
-      case r: TypeRef => app.findType(r.name) match {
-        case td: TypeDef => td.fields
-        case c: Composite => dereferenceFields(c)
-        case other =>
-          throw new IllegalStateException(s"Unexpected contents of Composite $r: $other")
-      }
-    }
+
 }
 
 trait TraitsStep extends EnrichmentStep {
@@ -140,16 +148,17 @@ trait TraitsStep extends EnrichmentStep {
     */
   protected def traits: SingleStep = typeDef => table => typeDef match {
     case (ref, t: TypeDef) if app.discriminators.contains(ref) =>
-      Map("traits" -> typeDefProps(ref, t, t.fields)(table))
+      Map("traits" -> typeDefProps(ref, t)(table))
     case _ => AstScalaPlayEnricher.empty
   }
 
-  protected def typeDefProps(k: Reference, t: Type, fields: Seq[Field])(table: DenotationTable): Map[String, Any] // FIXME should be defined only once
+  protected def typeDefProps(k: Reference, t: Type)(table: DenotationTable): Map[String, Any] // FIXME should be defined only once
 }
 
 trait AliasesStep extends EnrichmentStep {
 
   override def steps = aliases +: super.steps
+
   /**
     * Puts type related information into the denotation table
     * @return
@@ -164,10 +173,7 @@ trait AliasesStep extends EnrichmentStep {
   private def aliasProps(k: Reference, v: Container)(table: DenotationTable): Map[String, Any] = {
     Map(
       "name" -> typeNameDenotation(table, k),
-      //      "creator_method" -> useType(k, "", "create"),
       "alias" -> v.alias,
-      //      "generator" -> typeName(v, k),
-      //      "generator_name" -> generatorNameForType(v),
       "underlying_type" -> v.imports.headOption.map { _ => v.nestedTypes.map { t =>
         typeNameDenotation(table, t.name)
       }.mkString(", ")
@@ -176,13 +182,111 @@ trait AliasesStep extends EnrichmentStep {
   }
 }
 
+trait DataGeneratorsStep extends EnrichmentStep {
+
+  override def steps = dataGenerators +: super.steps
+
+  val generatorsSuffix = "Generator"
+
+  /**
+    * Puts data generators related information into the denotation table
+    * @return
+    */
+  protected val dataGenerators: SingleStep = typeDef => table =>
+    generatorProps(typeDef._1, typeDef._2)(table)
+
+  private def generatorProps(ref: Reference, v: Type)(table: DenotationTable): Denotation = v match {
+    case t: Container =>
+      Map("test_data_aliases" -> containerGenerator(ref, t)(table))
+    case t: PrimitiveType =>
+      Map("test_data_aliases" -> containerGenerator(ref, t)(table))
+    case t: TypeDef if ! ref.simple.startsWith("AllOf") =>
+      Map("test_data_classes" -> classGenerator(ref, t)(table))
+    case t: Composite  =>
+      Map("test_data_classes" -> compositeGenerator(ref, t)(table))
+
+    case _ => AstScalaPlayEnricher.empty
+  }
+
+  private def containerGenerator(k: Reference, v: Type)(table: DenotationTable): Map[String, Any] = {
+    Map(
+      GENERATOR_NAME -> generatorNameForType(v, table),
+      "creator_method" -> append(prepend("create", typeNameDenotation(table, k)), generatorsSuffix),
+      "generator" -> append(typeNameDenotation(table, k), generatorsSuffix)
+    )
+  }
+
+  private def classGenerator(k: Reference, v: TypeDef)(table: DenotationTable): Map[String, Any] = {
+    Map(
+      GENERATOR_NAME -> generatorNameForType(v, table),
+      "creator_method" -> append(prepend("create", typeNameDenotation(table, k)), generatorsSuffix),
+      "generator" -> append(typeNameDenotation(table, k), generatorsSuffix),
+      "class_name" -> typeNameDenotation(table, k),
+      "fields" -> typeFields(table, k).map { f =>
+        Map(
+          "name" -> escape(f.name.simple),
+          "generator" -> generatorNameForType(f.tpe, table)
+        )
+      }
+    )
+  }
+
+  private def compositeGenerator(k: Reference, v: Composite)(table: DenotationTable): Map[String, Any] = {
+    Map(
+      GENERATOR_NAME -> generatorNameForType(v, table),
+      "creator_method" -> append(prepend("create", typeNameDenotation(table, k)), generatorsSuffix),
+      "generator" -> append(typeNameDenotation(table, k), generatorsSuffix),
+      "class_name" -> typeNameDenotation(table, k),
+      "fields" -> typeFields(table, k).map { f =>
+        Map(
+          "name" -> escape(f.name.simple),
+          "generator" -> generatorNameForType(f.tpe, table)
+        )
+      }
+    )
+  }
+  private val generatorNameForType: (Type, DenotationTable) => String = {
+    case (s: PrimitiveType, table) => primitiveType(s, table)
+    case (c: Container, table) => containerType(c, table)
+    case (TypeRef(r), table) => append(typeNameDenotation(table, r), generatorsSuffix)
+    case o => s"generator name for $o"
+  }
+
+  private def containerType(c: Container, t: DenotationTable): String = {
+    val innerGenerator = generatorNameForType(c.tpe, t)
+    val className = typeNameDenotation(t, c.tpe.name)
+    c match {
+      case Opt(tpe, _) => s"Gen.option($innerGenerator)"
+      case Arr(tpe, _, _) => s"Gen.containerOf[List,$className]($innerGenerator)"
+      case c@CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
+    }
+  }
+
+  private def primitiveType(tpe: Type, t: DenotationTable) =
+    s"arbitrary[${typeNameDenotation(t, tpe.name)}]"
+
+}
+
+
 object DenotationNames {
   val COMMON = "common"
   val TYPE_NAME = "type_name"
+  val FIELDS = "fields"
+  val GENERATOR_NAME = "generator_name"
 
   def typeNameDenotation(table: DenotationTable, r: Reference): String = {
     table.get(r).map(_ (COMMON)(TYPE_NAME).toString).getOrElse(r.simple)
   }
+
+  def typeFields(table: DenotationTable, r: Reference): Seq[Field] = {
+    table.get(r).map(_ (COMMON)(FIELDS).asInstanceOf[Seq[Field]]).getOrElse(Seq.empty[Field])
+  }
+
+  def prepend(prefix: String, name: String): String =
+    if (name.startsWith("`")) "`" + prefix + name.tail else prefix + name
+
+  def append(name: String, suffix: String): String =
+    if (name.endsWith("`")) name.init + suffix + "`" else name + suffix
 }
 
 object ReShaper {
@@ -194,6 +298,8 @@ object ReShaper {
 object LastListElementMarks {
   def set(d: Map[String, Any]): Map[String, Any] = d map {
     case (ss, tt: Map[String, Any]) => ss -> set(tt)
+    case (ss, l: List[_]) if l.isEmpty || l.head.isInstanceOf[Field] =>
+      ss -> l
     case (ss, l: List[Map[String, Any]]) =>
       val newList: List[Map[String, Any]] =
         l.zipWithIndex map { case (le: Map[String, Any], i: Int) => le.updated("last", i == l.length - 1) }
