@@ -94,15 +94,15 @@ object Domain {
 
   case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta) with PrimitiveType
 
-  case class Date(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta)  with PrimitiveType {
+  case class Date(override val meta: TypeMeta) extends ProvidedType("Date", meta)  with PrimitiveType {
     override val imports = Set("java.util.Date")
   }
 
-  case class File(override val meta: TypeMeta) extends ProvidedType("java.io/File", meta)  with PrimitiveType {
+  case class File(override val meta: TypeMeta) extends ProvidedType("File", meta)  with PrimitiveType {
     override val imports = Set("java.io.File")
   }
 
-  case class DateTime(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta)  with PrimitiveType {
+  case class DateTime(override val meta: TypeMeta) extends ProvidedType("Date", meta)  with PrimitiveType {
     override val imports = Set("java.util.Date")
   }
 

@@ -1,4 +1,4 @@
-package nested_objects
+package nested_objects_validation
 package object yaml {
 import java.util.Date
 import java.io.File

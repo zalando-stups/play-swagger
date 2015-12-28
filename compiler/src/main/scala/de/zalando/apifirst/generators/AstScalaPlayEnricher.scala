@@ -28,13 +28,9 @@ object AstScalaPlayEnricher {
 /**
   * Enriches AST with information needed to generate scala based model
   */
-class ScalaModelEnricher(val app: StrictModel) extends TypesStep with ClassesStep with TraitsStep with AliasesStep {
+class ScalaModelEnricher(val app: StrictModel) extends AliasesStep with TraitsStep with ClassesStep with TypesStep {
 
-  type SingleStep = ((Reference, Type)) => DenotationTable => Denotation
-
-  private val steps: Seq[SingleStep] = Seq(types _, classes _, traits _, aliases _)
   private val modelTypes = app.typeDefs.toSeq
-
   /**
     * Applies all steps to all types to enrich given denotation table
     *
@@ -51,18 +47,30 @@ class ScalaModelEnricher(val app: StrictModel) extends TypesStep with ClassesSte
 }
 
 trait EnrichmentStep {
+  type SingleStep = ((Reference, Type)) => DenotationTable => Denotation
+
   def app: StrictModel
+
+  def steps: Seq[SingleStep] = Seq.empty
+
 }
 
 trait TypesStep extends EnrichmentStep {
 
+  override def steps = types +: super.steps
+
+  private def avoidClashes(table: DenotationTable, name: String)
+                          (names: Iterable[String] = table.values.map(_(COMMON)(TYPE_NAME).toString)): String =
+    if (names.exists(_ == name)) avoidClashes(table, name + "NameClash")(names) else name
+
   /**
     * Puts type information into the denotation table
-    * @param typeDef  the DenotationTable to enrich
     * @return
     */
-  protected def types(typeDef: (Reference, Type))(table: DenotationTable): Denotation = typeDef match {
-    case (ref, t) => Map(COMMON -> Map(TYPE_NAME -> typeName(t, ref)))
+  protected def types: SingleStep = typeDef => table => typeDef match {
+    case (ref, t) =>
+      val name = avoidClashes(table, typeName(t, ref))()
+      Map(COMMON -> Map(TYPE_NAME -> name))
   }
 
   private def typeName(t: Type, r: Reference, suffix: String = "") = t match {
@@ -79,12 +87,14 @@ trait TypesStep extends EnrichmentStep {
 }
 
 trait ClassesStep extends EnrichmentStep {
+
+  override def steps = classes +: super.steps
+
   /**
     * Puts class related information into the denotation table
-    * @param typeDef  the DenotationTable to enrich
     * @return
     */
-  protected def classes(typeDef: (Reference, Type))(table: DenotationTable): Denotation = typeDef match {
+  protected def classes: SingleStep = typeDef => table => typeDef match {
     case (ref, t: TypeDef) if !ref.simple.contains("AllOf") && !ref.simple.contains("OneOf") =>
       val traitName = app.discriminators.get(ref).map(_ => Map("name" -> typeNameDenotation(table, ref)))
       Map("classes" -> (typeDefProps(ref, t, t.fields)(table) + ("trait" -> traitName)))
@@ -122,12 +132,13 @@ trait ClassesStep extends EnrichmentStep {
 
 trait TraitsStep extends EnrichmentStep {
 
+  override def steps = traits +: super.steps
+
   /**
     * Puts trait related information into the denotation table
-    * @param typeDef  the DenotationTable to enrich
     * @return
     */
-  protected def traits(typeDef: (Reference, Type))(table: DenotationTable): Denotation = typeDef match {
+  protected def traits: SingleStep = typeDef => table => typeDef match {
     case (ref, t: TypeDef) if app.discriminators.contains(ref) =>
       Map("traits" -> typeDefProps(ref, t, t.fields)(table))
     case _ => AstScalaPlayEnricher.empty
@@ -137,12 +148,13 @@ trait TraitsStep extends EnrichmentStep {
 }
 
 trait AliasesStep extends EnrichmentStep {
+
+  override def steps = aliases +: super.steps
   /**
     * Puts type related information into the denotation table
-    * @param typeDef  the DenotationTable to enrich
     * @return
     */
-  protected def aliases(typeDef: (Reference, Type))(table: DenotationTable): Denotation = typeDef match {
+  protected val aliases: SingleStep = typeDef => table => typeDef match {
     case (ref, t: Container) =>
       Map("aliases" -> aliasProps(ref, t)(table))
     //      case (k, v: PrimitiveType) => mapForAlias(k, v)

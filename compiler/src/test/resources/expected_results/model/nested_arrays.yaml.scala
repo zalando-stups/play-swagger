@@ -3,8 +3,7 @@ package object yaml {
 import java.util.Date
 import java.io.File
 
-
-    type ExampleNestedArraysOptArr = scala.collection.Seq[ExampleNestedArraysOptArrArr]
+type ExampleNestedArraysOptArr = scala.collection.Seq[ExampleNestedArraysOptArrArr]
 
     type ExampleNestedArraysOpt = scala.collection.Seq[ExampleNestedArraysOptArr]
 
@@ -22,12 +21,9 @@ import java.io.File
 
     type ExampleNestedArraysOptArrArrArr = scala.collection.Seq[String]
 
-    case class Activity(actions: ActivityActions
-) 
+    case class Activity(actions: ActivityActions) 
 
-    case class Example(messages: ExampleMessages, 
-nestedArrays: ExampleNestedArrays
-) 
+    case class Example(messages: ExampleMessages, nestedArrays: ExampleNestedArrays) 
 
     
 
