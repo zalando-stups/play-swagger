@@ -13,7 +13,7 @@ import org.fusesource.scalate.{TemplateEngine, TemplateSource}
   */
 
 class ScalaGenerator(val strictModel: StrictModel)
-  extends PlayScalaControllersGenerator with ImportSupport with PlayScalaTestsGenerator {
+  extends PlayScalaControllersGenerator with ImportSupport {
 
   val denotationTable = AstScalaPlayEnricher(strictModel)
 
@@ -28,6 +28,7 @@ class ScalaGenerator(val strictModel: StrictModel)
     generate(fileName, unmanagedParts, unmanagedImports)(5)
   }
 
+  val testsTemplateName = "play_scala_test.mustache"
   val validatorsTemplateName = "play_validation.mustache"
   val generatorsTemplateName = "generators.mustache"
   val modelTemplateName = "model.mustache"
@@ -44,47 +45,46 @@ class ScalaGenerator(val strictModel: StrictModel)
 
   private def generateModel(fileName: String) = {
     if (modelTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
-    else apply(fileName, modelTemplateName, "")
+    else apply(fileName, modelTemplateName)
   }
 
   private def generateGenerators(fileName: String) = {
     if (modelTypes.isEmpty) ""
-    else apply(fileName, generatorsTemplateName, generatorsSuffix)
+    else apply(fileName, generatorsTemplateName)
   }
 
   def playValidators(fileName: String) = {
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
-    else apply(fileName, validatorsTemplateName, validatorsSuffix)
+    else apply(fileName, validatorsTemplateName)
   }
 
   def playScalaTests(fileName: String) = {
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
-    else apply(fileName, testsTemplateName, testsSuffix)
+    else apply(fileName, testsTemplateName)
   }
-
 
   def playScalaControllers(fileName: String, unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) = {
     if (modelCalls.isEmpty) ""
-    else apply(fileName, controllersTemplateName, controllersSuffix, unmanagedParts, unmanagedImports)
+    else apply(fileName, controllersTemplateName, unmanagedParts, unmanagedImports)
   }
 
   def playScalaControllerBases(fileName: String) = {
     if (modelCalls.isEmpty) ""
-    else apply(fileName, controllerBaseTemplateName, baseControllersSuffix)
+    else apply(fileName, controllerBaseTemplateName)
   }
 
-  private def apply(fileName: String, templateName: String, suffix: String,
+  private def apply(fileName: String, templateName: String,
                     unmanagedParts: Map[ApiCall, UnmanagedPart] = Map.empty, unmanagedImports: Seq[String] = Seq.empty): String = {
     val packages = Map(
       "main_package" -> fileName.split('.').map(escape).mkString("."),
       "main_package_prefix" -> fileName.split('.').init.mkString("."),
       "main_package_suffix" -> fileName.split('.').last,
-      "spec_name" -> escape(capitalize("\\.", fileName) + testsSuffix)
+      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
     )
-    nonEmptyTemplate(packages, templateName, suffix, unmanagedParts, unmanagedImports)
+    nonEmptyTemplate(packages, templateName, unmanagedParts, unmanagedImports)
   }
 
-  private def nonEmptyTemplate(map: Map[String, Any], templateName: String, suffix: String,
+  private def nonEmptyTemplate(map: Map[String, Any], templateName: String,
                                unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]): String = {
     cleanImportTable()
     val engine = new TemplateEngine
@@ -107,7 +107,7 @@ class ScalaGenerator(val strictModel: StrictModel)
 
           "controllers" -> controllers(modelCalls, unmanagedParts)
         )
-        singlePackage + ("package" -> suffix) + ("imports" -> imports(suffix)) ++ validationsByType.toMap
+        singlePackage ++ validationsByType.toMap // + ("imports" -> imports(suffix))
       }),
       "controller_imports" -> controllerImports.map(i => Map("name" -> i)),
       "unmanaged_imports" -> unmanagedImports.map(i => Map("name" -> i))
@@ -134,8 +134,6 @@ trait PlayScalaControllersGenerator extends ImportSupport {
   case class UnmanagedPart(marker: ApiCall, relevantCode: String, deadCode: String)
 
   def strictModel: StrictModel
-
-  def validatorsSuffix: String = "" // REMOVE ME
 
   def callValidations(call: ApiCall): Map[String, Any] = Map.empty // REMOVE ME
 
@@ -283,16 +281,6 @@ trait PlayScalaControllersGenerator extends ImportSupport {
       else "parameters?" -> Some(parameters)
     nameParamPair
   }
-}
-
-trait PlayScalaTestsGenerator extends ImportSupport {
-  def strictModel: StrictModel
-  val testsTemplateName = "play_scala_test.mustache"
-  val testsSuffix = "Spec"
-  val constraintsSuffix = "Constraints"
-
-  def generatorsSuffix: String = "Generator" // WRONG, MUST BE REMOVED
-
 }
 
 
