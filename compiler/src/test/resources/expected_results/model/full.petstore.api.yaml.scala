@@ -5,6 +5,10 @@ import java.io.File
 
 type OrderQuantity = Option[Int]
 
+    type UsersUsernameGetUsername = String
+
+    type UsersCreateWithListPostResponsesDefault = Null
+
     type UsersCreateWithListPostBodyOpt = scala.collection.Seq[User]
 
     type OrderPetId = Option[Long]
@@ -22,6 +26,8 @@ type OrderQuantity = Option[Int]
     type PetTags = Option[PetTagsOpt]
 
     type OrderComplete = Option[Boolean]
+
+    type PetsPetIdDeletePetId = Long
 
     type PetTagsOpt = scala.collection.Seq[Tag]
 

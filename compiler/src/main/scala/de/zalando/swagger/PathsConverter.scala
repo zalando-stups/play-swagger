@@ -5,7 +5,7 @@ import java.net.URI
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef, ApiCall, HandlerCall}
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst._
-import de.zalando.apifirst.new_naming.{Path, Reference}
+import de.zalando.apifirst.naming.{Path, Reference}
 import de.zalando.swagger.strictModel._
 
 /**
@@ -18,7 +18,7 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
 
   lazy val convert = fromPaths(model.paths, model.basePath)
 
-  import new_naming._
+  import naming._
 
   private def fromPath(basePath: BasePath)(pathDef: (String, PathItem)) = {
     implicit val (url, path) = pathDef

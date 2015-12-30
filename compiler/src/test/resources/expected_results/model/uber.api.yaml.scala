@@ -3,7 +3,9 @@ package object yaml {
 import java.util.Date
 import java.io.File
 
-type ProfileLast_name = Option[String]
+type EstimatesPriceGetEnd_latitude = Double
+
+    type ProfileLast_name = Option[String]
 
     type ProductsGetResponses200Opt = scala.collection.Seq[Product]
 

@@ -65,8 +65,8 @@
 ⌿paths⌿/users/createWithList⌿post⌿body⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿User))
 ⌿paths⌿/pets/findByStatus⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/pets/findByTags⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/pets/findByTags⌿get⌿responses⌿200⌿Opt -> 
+	Opt(TypeRef(⌿paths⌿/pets/findByStatus⌿get⌿responses⌿200⌿Opt))
+⌿paths⌿/pets/findByStatus⌿get⌿responses⌿200⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Pet))
 -- params --
 

@@ -1,6 +1,6 @@
 package de.zalando.apifirst
 
-import de.zalando.apifirst.new_naming.Path
+import de.zalando.apifirst.naming.Path
 import org.scalatest.{FunSpec, MustMatchers}
 
 class PathTest extends FunSpec with MustMatchers {

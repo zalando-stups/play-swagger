@@ -1,9 +1,9 @@
-package de.zalando.apifirst.naming
+package de.zalando.apifirst
 
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.new_naming._
+import de.zalando.apifirst.naming._
+import de.zalando.apifirst.naming.dsl._
 import org.scalatest.{FunSpec, MustMatchers}
-import dsl._
 
 class ReferenceTest extends FunSpec with MustMatchers {
   describe("Reference") {

@@ -23,6 +23,8 @@ type ExampleNestedArraysOpt = scala.collection.Seq[ExampleNestedArraysOptArr]
 
     type ExampleNestedArraysOptArr = scala.collection.Seq[ExampleNestedArraysOptArrArr]
 
+    type GetResponses200 = Null
+
     case class Activity(actions: ActivityActions) 
 
     case class Example(messages: ExampleMessages, nestedArrays: ExampleNestedArrays) 

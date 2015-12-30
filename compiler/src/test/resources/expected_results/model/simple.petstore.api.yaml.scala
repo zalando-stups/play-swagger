@@ -7,6 +7,10 @@ type PetsIdDeleteResponsesDefault = Option[ErrorModel]
 
     type PetsPostResponses200 = Option[Pet]
 
+    type PetsIdDeleteResponses204 = Null
+
+    type PetsIdDeleteId = Long
+
     type PetsGetLimit = Option[Int]
 
     type NewPetId = Option[Long]

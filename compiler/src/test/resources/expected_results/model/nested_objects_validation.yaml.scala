@@ -11,6 +11,8 @@ type NestedObjectsNested = Option[NestedObjectsNestedOpt]
 
     type NestedObjectsPlain = Option[NestedObjectsPlainOpt]
 
+    type GetResponses200 = Null
+
     case class NestedObjectsNestedOpt(nested2: NestedObjectsNestedNested2) 
 
     case class NestedObjectsNestedNested2Nested3Opt(bottom: NestedObjectsNestedNested2Nested3Bottom) 

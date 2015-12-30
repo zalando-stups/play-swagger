@@ -5,7 +5,7 @@ import java.net.URI
 import de.zalando.apifirst.Domain
 import Domain._
 import TypeMetaConverter._
-import de.zalando.apifirst.new_naming._
+import de.zalando.apifirst.naming._
 import strictModel._
 
 import scala.collection.mutable
@@ -118,7 +118,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case PrimitiveType.ARRAY =>
         require(param.items.nonEmpty, s"Items should not be empty for $name")
         val types = fromSchemaOrSchemaArray(name, param.items.get, None)
-        checkRequired(name, required, wrapInArray(types.head, None)) +: types.tail
+        val meta = arrayTypeMeta(param.comment.getOrElse(param.format), param)
+        checkRequired(name, required, wrapInArray(types.head, meta, None)) +: types.tail
       case PrimitiveType.OBJECT =>
         val obj = param.allOf map {
           extensionType(name, None) // "None" means that everything defined as a part of the composition is required
@@ -150,9 +151,13 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     Option(param) map {
       case Left(s) =>
         val typeDefs = fromSchemaOrReference(name, s, None)
-        wrapInCatchAll(typeDefs.head) +: typeDefs.tail
-      case Right(true) => Seq(wrapInCatchAll(name -> Str(None, meta)))
-      case Right(false) => Seq(wrapInCatchAll(name -> Str(None, meta)))
+        val topMeta = s match {
+          case Left(schema) => schemaTypeMeta(schema)
+          case _ => meta
+        }
+        wrapInCatchAll(typeDefs.head, topMeta) +: typeDefs.tail
+      case Right(true) => Seq(wrapInCatchAll(name -> Str(None, meta), meta))
+      case Right(false) => Seq(wrapInCatchAll(name -> Str(None, meta), meta))
     }
 
   // ------------------------------------ Single Types ------------------------------------
@@ -173,10 +178,12 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
-    if (items.isArray)
-      wrapInArray(fromPrimitivesItems(name, items.items), Option(items.collectionFormat).map(_.toString))
-    else
+    if (items.isArray) {
+      val meta = arrayTypeMeta(items.comment.getOrElse(items.format), items)
+      wrapInArray(fromPrimitivesItems(name, items.items), meta, Option(items.collectionFormat).map(_.toString))
+    } else {
       name -> (items.`type`, items.format)(items)
+    }
   }
 
   private def fromArrayJsonSchema[T](name: Reference, param: Schema[_], t: ArrayJsonSchemaType): NamedType = {
@@ -190,8 +197,12 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   private def fromNonBodyParameter[T, CF](name: Reference, param: NonBodyParameterCommons[T, CF]): NamedType = {
     val fullName = name / param.name
     val result =
-      if (param.isArray) wrapInArray(fromPrimitivesItems(fullName, param.items), Option(param.collectionFormat).map(_.toString))
-      else fullName -> (param.`type`, param.format)(param)
+      if (param.isArray) {
+        val meta = arrayTypeMeta(param.comment.getOrElse(param.format), param.items)
+        wrapInArray(fromPrimitivesItems(fullName, param.items), meta, Option(param.collectionFormat).map(_.toString))
+      } else {
+        fullName -> (param.`type`, param.format)(param)
+      }
     if (!param.required) wrapInOption(result) else result
   }
 
@@ -242,14 +253,14 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 
   // ------------------------------------ Wrappers ------------------------------------
 
-  private def wrapInArray(t: NamedType, collectionFormat: Option[String]): NamedType =
-    t._1 -> Domain.Arr(t._2, t._2.meta, collectionFormat.map(_.toString))
+  private def wrapInArray(t: NamedType, m: TypeMeta, collectionFormat: Option[String]): NamedType =
+    t._1 -> Domain.Arr(t._2, m, collectionFormat.map(_.toString))
 
   private def wrapInOption(t: NamedType): NamedType =
-    t._1 -> Domain.Opt(t._2, t._2.meta)
+    t._1 -> Domain.Opt(t._2, TypeMeta(None))
 
-  private def wrapInCatchAll(t: NamedType): NamedType =
-    t._1 -> Domain.CatchAll(t._2, t._2.meta)
+  private def wrapInCatchAll(t: NamedType, m: TypeMeta): NamedType =
+    t._1 -> Domain.CatchAll(t._2, m)
 
   // ------------------------------------ Helper methods ------------------------------------
 

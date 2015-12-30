@@ -3,7 +3,7 @@ package de.zalando.apifirst.generators
 import java.io.File
 
 import de.zalando.ExpectedResults
-import de.zalando.apifirst.{ParameterDereferencer, TypeDeduplicator, TypeFlattener}
+import de.zalando.apifirst.{TypeNormaliser, ParameterDereferencer, TypeDeduplicator, TypeFlattener}
 import de.zalando.swagger.{ModelConverter, StrictYamlParser}
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -29,7 +29,7 @@ class ScalaPlayTestsGeneratorIntegrationTest extends FunSpec with MustMatchers w
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val (base, model) = StrictYamlParser.parse(file)
       val ast         = ModelConverter.fromModel(base, model, Option(file))
-      val flatAst     = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
+      val flatAst     = TypeNormaliser.flatten(ast)
       val scalaTests  = new ScalaGenerator(flatAst).tests(file.getName)
       val expected    = asInFile(file, "scala")
       if (expected.isEmpty)

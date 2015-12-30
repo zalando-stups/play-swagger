@@ -5,6 +5,10 @@ import java.io.File
 
 type PetsIdDeleteResponsesDefault = Option[Error]
 
+    type PetsIdDeleteResponses204 = Null
+
+    type PetsIdDeleteId = Long
+
     type PetsGetLimit = Option[Int]
 
     type NewPetTag = Option[String]

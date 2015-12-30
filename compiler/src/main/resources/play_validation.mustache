@@ -7,44 +7,64 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+import java.util.Date
+import java.io.File
 
 {{#packages}}
-
-    {{#constraints}}
-    class {{& constraint_name }}(override val instance: {{& type_name }}) extends ValidationBase[{{& type_name }}] {
-        override def constraints: Seq[Constraint[{{& type_name }}]] =
+// ----- constraints and wrapper validations -----
+{{#primitive_validations}}
+class {{& constraint_name }}(override val instance: {{& type_name }}) extends ValidationBase[{{& type_name }}] {
+    override def constraints: Seq[Constraint[{{& type_name }}]] =
         Seq({{#restrictions}}{{&name}}{{^last}}, {{/last}}{{/restrictions}})
-    }
-    class {{& validation_name }}(instance: {{& type_name }}) extends RecursiveValidator {
-      override val validators = Seq(new {{&constraint_name}}(instance))⮐
-    }
-    {{/constraints}}
-
-    {{#validations}}
-        class {{& validation_name }}(instance: {{& class_name }}) extends RecursiveValidator {
-        override val validators = Seq(
-            {{#fields}}
-            new {{&validation_name}}(instance.{{&field_name}}){{^last}}, {{/last}}⮐
-            {{/fields}}
-        ) ++ Seq(
-            {{#container_fields}}
-                instance.{{&field_name}}.toSeq map { new {{&validation_name}}(_)}{{^last}}, {{/last}}
-            {{/container_fields}}
-        ).flatten
-        }
-    {{/validations}}
-
-    {{#call_validations}}
-    class {{& validation_name }}({{#all_fields}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/all_fields}}) extends RecursiveValidator {
+}
+class {{& validation_name }}(instance: {{& type_name }}) extends RecursiveValidator {
+    override val validators = Seq(new {{&constraint_name}}(instance))⮐
+}
+{{/primitive_validations}}
+// ----- complex type validators -----
+{{#typedef_validations}}
+class {{& validation_name }}(instance: {{& type_name }}) extends RecursiveValidator {
     override val validators = Seq(
     {{#fields}}
-        new {{&validation_name}}({{&field_name}}){{^last}}, {{/last}}⮐
+        new {{&validation_name}}(instance.{{&field_name}}){{^last}}, {{/last}}⮐
     {{/fields}}
-    )  ++ Seq(
-        {{#container_fields}}
-            {{&field_name}}.toSeq map { new {{&validation_name}}(_)}{{^last}}, {{/last}}
-        {{/container_fields}}
-        ).flatten
-    }
-    {{/call_validations}}
+    )
+}
+{{/typedef_validations}}
+// ----- option delegating validators -----
+{{#opt_validations}}
+class {{& validation_name }}(instance: {{& type_name }}) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new {{&delegate_validation_name}}(_) }
+}
+{{/opt_validations}}
+// ----- array delegating validators -----
+{{#array_validations}}
+class {{& constraint_name }}(override val instance: {{& type_name }}) extends ValidationBase[{{& type_name }}] {
+    override def constraints: Seq[Constraint[{{& type_name }}]] =
+        Seq({{#restrictions}}{{&name}}{{^last}}, {{/last}}{{/restrictions}})
+}
+class {{& validation_name }}(instance: {{& type_name }}) extends RecursiveValidator {
+    override val validators = new {{&constraint_name}}(instance) +: instance.map { new {{&delegate_validation_name}}(_)}
+}
+{{/array_validations}}
+// ----- catch all simple validators -----
+{{#catch_validations}}
+class {{& constraint_name }}(override val instance: {{& type_name }}) extends ValidationBase[{{& type_name }}] {
+    override def constraints: Seq[Constraint[{{& type_name }}]] =
+        Seq({{#restrictions}}{{&name}}{{^last}}, {{/last}}{{/restrictions}})
+}
+class {{& validation_name }}(instance: {{& type_name }}) extends RecursiveValidator {
+    override val validators = Seq(new {{&constraint_name}}(instance))⮐
+}
+{{/catch_validations}}
+// ----- call validations -----
+{{#call_validations}}
+class {{& validation_name }}({{#fields}}{{&field_name}}: {{&type_name}}{{^last}}, {{/last}}{{/fields}}) extends RecursiveValidator {
+    override val validators = Seq(
+        {{#fields}}
+            new {{&validation_name}}({{&field_name}}){{^last}}, {{/last}}
+        {{/fields}}
+    )
+}
+{{/call_validations}}
 {{/packages}}

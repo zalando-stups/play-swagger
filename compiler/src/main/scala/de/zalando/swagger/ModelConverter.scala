@@ -5,7 +5,7 @@ import java.net.URI
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Domain.Type
-import de.zalando.apifirst.new_naming.Reference
+import de.zalando.apifirst.naming.Reference
 import de.zalando.swagger.strictModel.SwaggerModel
 
 /**

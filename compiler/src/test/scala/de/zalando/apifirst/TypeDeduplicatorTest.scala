@@ -1,12 +1,11 @@
-package de.zalando.swagger
+package de.zalando.apifirst
 
 import de.zalando.ExpectedResults
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.{new_naming, Application, ParameterPlace, TypeDeduplicator}
-import de.zalando.apifirst.new_naming.{Reference, TypeName}
+import de.zalando.apifirst.naming.dsl._
+import de.zalando.apifirst.naming.{Reference, TypeName}
 import org.scalatest.{FunSpec, MustMatchers}
-import new_naming.dsl._
 
 /**
   * @author  slasch

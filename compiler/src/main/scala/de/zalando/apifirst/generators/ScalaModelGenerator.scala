@@ -16,7 +16,7 @@ class ScalaGenerator(val strictModel: StrictModel)
   extends ScalaModelGenerator with ScalaTestDataGenerator with PlayValidatorsGenerator
     with PlayScalaControllersGenerator with ImportSupport with PlayScalaTestsGenerator {
 
-  val denotationTable = AstScalaPlayEnricher.enrich(strictModel)
+  val denotationTable = AstScalaPlayEnricher(strictModel)
 
   val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _) = strictModel
 
@@ -86,10 +86,13 @@ class ScalaGenerator(val strictModel: StrictModel)
     cleanImportTable()
     val engine = new TemplateEngine
 
-    val allPackages = Map(
+    val validations = ReShaper.filterByType("validators", denotationTable)
+    val validationsByType = ReShaper.groupByType(validations.toSeq)
+
+    val rawAllPackages = Map(
       "packages" -> Seq({
         // val tConstraints = typeConstraints(modelTypes)
-        val pConstraints = parameterConstraints(modelParameters)
+        //val pConstraints = parameterConstraints(modelParameters)
         val singlePackage = Map(
 
           "classes" -> ReShaper.filterByType("classes", denotationTable),
@@ -99,19 +102,22 @@ class ScalaGenerator(val strictModel: StrictModel)
           "test_data_classes" -> ReShaper.filterByType("test_data_classes", denotationTable),
           "test_data_aliases" -> ReShaper.filterByType("test_data_aliases", denotationTable),
 
-          /*
-          "constraints" -> (tConstraints ++ pConstraints),
-          "validations" -> complexTypeValidations(modelTypes),
-          "call_validations" -> (modelCalls map callValidations),
+
+        /*
+        "constraints" -> (tConstraints ++ pConstraints),
+        "validations" -> complexTypeValidations(modelTypes),
+        "call_validations" -> (modelCalls map callValidations),
 */
-          "controllers" -> controllers(modelCalls, unmanagedParts),
-          "tests" -> tests(modelCalls)
+          "tests" -> ReShaper.filterByType("tests", denotationTable),
+
+          "controllers" -> controllers(modelCalls, unmanagedParts)
         )
-        singlePackage + ("package" -> suffix) + ("imports" -> imports(suffix)) ++ pConstraints
+        singlePackage + ("package" -> suffix) + ("imports" -> imports(suffix)) ++ validationsByType.toMap
       }),
       "controller_imports" -> controllerImports.map(i => Map("name" -> i)),
       "unmanaged_imports" -> unmanagedImports.map(i => Map("name" -> i))
     )
+    val allPackages = LastListElementMarks.set(rawAllPackages)
     val template = getClass.getClassLoader.getResource(templateName)
     val templateSource = TemplateSource.fromURL(template)
     val output = engine.layout(templateSource, map ++ allPackages)
@@ -385,11 +391,11 @@ trait PlayScalaControllersGenerator extends ImportSupport {
     def strictModel: StrictModel
     val testsTemplateName = "play_scala_test.mustache"
     val testsSuffix = "Spec"
-    def validatorsSuffix: String
+//    def validatorsSuffix: String = "" // WRONG, MUST BE REMOVED
     def generatorsSuffix: String = "" // WRONG, MUST BE REMOVED
-    def generatorNameForType: (Type) => String = _ => "" // WRONG, MUST BE REMOVED
+//    def generatorNameForType: (Type) => String = _ => "" // WRONG, MUST BE REMOVED
 
-    def tests(calls: Seq[ApiCall]) =
+    /*def tests(calls: Seq[ApiCall]) =
       calls filterNot { _.handler.parameters.isEmpty } map callTest
 
     def callTest(call: ApiCall): Map[String, Object] = {
@@ -489,7 +495,7 @@ trait PlayScalaControllersGenerator extends ImportSupport {
         name + "=${URLEncoder.encode(" + name + ".toString, \"UTF-8\")}"
     }
     private def containerParam(name: String) =
-      "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."
+      "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."*/
   }
 
 

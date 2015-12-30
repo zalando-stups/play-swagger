@@ -5,6 +5,8 @@ import java.io.File
 
 type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses200MetaOpt`]
 
+    type `LocationsLocation-idLocation-id` = Int
+
     type UsersSelfFeedGetResponses200 = Option[UsersSelfFeedGetResponses200Opt]
 
     type LikeUser_name = Option[String]
@@ -81,9 +83,15 @@ type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses20
 
     type MediaUsers_in_photo = Option[MediaUsers_in_photoOpt]
 
+    type `GeographiesGeo-idMediaRecentGetResponses200` = Null
+
     type UserCounts = Option[UserCountsOpt]
 
     type `MediaComments:Data` = Option[`MediaComments:DataOpt`]
+
+    type `User-id-paramUser-id` = Double
+
+    type `Tag-nameTag-name` = String
 
     type LocationsSearchGetResponses200 = Option[LocationsSearchGetResponses200Opt]
 

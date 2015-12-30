@@ -4,7 +4,7 @@ import java.io.File
 
 import de.zalando.ExpectedResults
 import de.zalando.apifirst.Application.ApiCall
-import de.zalando.apifirst.{ParameterDereferencer, TypeDeduplicator, TypeFlattener}
+import de.zalando.apifirst.{TypeNormaliser, ParameterDereferencer, TypeDeduplicator, TypeFlattener}
 import de.zalando.swagger.{ModelConverter, StrictYamlParser}
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -32,7 +32,7 @@ class ScalaControllerGeneratorIntegrationTest extends FunSpec with MustMatchers 
 
       val (base, model) = StrictYamlParser.parse(file)
       val ast         = ModelConverter.fromModel(base, model, Option(file))
-      val flatAst     = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
+      val flatAst     = TypeNormaliser.flatten(ast)
       val processor   = new ScalaGenerator(flatAst)
       val unmanagedParts = processor.analyzeController(expectedC)
       val controllers = processor.playScalaControllers(file.getName, unmanagedParts._1, unmanagedParts._2)
