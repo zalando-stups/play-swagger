@@ -79,11 +79,7 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
     case (d: TypeDef, table) => append(typeNameDenotation(table, d.name), generatorsSuffix)
     case (c: Composite, table) => append(typeNameDenotation(table, c.name), generatorsSuffix)
     case o =>
-      throw new Exception(o.toString)
-/*
-      println(s"generator name for $o")
-      s"generator name for $o"
-*/
+      throw new Exception("Unexpected reuqest for generator name for: " + o.toString)
   }
 
   private def containerType(c: Container, t: DenotationTable): String = {

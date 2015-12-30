@@ -28,7 +28,6 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Stri" -> Opt(Str(None, None), None)
       )
       val result = new ScalaGenerator(model).model("test.scala")
-      println(result)
       result mustBeAs
         """package test
           |package object scala {

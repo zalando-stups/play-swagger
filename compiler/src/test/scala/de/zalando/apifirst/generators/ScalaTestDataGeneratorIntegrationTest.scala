@@ -3,7 +3,7 @@ package de.zalando.apifirst.generators
 import java.io.File
 
 import de.zalando.ExpectedResults
-import de.zalando.apifirst.{TypeNormaliser, ParameterDereferencer, TypeDeduplicator, TypeFlattener}
+import de.zalando.apifirst.TypeNormaliser
 import de.zalando.swagger.{ModelConverter, StrictYamlParser}
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -19,9 +19,7 @@ class ScalaTestDataGeneratorIntegrationTest extends FunSpec with MustMatchers wi
 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
-  def toTest: File => Boolean = f => {
-    f.getName.endsWith(".yaml")
-  }
+  def toTest: File => Boolean = f => f.getName.endsWith(".yaml")
 
   describe("ScalaTestDataGenerator should generate model files") {
     (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>

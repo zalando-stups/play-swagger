@@ -10,7 +10,6 @@ import de.zalando.apifirst.naming.Reference
   * @author  slasch 
   * @since   28.12.2015.
   */
-
 trait CallValidatorsStep extends EnrichmentStep[ApiCall] with ValidatorsCommon {
 
   override def steps = callValidators +: super.steps
@@ -161,22 +160,6 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
   def fieldName(f: Field) = if (f.tpe.isInstanceOf[PrimitiveType]) f.name else f.tpe.name
 
 }
-
-/**
-  * @author  slasch
-  * @since   28.12.2015.
-  */
-/*trait TypeValidatorsStep extends EnrichmentStep[Type] with ValidatorsCommon {
-
-  override def steps = typeValidators +: super.steps
-
-  protected val typeValidators: SingleStep = typeDef => table =>
-    Map("validators" -> typeValidatorProps(typeDef._1, typeDef._2)(table))
-
-  private def typeValidatorProps(ref: Reference, v: Type)(table: DenotationTable): Map[String, Any] =
-    constraints0(ref, v)(table).toMap
-
-}*/
 
 trait ValidatorsCommon {
 
