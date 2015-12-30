@@ -19,7 +19,7 @@ class ScalaPlayTestsGeneratorIntegrationTest extends FunSpec with MustMatchers w
     f.getName.endsWith(".yaml") && f.getName.startsWith("simple")
   }
 
-  describe("ScalaModelGenerator should generate model files") {
+  describe("ScalaTestGenerator should generate test files") {
     (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>
       testScalaTestsGenerator(file)
     }

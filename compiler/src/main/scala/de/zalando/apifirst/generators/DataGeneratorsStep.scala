@@ -14,8 +14,6 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
 
   override def steps = dataGenerators +: super.steps
 
-  val generatorsSuffix = "Generator"
-
   /**
     * Puts data generators related information into the denotation table
     *
@@ -46,8 +44,8 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
   }
 
   private def classGenerator(k: Reference, v: Type)(table: DenotationTable): Map[String, Any] =
-    containerGenerator(k, v)(table) ++
-      Map(
+    containerGenerator(k, v)(table) +
+      (
         "class_name" -> typeNameDenotation(table, k),
         "fields" -> typeFields(table, k).map { f =>
           Map(
@@ -79,8 +77,4 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
 
   private def primitiveType(tpe: Type, t: DenotationTable) =
     s"arbitrary[${typeNameDenotation(t, tpe.name)}]"
-
-  private def generator(r: Reference, table: DenotationTable): String =
-    append(typeNameDenotation(table, r), generatorsSuffix)
-
 }

@@ -167,11 +167,7 @@ trait ValidatorsCommon {
 
   type Validations = Seq[(String, Map[String, Any])]
 
-  val validatorsSuffix = "Validator"
   val constraintsSuffix = "Constraints"
-
-  def validator(ref: Reference, table: DenotationTable): String =
-    append(memberNameDenotation(table, ref), validatorsSuffix)
 
   def constraint(ref: Reference, table: DenotationTable): String =
     append(memberNameDenotation(table, ref), constraintsSuffix)

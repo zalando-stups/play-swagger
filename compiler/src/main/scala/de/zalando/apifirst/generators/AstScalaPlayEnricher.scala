@@ -66,7 +66,7 @@ class ScalaPlayTypeEnricher(val app: StrictModel) extends Transformation[Type] w
   * Enriches AST with information related to ApiCalls
   */
 class ScalaPlayCallEnricher(val app: StrictModel) extends Transformation[ApiCall]
-  with CallValidatorsStep with CommonCallDataStep {
+  with CallTestsStep with CallValidatorsStep with CommonCallDataStep {
 
   override def data = app.calls map { c => c.asReference -> c }
 
@@ -118,6 +118,17 @@ object DenotationNames {
   def typeFields(table: DenotationTable, r: Reference): Seq[Field] = {
     table.get(r).map(_ (COMMON)(FIELDS).asInstanceOf[Seq[Field]]).getOrElse(Seq.empty[Field])
   }
+
+  private val generatorsSuffix = "Generator"
+
+  def generator(r: Reference, table: DenotationTable): String =
+    append(typeNameDenotation(table, r), generatorsSuffix)
+
+  private val validatorsSuffix = "Validator"
+
+  def validator(ref: Reference, table: DenotationTable): String =
+    append(memberNameDenotation(table, ref), validatorsSuffix)
+
 
   def prepend(prefix: String, name: String): String =
     if (name.startsWith("`")) "`" + prefix + name.tail else prefix + name
