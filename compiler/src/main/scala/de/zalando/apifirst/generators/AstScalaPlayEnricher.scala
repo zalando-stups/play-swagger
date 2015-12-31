@@ -66,7 +66,7 @@ class ScalaPlayTypeEnricher(val app: StrictModel) extends Transformation[Type] w
   * Enriches AST with information related to ApiCalls
   */
 class ScalaPlayCallEnricher(val app: StrictModel) extends Transformation[ApiCall]
-  with CallTestsStep with CallValidatorsStep with CommonCallDataStep {
+  with CallControllersStep with CallTestsStep with CallValidatorsStep with CommonCallDataStep {
 
   override def data = app.calls map { c => c.asReference -> c }
 
@@ -163,6 +163,8 @@ object LastListElementMarks {
   def set(d: Map[String, Any]): Map[String, Any] = d map {
     case (ss, tt: Map[String, Any]) =>
       ss -> set(tt)
+    case (ss, Some(tt: Map[String, Any])) =>
+      ss -> Some(set(tt))
     case (ss, l: List[_]) if l.isEmpty || !l.head.isInstanceOf[Map[_,_]] =>
       ss -> l
     case (ss, l: List[Map[String, Any]]) =>

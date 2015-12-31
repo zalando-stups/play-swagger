@@ -16,7 +16,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
   val testsSuffix = "Spec"
 
   /**
-    * Puts data generators related information into the denotation table
+    * Puts tests related information into the denotation table
     *
     * @return
     */

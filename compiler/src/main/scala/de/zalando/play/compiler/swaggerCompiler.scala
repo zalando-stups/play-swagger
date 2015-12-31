@@ -37,8 +37,7 @@ object SwaggerCompiler {
     val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "../../../../" + controllerDir)
     val generator     = new ScalaGenerator(flatAst)
     val currentCtrlr  = readFile(outputDir, fullFileName(task, places.last))
-    val (code, imports) = generator.analyzeController(currentCtrlr)
-    val artifacts     = generator.generate(task.definitionFile.getName, code, imports) zip places
+    val artifacts     = generator.generate(task.definitionFile.getName, currentCtrlr) zip places
     val persister     = persist(task, outputDir) _
     val swaggerFiles  = artifacts map { persister.tupled } map { Seq(_) }
     swaggerFiles

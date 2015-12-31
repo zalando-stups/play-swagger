@@ -12,17 +12,13 @@ import scala.util._
 {{#packages}}
 
     {{#controllers}}
-    {{!imports}}
-    {{!import {{&name}}
-    {{!imports}}
-
 
     trait {{&base}} extends Controller with PlayBodyParsing {
         {{#methods}}
         private val {{&response_mime_type_name}}    = "{{&response_mime_type_value}}"
         private val {{&action_success_status_name}} = Status({{&action_success_status_value}})
 
-        private type {{&action_request_type}}       = ({{#validations}}{{#all_fields}}{{&field_type}}{{^last}}, {{/last}}{{/all_fields}}{{/validations}}{{^validations}}Unit{{/validations}})
+        private type {{&action_request_type}}       = ({{#validations}}{{#fields}}{{&type_name}}{{^last}}, {{/last}}{{/fields}}{{/validations}}{{^validations}}Unit{{/validations}})
         private type {{&action_result_type}}        = {{&action_result_type_value}}
         private type {{&action_type}}              = {{&action_request_type}} => Try[{{&action_result_type}}]
 
@@ -32,10 +28,10 @@ import scala.util._
         {{/error_mappings}}{{#error_mappings}} } {{/error_mappings}}⮐
 
         {{#body_param}}
-            private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&field_type}}]("{{&method}}", "Invalid {{&method}}", maxLength)
+            private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&type_name}}]("{{&request_mime_type_value}}", "Invalid {{&type_name}}", maxLength)
         {{/body_param}}⮐
 
-        def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#request_needed?}}request =>{{/request_needed?}}⮐
+        def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&type_name}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#request_needed?}}request =>{{/request_needed?}}⮐
             {{#body_param}}
             val {{&field_name}} = request.body
             {{/body_param}}
@@ -45,8 +41,8 @@ import scala.util._
             val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
                 {{#validations?}}
                 {{#validations}}
-                    new {{&validation_name}}({{#all_fields}}{{&field_name}}{{^last}}, {{/last}}{{/all_fields}}).errors match {
-                        case e if e.isEmpty => {{&process_valid_request}}(f)(({{#all_fields}}{{&field_name}}{{^last}}, {{/last}}{{/all_fields}}))
+                    new {{&validation_name}}({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}).errors match {
+                        case e if e.isEmpty => {{&process_valid_request}}(f)(({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}))
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{&response_mime_type_name}})
                             BadRequest(l)

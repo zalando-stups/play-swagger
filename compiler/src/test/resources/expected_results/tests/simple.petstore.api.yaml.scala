@@ -79,13 +79,13 @@ import Generators._
 
         }
     "GET /api/pets" should {
-            def testInvalidInput(input: (PetsGetTags, PetsGetLimit, )) = {
+            def testInvalidInput(input: (PetsGetTags, PetsGetLimit)) = {
 
-                val (tags, limit, ) = input
+                val (tags, limit) = input
                 val url = s"""/api/pets?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
                 val headers = Seq()
                 val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsGetValidator(tags, limit, ).errors
+                val errors = new PetsGetValidator(tags, limit).errors
 
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
@@ -97,9 +97,9 @@ import Generators._
                     all(validations:_*)
                 )
             }
-            def testValidInput(input: (PetsGetTags, PetsGetLimit, )) = {
+            def testValidInput(input: (PetsGetTags, PetsGetLimit)) = {
 
-                val (tags, limit, ) = input
+                val (tags, limit) = input
                 val url = s"""/api/pets?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
                 val headers = Seq()
                 val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
@@ -111,10 +111,10 @@ import Generators._
                         limit <- PetsGetLimitGenerator
                         
 
-                    } yield (tags, limit, )
+                    } yield (tags, limit)
 
-                val inputs = genInputs suchThat { case (tags, limit, )=>
-                    new PetsGetValidator(tags, limit, ).errors.nonEmpty
+                val inputs = genInputs suchThat { case (tags, limit)=>
+                    new PetsGetValidator(tags, limit).errors.nonEmpty
                 }
                 val props = forAll(inputs) { i => testInvalidInput(i) }
                 checkResult(props)
@@ -125,10 +125,10 @@ import Generators._
                     limit <- PetsGetLimitGenerator
                     
 
-                } yield (tags, limit, )
+                } yield (tags, limit)
 
-                val inputs = genInputs suchThat { case (tags, limit, )=>
-                    new PetsGetValidator(tags, limit, ).errors.isEmpty
+                val inputs = genInputs suchThat { case (tags, limit)=>
+                    new PetsGetValidator(tags, limit).errors.isEmpty
                 }
                 val props = forAll(inputs) { i => testValidInput(i) }
                 checkResult(props)
