@@ -10,7 +10,6 @@ import PlayValidations._
 import java.util.Date
 import java.io.File
 
-{{#packages}}
 // ----- constraints and wrapper validations -----
 {{#primitive_validations}}
 class {{& constraint_name }}(override val instance: {{& type_name }}) extends ValidationBase[{{& type_name }}] {
@@ -67,4 +66,3 @@ class {{& validation_name }}({{#fields}}{{&field_name}}: {{&type_name}}{{^last}}
     )
 }
 {{/call_validations}}
-{{/packages}}

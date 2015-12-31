@@ -1,6 +1,6 @@
-{{!main_package}}
-{{!package {{&main_package}}
-{{!main_package}}
+
+
+
 
 {{#controller_imports}}
 import {{&name}}
@@ -10,15 +10,8 @@ import {{&name}}
 import {{&name}}
 {{/unmanaged_imports}}
 
-{{#packages}}
 {{#controllers}}
-
-
-package {{&main_package}} {
-
-{{!imports}}
-{{!    import {{&name}}
-{{!imports}}
+package {{&effective_package}} { {{!main_package}}
 
     class {{&controller}} extends {{&base}} {
     {{#methods}}
@@ -34,7 +27,4 @@ package {{&main_package}} {
     {{/methods}}
     }
 }
-
 {{/controllers}}
-
-{{/packages}}

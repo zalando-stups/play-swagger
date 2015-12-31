@@ -19,7 +19,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
   describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {
-      new ScalaGenerator(Map.empty[Reference, Domain.Type]).model("test.scala") mustBe ""
+      new ScalaGenerator(Map.empty[Reference, Domain.Type]).generateModel("test.scala") mustBe ""
     }
 
     it("should generate single type alias for an option") {
@@ -27,7 +27,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Opti" -> Opt(Lng(None), None),
         "definitions" / "Stri" -> Opt(Str(None, None), None)
       )
-      val result = new ScalaGenerator(model).model("test.scala")
+      val result = new ScalaGenerator(model).generateModel("test.scala")
       result mustBeAs
         """package test
           |package object scala {
@@ -45,7 +45,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Option" -> Opt(Lng(None), None),
         "definitions" / "String" -> Opt(Str(None, None), None)
       )
-      new ScalaGenerator(model).model("overloaded.txt") mustBeAs
+      new ScalaGenerator(model).generateModel("overloaded.txt") mustBeAs
         """package overloaded
           |package object txt {
           |import java.util.Date
@@ -62,7 +62,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Dbl" -> Arr(Dbl(None), None),
         "definitions" / "Flt" -> Arr(Flt(None), None)
       )
-      new ScalaGenerator(model).model("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
           |import java.util.Date
@@ -78,7 +78,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "parameters" / "all" -> CatchAll(Bool(None), None)
       )
-      new ScalaGenerator(model).model("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
           |import java.util.Date
@@ -92,7 +92,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "paths" / "/" / "get" / "responses" / "200" -> Null(None)
       )
-      new ScalaGenerator(model).model("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """"""
     }
 
@@ -104,7 +104,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "User" -> TypeDef("definitions" / "User", fields, None)
       )
-      new ScalaGenerator(model).model("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
           |import java.util.Date
@@ -119,7 +119,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "OptionalData" -> Opt(TypeRef("definitions" / "Passwords"), None),
         "definitions" / "Passwords" -> Arr(Password(None), None, None)
       )
-      new ScalaGenerator(model).model("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
           |import java.util.Date
@@ -167,7 +167,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       val strictModel = StrictModel(Nil, model, Map.empty, discriminators, "")
 
-      val result = new ScalaGenerator(strictModel).model("test.scala")
+      val result = new ScalaGenerator(strictModel).generateModel("test.scala")
 
       result mustBeAs
         """package test
@@ -205,7 +205,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
             Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)
       )
-      new ScalaGenerator(model).model("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
           |import java.util.Date

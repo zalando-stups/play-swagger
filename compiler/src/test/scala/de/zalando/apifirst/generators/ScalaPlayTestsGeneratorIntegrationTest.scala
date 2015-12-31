@@ -28,7 +28,7 @@ class ScalaPlayTestsGeneratorIntegrationTest extends FunSpec with MustMatchers w
       val (base, model) = StrictYamlParser.parse(file)
       val ast         = ModelConverter.fromModel(base, model, Option(file))
       val flatAst     = TypeNormaliser.flatten(ast)
-      val scalaTests  = new ScalaGenerator(flatAst).tests(file.getName)
+      val scalaTests  = new ScalaGenerator(flatAst).playScalaTests(file.getName)
       val expected    = asInFile(file, "scala")
       if (expected.isEmpty)
         dump(scalaTests, file, "scala")

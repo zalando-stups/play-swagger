@@ -3,13 +3,8 @@ package {{&main_package_prefix}}
 package object {{&main_package_suffix}} {
 {{/main_package}}
 
-import java.util.Date
-import java.io.File
-
-{{#packages}}
-    {{#imports}}
-    import {{&name}}
-    {{/imports}}
+    import java.util.Date
+    import java.io.File
 
     {{#aliases}}
     type {{& name }} = {{& alias }}{{#underlying_type}}[{{& underlying_type }}]{{/underlying_type}}⮐
@@ -26,5 +21,4 @@ import java.io.File
     {{#classes}}
     case class {{& name }}({{#fields}}{{&name}}: {{&type_name}}{{^last}}, {{/last}}{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
     {{/classes}}⮐
-{{/packages}}
 }

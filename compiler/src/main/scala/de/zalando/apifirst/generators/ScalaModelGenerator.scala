@@ -4,7 +4,6 @@ import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames.DenotationTable
-import de.zalando.apifirst.naming.Reference
 import org.fusesource.scalate.{TemplateEngine, TemplateSource}
 
 /**
@@ -12,67 +11,52 @@ import org.fusesource.scalate.{TemplateEngine, TemplateSource}
   * @since 16.11.2015.
   */
 
-class ScalaGenerator(val strictModel: StrictModel)
-  extends PlayScalaControllerAnalyzer with ImportSupport {
+class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAnalyzer {
 
   val denotationTable = AstScalaPlayEnricher(strictModel)
 
   val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _) = strictModel
 
-  def model(fileName: String) = generate(fileName, "").head
+  val testsTemplateName           = "play_scala_test.mustache"
+  val validatorsTemplateName      = "play_validation.mustache"
+  val generatorsTemplateName      = "generators.mustache"
+  val modelTemplateName           = "model.mustache"
+  val controllersTemplateName     = "play_scala_controller.mustache"
+  val controllerBaseTemplateName  = "play_scala_controller_base.mustache"
 
-  def generators(fileName: String) = generate(fileName, "")(1)
 
-  def tests(fileName: String) = generate(fileName, "")(4)
+  def generate(fileName: String, currentController: String) = Seq(
+    generateModel(fileName),
+    generateGenerators(fileName),
+    playValidators(fileName),
+    playScalaControllerBases(fileName),
+    playScalaTests(fileName),
+    playScalaControllers(fileName, currentController)
+  )
 
-  def controllers(fileName: String, currentVersion: String) =
-    generate(fileName, currentVersion)(5)
-
-  val testsTemplateName = "play_scala_test.mustache"
-  val validatorsTemplateName = "play_validation.mustache"
-  val generatorsTemplateName = "generators.mustache"
-  val modelTemplateName = "model.mustache"
-
-  def generate(fileName: String, currentController: String) = {
-    Seq(
-      generateModel(fileName),
-      generateGenerators(fileName),
-      playValidators(fileName),
-      playScalaControllerBases(fileName),
-      playScalaTests(fileName),
-      playScalaControllers(fileName, currentController)
-    )
-  }
-
-  private def generateModel(fileName: String) = {
+  def generateModel(fileName: String) =
     if (modelTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
     else apply(fileName, modelTemplateName)
-  }
 
-  private def generateGenerators(fileName: String) = {
+  def generateGenerators(fileName: String) =
     if (modelTypes.isEmpty) ""
     else apply(fileName, generatorsTemplateName)
-  }
 
-  def playValidators(fileName: String) = {
+  def playValidators(fileName: String) =
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
     else apply(fileName, validatorsTemplateName)
-  }
 
-  def playScalaTests(fileName: String) = {
+  def playScalaTests(fileName: String) =
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
     else apply(fileName, testsTemplateName)
-  }
 
-  def playScalaControllers(fileName: String, currentController: String) = {
+  def playScalaControllers(fileName: String, currentController: String) =
     if (modelCalls.isEmpty) ""
     else apply(fileName, controllersTemplateName, currentController)
-  }
 
-  def playScalaControllerBases(fileName: String) = {
+  def playScalaControllerBases(fileName: String) =
     if (modelCalls.isEmpty) ""
     else apply(fileName, controllerBaseTemplateName)
-  }
 
   private def apply(fileName: String, templateName: String, currentController: String = ""): String = {
     val packages = Map(
@@ -85,39 +69,36 @@ class ScalaGenerator(val strictModel: StrictModel)
   }
 
   private def nonEmptyTemplate(map: Map[String, Any], templateName: String, currentController: String): String = {
-    cleanImportTable()
     val engine = new TemplateEngine
 
-    val validations = ReShaper.filterByType("validators", denotationTable)
-    val validationsByType = ReShaper.groupByType(validations.toSeq)
+    val validations         = ReShaper.filterByType("validators", denotationTable)
+    val validationsByType   = ReShaper.groupByType(validations.toSeq).toMap
 
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)
 
-    val rawAllPackages = Map(
-      "packages" -> Seq({
-        val singlePackage = Map(
-
-          "classes" -> ReShaper.filterByType("classes", denotationTable),
-          "aliases" -> ReShaper.filterByType("aliases", denotationTable),
-          "traits" -> ReShaper.filterByType("traits", denotationTable),
-
-          "test_data_classes" -> ReShaper.filterByType("test_data_classes", denotationTable),
-          "test_data_aliases" -> ReShaper.filterByType("test_data_aliases", denotationTable),
-
-          "tests" -> ReShaper.filterByType("tests", denotationTable),
-
-          "controllers" -> controllers(modelCalls, unmanagedParts)(denotationTable)
-        )
-        singlePackage ++ validationsByType.toMap // + ("imports" -> imports(suffix))
-      }),
-      "controller_imports" -> controllerImports.map(i => Map("name" -> i)),
-      "unmanaged_imports" -> unmanagedImports.map(i => Map("name" -> i))
+    val controllersMap = Map(
+      "controllers"         -> controllers(modelCalls, unmanagedParts)(denotationTable),
+      "controller_imports"  -> controllerImports.map(i => Map("name" -> i)),
+      "unmanaged_imports"   -> unmanagedImports.map(i => Map("name" -> i))
     )
-    val allPackages = LastListElementMarks.set(rawAllPackages)
-    val template = getClass.getClassLoader.getResource(templateName)
-    val templateSource = TemplateSource.fromURL(template)
-    val output = engine.layout(templateSource, map ++ allPackages)
+
+    val singlePackage = Map(
+      "classes"             -> ReShaper.filterByType("classes", denotationTable),
+      "aliases"             -> ReShaper.filterByType("aliases", denotationTable),
+      "traits"              -> ReShaper.filterByType("traits", denotationTable),
+      "test_data_classes"   -> ReShaper.filterByType("test_data_classes", denotationTable),
+      "test_data_aliases"   -> ReShaper.filterByType("test_data_aliases", denotationTable),
+      "tests"               -> ReShaper.filterByType("tests", denotationTable)
+    )
+
+    val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
+    val allPackages         = LastListElementMarks.set(rawAllPackages)
+
+    val template            = getClass.getClassLoader.getResource(templateName)
+    val templateSource      = TemplateSource.fromURL(template)
+    val output              = engine.layout(templateSource, map ++ allPackages)
+
     output.replaceAll("\u2B90", "\n")
   }
 
@@ -143,16 +124,17 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
     val codeParts = markerIndexes map { idx => sortedMarkers.find(_ > idx).getOrElse(lines.length) }
 
     val parts = markers zip markerIndexes zip codeParts filter {
+      case ((((call, (marker, length)), start), end)) => start >= 0
+    } map {
       case ((((call, (marker, length)), start), end)) =>
-        start >= 0
-    } map { case ((((call, (marker, length)), start), end)) =>
-      val code = lines.slice(start + length, end - 1)
-      val relevantCode = code.takeWhile(!_.contains(eof))
-      val deadCode = code.dropWhile(!_.contains(eof)).drop(1).filterNot(_.trim.isEmpty)
-      val commentedOut = if (deadCode.isEmpty) "" else deadCode.mkString("/*\n", "\n", "\n*/\n")
-      call -> UnmanagedPart(call, relevantCode.mkString("\n"), commentedOut)
+        val code = lines.slice(start + length, end - 1)
+        val relevantCode = code.takeWhile(!_.contains(eof))
+        val deadCode = code.dropWhile(!_.contains(eof)).drop(1).filterNot(_.trim.isEmpty)
+        val commentedOut = if (deadCode.isEmpty) "" else deadCode.mkString("/*\n", "\n", "\n*/\n")
+        call -> UnmanagedPart(call, relevantCode.mkString("\n"), commentedOut)
     }
-    val preservedImports = allLines.filter(_.trim.startsWith("import")).map(_.replace("import ", "")).filterNot(controllerImports.contains)
+    val preservedImports =
+      allLines.filter(_.trim.startsWith("import")).map(_.replace("import ", "")).filterNot(controllerImports.contains)
     (parts.toMap, preservedImports)
   }
 
@@ -170,7 +152,7 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
   }
 }
 
-trait PlayScalaControllersGenerator extends ImportSupport {
+trait PlayScalaControllersGenerator {
 
   val controllerImports = Seq(
     "play.api.mvc.{Action, Controller}",
@@ -182,71 +164,29 @@ trait PlayScalaControllersGenerator extends ImportSupport {
 
   case class UnmanagedPart(marker: ApiCall, relevantCode: String, deadCode: String)
 
-  def strictModel: StrictModel
-
   val baseControllersSuffix = "Base"
-
-  val controllersTemplateName = "play_scala_controller.mustache"
-  val controllerBaseTemplateName = "play_scala_controller_base.mustache"
 
   def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart])(table: DenotationTable) = {
     allCalls groupBy { c =>
       (c.handler.packageName, c.handler.controller)
     } map { case (controller, calls) =>
-      val methods = calls map { call =>
-        val method = table(call.asReference)("controller")
-        val methodWithCode = method + (
-          "dead_code" -> unmanagedParts.get(call).map(_.deadCode).getOrElse(""),
-          "implementation" -> unmanagedParts.get(call).map(_.relevantCode).getOrElse("???")
-          )
-        methodWithCode
-      }
+      val methods = calls map { singleMethod(unmanagedParts, table) }
       Map(
-        "effective_package" -> escape(controller._1), // TODO currently, the package name just ignored
-        "controller" -> escape(controller._2),
-        "base" -> escape(controller._2 + baseControllersSuffix),
-        "methods" -> methods
+        "effective_package"   -> escape(controller._1), // TODO currently, the package name just ignored
+        "controller"          -> escape(controller._2),
+        "base"                -> escape(controller._2 + baseControllersSuffix),
+        "methods"             -> methods
       )
     }
   }
-}
 
-
-trait ImportSupport {
-
-  val dependencies = Map(
-    "Base" -> Set("Validator"),
-    "Action" -> Set("Validator", "Base"),
-    "Test" -> Seq("Validator", "Base")
-  )
-
-  protected case class TypePlacement(packageName: Option[String], typeName: String) {
-    val qualifiedName = packageName.map(_ + "." + typeName).getOrElse(typeName)
-  }
-
-  private var typeUsages = Map.empty[String, Set[TypePlacement]]
-
-  def cleanImportTable(): Unit = {
-    typeUsages.synchronized {
-      typeUsages = Map.empty[String, Set[TypePlacement]]
+  def singleMethod(unmanagedParts: Map[ApiCall, UnmanagedPart], table: DenotationTable): ApiCall => Map[String, Any] =
+    call => {
+      val method = table(call.asReference)("controller")
+      val methodWithCode = method + (
+        "dead_code"       -> unmanagedParts.get(call).map(_.deadCode).getOrElse(""),
+        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode).getOrElse("???")
+        )
+      methodWithCode
     }
-  }
-
-  def useType(ref: Reference, suffix: String, prefix: String) = {
-    val fullName = ref.qualifiedName(prefix, suffix)
-    fullName._2
-  }
-
-  def imports(pckg: String) = {
-    val neededTypes = typeUsages.get(pckg).toSeq.flatten.distinct.filterNot(_.packageName == Some(pckg))
-
-    val result = neededTypes.groupBy(_.packageName).flatMap { packageGroup =>
-      if (packageGroup._2.size > 3) Seq(packageGroup._1.get + "._")
-      else if (packageGroup._2.size > 1) Seq(packageGroup._1.get + "." + packageGroup._2.map(_.typeName).sorted.mkString("{", ", ", "}"))
-      else packageGroup._2.map(_.qualifiedName)
-    }
-    val endResult = result.map(r => Map("name" -> r))
-    endResult
-  }
-
 }

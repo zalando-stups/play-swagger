@@ -1,18 +1,10 @@
-{{#main_package}}
-package {{&main_package_prefix}}.{{&main_package_suffix}}
-{{/main_package}}
-
+package {{&main_package}}
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
 object Generators {
-{{#packages}}
-    {{#imports}}
-    import {{&name}}
-    {{/imports}}
-
     {{#test_data_aliases}}
     def {{& creator_method }} = _generate({{& generator }})⮐
     {{/test_data_aliases}}
@@ -40,4 +32,3 @@ object Generators {
         values <- Gen.containerOfN[List,V](keys.size, valGen)⮐
     } yield keys.zip(values).toMap⮐
 }
-{{/packages}}
