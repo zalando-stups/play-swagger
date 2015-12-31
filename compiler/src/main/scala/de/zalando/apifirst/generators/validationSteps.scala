@@ -43,7 +43,7 @@ trait CallValidatorsStep extends EnrichmentStep[ApiCall] with ValidatorsCommon {
       "validation_name" -> validator(r, table),
       "fields" -> call.handler.parameters.map { p =>
         Map(
-          "field_name" -> escape(p.name.simple),
+          "field_name" -> escape(camelize("\\.", p.name.simple)),
           "type_name" -> typeNameDenotation(table, p.name),
           "validation_name" -> validator(p.name, table)
         )

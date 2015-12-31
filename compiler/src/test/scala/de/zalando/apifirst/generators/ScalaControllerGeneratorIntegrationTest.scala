@@ -15,9 +15,7 @@ class ScalaControllerGeneratorIntegrationTest extends FunSpec with MustMatchers 
 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
-  def toTest: File => Boolean = f => {
-    f.getName.endsWith(".yaml") && f.getName.startsWith("simple")
-  }
+  def toTest: File => Boolean = f => f.getName.endsWith(".yaml")
 
   describe("ScalaPlayControllerGenerator should generate controller and base controller files") {
     (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>
@@ -39,8 +37,8 @@ class ScalaControllerGeneratorIntegrationTest extends FunSpec with MustMatchers 
         dump(controllers, file, "scala")
       val expectedB   = asInFile(file, "base.scala")
       if (expectedB.isEmpty) dump(bases, file, "base.scala")
-      // clean(controllers) mustBe clean(expectedC)
       clean(bases) mustBe clean(expectedB)
+      clean(controllers) mustBe clean(expectedC)
     }
   }
 

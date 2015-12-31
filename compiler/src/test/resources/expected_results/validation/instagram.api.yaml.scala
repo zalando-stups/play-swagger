@@ -246,9 +246,9 @@ class UsersSearchGetValidator(q: String, count: LikeUser_name) extends Recursive
     override val validators = Seq(
         new UsersSearchGetQValidator(q), new LikeUser_nameValidator(count))
 }
-class `MediaMedia-idCommentsPostValidator`(`media-id`: Int, TEXT: LocationLongitude) extends RecursiveValidator {
+class `MediaMedia-idCommentsPostValidator`(`media-id`: Int, tEXT: LocationLongitude) extends RecursiveValidator {
     override val validators = Seq(
-        new `MediaMedia-idCommentsPostMedia-idValidator`(`media-id`), new LocationLongitudeValidator(TEXT))
+        new `MediaMedia-idCommentsPostMedia-idValidator`(`media-id`), new LocationLongitudeValidator(tEXT))
 }
 class `MediaMedia-idLikesPostValidator`(`media-id`: Int) extends RecursiveValidator {
     override val validators = Seq(
@@ -270,9 +270,9 @@ class `LocationsLocation-idMediaRecentGetValidator`(`location-id`: Int, max_time
     override val validators = Seq(
         new `LocationsLocation-idMediaRecentGetLocation-idValidator`(`location-id`), new MediaCreated_timeValidator(max_timestamp), new MediaCreated_timeValidator(min_timestamp), new LikeUser_nameValidator(min_id), new LikeUser_nameValidator(max_id))
 }
-class MediaSearchGetValidator(MAX_TIMESTAMP: MediaCreated_time, DISTANCE: MediaCreated_time, LNG: LocationLongitude, MIN_TIMESTAMP: MediaCreated_time, LAT: LocationLongitude) extends RecursiveValidator {
+class MediaSearchGetValidator(mAX_TIMESTAMP: MediaCreated_time, dISTANCE: MediaCreated_time, lNG: LocationLongitude, mIN_TIMESTAMP: MediaCreated_time, lAT: LocationLongitude) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaCreated_timeValidator(MAX_TIMESTAMP), new MediaCreated_timeValidator(DISTANCE), new LocationLongitudeValidator(LNG), new MediaCreated_timeValidator(MIN_TIMESTAMP), new LocationLongitudeValidator(LAT))
+        new MediaCreated_timeValidator(mAX_TIMESTAMP), new MediaCreated_timeValidator(dISTANCE), new LocationLongitudeValidator(lNG), new MediaCreated_timeValidator(mIN_TIMESTAMP), new LocationLongitudeValidator(lAT))
 }
 class `TagsTag-nameMediaRecentGetValidator`(`tag-name`: String) extends RecursiveValidator {
     override val validators = Seq(

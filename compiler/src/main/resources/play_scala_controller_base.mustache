@@ -36,7 +36,7 @@ import scala.util._
             val {{&field_name}} = request.body
             {{/body_param}}
             {{#header_params}}
-            val {{&field_name}} = request.headers.{{&method}}("{{&field_name}}")
+            val {{&field_name}} = request.headers.{{&header_method}}("{{&field_name}}")
             {{/header_params}}
             val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
                 {{#validations?}}

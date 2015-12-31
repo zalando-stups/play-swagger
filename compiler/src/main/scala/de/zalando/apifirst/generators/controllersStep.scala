@@ -43,7 +43,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val allValidations      = callValidations(ref).asInstanceOf[Seq[_]]
     val actionResultType    = resultType(call)
     val actionErrorMappings = errorMappings(call)
-    val nameParamPair       = singleOrMultipleParameters(call)
+    val nameParamPair       = singleOrMultipleParameters(call)(table)
 
     val nameMappings        = nameMapping map { case (k, v) => k -> nameWithSuffix(call, v) }
 
@@ -95,14 +95,14 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     }}
 
   private def validationsByType(call: ApiCall, filter: Parameter => Boolean)(implicit table: DenotationTable) =
-    parametersValidations(parametersByPlace(call, filter))
+    parametersValidations(table)(parametersByPlace(call, filter))
 
   private def parametersByPlace(call: ApiCall, filter: Parameter => Boolean): Seq[ParameterRef] =
     call.handler.parameters.filter { p => filter(app.findParameter(p)) }
 
-  private def singleOrMultipleParameters(call: ApiCall): (String, Option[Map[String, Any]]) = {
-    lazy val parameters = Map("parameters" -> call.handler.parameters.map { parameterMap })
-    lazy val parameter = parameterMap(call.handler.parameters.head)
+  private def singleOrMultipleParameters(call: ApiCall)(table: DenotationTable): (String, Option[Map[String, Any]]) = {
+    lazy val parameters = Map("parameters" -> call.handler.parameters.map { parameterMap(table) })
+    lazy val parameter = parameterMap(table)(call.handler.parameters.head)
     val nameParamPair =
       if (call.handler.parameters.isEmpty) "" -> None
       else if (call.handler.parameters.length == 1) "single_parameter?" -> Some(parameter)
@@ -110,18 +110,19 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     nameParamPair
   }
 
-  private def parameterMap(param: ParameterRef): Map[String, String] = {
-    val typeName = app.findParameter(param).typeName.name
+  private def parameterMap(table: DenotationTable): ParameterRef => Map[String, String] = param => {
+    val typeName = app.findParameter(param).typeName
     Map(
-      "field_name" -> escape(camelize("\\.", param.simple)),
-      "type_name" -> typeName.typeAlias("", "") // TODO lookup in the table
+      "field_name" -> escape(camelize("\\.", param.simple)), // should be taken from the validation
+      "header_method" -> (if (typeName.isInstanceOf[Container]) "apply" else "get"),
+      "type_name" -> typeName.name.typeAlias("", "") //typeNameDenotation(table, typeName.name) // TODO lookup in the table
     )
   }
 
   def comment(action: String) = s"$eof $action"
 
-  def parametersValidations(parameters: Seq[ParameterRef]) =
-    parameters map parameterMap
+  def parametersValidations(table: DenotationTable)(parameters: Seq[ParameterRef]) =
+    parameters map parameterMap(table)
 
   // TODO made these names constants
   def callValidations(ref: Reference)(implicit table: DenotationTable) =
