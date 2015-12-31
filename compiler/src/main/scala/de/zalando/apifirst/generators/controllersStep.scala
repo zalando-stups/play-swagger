@@ -1,11 +1,11 @@
 package de.zalando.apifirst.generators
 
-import de.zalando.apifirst.Application.{Parameter, ApiCall, ParameterRef}
+import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef}
 import de.zalando.apifirst.Domain._
+import de.zalando.apifirst.ParameterPlace
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
-import de.zalando.apifirst.{ParameterPlace, Domain, ScalaName}
 
 /**
   * @author  slasch
@@ -41,7 +41,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val headerParams        = validationsByType(call, p => p.place == ParameterPlace.HEADER)
     val nonBodyParams       = validationsByType(call, p => p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER)
     val allValidations      = callValidations(ref).asInstanceOf[Seq[_]]
-    val actionResultType    = resultType(call)
+    val actionResultType    = resultType(call)(table)
     val actionErrorMappings = errorMappings(call)
     val nameParamPair       = singleOrMultipleParameters(call)(table)
 
@@ -78,12 +78,12 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
   private def nameWithSuffix(call: ApiCall, suffix: String): String =
     escape(call.handler.method + suffix)
 
-  private def resultType(call: ApiCall): Option[String] = {
+  private def resultType(call: ApiCall)(table: DenotationTable): Option[String] = {
     call.resultTypes.toSeq.sortBy(_.simple).headOption.map { t =>
       val tpe = app.findType(t.name)
       tpe match {
-        case c: Container => c.imports.head + "[" + c.tpe.name.typeAlias() + "]" // FIXME won't work with MAP
-        case p: ProvidedType => p.name.typeAlias()
+        case c: Container => c.imports.head + "[" + typeNameDenotation(table, c.tpe.name) + "]" // FIXME won't work with MAP
+        case p: ProvidedType => typeNameDenotation(table, p.name)
         case o => o.name.className
       }
     }
@@ -114,8 +114,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val typeName = app.findParameter(param).typeName
     Map(
       "field_name" -> escape(camelize("\\.", param.simple)), // should be taken from the validation
-      "header_method" -> (if (typeName.isInstanceOf[Container]) "apply" else "get"),
-      "type_name" -> typeName.name.typeAlias("", "") //typeNameDenotation(table, typeName.name) // TODO lookup in the table
+      "header_method" -> "get",
+      "type_name" -> typeNameDenotation(table, typeName.name)
     )
   }
 
