@@ -2,24 +2,25 @@ package nested_arrays
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type ExampleNestedArraysOptArr = scala.collection.Seq[ExampleNestedArraysOptArrArr]
+    type ExampleNestedArraysOptArr = ArrayWrapper[ExampleNestedArraysOptArrArr]
 
-    type ExampleNestedArraysOpt = scala.collection.Seq[ExampleNestedArraysOptArr]
+    type ExampleNestedArraysOpt = ArrayWrapper[ExampleNestedArraysOptArr]
 
-    type ExampleMessagesOpt = scala.collection.Seq[ExampleMessagesOptArr]
+    type ExampleMessagesOpt = ArrayWrapper[ExampleMessagesOptArr]
 
     type ActivityActions = Option[String]
 
     type ExampleMessages = Option[ExampleMessagesOpt]
 
-    type ExampleMessagesOptArr = scala.collection.Seq[Activity]
+    type ExampleMessagesOptArr = ArrayWrapper[Activity]
 
-    type ExampleNestedArraysOptArrArr = scala.collection.Seq[ExampleNestedArraysOptArrArrArr]
+    type ExampleNestedArraysOptArrArr = ArrayWrapper[ExampleNestedArraysOptArrArrArr]
 
     type ExampleNestedArrays = Option[ExampleNestedArraysOpt]
 
-    type ExampleNestedArraysOptArrArrArr = scala.collection.Seq[String]
+    type ExampleNestedArraysOptArrArrArr = ArrayWrapper[String]
 
     case class Activity(actions: ActivityActions) 
 

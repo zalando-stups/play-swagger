@@ -254,7 +254,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   // ------------------------------------ Wrappers ------------------------------------
 
   private def wrapInArray(t: NamedType, m: TypeMeta, collectionFormat: Option[String]): NamedType =
-    t._1 -> Domain.Arr(t._2, m, collectionFormat.map(_.toString))
+    t._1 -> Domain.Arr(t._2, m, collectionFormat.map(_.toString).getOrElse(CollectionFormat.default.toString))
 
   private def wrapInOption(t: NamedType): NamedType =
     t._1 -> Domain.Opt(t._2, TypeMeta(None))

@@ -2,8 +2,9 @@ package simple.petstore.api
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type PetsIdDeleteResponsesDefault = Option[ErrorModel]
+    type PetsIdDeleteResponsesDefault = Option[ErrorModel]
 
     type PetsPostResponses200 = Option[Pet]
 
@@ -15,9 +16,9 @@ type PetsIdDeleteResponsesDefault = Option[ErrorModel]
 
     type NewPetId = Option[Long]
 
-    type PetsGetTagsOpt = scala.collection.Seq[String]
+    type PetsGetTagsOpt = ArrayWrapper[String]
 
-    type PetsGetResponses200Opt = scala.collection.Seq[Pet]
+    type PetsGetResponses200Opt = ArrayWrapper[Pet]
 
     type PetTag = Option[String]
 

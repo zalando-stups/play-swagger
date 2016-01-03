@@ -2,8 +2,9 @@ package nested_objects
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type NestedObjectsNested = Option[NestedObjectsNestedOpt]
+    type NestedObjectsNested = Option[NestedObjectsNestedOpt]
 
     type NestedObjectsNestedNested2Nested3Bottom = Option[String]
 

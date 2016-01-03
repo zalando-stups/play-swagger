@@ -74,9 +74,9 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
 
     it("should generate single type alias for an array") {
       val model = Map(
-        "definitions" / "Int" -> Arr(Intgr(None), None),
-        "definitions" / "Dbl" -> Arr(Dbl(None), None),
-        "definitions" / "Flt" -> Arr(Flt(None), None)
+        "definitions" / "Int" -> Arr(Intgr(None), None, "csv"),
+        "definitions" / "Dbl" -> Arr(Dbl(None), None, "tsv"),
+        "definitions" / "Flt" -> Arr(Flt(None), None, "ssv")
       )
       new ScalaGenerator(model).generateGenerators("test.yaml") mustBeAs
         """package test.yaml
@@ -178,7 +178,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
     it("should generate a type alias for the TypeReference") {
       val model = Map(
         "definitions" / "OptionalData" -> Opt(TypeRef("definitions" / "Passwords"), None),
-        "definitions" / "Passwords" -> Arr(Password(None), None, None)
+        "definitions" / "Passwords" -> Arr(Password(None), None, "pipes")
       )
       val result = new ScalaGenerator(model).generateGenerators("test.yaml")
 

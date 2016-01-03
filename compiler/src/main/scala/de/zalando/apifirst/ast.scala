@@ -157,8 +157,8 @@ object Domain {
     def withType(t: Type): Container
   }
 
-  case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
-    extends Container(tpe.name / "Arr", tpe, meta, Set("scala.collection.Seq")) {
+  case class Arr(override val tpe: Type, override val meta: TypeMeta, format: String)
+    extends Container(tpe.name / "Arr", tpe, meta, Set("ArrayWrapper")) {
     def withType(t: Type) = this.copy(tpe = t)
   }
 

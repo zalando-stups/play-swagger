@@ -114,6 +114,7 @@ object strictModel {
     val SSV     = Value("ssv")
     val TSV     = Value("tsv")
     val PIPES   = Value("pipes")
+    val default = CSV
   }
 
   private[swagger] class CollectionFormatWithMultiReference extends TypeReference[CollectionFormatWithMulti.type]

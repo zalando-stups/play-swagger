@@ -5,6 +5,7 @@ package object {{&main_package_suffix}} {
 
     import java.util.Date
     import java.io.File
+    import de.zalando.play.controllers.ArrayWrapper
 
     {{#aliases}}
     type {{& name }} = {{& alias }}{{#underlying_type}}[{{& underlying_type }}]{{/underlying_type}}⮐

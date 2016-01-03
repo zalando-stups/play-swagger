@@ -2,26 +2,27 @@ package nested_arrays_validation
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type ExampleNestedArraysOpt = scala.collection.Seq[ExampleNestedArraysOptArr]
+    type ExampleNestedArraysOpt = ArrayWrapper[ExampleNestedArraysOptArr]
 
     type ActivityActions = Option[String]
 
-    type ExampleNestedArraysOptArrArr = scala.collection.Seq[ExampleNestedArraysOptArrArrArr]
+    type ExampleNestedArraysOptArrArr = ArrayWrapper[ExampleNestedArraysOptArrArrArr]
 
-    type ExampleMessagesOptArr = scala.collection.Seq[Activity]
+    type ExampleMessagesOptArr = ArrayWrapper[Activity]
 
-    type ExampleNestedArraysOptArrArrArr = scala.collection.Seq[String]
+    type ExampleNestedArraysOptArrArrArr = ArrayWrapper[String]
 
     type GetExample = Option[Example]
 
     type ExampleMessages = Option[ExampleMessagesOpt]
 
-    type ExampleMessagesOpt = scala.collection.Seq[ExampleMessagesOptArr]
+    type ExampleMessagesOpt = ArrayWrapper[ExampleMessagesOptArr]
 
     type ExampleNestedArrays = Option[ExampleNestedArraysOpt]
 
-    type ExampleNestedArraysOptArr = scala.collection.Seq[ExampleNestedArraysOptArrArr]
+    type ExampleNestedArraysOptArr = ArrayWrapper[ExampleNestedArraysOptArrArr]
 
     type GetResponses200 = Null
 

@@ -2,8 +2,9 @@ package security.api
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type PetsIdGetId = scala.collection.Seq[String]
+    type PetsIdGetId = ArrayWrapper[String]
 
     type PetsIdGetResponsesDefault = Option[ErrorModel]
 
@@ -11,7 +12,7 @@ type PetsIdGetId = scala.collection.Seq[String]
 
     type PetsIdGetResponses200 = Option[PetsIdGetResponses200Opt]
 
-    type PetsIdGetResponses200Opt = scala.collection.Seq[Pet]
+    type PetsIdGetResponses200Opt = ArrayWrapper[Pet]
 
     case class ErrorModel(code: Int, message: String) 
 

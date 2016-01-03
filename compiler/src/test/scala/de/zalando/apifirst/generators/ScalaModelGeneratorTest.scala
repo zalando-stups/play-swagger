@@ -33,6 +33,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           |package object scala {
           |import java.util.Date
           |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |type Opti = Option[Long]
           |type Stri = Option[String]
           |}
@@ -50,6 +51,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           |package object txt {
           |import java.util.Date
           |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |type Option = Option[Long]
           |type String = Option[String]
           |}
@@ -58,18 +60,19 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
     it("should generate single type alias for an array") {
       val model = Map(
-        "definitions" / "Int" -> Arr(Intgr(None), None),
-        "definitions" / "Dbl" -> Arr(Dbl(None), None),
-        "definitions" / "Flt" -> Arr(Flt(None), None)
+        "definitions" / "Int" -> Arr(Intgr(None), None, "csv"),
+        "definitions" / "Dbl" -> Arr(Dbl(None), None, "tsv"),
+        "definitions" / "Flt" -> Arr(Flt(None), None, "ssv")
       )
       new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
           |import java.util.Date
           |import java.io.File
-          |type Int = scala.collection.Seq[Int]
-          |type Dbl = scala.collection.Seq[Double]
-          |type Flt = scala.collection.Seq[Float]
+          |import de.zalando.play.controllers.ArrayWrapper
+          |type Int = ArrayWrapper[Int]
+          |type Dbl = ArrayWrapper[Double]
+          |type Flt = ArrayWrapper[Float]
           |}
           | """
     }
@@ -83,6 +86,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           |package object scala {
           |import java.util.Date
           |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |type All = scala.collection.immutable.Map[String, Boolean]
           |}
           | """
@@ -109,6 +113,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           |package object scala {
           |import java.util.Date
           |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |case class User(name: String, id: Long)
           |}
           | """
@@ -117,15 +122,16 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
     it("should generate a type alias for the TypeReference") {
       val model = Map(
         "definitions" / "OptionalData" -> Opt(TypeRef("definitions" / "Passwords"), None),
-        "definitions" / "Passwords" -> Arr(Password(None), None, None)
+        "definitions" / "Passwords" -> Arr(Password(None), None, "csv")
       )
       new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
           |import java.util.Date
           |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |type OptionalData = Option[Passwords]
-          |type Passwords = scala.collection.Seq[String]
+          |type Passwords = ArrayWrapper[String]
           |}
           | """
     }
@@ -174,6 +180,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           |package object scala {
           |import java.util.Date
           |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |trait IPet {
           |    def name: String
           |    def petType: String
@@ -210,6 +217,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           |package object scala {
           |import java.util.Date
           |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |case class ErrorModel(message: String, code: Int)
           |
           |case class ExtendedErrorModel(message: String, code: Int, rootCause: String)

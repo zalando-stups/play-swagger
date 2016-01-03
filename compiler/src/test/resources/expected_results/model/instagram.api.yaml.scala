@@ -2,8 +2,9 @@ package instagram.api
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses200MetaOpt`]
+    type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses200MetaOpt`]
 
     type `LocationsLocation-idLocation-id` = Int
 
@@ -25,7 +26,7 @@ type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses20
 
     type `MediaMedia-idCommentsDeleteResponses200` = Option[`MediaMedia-idCommentsDeleteResponses200Opt`]
 
-    type MediaUsers_in_photoOpt = scala.collection.Seq[MiniProfile]
+    type MediaUsers_in_photoOpt = ArrayWrapper[MiniProfile]
 
     type MediaImages = Option[MediaImagesOpt]
 
@@ -35,7 +36,7 @@ type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses20
 
     type `UsersSelfRequested-byGetResponses200` = Option[`UsersSelfRequested-byGetResponses200Opt`]
 
-    type MediaTagsOpt = scala.collection.Seq[Tag]
+    type MediaTagsOpt = ArrayWrapper[Tag]
 
     type MediaLikes = Option[MediaLikesOpt]
 
@@ -47,31 +48,31 @@ type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses20
 
     type MediaLocation = Option[Location]
 
-    type `MediaMedia-idLikesGetResponses200DataOpt` = scala.collection.Seq[Like]
+    type `MediaMedia-idLikesGetResponses200DataOpt` = ArrayWrapper[Like]
 
     type LocationsSearchGetResponses200Data = Option[LocationsSearchGetResponses200DataOpt]
 
     type `TagsTag-nameGetResponses200` = Option[Tag]
 
-    type MediaSearchGetResponses200DataOpt = scala.collection.Seq[MediaSearchGetResponses200DataOptArr]
+    type MediaSearchGetResponses200DataOpt = ArrayWrapper[MediaSearchGetResponses200DataOptArr]
 
     type `MediaMedia-idLikesGetResponses200` = Option[`MediaMedia-idLikesGetResponses200Opt`]
 
     type MediaTags = Option[MediaTagsOpt]
 
-    type LocationsSearchGetResponses200DataOpt = scala.collection.Seq[Location]
+    type LocationsSearchGetResponses200DataOpt = ArrayWrapper[Location]
 
     type MediaSearchGetResponses200 = Option[MediaSearchGetResponses200Opt]
 
     type MediaSearchGetResponses200Data = Option[MediaSearchGetResponses200DataOpt]
 
-    type UsersSelfFeedGetResponses200DataOpt = scala.collection.Seq[Media]
+    type UsersSelfFeedGetResponses200DataOpt = ArrayWrapper[Media]
 
     type TagsSearchGetResponses200 = Option[TagsSearchGetResponses200Opt]
 
     type `MediaMedia-idGetResponses200` = Option[Media]
 
-    type `MediaComments:DataOpt` = scala.collection.Seq[Comment]
+    type `MediaComments:DataOpt` = ArrayWrapper[Comment]
 
     type `UsersUser-idGetResponses200Data` = Option[User]
 

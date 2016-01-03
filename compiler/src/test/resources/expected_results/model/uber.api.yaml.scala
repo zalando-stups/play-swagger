@@ -2,14 +2,15 @@ package uber.api
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type EstimatesPriceGetEnd_latitude = Double
+    type EstimatesPriceGetEnd_latitude = Double
 
     type ProfileLast_name = Option[String]
 
-    type ProductsGetResponses200Opt = scala.collection.Seq[Product]
+    type ProductsGetResponses200Opt = ArrayWrapper[Product]
 
-    type EstimatesPriceGetResponses200Opt = scala.collection.Seq[PriceEstimate]
+    type EstimatesPriceGetResponses200Opt = ArrayWrapper[PriceEstimate]
 
     type ActivitiesHistory = Option[ActivitiesHistoryOpt]
 
@@ -23,7 +24,7 @@ type EstimatesPriceGetEnd_latitude = Double
 
     type MeGetResponses200 = Option[Profile]
 
-    type ActivitiesHistoryOpt = scala.collection.Seq[Activity]
+    type ActivitiesHistoryOpt = ArrayWrapper[Activity]
 
     type EstimatesPriceGetResponses200 = Option[EstimatesPriceGetResponses200Opt]
 

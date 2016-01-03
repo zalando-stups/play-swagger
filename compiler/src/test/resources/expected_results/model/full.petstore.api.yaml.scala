@@ -2,14 +2,15 @@ package full.petstore.api
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type OrderQuantity = Option[Int]
+    type OrderQuantity = Option[Int]
 
     type UsersUsernameGetUsername = String
 
     type UsersCreateWithListPostResponsesDefault = Null
 
-    type UsersCreateWithListPostBodyOpt = scala.collection.Seq[User]
+    type UsersCreateWithListPostBodyOpt = ArrayWrapper[User]
 
     type OrderPetId = Option[Long]
 
@@ -29,9 +30,9 @@ type OrderQuantity = Option[Int]
 
     type PetsPetIdDeletePetId = Long
 
-    type PetTagsOpt = scala.collection.Seq[Tag]
+    type PetTagsOpt = ArrayWrapper[Tag]
 
-    type PetsFindByStatusGetResponses200Opt = scala.collection.Seq[Pet]
+    type PetsFindByStatusGetResponses200Opt = ArrayWrapper[Pet]
 
     type PetCategory = Option[Tag]
 
@@ -41,7 +42,7 @@ type OrderQuantity = Option[Int]
 
     type PetsFindByStatusGetStatus = Option[PetPhotoUrls]
 
-    type PetPhotoUrls = scala.collection.Seq[String]
+    type PetPhotoUrls = ArrayWrapper[String]
 
     case class User(email: OrderStatus, username: OrderStatus, userStatus: OrderQuantity, lastName: OrderStatus, firstName: OrderStatus, id: OrderPetId, phone: OrderStatus, password: OrderStatus) 
 

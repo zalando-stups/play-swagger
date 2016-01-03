@@ -2,10 +2,11 @@ package error_in_array
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
 type MetaCopyright = Option[String]
 
-    type ErrorsErrorsOpt = scala.collection.Seq[Error]
+    type ErrorsErrorsOpt = ArrayWrapper[Error]
 
     type ModelSchemaSpecialDescriptions = Option[ModelSchemaAgeGroups]
 
@@ -13,7 +14,7 @@ type MetaCopyright = Option[String]
 
     type ErrorSource = Option[ErrorSourceNameClash]
 
-    type ModelSchemaAgeGroups = scala.collection.Seq[String]
+    type ModelSchemaAgeGroups = ArrayWrapper[String]
 
     type ModelSchemaRootData = Option[ModelSchema]
 

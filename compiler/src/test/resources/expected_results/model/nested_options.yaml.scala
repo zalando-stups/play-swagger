@@ -2,8 +2,9 @@ package nested_options
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type BasicOptional = Option[BasicOptionalOpt]
+    type BasicOptional = Option[BasicOptionalOpt]
 
     type BasicOptionalNested_optional = Option[String]
 

@@ -2,12 +2,13 @@ package heroku.petstore.api
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type PetName = Option[String]
+    type PetName = Option[String]
 
     type PetIdGetPetId = String
 
-    type GetResponses200Opt = scala.collection.Seq[Pet]
+    type GetResponses200Opt = ArrayWrapper[Pet]
 
     type PostResponses200 = Null
 

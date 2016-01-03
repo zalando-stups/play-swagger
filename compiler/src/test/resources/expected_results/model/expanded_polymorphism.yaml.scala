@@ -2,6 +2,7 @@ package expanded_polymorphism
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
 type PetsIdDeleteResponsesDefault = Option[Error]
 
@@ -13,9 +14,9 @@ type PetsIdDeleteResponsesDefault = Option[Error]
 
     type NewPetTag = Option[String]
 
-    type PetsGetTagsOpt = scala.collection.Seq[String]
+    type PetsGetTagsOpt = ArrayWrapper[String]
 
-    type PetsGetResponses200Opt = scala.collection.Seq[Pet]
+    type PetsGetResponses200Opt = ArrayWrapper[Pet]
 
     type PetsGetResponses200 = Option[PetsGetResponses200Opt]
 

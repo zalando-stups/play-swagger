@@ -2,8 +2,9 @@ package options
 package object yaml {
 import java.util.Date
 import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
 
-type BasicRequired = scala.collection.Seq[String]
+    type BasicRequired = ArrayWrapper[String]
 
     type BasicOptional = Option[BasicRequired]
 
