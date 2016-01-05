@@ -106,12 +106,18 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val imports = ImportsCollector.collect(rawAllPackages)
     val importMaps = imports.distinct map { i => Map("name" -> i) }
 
-    val allPackages = LastListElementMarks.set(rawAllPackages) +
-      ("imports" -> importMaps) +
-      ("lists?" -> imports.exists(_.contains("ArrayWrapper"))) +
-      ("maps?" -> imports.exists(_.contains("Map")))
-
+    val allPackages = LastListElementMarks.set(rawAllPackages) ++ neededParts(imports) + ("imports" -> importMaps)
     allPackages
+  }
+
+  private val partsMapping = Map(
+    "lists?" -> "ArrayWrapper",
+    "maps?" -> "Map",
+    "date?" -> "DateMidnight",
+    "date_time?" -> "DateTime"
+  )
+  private def neededParts(imports: Seq[String]): Map[String, Boolean] = partsMapping map {
+    case (k,v) => k -> imports.exists(_.contains(v))
   }
 }
 

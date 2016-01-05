@@ -133,4 +133,7 @@ def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
+    implicit lazy val arbDateTime: Arbitrary[DateTime] = Arbitrary(for {
+        l <- arbitrary[Long]
+    } yield new DateTime(System.currentTimeMillis + l))
 }
