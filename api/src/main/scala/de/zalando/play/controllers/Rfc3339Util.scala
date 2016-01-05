@@ -25,14 +25,12 @@ object Rfc3339Util {
   private val fullDTWithTicks = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
   private val dateTime = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
 
-  def parseDateTime(datestring: String): Try[DateTime] = Try {
+  def parseDateTime(datestring: String): DateTime =
     if(datestring.endsWith("Z")) parseFull(datestring)
     else parseParts(datestring)
-  }
 
-  def parseDate(datestring: String): Try[DateMidnight] = Try {
+  def parseDate(datestring: String): DateMidnight =
     fullDate.parseDateTime(datestring).toDateMidnight
-  }
 
   def writeDate(date: DateMidnight): String = fullDate.print(date)
 
