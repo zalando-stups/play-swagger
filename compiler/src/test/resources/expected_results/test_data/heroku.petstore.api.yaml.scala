@@ -21,7 +21,7 @@ def createPetNameGenerator = _generate(PetNameGenerator)
 
     def StringGenerator = arbitrary[String]
 
-    def GetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
+    def GetResponses200OptGenerator = _genList(PetGenerator, "csv")
 
     def NullGenerator = arbitrary[Null]
 
@@ -37,13 +37,7 @@ def createPetNameGenerator = _generate(PetNameGenerator)
         } yield Pet(name, birthday)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
 }

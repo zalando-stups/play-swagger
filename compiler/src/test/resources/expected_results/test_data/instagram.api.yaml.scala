@@ -119,7 +119,7 @@ def createTagsSearchGetResponses200MetaGenerator = _generate(TagsSearchGetRespon
 
     def `MediaMedia-idCommentsDeleteResponses200Generator` = Gen.option(`MediaMedia-idCommentsDeleteResponses200OptGenerator`)
 
-    def MediaUsers_in_photoOptGenerator = Gen.containerOf[List,MiniProfile](MiniProfileGenerator)
+    def MediaUsers_in_photoOptGenerator = _genList(MiniProfileGenerator, "csv")
 
     def MediaImagesGenerator = Gen.option(MediaImagesOptGenerator)
 
@@ -129,7 +129,7 @@ def createTagsSearchGetResponses200MetaGenerator = _generate(TagsSearchGetRespon
 
     def `UsersSelfRequested-byGetResponses200Generator` = Gen.option(`UsersSelfRequested-byGetResponses200OptGenerator`)
 
-    def MediaTagsOptGenerator = Gen.containerOf[List,Tag](TagGenerator)
+    def MediaTagsOptGenerator = _genList(TagGenerator, "csv")
 
     def MediaLikesGenerator = Gen.option(MediaLikesOptGenerator)
 
@@ -141,31 +141,31 @@ def createTagsSearchGetResponses200MetaGenerator = _generate(TagsSearchGetRespon
 
     def MediaLocationGenerator = Gen.option(LocationGenerator)
 
-    def `MediaMedia-idLikesGetResponses200DataOptGenerator` = Gen.containerOf[List,Like](LikeGenerator)
+    def `MediaMedia-idLikesGetResponses200DataOptGenerator` = _genList(LikeGenerator, "csv")
 
     def LocationsSearchGetResponses200DataGenerator = Gen.option(LocationsSearchGetResponses200DataOptGenerator)
 
     def `TagsTag-nameGetResponses200Generator` = Gen.option(TagGenerator)
 
-    def MediaSearchGetResponses200DataOptGenerator = Gen.containerOf[List,MediaSearchGetResponses200DataOptArr](MediaSearchGetResponses200DataOptArrGenerator)
+    def MediaSearchGetResponses200DataOptGenerator = _genList(MediaSearchGetResponses200DataOptArrGenerator, "csv")
 
     def `MediaMedia-idLikesGetResponses200Generator` = Gen.option(`MediaMedia-idLikesGetResponses200OptGenerator`)
 
     def MediaTagsGenerator = Gen.option(MediaTagsOptGenerator)
 
-    def LocationsSearchGetResponses200DataOptGenerator = Gen.containerOf[List,Location](LocationGenerator)
+    def LocationsSearchGetResponses200DataOptGenerator = _genList(LocationGenerator, "csv")
 
     def MediaSearchGetResponses200Generator = Gen.option(MediaSearchGetResponses200OptGenerator)
 
     def MediaSearchGetResponses200DataGenerator = Gen.option(MediaSearchGetResponses200DataOptGenerator)
 
-    def UsersSelfFeedGetResponses200DataOptGenerator = Gen.containerOf[List,Media](MediaGenerator)
+    def UsersSelfFeedGetResponses200DataOptGenerator = _genList(MediaGenerator, "csv")
 
     def TagsSearchGetResponses200Generator = Gen.option(TagsSearchGetResponses200OptGenerator)
 
     def `MediaMedia-idGetResponses200Generator` = Gen.option(MediaGenerator)
 
-    def `MediaComments:DataOptGenerator` = Gen.containerOf[List,Comment](CommentGenerator)
+    def `MediaComments:DataOptGenerator` = _genList(CommentGenerator, "csv")
 
     def `UsersUser-idGetResponses200DataGenerator` = Gen.option(UserGenerator)
 
@@ -415,13 +415,7 @@ def createTagsSearchGetResponses200MetaGenerator = _generate(TagsSearchGetRespon
         } yield `MediaMedia-idCommentsGetResponses200Opt`(meta, data)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
 }

@@ -12,7 +12,7 @@ def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditi
 
     def KeyedArraysAdditionalPropertiesGenerator = _genMap[String,KeyedArraysAdditionalPropertiesCatchAll](arbitrary[String], KeyedArraysAdditionalPropertiesCatchAllGenerator)
 
-    def KeyedArraysAdditionalPropertiesCatchAllGenerator = Gen.containerOf[List,Int](arbitrary[Int])
+    def KeyedArraysAdditionalPropertiesCatchAllGenerator = _genList(arbitrary[Int], "csv")
 
     def createKeyedArraysGenerator = _generate(KeyedArraysGenerator)
 
@@ -21,7 +21,9 @@ def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditi
         } yield KeyedArrays(additionalProperties)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
     def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
 
         keys <- Gen.containerOf[List,K](keyGen)

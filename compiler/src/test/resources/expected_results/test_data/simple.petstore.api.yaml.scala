@@ -39,9 +39,9 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
 
     def NewPetIdGenerator = Gen.option(arbitrary[Long])
 
-    def PetsGetTagsOptGenerator = Gen.containerOf[List,String](arbitrary[String])
+    def PetsGetTagsOptGenerator = _genList(arbitrary[String], "csv")
 
-    def PetsGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
+    def PetsGetResponses200OptGenerator = _genList(PetGenerator, "csv")
 
     def PetTagGenerator = Gen.option(arbitrary[String])
 
@@ -73,13 +73,7 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
         } yield NewPet(name, id, tag)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
 }

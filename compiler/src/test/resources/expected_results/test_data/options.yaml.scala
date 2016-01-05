@@ -9,7 +9,7 @@ def createBasicRequiredGenerator = _generate(BasicRequiredGenerator)
 
     def createBasicOptionalGenerator = _generate(BasicOptionalGenerator)
 
-    def BasicRequiredGenerator = Gen.containerOf[List,String](arbitrary[String])
+    def BasicRequiredGenerator = _genList(arbitrary[String], "csv")
 
     def BasicOptionalGenerator = Gen.option(BasicRequiredGenerator)
 
@@ -22,13 +22,7 @@ def createBasicRequiredGenerator = _generate(BasicRequiredGenerator)
         } yield Basic(id, required, optional)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
 }

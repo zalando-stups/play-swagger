@@ -15,7 +15,7 @@ def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
 
     def createPetsIdGetResponses200OptGenerator = _generate(PetsIdGetResponses200OptGenerator)
 
-    def PetsIdGetIdGenerator = Gen.containerOf[List,String](arbitrary[String])
+    def PetsIdGetIdGenerator = _genList(arbitrary[String], "csv")
 
     def PetsIdGetResponsesDefaultGenerator = Gen.option(ErrorModelGenerator)
 
@@ -23,7 +23,7 @@ def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
 
     def PetsIdGetResponses200Generator = Gen.option(PetsIdGetResponses200OptGenerator)
 
-    def PetsIdGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
+    def PetsIdGetResponses200OptGenerator = _genList(PetGenerator, "csv")
 
     def createErrorModelGenerator = _generate(ErrorModelGenerator)
 
@@ -40,13 +40,7 @@ def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
         } yield Pet(name, tag)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
 }

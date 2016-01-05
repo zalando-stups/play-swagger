@@ -23,23 +23,23 @@ def createExampleNestedArraysOptArrGenerator = _generate(ExampleNestedArraysOptA
 
     def createExampleNestedArraysOptArrArrArrGenerator = _generate(ExampleNestedArraysOptArrArrArrGenerator)
 
-    def ExampleNestedArraysOptArrGenerator = Gen.containerOf[List,ExampleNestedArraysOptArrArr](ExampleNestedArraysOptArrArrGenerator)
+    def ExampleNestedArraysOptArrGenerator = _genList(ExampleNestedArraysOptArrArrGenerator, "csv")
 
-    def ExampleNestedArraysOptGenerator = Gen.containerOf[List,ExampleNestedArraysOptArr](ExampleNestedArraysOptArrGenerator)
+    def ExampleNestedArraysOptGenerator = _genList(ExampleNestedArraysOptArrGenerator, "csv")
 
-    def ExampleMessagesOptGenerator = Gen.containerOf[List,ExampleMessagesOptArr](ExampleMessagesOptArrGenerator)
+    def ExampleMessagesOptGenerator = _genList(ExampleMessagesOptArrGenerator, "csv")
 
     def ActivityActionsGenerator = Gen.option(arbitrary[String])
 
     def ExampleMessagesGenerator = Gen.option(ExampleMessagesOptGenerator)
 
-    def ExampleMessagesOptArrGenerator = Gen.containerOf[List,Activity](ActivityGenerator)
+    def ExampleMessagesOptArrGenerator = _genList(ActivityGenerator, "csv")
 
-    def ExampleNestedArraysOptArrArrGenerator = Gen.containerOf[List,ExampleNestedArraysOptArrArrArr](ExampleNestedArraysOptArrArrArrGenerator)
+    def ExampleNestedArraysOptArrArrGenerator = _genList(ExampleNestedArraysOptArrArrArrGenerator, "csv")
 
     def ExampleNestedArraysGenerator = Gen.option(ExampleNestedArraysOptGenerator)
 
-    def ExampleNestedArraysOptArrArrArrGenerator = Gen.containerOf[List,String](arbitrary[String])
+    def ExampleNestedArraysOptArrArrArrGenerator = _genList(arbitrary[String], "csv")
 
     def createActivityGenerator = _generate(ActivityGenerator)
 
@@ -55,13 +55,7 @@ def createExampleNestedArraysOptArrGenerator = _generate(ExampleNestedArraysOptA
         } yield Example(messages, nestedArrays)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
 }

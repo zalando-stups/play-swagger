@@ -93,10 +93,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     )
 
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
-    val imports             = ImportsCollector.collect(rawAllPackages)
-    val importMaps          = imports.distinct map { i => Map("name" -> i) }
-
-    val allPackages         = LastListElementMarks.set(rawAllPackages) + ("imports" -> importMaps)
+    val allPackages         = enrichWithStructuralInfo(rawAllPackages)
 
     val template            = getClass.getClassLoader.getResource(templateName)
     val templateSource      = TemplateSource.fromURL(template)
@@ -105,6 +102,17 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     output.replaceAll("\u2B90", "\n")
   }
 
+  def enrichWithStructuralInfo(rawAllPackages: Map[String, Iterable[Any]]): Map[String, Any] = {
+    val imports = ImportsCollector.collect(rawAllPackages)
+    val importMaps = imports.distinct map { i => Map("name" -> i) }
+
+    val allPackages = LastListElementMarks.set(rawAllPackages) +
+      ("imports" -> importMaps) +
+      ("lists?" -> imports.exists(_.contains("ArrayWrapper"))) +
+      ("maps?" -> imports.exists(_.contains("Map")))
+
+    allPackages
+  }
 }
 
 trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with ControllersCommons {

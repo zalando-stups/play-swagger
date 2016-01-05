@@ -38,10 +38,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |   def OptiGenerator = Gen.option(arbitrary[Long])
           |   def StriGenerator = Gen.option(arbitrary[String])
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-          |   def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-          |     keys <- Gen.containerOf[List,K](keyGen)
-          |     values <- Gen.containerOfN[List,V](keys.size, valGen)
-          |   } yield keys.zip(values).toMap
           |}"""
     }
 
@@ -61,10 +57,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |   def OptionGenerator = Gen.option(arbitrary[Long])
           |   def StringGenerator = Gen.option(arbitrary[String])
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-          |   def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-          |     keys <- Gen.containerOf[List,K](keyGen)
-          |     values <- Gen.containerOfN[List,V](keys.size, valGen)
-          |   } yield keys.zip(values).toMap
           |}"""
     }
 
@@ -83,14 +75,13 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |   def createIntGenerator = _generate(IntGenerator)
           |   def createDblGenerator = _generate(DblGenerator)
           |   def createFltGenerator = _generate(FltGenerator)
-          |   def IntGenerator = Gen.containerOf[List,Int](arbitrary[Int])
-          |   def DblGenerator = Gen.containerOf[List,Double](arbitrary[Double])
-          |   def FltGenerator = Gen.containerOf[List,Float](arbitrary[Float])
+          |   def IntGenerator = _genList(arbitrary[Int], "csv")
+          |   def DblGenerator = _genList(arbitrary[Double], "tsv")
+          |   def FltGenerator = _genList(arbitrary[Float], "ssv")
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-          |   def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-          |     keys <- Gen.containerOf[List,K](keyGen)
-          |     values <- Gen.containerOfN[List,V](keys.size, valGen)
-          |   } yield keys.zip(values).toMap
+          |    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+          |        items <- Gen.containerOf[List,T](gen)
+          |    } yield ArrayWrapper(format)(items)
           |}"""
     }
 
@@ -131,10 +122,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |def NullGenerator = arbitrary[Null]
           |def NullNameClashGenerator = arbitrary[Null]
           | def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-          | def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-          |   keys <- Gen.containerOf[List,K](keyGen)
-          |   values <- Gen.containerOfN[List,V](keys.size, valGen)
-          | } yield keys.zip(values).toMap
           |}"""
     }
 
@@ -158,10 +145,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |       id <- arbitrary[Long]
           |     } yield User(name, id)
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-          |   def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-          |     keys <- Gen.containerOf[List,K](keyGen)
-          |     values <- Gen.containerOfN[List,V](keys.size, valGen)
-          |   } yield keys.zip(values).toMap
           |}"""
     }
 
@@ -181,12 +164,11 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |   def createOptionalDataGenerator = _generate(OptionalDataGenerator)
           |   def createPasswordsGenerator = _generate(PasswordsGenerator)
           |   def OptionalDataGenerator = Gen.option(PasswordsGenerator)
-          |   def PasswordsGenerator = Gen.containerOf[List,String](arbitrary[String])
+          |   def PasswordsGenerator = _genList(arbitrary[String], "pipes")
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-          |   def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-          |     keys <- Gen.containerOf[List,K](keyGen)
-          |     values <- Gen.containerOfN[List,V](keys.size, valGen)
-          |   } yield keys.zip(values).toMap
+          |    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+          |        items <- Gen.containerOf[List,T](gen)
+          |    } yield ArrayWrapper(format)(items)
           |}"""
     }
 
@@ -264,10 +246,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |       cuteness <- arbitrary[Int]
           |     } yield Labrador(name, petType, packSize, cuteness)
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-          |   def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-          |     keys <- Gen.containerOf[List,K](keyGen)
-          |     values <- Gen.containerOfN[List,V](keys.size, valGen)
-          |   } yield keys.zip(values).toMap
           |}"""
     }
 
@@ -304,10 +282,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |       rootCause <- arbitrary[String]
           |     } yield ExtendedErrorModel(message, code, rootCause)
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-          |   def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-          |     keys <- Gen.containerOf[List,K](keyGen)
-          |     values <- Gen.containerOfN[List,V](keys.size, valGen)
-          |   } yield keys.zip(values).toMap
           |}"""
     }
 

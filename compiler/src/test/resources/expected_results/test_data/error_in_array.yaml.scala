@@ -27,7 +27,7 @@ def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
 
     def MetaCopyrightGenerator = Gen.option(arbitrary[String])
 
-    def ErrorsErrorsOptGenerator = Gen.containerOf[List,Error](ErrorGenerator)
+    def ErrorsErrorsOptGenerator = _genList(ErrorGenerator, "csv")
 
     def ModelSchemaSpecialDescriptionsGenerator = Gen.option(ModelSchemaAgeGroupsGenerator)
 
@@ -35,7 +35,7 @@ def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
 
     def ErrorSourceGenerator = Gen.option(ErrorSourceNameClashGenerator)
 
-    def ModelSchemaAgeGroupsGenerator = Gen.containerOf[List,String](arbitrary[String])
+    def ModelSchemaAgeGroupsGenerator = _genList(arbitrary[String], "csv")
 
     def ModelSchemaRootDataGenerator = Gen.option(ModelSchemaGenerator)
 
@@ -106,13 +106,7 @@ def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
         } yield Links(self, related)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
 }

@@ -35,9 +35,9 @@ def createDoubleGenerator = _generate(DoubleGenerator)
 
     def ProfileLast_nameGenerator = Gen.option(arbitrary[String])
 
-    def ProductsGetResponses200OptGenerator = Gen.containerOf[List,Product](ProductGenerator)
+    def ProductsGetResponses200OptGenerator = _genList(ProductGenerator, "csv")
 
-    def EstimatesPriceGetResponses200OptGenerator = Gen.containerOf[List,PriceEstimate](PriceEstimateGenerator)
+    def EstimatesPriceGetResponses200OptGenerator = _genList(PriceEstimateGenerator, "csv")
 
     def ActivitiesHistoryGenerator = Gen.option(ActivitiesHistoryOptGenerator)
 
@@ -51,7 +51,7 @@ def createDoubleGenerator = _generate(DoubleGenerator)
 
     def MeGetResponses200Generator = Gen.option(ProfileGenerator)
 
-    def ActivitiesHistoryOptGenerator = Gen.containerOf[List,Activity](ActivityGenerator)
+    def ActivitiesHistoryOptGenerator = _genList(ActivityGenerator, "csv")
 
     def EstimatesPriceGetResponses200Generator = Gen.option(EstimatesPriceGetResponses200OptGenerator)
 
@@ -113,13 +113,7 @@ def createDoubleGenerator = _generate(DoubleGenerator)
         } yield Error(code, message, fields)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
 }

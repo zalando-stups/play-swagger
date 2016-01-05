@@ -4,6 +4,7 @@ import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.naming.Reference
 import DenotationNames._
+import de.zalando.play.controllers.ArrayWrapper
 
 /**
   * @author slasch
@@ -70,7 +71,7 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
     val className = typeNameDenotation(t, c.tpe.name)
     c match {
       case Opt(tpe, _) => s"Gen.option($innerGenerator)"
-      case Arr(tpe, _, _) => s"Gen.containerOf[List,$className]($innerGenerator)"
+      case Arr(tpe, _, format) => s"""_genList($innerGenerator, "$format")"""
       case c@CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
     }
   }
