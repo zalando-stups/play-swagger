@@ -1,7 +1,8 @@
 package {{&main_package}}
 
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
 {{#imports}}
 import {{&name}}
@@ -40,4 +41,14 @@ object Generators {
         values <- Gen.containerOfN[List,V](keys.size, valGen)⮐
     } yield keys.zip(values).toMap⮐
     {{/maps?}}
+    {{#date?}}
+    implicit lazy val arbDateMidnight: Arbitrary[DateMidnight] = Arbitrary(for {
+        l <- arbitrary[Long]
+    } yield new DateMidnight(System.currentTimeMillis + l))
+    {{/date?}}
+    {{#date_time?}}
+    implicit lazy val arbDateTime: Arbitrary[DateTime] = Arbitrary(for {
+        l <- arbitrary[Long]
+    } yield new DateTime(System.currentTimeMillis + l))
+    {{/date_time?}}
 }

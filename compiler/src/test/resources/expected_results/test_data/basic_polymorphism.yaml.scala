@@ -1,7 +1,8 @@
 package basic_polymorphism.yaml
 
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
 object Generators {
 def createCatGenerator = _generate(CatGenerator)

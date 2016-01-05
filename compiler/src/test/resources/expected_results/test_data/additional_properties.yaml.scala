@@ -1,7 +1,8 @@
 package additional_properties.yaml
 
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
 import scala.collection.immutable.Map
 import de.zalando.play.controllers.ArrayWrapper

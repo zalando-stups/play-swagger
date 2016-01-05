@@ -31,7 +31,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       result mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+          |import Arbitrary._
           |object Generators {
           |   def createOptiGenerator = _generate(OptiGenerator)
           |   def createStriGenerator = _generate(StriGenerator)
@@ -50,7 +51,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateGenerators("overloaded.yaml") mustBeAs
         """package overloaded.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+          |import Arbitrary._
           |object Generators {
           |   def createOptionGenerator = _generate(OptionGenerator)
           |   def createStringGenerator = _generate(StringGenerator)
@@ -69,7 +71,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateGenerators("test.yaml") mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+          |import Arbitrary._
           |import de.zalando.play.controllers.ArrayWrapper
           |object Generators {
           |   def createIntGenerator = _generate(IntGenerator)
@@ -92,7 +95,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateGenerators("test.yaml") mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+          |import Arbitrary._
           |import scala.collection.immutable.Map
           |object Generators {
           |   def createAllGenerator = _generate(AllGenerator)
@@ -115,7 +119,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         """|
           |package test.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+          |import Arbitrary._
           |object Generators {
           |def createNullGenerator = _generate(NullGenerator)
           |def createNullNameClashGenerator = _generate(NullNameClashGenerator)
@@ -137,7 +142,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       result mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+          |import Arbitrary._
           |object Generators {
           |   def createUserGenerator = _generate(UserGenerator)
           |   def UserGenerator = for {
@@ -158,7 +164,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       result mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+          |import Arbitrary._
           |import de.zalando.play.controllers.ArrayWrapper
           |object Generators {
           |   def createOptionalDataGenerator = _generate(OptionalDataGenerator)
@@ -212,7 +219,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       result mustBeAs
         s"""package test.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+            |import Arbitrary._
           |object Generators {
           |   def createCatGenerator = _generate(CatGenerator)
           |   def createDogGenerator = _generate(DogGenerator)
@@ -268,7 +276,8 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       result mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
-          |import org.scalacheck.Arbitrary._
+          |import org.scalacheck.Arbitrary
+          |import Arbitrary._
           |object Generators {
           |   def createErrorModelGenerator = _generate(ErrorModelGenerator)
           |   def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)
