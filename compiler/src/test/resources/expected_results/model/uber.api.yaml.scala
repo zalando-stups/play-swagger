@@ -1,9 +1,6 @@
 package uber.api
 package object yaml {
-import java.util.Date
-import java.io.File
 import de.zalando.play.controllers.ArrayWrapper
-
     type EstimatesPriceGetEnd_latitude = Double
 
     type ProfileLast_name = Option[String]

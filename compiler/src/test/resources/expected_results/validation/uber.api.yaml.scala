@@ -4,9 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-import java.util.Date
-import java.io.File
-
+import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class EstimatesPriceGetEnd_latitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =

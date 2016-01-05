@@ -1,9 +1,6 @@
 package instagram.api
 package object yaml {
-import java.util.Date
-import java.io.File
 import de.zalando.play.controllers.ArrayWrapper
-
     type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses200MetaOpt`]
 
     type `LocationsLocation-idLocation-id` = Int

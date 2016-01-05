@@ -1,10 +1,7 @@
 package expanded_polymorphism
 package object yaml {
-import java.util.Date
-import java.io.File
 import de.zalando.play.controllers.ArrayWrapper
-
-type PetsIdDeleteResponsesDefault = Option[Error]
+    type PetsIdDeleteResponsesDefault = Option[Error]
 
     type PetsIdDeleteResponses204 = Null
 

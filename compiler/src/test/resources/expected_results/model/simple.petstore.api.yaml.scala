@@ -1,9 +1,6 @@
 package simple.petstore.api
 package object yaml {
-import java.util.Date
-import java.io.File
 import de.zalando.play.controllers.ArrayWrapper
-
     type PetsIdDeleteResponsesDefault = Option[ErrorModel]
 
     type PetsPostResponses200 = Option[Pet]

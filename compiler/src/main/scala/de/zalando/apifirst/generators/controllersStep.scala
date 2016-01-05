@@ -82,7 +82,9 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     call.resultTypes.toSeq.sortBy(_.simple).headOption.map { t =>
       val tpe = app.findType(t.name)
       tpe match {
-        case c: Container => c.imports.head + "[" + typeNameDenotation(table, c.tpe.name) + "]" // FIXME won't work with MAP
+        case c: Container =>
+          // TODO this should be readable from model
+          c.name.simple + c.nestedTypes.map{ t => typeNameDenotation(table, t.name)}.mkString("[", ", ", "]")
         case p: ProvidedType => typeNameDenotation(table, p.name)
         case o => o.name.className
       }

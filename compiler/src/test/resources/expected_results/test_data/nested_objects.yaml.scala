@@ -1,8 +1,7 @@
 package nested_objects.yaml
+
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
 
 object Generators {
 def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)

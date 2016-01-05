@@ -1,9 +1,6 @@
 package nested_arrays_validation
 package object yaml {
-import java.util.Date
-import java.io.File
 import de.zalando.play.controllers.ArrayWrapper
-
     type ExampleNestedArraysOpt = ArrayWrapper[ExampleNestedArraysOptArr]
 
     type ActivityActions = Option[String]

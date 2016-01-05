@@ -93,7 +93,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     )
 
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
-    val allPackages         = LastListElementMarks.set(rawAllPackages)
+    val imports             = ImportsCollector.collect(rawAllPackages)
+    val importMaps          = imports.distinct map { i => Map("name" -> i) }
+
+    val allPackages         = LastListElementMarks.set(rawAllPackages) + ("imports" -> importMaps)
 
     val template            = getClass.getClassLoader.getResource(templateName)
     val templateSource      = TemplateSource.fromURL(template)

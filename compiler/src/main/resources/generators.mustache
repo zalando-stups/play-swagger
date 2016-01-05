@@ -1,8 +1,11 @@
 package {{&main_package}}
+
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
+
+{{#imports}}
+import {{&name}}
+{{/imports}}
 
 object Generators {
     {{#test_data_aliases}}

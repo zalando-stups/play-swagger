@@ -1,9 +1,6 @@
 package nested_arrays
 package object yaml {
-import java.util.Date
-import java.io.File
 import de.zalando.play.controllers.ArrayWrapper
-
     type ExampleNestedArraysOptArr = ArrayWrapper[ExampleNestedArraysOptArrArr]
 
     type ExampleNestedArraysOpt = ArrayWrapper[ExampleNestedArraysOptArr]

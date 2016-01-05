@@ -4,9 +4,8 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-import java.util.Date
-import java.io.File
-
+import de.zalando.play.controllers.ArrayWrapper
+import org.joda.time.DateTime
 // ----- constraints and wrapper validations -----
 class UsersUsernameGetUsernameConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -64,11 +63,11 @@ class OrderQuantityOptValidator(instance: Int) extends RecursiveValidator {
     override val validators = Seq(new OrderQuantityOptConstraints(instance))
 
 }
-class OrderShipDateOptConstraints(override val instance: Date) extends ValidationBase[Date] {
-    override def constraints: Seq[Constraint[Date]] =
+class OrderShipDateOptConstraints(override val instance: DateTime) extends ValidationBase[DateTime] {
+    override def constraints: Seq[Constraint[DateTime]] =
         Seq()
 }
-class OrderShipDateOptValidator(instance: Date) extends RecursiveValidator {
+class OrderShipDateOptValidator(instance: DateTime) extends RecursiveValidator {
     override val validators = Seq(new OrderShipDateOptConstraints(instance))
 
 }

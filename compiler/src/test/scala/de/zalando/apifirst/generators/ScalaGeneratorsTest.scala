@@ -32,8 +32,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
           |object Generators {
           |   def createOptiGenerator = _generate(OptiGenerator)
           |   def createStriGenerator = _generate(StriGenerator)
@@ -57,8 +55,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         """package overloaded.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
           |object Generators {
           |   def createOptionGenerator = _generate(OptionGenerator)
           |   def createStringGenerator = _generate(StringGenerator)
@@ -82,8 +78,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |object Generators {
           |   def createIntGenerator = _generate(IntGenerator)
           |   def createDblGenerator = _generate(DblGenerator)
@@ -107,8 +102,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
+          |import scala.collection.immutable.Map
           |object Generators {
           |   def createAllGenerator = _generate(AllGenerator)
           |   def AllGenerator = _genMap[String,Boolean](arbitrary[String], arbitrary[Boolean])
@@ -131,8 +125,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
           |object Generators {
           |def createNullGenerator = _generate(NullGenerator)
           |def createNullNameClashGenerator = _generate(NullNameClashGenerator)
@@ -159,8 +151,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
           |object Generators {
           |   def createUserGenerator = _generate(UserGenerator)
           |   def UserGenerator = for {
@@ -186,8 +176,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
+          |import de.zalando.play.controllers.ArrayWrapper
           |object Generators {
           |   def createOptionalDataGenerator = _generate(OptionalDataGenerator)
           |   def createPasswordsGenerator = _generate(PasswordsGenerator)
@@ -242,8 +231,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         s"""package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
           |object Generators {
           |   def createCatGenerator = _generate(CatGenerator)
           |   def createDogGenerator = _generate(DogGenerator)
@@ -304,8 +291,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary._
-          |import java.util.Date
-          |import java.io.File
           |object Generators {
           |   def createErrorModelGenerator = _generate(ErrorModelGenerator)
           |   def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)

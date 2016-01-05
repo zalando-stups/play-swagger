@@ -6,6 +6,8 @@ import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
 
+import scala.annotation.tailrec
+
 /**
   * @author  slasch 
   * @since   21.12.2015.
@@ -173,5 +175,24 @@ object LastListElementMarks {
       ss -> newList
     case (ss, other) =>
       ss -> other
+  }
+}
+object ImportsCollector {
+  def collect(d: Map[String, Any]): Seq[String] = d.toSeq flatMap {
+    case (ss, tt: Map[String, Any]) =>
+      tt.values flatMap {
+        case ttt: Map[String, Any] => collect(ttt)
+        case _ => Nil
+      }
+    case (ss, Some(tt: Map[String, Any])) =>
+      collect(tt)
+    case (ss, l: List[_]) if l.isEmpty || !l.head.isInstanceOf[Map[_,_]] =>
+      Nil
+    case (ss, l: List[Map[String, Any]]) =>
+      l flatMap collect
+    case (ss, other: Set[String]) if ss == "imports" && other.nonEmpty =>
+      other
+    case (ss, other) =>
+      Nil
   }
 }

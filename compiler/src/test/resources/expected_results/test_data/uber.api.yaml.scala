@@ -1,9 +1,9 @@
 package uber.api.yaml
+
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
 
+import de.zalando.play.controllers.ArrayWrapper
 object Generators {
 def createDoubleGenerator = _generate(DoubleGenerator)
 

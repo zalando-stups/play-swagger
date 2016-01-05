@@ -31,9 +31,6 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       result mustBeAs
         """package test
           |package object scala {
-          |import java.util.Date
-          |import java.io.File
-          |import de.zalando.play.controllers.ArrayWrapper
           |type Opti = Option[Long]
           |type Stri = Option[String]
           |}
@@ -49,9 +46,6 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateModel("overloaded.txt") mustBeAs
         """package overloaded
           |package object txt {
-          |import java.util.Date
-          |import java.io.File
-          |import de.zalando.play.controllers.ArrayWrapper
           |type Option = Option[Long]
           |type String = Option[String]
           |}
@@ -67,8 +61,6 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
-          |import java.util.Date
-          |import java.io.File
           |import de.zalando.play.controllers.ArrayWrapper
           |type Int = ArrayWrapper[Int]
           |type Dbl = ArrayWrapper[Double]
@@ -84,10 +76,8 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
-          |import java.util.Date
-          |import java.io.File
-          |import de.zalando.play.controllers.ArrayWrapper
-          |type All = scala.collection.immutable.Map[String, Boolean]
+          |import scala.collection.immutable.Map
+          |type All = Map[String, Boolean]
           |}
           | """
     }
@@ -111,9 +101,6 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
-          |import java.util.Date
-          |import java.io.File
-          |import de.zalando.play.controllers.ArrayWrapper
           |case class User(name: String, id: Long)
           |}
           | """
@@ -127,8 +114,6 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
-          |import java.util.Date
-          |import java.io.File
           |import de.zalando.play.controllers.ArrayWrapper
           |type OptionalData = Option[Passwords]
           |type Passwords = ArrayWrapper[String]
@@ -178,9 +163,6 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       result mustBeAs
         """package test
           |package object scala {
-          |import java.util.Date
-          |import java.io.File
-          |import de.zalando.play.controllers.ArrayWrapper
           |trait IPet {
           |    def name: String
           |    def petType: String
@@ -215,9 +197,6 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       new ScalaGenerator(model).generateModel("test.scala") mustBeAs
         """package test
           |package object scala {
-          |import java.util.Date
-          |import java.io.File
-          |import de.zalando.play.controllers.ArrayWrapper
           |case class ErrorModel(message: String, code: Int)
           |
           |case class ExtendedErrorModel(message: String, code: Int, rootCause: String)

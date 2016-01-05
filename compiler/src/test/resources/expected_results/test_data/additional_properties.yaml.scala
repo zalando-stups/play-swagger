@@ -1,9 +1,10 @@
 package additional_properties.yaml
+
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
 
+import scala.collection.immutable.Map
+import de.zalando.play.controllers.ArrayWrapper
 object Generators {
 def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditionalPropertiesGenerator)
 

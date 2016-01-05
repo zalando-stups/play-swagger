@@ -1,9 +1,5 @@
 package basic_polymorphism
 package object yaml {
-import java.util.Date
-import java.io.File
-import de.zalando.play.controllers.ArrayWrapper
-
 trait IPet {
 
     def name: String

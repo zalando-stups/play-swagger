@@ -4,9 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-import java.util.Date
-import java.io.File
-
+import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class ModelSchemaNameConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =

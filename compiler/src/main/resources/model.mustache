@@ -3,9 +3,9 @@ package {{&main_package_prefix}}
 package object {{&main_package_suffix}} {
 {{/main_package}}
 
-    import java.util.Date
-    import java.io.File
-    import de.zalando.play.controllers.ArrayWrapper
+{{#imports}}
+    import {{&name}}
+{{/imports}}
 
     {{#aliases}}
     type {{& name }} = {{& alias }}{{#underlying_type}}[{{& underlying_type }}]{{/underlying_type}}⮐

@@ -1,9 +1,7 @@
 package full.petstore.api
 package object yaml {
-import java.util.Date
-import java.io.File
 import de.zalando.play.controllers.ArrayWrapper
-
+import org.joda.time.DateTime
     type OrderQuantity = Option[Int]
 
     type UsersUsernameGetUsername = String
@@ -36,7 +34,7 @@ import de.zalando.play.controllers.ArrayWrapper
 
     type PetCategory = Option[Tag]
 
-    type OrderShipDate = Option[Date]
+    type OrderShipDate = Option[DateTime]
 
     type UsersCreateWithListPostBody = Option[UsersCreateWithListPostBodyOpt]
 
@@ -52,6 +50,6 @@ import de.zalando.play.controllers.ArrayWrapper
 
     case class Pet(name: String, tags: PetTags, photoUrls: PetPhotoUrls, id: OrderPetId, status: OrderStatus, category: PetCategory) 
 
-    
+
 
 }

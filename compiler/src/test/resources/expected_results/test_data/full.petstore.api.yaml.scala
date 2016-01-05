@@ -1,9 +1,10 @@
 package full.petstore.api.yaml
+
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
 
+import de.zalando.play.controllers.ArrayWrapper
+import org.joda.time.DateTime
 object Generators {
 def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
 
@@ -77,7 +78,7 @@ def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
 
     def PetCategoryGenerator = Gen.option(TagGenerator)
 
-    def OrderShipDateGenerator = Gen.option(arbitrary[Date])
+    def OrderShipDateGenerator = Gen.option(arbitrary[DateTime])
 
     def UsersCreateWithListPostBodyGenerator = Gen.option(UsersCreateWithListPostBodyOptGenerator)
 

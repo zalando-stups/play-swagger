@@ -1,9 +1,6 @@
 package security.api
 package object yaml {
-import java.util.Date
-import java.io.File
 import de.zalando.play.controllers.ArrayWrapper
-
     type PetsIdGetId = ArrayWrapper[String]
 
     type PetsIdGetResponsesDefault = Option[ErrorModel]
