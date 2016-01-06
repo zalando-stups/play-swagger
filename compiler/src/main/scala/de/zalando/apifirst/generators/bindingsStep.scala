@@ -32,26 +32,43 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
         // body parameters do not need bindables
         Map.empty
       case ParameterPlace.FORM    =>
-        // TODO not supported yet
+        // FIXME not supported yet
         Map.empty
       case other    =>
-        val key = other.toString + "_param"
-        Map(key -> forType(paramPair._1, paramPair._2.typeName, table))
+        val tpe = other.toString.capitalize
+        Map("binding" -> forType(tpe: String, paramPair._1, paramPair._2.typeName, table))
     }
 
   val providedBindings = Seq(classOf[Flt], classOf[Intgr], classOf[Lng], classOf[Dbl], classOf[Bool], classOf[Str])
 
-  def forType(k: Reference, typeName: Type, table: DenotationTable): Seq[Map[String, Any]] = typeName match {
+  def forType(tpe: String, k: Reference, typeName: Type, table: DenotationTable): Seq[Map[String, Any]] = typeName match {
     case i if providedBindings.contains(i.getClass) => Nil
-    case tpe if tpe.nestedTypes.nonEmpty =>
+    case someTpe if someTpe.nestedTypes.nonEmpty =>
+      val alias =  someTpe.name.simple
+      val underlyingType = someTpe.nestedTypes.map { t => typeNameDenotation(table, t.name) }.mkString(", ")
+      val bindable = s"""implicit val bindable_$alias$underlyingType$tpe = PlayPathBindables.create$alias${tpe}Bindable[$underlyingType]"""
+      val format = someTpe match {
+        case arr: Arr => Some("(\"" + arr.format + "\")")
+        case _ => None
+      }
       val mainType = Seq(Map(
-        "alias" -> tpe.name.simple,
-        "underlying_type" -> tpe.nestedTypes.map { t => typeNameDenotation(table, t.name) }.mkString(", "),
+        "name" -> bindable,
+        "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables"),
+        "format" -> format
+      ))
+      val nestedTypes = someTpe.nestedTypes.flatMap { nt => forType(tpe, nt.name, nt, table) }
+      mainType ++ nestedTypes
+    case TypeRef(ref) => forType(tpe, ref, app.findType(ref), table)
+    case d: Date =>
+      Seq(Map(
+        "name" -> s"import PlayPathBindables.${tpe.toLowerCase}BindableDateMidnight",
         "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
       ))
-      val nestedTypes = tpe.nestedTypes.flatMap { nt => forType(nt.name, nt, table) }
-      mainType ++ nestedTypes
-    case TypeRef(ref) => forType(ref, app.findType(ref), table)
+    case d: DateTime =>
+      Seq(Map(
+        "name" -> s"import PlayPathBindables.${tpe.toLowerCase}BindableDateTime",
+        "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
+      ))
   }
 
 }

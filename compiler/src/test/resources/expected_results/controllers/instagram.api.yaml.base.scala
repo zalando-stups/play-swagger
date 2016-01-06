@@ -5,7 +5,7 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
-
+import de.zalando.play.controllers.PlayPathBindables
 trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         private val getmediaByMedia_idLikesResponseMimeType    = "application/json"
         private val getmediaByMedia_idLikesActionSuccessStatus = Status(200)

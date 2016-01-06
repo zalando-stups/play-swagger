@@ -70,15 +70,23 @@ object PlayPathBindables {
   }
 
   /**
-    * Example use for pipe-separated array of Ints
+    * Constructor for ArrayWrapper with specific format
     * @param tBinder  this binder should be available from Play
     * @return
     */
-  implicit def createArrayWrapperQueryBindable(implicit tBinder: PathBindable[Int]): PathBindable[ArrayWrapper[Int]] =
-    createArrPathBindable(PipesArrayWrapper(Nil))
+  def createArrayWrapperPathBindable[T](format: String)(implicit tBinder: PathBindable[T]): PathBindable[ArrayWrapper[T]] =
+    createArrPathBindable(ArrayWrapper[T](format)(Nil))
 
   /**
-    * Factory method for bindables of different types
+    * Constructor for ArrayWrapper with specific format
+    * @param tBinder  this binder should be available from Play
+    * @return
+    */
+  def createArrayWrapperQueryBindable[T](format: String)(implicit tBinder: QueryStringBindable[T]): QueryStringBindable[ArrayWrapper[T]] =
+    createArrQueryBindable(ArrayWrapper[T](format)(Nil))
+
+  /**
+    * Factory method for path bindables of different types
     *
     * @param wrapper  the wrapper is used to distinguish different separator chars
     * @param tBinder  the binder for underlying types
@@ -107,6 +115,58 @@ object PlayPathBindables {
     /**
       * Unbind method converts an ArrayWrapper to the Path string
  *
+      * @param key  parameter name
+      * @param w    wrapper to convert
+      * @return
+      */
+    def unbind(key: String, w: ArrayWrapper[T]): String = writeArray(w.items map (tBinder.unbind(key, _)))
+
+    private def readArray(line: String) = {
+      val array = reader.readValues(line.getBytes).asInstanceOf[MappingIterator[Array[String]]]
+      val resArray = if (array.hasNext) array.next() else Array.empty[String]
+      resArray
+    }
+
+    private def writeArray(items: Seq[String]): String = mapper.writer().writeValueAsString(items)
+  }
+
+
+  /**
+    * Factory method for query bindables of different types
+    *
+    * @param wrapper  the wrapper is used to distinguish different separator chars
+    * @param tBinder  the binder for underlying types
+    * @tparam T       the type of array items
+    * @return
+    */
+  def createArrQueryBindable[T](wrapper: ArrayWrapper[T])(implicit tBinder: QueryStringBindable[T]) = new QueryStringBindable[ArrayWrapper[T]] {
+
+    val mapper = new CsvMapper().enable(CsvParser.Feature.WRAP_AS_ARRAY)
+    mapper.schema().withArrayElementSeparator(wrapper.separator).withColumnSeparator('\n').withLineSeparator("\n")
+    val reader = mapper.readerFor(classOf[Array[String]])
+
+    def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, ArrayWrapper[T]]] = Some(try {
+      val line: Option[Seq[String]] = params.get(key) flatMap {
+        case Nil => None
+        case null => None
+        case single :: Nil if wrapper.separator == '&' => Some(Seq(single))
+        case single :: Nil => Some(readArray(single))
+        case multiple if wrapper.separator == '&' => Some(multiple)
+        case _ =>
+          throw new IllegalArgumentException("Got multiple parameters with the same name, but parameter type is not 'multi'")
+      }
+      val xs = line flatMap { l => tBinder.bind(key, Map(key -> l)) }
+      val lefts = xs collect {case Left(x) => x }
+      lazy val rights = xs collect {case Right(x) => x}
+      lazy val success = wrapper.copy(rights.toSeq)
+      if (lefts.isEmpty) Right(success) else Left(lefts.mkString("\n"))
+    } catch {
+      case e: Exception => Left(e.getMessage)
+    })
+
+    /**
+      * Unbind method converts an ArrayWrapper to the Path string
+      *
       * @param key  parameter name
       * @param w    wrapper to convert
       * @return

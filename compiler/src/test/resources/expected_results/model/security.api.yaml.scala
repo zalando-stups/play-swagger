@@ -16,6 +16,6 @@ import de.zalando.play.controllers.PlayPathBindables
 
     case class Pet(name: String, tag: PetTag)
 
-    implicit val bindable_ArrayWrapperStringPath = PlayPathBindables.createArrayWrapperPathBindable[String]
+    implicit val bindable_ArrayWrapperStringPath = PlayPathBindables.createArrayWrapperPathBindable[String]("csv")
 
 }

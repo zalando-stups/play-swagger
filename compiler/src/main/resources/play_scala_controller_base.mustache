@@ -8,12 +8,9 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
-{{#date?}}
-import de.zalando.play.controllers.PlayPathBindables.bindableDateMidnight
-{{/date?}}
-{{#date_time?}}
-import de.zalando.play.controllers.PlayPathBindables.bindableDateTime
-{{/date_time?}}
+{{#binding_imports}}
+import {{&name}}
+{{/binding_imports}}
 
 
 {{#controllers}}

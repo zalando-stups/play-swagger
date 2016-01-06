@@ -36,7 +36,7 @@ case class PipesArrayWrapper[T](items: Seq[T]) extends ArrayWrapper[T] {
 }
 // TODO this supposed to wrap multiple query parameters with same name, with or without []
 case class MultiArrayWrapper[T](items: Seq[T]) extends ArrayWrapper[T] {
-  val separator = '?'
+  val separator = '&'
   override def copy(newItems: Seq[T]): ArrayWrapper[T] = MultiArrayWrapper(newItems)
 }
 object ArrayWrapper {

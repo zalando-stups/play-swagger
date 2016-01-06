@@ -5,7 +5,7 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
-
+import de.zalando.play.controllers.PlayPathBindables
 trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         private val getResponseMimeType    = "application/json"
         private val getActionSuccessStatus = Status(200)

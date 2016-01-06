@@ -35,11 +35,8 @@ package object {{&main_package_suffix}} {
     import PlayPathBindables.queryBindableDateTime
     {{/date_time?}}
     {{#bindings}}
-    {{#path_param}}
-    implicit val bindable_{{&alias}}{{& underlying_type }}Path = PlayPathBindables.create{{&alias}}PathBindable[{{& underlying_type }}]
-    {{/path_param}}
-    {{#query_param}}
-    implicit val bindable_{{&alias}}{{& underlying_type }}Query = PlayPathBindables.create{{&alias}}QueryBindable[{{& underlying_type }}]
-    {{/query_param}}
+    {{#binding}}
+    {{&name}}{{&format}}
+    {{/binding}}
     {{/bindings}}
 }

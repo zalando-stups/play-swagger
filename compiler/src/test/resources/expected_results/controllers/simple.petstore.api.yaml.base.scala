@@ -5,7 +5,7 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
-
+import de.zalando.play.controllers.PlayPathBindables
 trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
         private val addPetResponseMimeType    = "application/json"
         private val addPetActionSuccessStatus = Status(200)

@@ -5,6 +5,7 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
+import de.zalando.play.controllers.PlayPathBindables
 
 trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         private val findPetsResponseMimeType    = "application/json"

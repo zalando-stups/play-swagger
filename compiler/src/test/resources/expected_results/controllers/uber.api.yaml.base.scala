@@ -5,7 +5,7 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
-
+import de.zalando.play.controllers.PlayPathBindables
 trait UberApiYamlBase extends Controller with PlayBodyParsing {
         private val getmeResponseMimeType    = "application/json"
         private val getmeActionSuccessStatus = Status(200)

@@ -54,6 +54,6 @@ import de.zalando.play.controllers.PlayPathBindables
     import PlayPathBindables.queryBindableDateTime
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
     implicit val bindable_OptionPetPhotoUrlsQuery = PlayPathBindables.createOptionQueryBindable[PetPhotoUrls]
-    implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]
+    implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("csv")
 
 }
