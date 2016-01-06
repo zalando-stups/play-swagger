@@ -13,7 +13,6 @@ import de.zalando.apifirst.generators.DenotationNames._
   * @author slasch 
   * @since 30.12.2015.
   */
-
 trait CommonParamDataStep extends EnrichmentStep[Parameter] with CommonData {
 
   override def steps = types +: super.steps
@@ -31,8 +30,8 @@ trait CommonParamDataStep extends EnrichmentStep[Parameter] with CommonData {
     val name = typeName(t, ref)
     Map(COMMON -> Map(TYPE_NAME -> name, FIELDS -> fieldsForType(t), MEMBER_NAME -> memberName(t, ref)))
   }
-
 }
+
 trait CommonCallDataStep extends EnrichmentStep[ApiCall] with CommonData {
 
   override def steps = types +: super.steps

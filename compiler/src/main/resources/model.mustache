@@ -6,6 +6,9 @@ package object {{&main_package_suffix}} {
 {{#imports}}
     import {{&name}}
 {{/imports}}
+{{#binding_imports}}
+    import {{&name}}
+{{/binding_imports}}
 
     {{#aliases}}
     type {{& name }} = {{& alias }}{{#underlying_type}}[{{& underlying_type }}]{{/underlying_type}}⮐
@@ -22,4 +25,21 @@ package object {{&main_package_suffix}} {
     {{#classes}}
     case class {{& name }}({{#fields}}{{&name}}: {{&type_name}}{{^last}}, {{/last}}{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
     {{/classes}}⮐
+
+    {{! seems like the package object is the only way to dynamically bring }}
+    {{! marshalling infrastructure into the scope of play routes }}
+    {{#date?}}
+    import PlayPathBindables.queryBindableDateMidnight
+    {{/date?}}
+    {{#date_time?}}
+    import PlayPathBindables.queryBindableDateTime
+    {{/date_time?}}
+    {{#bindings}}
+    {{#path_param}}
+    implicit val bindable_{{&alias}}{{& underlying_type }}Path = PlayPathBindables.create{{&alias}}PathBindable[{{& underlying_type }}]
+    {{/path_param}}
+    {{#query_param}}
+    implicit val bindable_{{&alias}}{{& underlying_type }}Query = PlayPathBindables.create{{&alias}}QueryBindable[{{& underlying_type }}]
+    {{/query_param}}
+    {{/bindings}}
 }

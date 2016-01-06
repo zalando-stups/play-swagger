@@ -78,7 +78,7 @@ class ScalaPlayCallEnricher(val app: StrictModel) extends Transformation[ApiCall
   * Enriches AST with information related to Parameters
   */
 class ScalaPlayParameterEnricher(val app: StrictModel) extends Transformation[Parameter]
-  with ParametersValidatorsStep with CommonParamDataStep {
+  with ParamBindingsStep with ParametersValidatorsStep with CommonParamDataStep {
 
   override def data = app.params.toSeq.map { case (r, p) => r.name -> p }
 
@@ -177,20 +177,23 @@ object LastListElementMarks {
       ss -> other
   }
 }
-object ImportsCollector {
-  def collect(d: Map[String, Any]): Seq[String] = d.toSeq flatMap {
+object KeyCollector {
+  def collect(key: String)(d: Map[String, Any]): Seq[String] = d.toSeq flatMap {
     case (ss, tt: Map[String, Any]) =>
       tt.values flatMap {
-        case ttt: Map[String, Any] => collect(ttt)
+        case ttt: Map[String, Any] =>
+          collect(key)(ttt)
+        case ttt: List[Map[String, Any]] =>
+          ttt flatMap collect(key)
         case _ => Nil
       }
     case (ss, Some(tt: Map[String, Any])) =>
-      collect(tt)
+      collect(key)(tt)
     case (ss, l: List[_]) if l.isEmpty || !l.head.isInstanceOf[Map[_,_]] =>
       Nil
     case (ss, l: List[Map[String, Any]]) =>
-      l flatMap collect
-    case (ss, other: Set[String]) if ss == "imports" && other.nonEmpty =>
+      l flatMap collect(key)
+    case (ss, other: Set[String]) if ss == key && other.nonEmpty =>
       other
     case (ss, other) =>
       Nil

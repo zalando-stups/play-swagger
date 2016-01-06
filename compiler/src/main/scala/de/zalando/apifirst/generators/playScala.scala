@@ -74,6 +74,9 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val validations         = ReShaper.filterByType("validators", denotationTable)
     val validationsByType   = ReShaper.groupByType(validations.toSeq).toMap
 
+    val bindings            = ReShaper.filterByType("bindings", denotationTable)
+    val bindingsByType      = ReShaper.groupByType(bindings.toSeq).toMap
+
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)
 
@@ -89,7 +92,8 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "traits"              -> ReShaper.filterByType("traits", denotationTable),
       "test_data_classes"   -> ReShaper.filterByType("test_data_classes", denotationTable),
       "test_data_aliases"   -> ReShaper.filterByType("test_data_aliases", denotationTable),
-      "tests"               -> ReShaper.filterByType("tests", denotationTable)
+      "tests"               -> ReShaper.filterByType("tests", denotationTable),
+      "bindings"            -> bindingsByType
     )
 
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
@@ -103,18 +107,22 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   }
 
   def enrichWithStructuralInfo(rawAllPackages: Map[String, Iterable[Any]]): Map[String, Any] = {
-    val imports = ImportsCollector.collect(rawAllPackages)
+    val imports = KeyCollector.collect("imports")(rawAllPackages)
     val importMaps = imports.distinct map { i => Map("name" -> i) }
 
-    val allPackages = LastListElementMarks.set(rawAllPackages) ++ neededParts(imports) + ("imports" -> importMaps)
+    val bind_imports = KeyCollector.collect("binding_imports")(rawAllPackages)
+    val bind_importMaps = bind_imports.distinct map { i => Map("name" -> i) }
+
+    val allPackages = LastListElementMarks.set(rawAllPackages) ++
+      neededParts(imports) + ("imports" -> importMaps) + ("binding_imports" -> bind_importMaps)
     allPackages
   }
 
   private val partsMapping = Map(
-    "lists?" -> "ArrayWrapper",
-    "maps?" -> "Map",
-    "date?" -> "DateMidnight",
-    "date_time?" -> "DateTime"
+    "lists?"      -> "ArrayWrapper",
+    "maps?"       -> "Map",
+    "date?"       -> "DateMidnight",
+    "date_time?"  -> "DateTime"
   )
   private def neededParts(imports: Seq[String]): Map[String, Boolean] = partsMapping map {
     case (k,v) => k -> imports.exists(_.contains(v))

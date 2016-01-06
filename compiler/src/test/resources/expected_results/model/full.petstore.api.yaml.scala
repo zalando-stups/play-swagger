@@ -2,6 +2,7 @@ package full.petstore.api
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
+import de.zalando.play.controllers.PlayPathBindables
     type OrderQuantity = Option[Int]
 
     type UsersUsernameGetUsername = String
@@ -48,8 +49,11 @@ import org.joda.time.DateTime
 
     case class Tag(id: OrderPetId, name: OrderStatus) 
 
-    case class Pet(name: String, tags: PetTags, photoUrls: PetPhotoUrls, id: OrderPetId, status: OrderStatus, category: PetCategory) 
+    case class Pet(name: String, tags: PetTags, photoUrls: PetPhotoUrls, id: OrderPetId, status: OrderStatus, category: PetCategory)
 
-
+    import PlayPathBindables.queryBindableDateTime
+    implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
+    implicit val bindable_OptionPetPhotoUrlsQuery = PlayPathBindables.createOptionQueryBindable[PetPhotoUrls]
+    implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]
 
 }

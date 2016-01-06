@@ -38,5 +38,5 @@ class ScalaModelGeneratorIntegrationTest extends FunSpec with MustMatchers with 
     }
   }
 
-  def clean(str: String) = str.split("\n").map(_.trim).mkString("\n")
+  def clean(str: String) = str.split("\n").map(_.trim).filter(_.nonEmpty).mkString("\n")
 }

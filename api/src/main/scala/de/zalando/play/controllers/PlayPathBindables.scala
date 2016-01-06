@@ -1,11 +1,9 @@
 package de.zalando.play.controllers
 
-import com.fasterxml.jackson.databind.{ObjectReader, MappingIterator}
+import com.fasterxml.jackson.databind.MappingIterator
 import com.fasterxml.jackson.dataformat.csv.{CsvMapper, CsvParser}
 import org.joda.time.{DateMidnight, DateTime}
-import play.api.mvc.PathBindable
-import play.api.mvc.PathBindable.Parsing
-
+import play.api.mvc.{PathBindable, QueryStringBindable}
 
 /**
   * @author slasch 
@@ -13,24 +11,70 @@ import play.api.mvc.PathBindable.Parsing
   */
 object PlayPathBindables {
 
-  implicit object bindableDateTime extends Parsing[DateTime](
+  implicit object pathBindableDateTime extends PathBindable.Parsing[DateTime](
     Rfc3339Util.parseDateTime,
     Rfc3339Util.writeDateTime,
     (key: String, e: Exception) => "Cannot parse parameter %s as DateTime: %s".format(key, e.getMessage)
   )
 
-  implicit object bindableDateMidnight extends Parsing[DateMidnight](
+  implicit object pathBindableDateMidnight extends PathBindable.Parsing[DateMidnight](
     Rfc3339Util.parseDate,
     Rfc3339Util.writeDate,
     (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
   )
+  implicit object queryBindableDateTime extends QueryStringBindable.Parsing[DateTime](
+    Rfc3339Util.parseDateTime,
+    Rfc3339Util.writeDateTime,
+    (key: String, e: Exception) => "Cannot parse parameter %s as DateTime: %s".format(key, e.getMessage)
+  )
+
+  implicit object queryBindableDateMidnight extends QueryStringBindable.Parsing[DateMidnight](
+    Rfc3339Util.parseDate,
+    Rfc3339Util.writeDate,
+    (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
+  )
+
+  /**
+    * Factory to create PathBindable for optional values of any type
+    * @param tBinder
+    * @tparam T
+    * @return
+    */
+  def createOptionPathBindable[T](implicit tBinder: PathBindable[T]) = new PathBindable[Option[T]] {
+    override def bind(key: String, value: String): Either[String, Option[T]] = {
+      val wrap = Option(value).map(tBinder.bind(key, _))
+      wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
+    }
+
+    override def unbind(key: String, value: Option[T]): String = value match {
+      case None => null
+      case Some(v) => tBinder.unbind(key, v)
+    }
+  }
+  /**
+    * Factory to create QueryBindable for optional values of any type
+    * @param tBinder
+    * @tparam T
+    * @return
+    */
+  def createOptionQueryBindable[T](implicit tBinder: QueryStringBindable[T]) = new QueryStringBindable[Option[T]] {
+    override def bind(key: String, values: Map[String, Seq[String]]): Option[Either[String, Option[T]]] = {
+      val wrap = values.get(key).flatMap(_ => tBinder.bind(key, values))
+      wrap.map(_.right.map(Option.apply))
+    }
+
+    override def unbind(key: String, value: Option[T]): String = value match {
+      case None => null
+      case Some(v) => tBinder.unbind(key, v)
+    }
+  }
+
   /**
     * Example use for pipe-separated array of Ints
- *
     * @param tBinder  this binder should be available from Play
     * @return
     */
-  implicit def intPipeNameArrBindable(implicit tBinder: PathBindable[Int]): PathBindable[ArrayWrapper[Int]] =
+  implicit def createArrayWrapperQueryBindable(implicit tBinder: PathBindable[Int]): PathBindable[ArrayWrapper[Int]] =
     createArrPathBindable(PipesArrayWrapper(Nil))
 
   /**

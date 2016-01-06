@@ -1,6 +1,7 @@
 package simple.petstore.api
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
+import de.zalando.play.controllers.PlayPathBindables
     type PetsIdDeleteResponsesDefault = Option[ErrorModel]
 
     type PetsPostResponses200 = Option[Pet]
@@ -27,8 +28,10 @@ import de.zalando.play.controllers.ArrayWrapper
 
     case class Pet(id: Long, name: String, tag: PetTag) 
 
-    case class NewPet(name: String, id: NewPetId, tag: PetTag) 
+    case class NewPet(name: String, id: NewPetId, tag: PetTag)
 
-    
+    implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
+    implicit val bindable_OptionPetsGetTagsOptQuery = PlayPathBindables.createOptionQueryBindable[PetsGetTagsOpt]
+    implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]
 
 }

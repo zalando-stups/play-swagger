@@ -1,6 +1,7 @@
 package instagram.api
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
+import de.zalando.play.controllers.PlayPathBindables
     type TagsSearchGetResponses200Meta = Option[`UsersSelfRequested-byGetResponses200MetaOpt`]
 
     type `LocationsLocation-idLocation-id` = Int
@@ -147,8 +148,10 @@ import de.zalando.play.controllers.ArrayWrapper
 
     case class `MediaComments:Opt`(count: MediaCreated_time, data: `MediaComments:Data`) 
 
-    case class `MediaMedia-idCommentsGetResponses200Opt`(meta: `MediaMedia-idCommentsDeleteResponses200Meta`, data: `MediaComments:Data`) 
+    case class `MediaMedia-idCommentsGetResponses200Opt`(meta: `MediaMedia-idCommentsDeleteResponses200Meta`, data: `MediaComments:Data`)
 
-    
+    implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
+    implicit val bindable_OptionDoubleQuery = PlayPathBindables.createOptionQueryBindable[Double]
+    implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
 
 }

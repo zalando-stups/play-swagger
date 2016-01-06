@@ -1,6 +1,7 @@
 package uber.api
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
+import de.zalando.play.controllers.PlayPathBindables
     type EstimatesPriceGetEnd_latitude = Double
 
     type ProfileLast_name = Option[String]
@@ -37,8 +38,9 @@ import de.zalando.play.controllers.ArrayWrapper
 
     case class Activities(offset: ActivitiesLimit, limit: ActivitiesLimit, count: ActivitiesLimit, history: ActivitiesHistory) 
 
-    case class Error(code: ActivitiesLimit, message: ProfileLast_name, fields: ProfileLast_name) 
+    case class Error(code: ActivitiesLimit, message: ProfileLast_name, fields: ProfileLast_name)
 
-    
+    implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
+    implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
 
 }
