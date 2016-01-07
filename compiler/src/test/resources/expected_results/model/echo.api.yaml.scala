@@ -6,6 +6,6 @@ package object yaml {
 
     type `Test-pathIdGetId` = String
 
-    
+    case class PostResponses200(name: PostName, year: PostName)
 
 }

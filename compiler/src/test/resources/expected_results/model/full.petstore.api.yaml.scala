@@ -49,12 +49,6 @@ type OrderQuantity = Option[Int]
 
     case class Pet(name: String, tags: PetTags, photoUrls: PetPhotoUrls, id: OrderPetId, status: OrderStatus, category: PetCategory) 
 
-    
-
-
-    
-    
-    import PlayPathBindables.queryBindableDateTime
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
     implicit val bindable_OptionPetPhotoUrlsQuery = PlayPathBindables.createOptionQueryBindable[PetPhotoUrls]
     implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("csv")

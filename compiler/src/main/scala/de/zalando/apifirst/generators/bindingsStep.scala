@@ -61,13 +61,17 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
     case TypeRef(ref) => forType(tpe, ref, app.findType(ref), table)
     case d: Date =>
       Seq(Map(
-        "name" -> s"import PlayPathBindables.${tpe.toLowerCase}BindableDateMidnight",
-        "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
+        "binding_imports" -> Set(
+          "de.zalando.play.controllers.PlayPathBindables",
+          s"PlayPathBindables.${tpe.toLowerCase}BindableDateMidnight"
+        )
       ))
     case d: DateTime =>
       Seq(Map(
-        "name" -> s"import PlayPathBindables.${tpe.toLowerCase}BindableDateTime",
-        "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
+        "binding_imports" -> Set(
+          "de.zalando.play.controllers.PlayPathBindables",
+          s"PlayPathBindables.${tpe.toLowerCase}BindableDateTime"
+        )
       ))
   }
 

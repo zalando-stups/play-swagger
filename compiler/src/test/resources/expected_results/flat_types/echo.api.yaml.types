@@ -4,6 +4,10 @@
 	Str
 ⌿paths⌿/test-path/{id}⌿get⌿responses⌿200 -> 
 	Null
+⌿paths⌿/⌿post⌿responses⌿200 -> 
+	TypeDef(⌿paths⌿/⌿post⌿responses⌿200, Seq(
+		Field(⌿paths⌿/⌿post⌿responses⌿200⌿name, TypeRef(⌿paths⌿/⌿post⌿name)), 
+		Field(⌿paths⌿/⌿post⌿responses⌿200⌿year, TypeRef(⌿paths⌿/⌿post⌿name))))
 -- params --
 
 ⌿paths⌿/⌿post⌿name -> Parameter(name,TypeRef(⌿paths⌿/⌿post⌿name),None,None,.+,true,formData)
