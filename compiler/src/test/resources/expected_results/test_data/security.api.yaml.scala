@@ -6,25 +6,17 @@ import Arbitrary._
 
 import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
-
-    def createPetsIdGetResponsesDefaultGenerator = _generate(PetsIdGetResponsesDefaultGenerator)
+    def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
 
     def createPetTagGenerator = _generate(PetTagGenerator)
 
     def createPetsIdGetResponses200Generator = _generate(PetsIdGetResponses200Generator)
 
-    def createPetsIdGetResponses200OptGenerator = _generate(PetsIdGetResponses200OptGenerator)
-
     def PetsIdGetIdGenerator = _genList(arbitrary[String], "csv")
-
-    def PetsIdGetResponsesDefaultGenerator = Gen.option(ErrorModelGenerator)
 
     def PetTagGenerator = Gen.option(arbitrary[String])
 
-    def PetsIdGetResponses200Generator = Gen.option(PetsIdGetResponses200OptGenerator)
-
-    def PetsIdGetResponses200OptGenerator = _genList(PetGenerator, "csv")
+    def PetsIdGetResponses200Generator = _genList(PetGenerator, "csv")
 
     def createErrorModelGenerator = _generate(ErrorModelGenerator)
 
@@ -44,4 +36,4 @@ def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
-}
+    }

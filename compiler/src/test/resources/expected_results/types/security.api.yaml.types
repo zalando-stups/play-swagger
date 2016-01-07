@@ -9,10 +9,10 @@
 ⌿paths⌿/pets/{id}⌿get⌿id ->
 	Arr(Str)
 ⌿paths⌿/pets/{id}⌿get⌿responses⌿default ->
-	Opt(TypeDef(⌿/definitions/ErrorModel, Seq(
+	TypeDef(⌿/definitions/ErrorModel, Seq(
 		Field(⌿/definitions/ErrorModel⌿code, Intgr), 
-		Field(⌿/definitions/ErrorModel⌿message, Str))))
+		Field(⌿/definitions/ErrorModel⌿message, Str)))
 ⌿paths⌿/pets/{id}⌿get⌿responses⌿200 ->
-	Opt(Arr(TypeDef(⌿/definitions/Pet, Seq(
+	Arr(TypeDef(⌿/definitions/Pet, Seq(
 		Field(⌿/definitions/Pet⌿name, Str), 
-		Field(⌿/definitions/Pet⌿tag, Opt(Str))))))
+		Field(⌿/definitions/Pet⌿tag, Opt(Str)))))

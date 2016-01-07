@@ -11,8 +11,6 @@
 ⌿paths⌿/⌿post⌿responses⌿200 -> 
 	Null
 ⌿paths⌿/⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/⌿get⌿responses⌿200⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Pet))
 -- params --
 

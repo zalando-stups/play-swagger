@@ -8,6 +8,9 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
+{{#imports}}
+    import {{&name}}
+{{/imports}}
 {{#binding_imports}}
 import {{&name}}
 {{/binding_imports}}

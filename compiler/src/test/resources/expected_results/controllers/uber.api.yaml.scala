@@ -7,11 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-package uber.api.yaml {
-
-
-
-
+package uber.api.yaml { 
 
     class UberApiYaml extends UberApiYamlBase {
     val getme = getmeAction {
@@ -26,7 +22,7 @@ package uber.api.yaml {
             
         } //////// EOF ////////  getproductsAction
     val getestimatesTime = getestimatesTimeAction {
-            input: (Double, Double, ProfileLast_name, ProfileLast_name) =>
+            input: (Double, Double, ProductDescription, ProductDescription) =>
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
 
             ???
@@ -40,7 +36,7 @@ package uber.api.yaml {
             
         } //////// EOF ////////  getestimatesPriceAction
     val gethistory = gethistoryAction {
-            input: (ActivitiesLimit, ActivitiesLimit) =>
+            input: (ErrorCode, ErrorCode) =>
             val (offset, limit) = input
 
             ???
@@ -48,4 +44,3 @@ package uber.api.yaml {
         } //////// EOF ////////  gethistoryAction
     }
 }
-

@@ -139,7 +139,7 @@
 		Field(⌿/definitions/User⌿phone, Opt(Str)), 
 		Field(⌿/definitions/User⌿password, Opt(Str))))))
 ⌿paths⌿/users/{username}⌿get⌿responses⌿200 ->
-	Opt(TypeDef(⌿/definitions/User, Seq(
+	TypeDef(⌿/definitions/User, Seq(
 		Field(⌿/definitions/User⌿email, Opt(Str)), 
 		Field(⌿/definitions/User⌿username, Opt(Str)), 
 		Field(⌿/definitions/User⌿userStatus, Opt(Intgr)), 
@@ -147,7 +147,7 @@
 		Field(⌿/definitions/User⌿firstName, Opt(Str)), 
 		Field(⌿/definitions/User⌿id, Opt(Lng)), 
 		Field(⌿/definitions/User⌿phone, Opt(Str)), 
-		Field(⌿/definitions/User⌿password, Opt(Str)))))
+		Field(⌿/definitions/User⌿password, Opt(Str))))
 ⌿paths⌿/users/createWithList⌿post⌿responses⌿default ->
 	Null
 ⌿paths⌿/users/{username}⌿get⌿responses⌿400 ->
@@ -161,7 +161,7 @@
 ⌿paths⌿/users/login⌿get⌿responses⌿400 ->
 	Null
 ⌿paths⌿/pets/findByStatus⌿get⌿responses⌿200 ->
-	Opt(Arr(TypeDef(⌿/definitions/Pet, Seq(
+	Arr(TypeDef(⌿/definitions/Pet, Seq(
 		Field(⌿/definitions/Pet⌿name, Str), 
 		Field(⌿/definitions/Pet⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿id, Opt(Lng)), 
@@ -171,29 +171,29 @@
 		Field(⌿/definitions/Pet⌿status, Opt(Str)), 
 		Field(⌿/definitions/Pet⌿category, Opt(TypeDef(⌿/definitions/Category, Seq(
 			Field(⌿/definitions/Category⌿id, Opt(Lng)), 
-			Field(⌿/definitions/Category⌿name, Opt(Str))))))))))
+			Field(⌿/definitions/Category⌿name, Opt(Str)))))))))
 ⌿paths⌿/pets/{petId}⌿delete⌿responses⌿400 ->
 	Null
 ⌿paths⌿/stores/order⌿post⌿responses⌿200 ->
-	Opt(TypeDef(⌿/definitions/Order, Seq(
+	TypeDef(⌿/definitions/Order, Seq(
 		Field(⌿/definitions/Order⌿shipDate, Opt(DateTime)), 
 		Field(⌿/definitions/Order⌿quantity, Opt(Intgr)), 
 		Field(⌿/definitions/Order⌿petId, Opt(Lng)), 
 		Field(⌿/definitions/Order⌿id, Opt(Lng)), 
 		Field(⌿/definitions/Order⌿complete, Opt(Bool)), 
-		Field(⌿/definitions/Order⌿status, Opt(Str)))))
+		Field(⌿/definitions/Order⌿status, Opt(Str))))
 ⌿paths⌿/users/login⌿get⌿responses⌿200 ->
-	Opt(Str)
+	Str
 ⌿paths⌿/stores/order⌿post⌿responses⌿400 ->
 	Null
 ⌿paths⌿/stores/order/{orderId}⌿get⌿responses⌿200 ->
-	Opt(TypeDef(⌿/definitions/Order, Seq(
+	TypeDef(⌿/definitions/Order, Seq(
 		Field(⌿/definitions/Order⌿shipDate, Opt(DateTime)), 
 		Field(⌿/definitions/Order⌿quantity, Opt(Intgr)), 
 		Field(⌿/definitions/Order⌿petId, Opt(Lng)), 
 		Field(⌿/definitions/Order⌿id, Opt(Lng)), 
 		Field(⌿/definitions/Order⌿complete, Opt(Bool)), 
-		Field(⌿/definitions/Order⌿status, Opt(Str)))))
+		Field(⌿/definitions/Order⌿status, Opt(Str))))
 ⌿paths⌿/pets⌿put⌿responses⌿404 ->
 	Null
 ⌿paths⌿/users/logout⌿get⌿responses⌿default ->
@@ -205,7 +205,21 @@
 ⌿paths⌿/users/{username}⌿delete⌿responses⌿400 ->
 	Null
 ⌿paths⌿/pets/{petId}⌿get⌿responses⌿200 ->
-	Opt(TypeDef(⌿/definitions/Pet, Seq(
+	TypeDef(⌿/definitions/Pet, Seq(
+		Field(⌿/definitions/Pet⌿name, Str), 
+		Field(⌿/definitions/Pet⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+			Field(⌿/definitions/Tag⌿id, Opt(Lng)), 
+			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
+		Field(⌿/definitions/Pet⌿photoUrls, Arr(Str)), 
+		Field(⌿/definitions/Pet⌿id, Opt(Lng)), 
+		Field(⌿/definitions/Pet⌿status, Opt(Str)), 
+		Field(⌿/definitions/Pet⌿category, Opt(TypeDef(⌿/definitions/Category, Seq(
+			Field(⌿/definitions/Category⌿id, Opt(Lng)), 
+			Field(⌿/definitions/Category⌿name, Opt(Str))))))))
+⌿paths⌿/stores/order/{orderId}⌿delete⌿responses⌿404 ->
+	Null
+⌿paths⌿/pets/findByTags⌿get⌿responses⌿200 ->
+	Arr(TypeDef(⌿/definitions/Pet, Seq(
 		Field(⌿/definitions/Pet⌿name, Str), 
 		Field(⌿/definitions/Pet⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿id, Opt(Lng)), 
@@ -216,20 +230,6 @@
 		Field(⌿/definitions/Pet⌿category, Opt(TypeDef(⌿/definitions/Category, Seq(
 			Field(⌿/definitions/Category⌿id, Opt(Lng)), 
 			Field(⌿/definitions/Category⌿name, Opt(Str)))))))))
-⌿paths⌿/stores/order/{orderId}⌿delete⌿responses⌿404 ->
-	Null
-⌿paths⌿/pets/findByTags⌿get⌿responses⌿200 ->
-	Opt(Arr(TypeDef(⌿/definitions/Pet, Seq(
-		Field(⌿/definitions/Pet⌿name, Str), 
-		Field(⌿/definitions/Pet⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
-			Field(⌿/definitions/Tag⌿id, Opt(Lng)), 
-			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-		Field(⌿/definitions/Pet⌿photoUrls, Arr(Str)), 
-		Field(⌿/definitions/Pet⌿id, Opt(Lng)), 
-		Field(⌿/definitions/Pet⌿status, Opt(Str)), 
-		Field(⌿/definitions/Pet⌿category, Opt(TypeDef(⌿/definitions/Category, Seq(
-			Field(⌿/definitions/Category⌿id, Opt(Lng)), 
-			Field(⌿/definitions/Category⌿name, Opt(Str))))))))))
 ⌿paths⌿/pets/{petId}⌿get⌿responses⌿400 ->
 	Null
 ⌿paths⌿/users/{username}⌿put⌿responses⌿400 ->

@@ -272,8 +272,9 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   // Use required = None if everything is required
   // Use required = Some(listOfFields) to specify what exactly is required
   // Use required = Some(Nil) to define that everything is optional
+  // The return type is also required by definition
   private def isRequired[T](name: Reference, required: Option[Seq[String]]): Boolean =
-    required.isEmpty || required.get.contains(name.simple)
+    required.isEmpty || required.get.contains(name.simple) || name.parent.parts.last == "responses"
 
 }
 

@@ -1,9 +1,11 @@
 package error_in_array
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
-    type MetaCopyright = Option[String]
+type MetaCopyright = Option[String]
 
     type ErrorsErrorsOpt = ArrayWrapper[Error]
+
+    type ModelSchemaRootData = Option[ModelSchema]
 
     type ModelSchemaSpecialDescriptions = Option[ModelSchemaAgeGroups]
 
@@ -13,13 +15,9 @@ import de.zalando.play.controllers.ArrayWrapper
 
     type ModelSchemaAgeGroups = ArrayWrapper[String]
 
-    type ModelSchemaRootData = Option[ModelSchema]
-
     type ErrorsErrors = Option[ErrorsErrorsOpt]
 
     type ModelSchemaRootMeta = Option[Meta]
-
-    type SchemaModelGetResponses200 = Option[ModelSchemaRoot]
 
     case class ModelSchemaRoot(data: ModelSchemaRootData, meta: ModelSchemaRootMeta, links: ModelSchemaRootLinks) 
 
@@ -37,4 +35,7 @@ import de.zalando.play.controllers.ArrayWrapper
 
     
 
-}
+
+    
+    
+    }

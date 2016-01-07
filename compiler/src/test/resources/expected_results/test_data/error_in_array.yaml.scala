@@ -6,9 +6,11 @@ import Arbitrary._
 
 import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
+    def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
 
     def createErrorsErrorsOptGenerator = _generate(ErrorsErrorsOptGenerator)
+
+    def createModelSchemaRootDataGenerator = _generate(ModelSchemaRootDataGenerator)
 
     def createModelSchemaSpecialDescriptionsGenerator = _generate(ModelSchemaSpecialDescriptionsGenerator)
 
@@ -18,17 +20,15 @@ def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
 
     def createModelSchemaAgeGroupsGenerator = _generate(ModelSchemaAgeGroupsGenerator)
 
-    def createModelSchemaRootDataGenerator = _generate(ModelSchemaRootDataGenerator)
-
     def createErrorsErrorsGenerator = _generate(ErrorsErrorsGenerator)
 
     def createModelSchemaRootMetaGenerator = _generate(ModelSchemaRootMetaGenerator)
 
-    def createSchemaModelGetResponses200Generator = _generate(SchemaModelGetResponses200Generator)
-
     def MetaCopyrightGenerator = Gen.option(arbitrary[String])
 
     def ErrorsErrorsOptGenerator = _genList(ErrorGenerator, "csv")
+
+    def ModelSchemaRootDataGenerator = Gen.option(ModelSchemaGenerator)
 
     def ModelSchemaSpecialDescriptionsGenerator = Gen.option(ModelSchemaAgeGroupsGenerator)
 
@@ -38,13 +38,9 @@ def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
 
     def ModelSchemaAgeGroupsGenerator = _genList(arbitrary[String], "csv")
 
-    def ModelSchemaRootDataGenerator = Gen.option(ModelSchemaGenerator)
-
     def ErrorsErrorsGenerator = Gen.option(ErrorsErrorsOptGenerator)
 
     def ModelSchemaRootMetaGenerator = Gen.option(MetaGenerator)
-
-    def SchemaModelGetResponses200Generator = Gen.option(ModelSchemaRootGenerator)
 
     def createModelSchemaRootGenerator = _generate(ModelSchemaRootGenerator)
 
@@ -110,4 +106,4 @@ def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
-}
+    }

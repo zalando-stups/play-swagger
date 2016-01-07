@@ -22,17 +22,11 @@
 	Opt(Intgr)
 ⌿paths⌿/pets⌿get⌿tags -> 
 	Opt(TypeRef(⌿paths⌿/pets⌿get⌿tags⌿Opt))
-⌿paths⌿/pets/{id}⌿delete⌿responses⌿default -> 
-	Opt(TypeRef(⌿definitions⌿errorModel))
-⌿paths⌿/pets⌿post⌿responses⌿200 -> 
-	Opt(TypeRef(⌿definitions⌿pet))
 ⌿paths⌿/pets/{id}⌿delete⌿responses⌿204 -> 
 	Null
 ⌿paths⌿/pets⌿get⌿tags⌿Opt -> 
 	Arr(Str)
 ⌿paths⌿/pets⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/pets⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/pets⌿get⌿responses⌿200⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿pet))
 -- params --
 

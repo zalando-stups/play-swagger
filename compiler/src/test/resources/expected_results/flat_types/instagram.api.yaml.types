@@ -84,18 +84,18 @@
 ⌿/definitions/Media⌿tags⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Tag))
 ⌿/definitions/Media⌿videos⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos, Seq(
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿low_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution))))
+	TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿videos, Seq(
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿videos⌿low_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿videos⌿standard_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution))))
 ⌿/definitions/Media⌿likes⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes, Seq(
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿count, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
+	TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿likes, Seq(
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿likes⌿count, TypeRef(⌿/definitions/Media⌿created_time)), 
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿likes⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
 ⌿/definitions/Media⌿images⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images, Seq(
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿low_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿thumbnail, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿standard_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution))))
+	TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿images, Seq(
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿images⌿low_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿images⌿thumbnail, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿images⌿standard_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution))))
 ⌿parameters⌿user-id-param⌿user-id -> 
 	Dbl
 ⌿/definitions/User⌿counts⌿Opt -> 
@@ -104,9 +104,9 @@
 		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data⌿counts⌿follows, TypeRef(⌿/definitions/Media⌿created_time)), 
 		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data⌿counts⌿follwed_by, TypeRef(⌿/definitions/Media⌿created_time))))
 ⌿/definitions/Media⌿comments:⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:, Seq(
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿count, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿data, TypeRef(⌿definitions⌿Media⌿comments:⌿data))))
+	TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿comments:, Seq(
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿comments:⌿count, TypeRef(⌿/definitions/Media⌿created_time)), 
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿comments:⌿data, TypeRef(⌿definitions⌿Media⌿comments:⌿data))))
 ⌿parameters⌿tag-name⌿tag-name -> 
 	Str
 ⌿paths⌿/locations/{location-id}⌿⌿location-id -> 
@@ -116,92 +116,64 @@
 ⌿definitions⌿Media⌿comments:⌿data -> 
 	Opt(TypeRef(⌿definitions⌿Media⌿comments:⌿data⌿Opt))
 ⌿paths⌿/users/self/feed⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿Opt))
+	TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data))))
 ⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿Opt))
+	TypeDef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200, Seq(
+		Field(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
+		Field(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿data, TypeRef(⌿/definitions/Like⌿user_name))))
 ⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200⌿Opt))
+	TypeDef(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
 ⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200⌿Opt))
+	TypeDef(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿tags))))
 ⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/tags/{tag-name}⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿definitions⌿Tag))
-⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/media/search⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/tags/search⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/media/{media-id}⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿definitions⌿Media))
-⌿definitions⌿Media⌿comments:⌿data⌿Opt -> 
-	Arr(TypeRef(⌿definitions⌿Comment))
-⌿paths⌿/users/{user-id}⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿responses⌿200 -> 
-	Null
-⌿paths⌿/locations/search⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta -> 
-	Opt(TypeRef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿Opt))
-⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
-		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data))))
-⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿Opt -> 
 	TypeDef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta)), 
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
-⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta -> 
-	Opt(TypeRef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta⌿Opt))
-⌿paths⌿/tags/search⌿get⌿responses⌿200⌿Opt -> 
+⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200 -> 
+	TypeDef(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿location))))
+⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200 -> 
+	TypeDef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
+		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data))))
+⌿paths⌿/media/search⌿get⌿responses⌿200 -> 
+	TypeDef(⌿paths⌿/media/search⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data))))
+⌿paths⌿/tags/search⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/tags/search⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta)), 
 		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿tags))))
+⌿definitions⌿Media⌿comments:⌿data⌿Opt -> 
+	Arr(TypeRef(⌿definitions⌿Comment))
+⌿paths⌿/users/{user-id}⌿get⌿responses⌿200 -> 
+	TypeDef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data))))
+⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200 -> 
+	TypeDef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
+		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿comments:⌿data))))
+⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿responses⌿200 -> 
+	Null
+⌿paths⌿/locations/search⌿get⌿responses⌿200 -> 
+	TypeDef(⌿paths⌿/locations/search⌿get⌿responses⌿200, Seq(
+		Field(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data))))
+⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta -> 
+	Opt(TypeRef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿Opt))
+⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta -> 
+	Opt(TypeRef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta⌿Opt))
 ⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data⌿Opt))
-⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿tags))))
-⌿paths⌿/media/search⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/media/search⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data))))
 ⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/media/search⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿definitions⌿User))
-⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200, Seq(
-		Field(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
-		Field(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿data, TypeRef(⌿/definitions/Like⌿user_name))))
-⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data))))
-⌿paths⌿/locations/search⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/locations/search⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data))))
-⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿location))))
-⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data))))
-⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
-⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
-		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿comments:⌿data))))
 ⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿Opt -> 
 	TypeDef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta, Seq(
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿code, TypeRef(⌿/definitions/Media⌿created_time))))

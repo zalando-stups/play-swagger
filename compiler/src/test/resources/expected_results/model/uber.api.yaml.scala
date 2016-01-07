@@ -2,45 +2,39 @@ package uber.api
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
 import de.zalando.play.controllers.PlayPathBindables
-    type EstimatesPriceGetEnd_latitude = Double
+type EstimatesPriceGetEnd_latitude = Double
 
-    type ProfileLast_name = Option[String]
-
-    type ProductsGetResponses200Opt = ArrayWrapper[Product]
-
-    type EstimatesPriceGetResponses200Opt = ArrayWrapper[PriceEstimate]
+    type ProductDescription = Option[String]
 
     type ActivitiesHistory = Option[ActivitiesHistoryOpt]
 
+    type ErrorCode = Option[Int]
+
     type PriceEstimateLow_estimate = Option[Double]
 
-    type HistoryGetResponsesDefault = Option[Error]
+    type ProductsGetResponses200 = ArrayWrapper[Product]
 
-    type HistoryGetResponses200 = Option[Activities]
-
-    type ProductsGetResponses200 = Option[ProductsGetResponses200Opt]
-
-    type MeGetResponses200 = Option[Profile]
+    type EstimatesPriceGetResponses200 = ArrayWrapper[PriceEstimate]
 
     type ActivitiesHistoryOpt = ArrayWrapper[Activity]
 
-    type EstimatesPriceGetResponses200 = Option[EstimatesPriceGetResponses200Opt]
+    case class Activity(uuid: ProductDescription) 
 
-    type ActivitiesLimit = Option[Int]
+    case class PriceEstimate(low_estimate: PriceEstimateLow_estimate, display_name: ProductDescription, estimate: ProductDescription, high_estimate: PriceEstimateLow_estimate, product_id: ProductDescription, currency_code: ProductDescription, surge_multiplier: PriceEstimateLow_estimate) 
 
-    case class Activity(uuid: ProfileLast_name) 
+    case class Product(image: ProductDescription, description: ProductDescription, display_name: ProductDescription, product_id: ProductDescription, capacity: ProductDescription) 
 
-    case class PriceEstimate(low_estimate: PriceEstimateLow_estimate, display_name: ProfileLast_name, estimate: ProfileLast_name, high_estimate: PriceEstimateLow_estimate, product_id: ProfileLast_name, currency_code: ProfileLast_name, surge_multiplier: PriceEstimateLow_estimate) 
+    case class Profile(first_name: ProductDescription, email: ProductDescription, promo_code: ProductDescription, last_name: ProductDescription, picture: ProductDescription) 
 
-    case class Product(image: ProfileLast_name, description: ProfileLast_name, display_name: ProfileLast_name, product_id: ProfileLast_name, capacity: ProfileLast_name) 
+    case class Activities(offset: ErrorCode, limit: ErrorCode, count: ErrorCode, history: ActivitiesHistory) 
 
-    case class Profile(first_name: ProfileLast_name, email: ProfileLast_name, promo_code: ProfileLast_name, last_name: ProfileLast_name, picture: ProfileLast_name) 
+    case class Error(code: ErrorCode, message: ProductDescription, fields: ProductDescription) 
 
-    case class Activities(offset: ActivitiesLimit, limit: ActivitiesLimit, count: ActivitiesLimit, history: ActivitiesHistory) 
+    
 
-    case class Error(code: ActivitiesLimit, message: ProfileLast_name, fields: ProfileLast_name)
 
+    
+    
     implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
-
-}
+    }

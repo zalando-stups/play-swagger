@@ -10,11 +10,7 @@
 		Field(⌿definitions⌿Pet⌿tag, TypeRef(⌿/definitions/Pet⌿tag))))
 ⌿paths⌿/pets/{id}⌿get⌿id -> 
 	Arr(Str)
-⌿paths⌿/pets/{id}⌿get⌿responses⌿default -> 
-	Opt(TypeRef(⌿definitions⌿ErrorModel))
 ⌿paths⌿/pets/{id}⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/pets/{id}⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/pets/{id}⌿get⌿responses⌿200⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Pet))
 -- params --
 

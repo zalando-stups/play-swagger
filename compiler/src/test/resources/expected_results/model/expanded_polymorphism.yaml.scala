@@ -2,9 +2,7 @@ package expanded_polymorphism
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
 import de.zalando.play.controllers.PlayPathBindables
-    type PetsIdDeleteResponsesDefault = Option[Error]
-
-    type PetsIdDeleteResponses204 = Null
+type PetsIdDeleteResponses204 = Null
 
     type PetsIdDeleteId = Long
 
@@ -14,9 +12,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
     type PetsGetTagsOpt = ArrayWrapper[String]
 
-    type PetsGetResponses200Opt = ArrayWrapper[Pet]
-
-    type PetsGetResponses200 = Option[PetsGetResponses200Opt]
+    type PetsGetResponses200 = ArrayWrapper[Pet]
 
     type PetsGetTags = Option[PetsGetTagsOpt]
 
@@ -24,14 +20,14 @@ import de.zalando.play.controllers.PlayPathBindables
 
     case class Pet(name: String, tag: NewPetTag, id: Long) 
 
-    case class Error(code: Int, message: String)
+    case class Error(code: Int, message: String) 
+
+    
 
 
-
-
-
-
+    
+    
     implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
     implicit val bindable_OptionPetsGetTagsOptQuery = PlayPathBindables.createOptionQueryBindable[PetsGetTagsOpt]
     implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("csv")
-}
+    }

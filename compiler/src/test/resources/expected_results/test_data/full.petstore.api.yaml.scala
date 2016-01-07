@@ -7,7 +7,7 @@ import Arbitrary._
 import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
 object Generators {
-def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
+    def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
 
     def createStringGenerator = _generate(StringGenerator)
 
@@ -35,8 +35,6 @@ def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
 
     def createPetTagsOptGenerator = _generate(PetTagsOptGenerator)
 
-    def createPetsFindByStatusGetResponses200OptGenerator = _generate(PetsFindByStatusGetResponses200OptGenerator)
-
     def createPetCategoryGenerator = _generate(PetCategoryGenerator)
 
     def createOrderShipDateGenerator = _generate(OrderShipDateGenerator)
@@ -57,7 +55,7 @@ def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
 
     def OrderPetIdGenerator = Gen.option(arbitrary[Long])
 
-    def PetsFindByStatusGetResponses200Generator = Gen.option(PetsFindByStatusGetResponses200OptGenerator)
+    def PetsFindByStatusGetResponses200Generator = _genList(PetGenerator, "csv")
 
     def PetsPostBodyGenerator = Gen.option(PetGenerator)
 
@@ -74,8 +72,6 @@ def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
     def LongGenerator = arbitrary[Long]
 
     def PetTagsOptGenerator = _genList(TagGenerator, "csv")
-
-    def PetsFindByStatusGetResponses200OptGenerator = _genList(PetGenerator, "csv")
 
     def PetCategoryGenerator = Gen.option(TagGenerator)
 
@@ -136,4 +132,4 @@ def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
     implicit lazy val arbDateTime: Arbitrary[DateTime] = Arbitrary(for {
         l <- arbitrary[Long]
     } yield new DateTime(System.currentTimeMillis + l))
-}
+    }

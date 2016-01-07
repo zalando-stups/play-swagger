@@ -6,11 +6,9 @@ import Arbitrary._
 
 import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createPetNameGenerator = _generate(PetNameGenerator)
+    def createPetNameGenerator = _generate(PetNameGenerator)
 
     def createStringGenerator = _generate(StringGenerator)
-
-    def createGetResponses200OptGenerator = _generate(GetResponses200OptGenerator)
 
     def createNullGenerator = _generate(NullGenerator)
 
@@ -22,13 +20,11 @@ def createPetNameGenerator = _generate(PetNameGenerator)
 
     def StringGenerator = arbitrary[String]
 
-    def GetResponses200OptGenerator = _genList(PetGenerator, "csv")
-
     def NullGenerator = arbitrary[Null]
 
     def PetBirthdayGenerator = Gen.option(arbitrary[Int])
 
-    def GetResponses200Generator = Gen.option(GetResponses200OptGenerator)
+    def GetResponses200Generator = _genList(PetGenerator, "csv")
 
     def createPetGenerator = _generate(PetGenerator)
 
@@ -41,4 +37,4 @@ def createPetNameGenerator = _generate(PetNameGenerator)
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
-}
+    }

@@ -3,7 +3,7 @@ package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
 import de.zalando.play.controllers.PlayPathBindables
-    type OrderQuantity = Option[Int]
+type OrderQuantity = Option[Int]
 
     type UsersUsernameGetUsername = String
 
@@ -13,7 +13,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
     type OrderPetId = Option[Long]
 
-    type PetsFindByStatusGetResponses200 = Option[PetsFindByStatusGetResponses200Opt]
+    type PetsFindByStatusGetResponses200 = ArrayWrapper[Pet]
 
     type PetsPostBody = Option[Pet]
 
@@ -31,8 +31,6 @@ import de.zalando.play.controllers.PlayPathBindables
 
     type PetTagsOpt = ArrayWrapper[Tag]
 
-    type PetsFindByStatusGetResponses200Opt = ArrayWrapper[Pet]
-
     type PetCategory = Option[Tag]
 
     type OrderShipDate = Option[DateTime]
@@ -49,11 +47,15 @@ import de.zalando.play.controllers.PlayPathBindables
 
     case class Tag(id: OrderPetId, name: OrderStatus) 
 
-    case class Pet(name: String, tags: PetTags, photoUrls: PetPhotoUrls, id: OrderPetId, status: OrderStatus, category: PetCategory)
+    case class Pet(name: String, tags: PetTags, photoUrls: PetPhotoUrls, id: OrderPetId, status: OrderStatus, category: PetCategory) 
 
+    
+
+
+    
+    
     import PlayPathBindables.queryBindableDateTime
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
     implicit val bindable_OptionPetPhotoUrlsQuery = PlayPathBindables.createOptionQueryBindable[PetPhotoUrls]
     implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("csv")
-
-}
+    }

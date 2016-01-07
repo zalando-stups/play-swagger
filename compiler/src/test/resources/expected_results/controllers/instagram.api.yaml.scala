@@ -7,11 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-package instagram.api.yaml {
-
-
-
-
+package instagram.api.yaml { 
 
     class InstagramApiYaml extends InstagramApiYamlBase {
     val getmediaByMedia_idLikes = getmediaByMedia_idLikesAction {
@@ -164,4 +160,3 @@ package instagram.api.yaml {
         } //////// EOF ////////  getmediaPopularAction
     }
 }
-

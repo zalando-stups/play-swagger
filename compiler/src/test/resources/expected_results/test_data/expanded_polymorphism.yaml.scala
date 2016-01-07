@@ -6,8 +6,6 @@ import Arbitrary._
 
 import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponsesDefaultGenerator)
-
     def createNullGenerator = _generate(NullGenerator)
 
     def createLongGenerator = _generate(LongGenerator)
@@ -18,13 +16,9 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
 
     def createPetsGetTagsOptGenerator = _generate(PetsGetTagsOptGenerator)
 
-    def createPetsGetResponses200OptGenerator = _generate(PetsGetResponses200OptGenerator)
-
     def createPetsGetResponses200Generator = _generate(PetsGetResponses200Generator)
 
     def createPetsGetTagsGenerator = _generate(PetsGetTagsGenerator)
-
-    def PetsIdDeleteResponsesDefaultGenerator = Gen.option(ErrorGenerator)
 
     def NullGenerator = arbitrary[Null]
 
@@ -36,9 +30,7 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
 
     def PetsGetTagsOptGenerator = _genList(arbitrary[String], "csv")
 
-    def PetsGetResponses200OptGenerator = _genList(PetGenerator, "csv")
-
-    def PetsGetResponses200Generator = Gen.option(PetsGetResponses200OptGenerator)
+    def PetsGetResponses200Generator = _genList(PetGenerator, "csv")
 
     def PetsGetTagsGenerator = Gen.option(PetsGetTagsOptGenerator)
 
@@ -68,4 +60,4 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
-}
+    }
