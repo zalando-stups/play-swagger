@@ -78,6 +78,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     case r : JsonReference => Seq(fromReference(name, r, None))
     case nb: NonBodyParameterCommons[_, _] => Seq(fromNonBodyParameter(name, nb))
     case bp: BodyParameter[_] => fromBodyParameter(name, bp)
+    case nbp: NonBodyParameter[_] =>
+      throw new IllegalStateException("Something went wrong, this case should not be reachable")
   }
 
   private def fromBodyParameter[T](name: Reference, param: BodyParameter[T]): NamedTypes =
@@ -215,7 +217,6 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 
   // ------------------------------------ Primitives ------------------------------------
 
-  @throws[MatchError]
   private implicit def fromParameterType(tpe: (ParameterType.Value, String)): TypeConstructor =
     (tpe._1, Option(tpe._2)) match {
       case (ParameterType.INTEGER, Some("int64")) => Domain.Lng
@@ -231,9 +232,9 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (ParameterType.STRING, Some("password")) => Domain.Password
       case (ParameterType.STRING, fmt) => Domain.Str.curried(fmt)
       case (ParameterType.FILE, _) => Domain.File
+      case (a, b) => throw new IllegalArgumentException(s"Combination if $a and $b is not supported")
     }
 
-  @throws[MatchError]
   private implicit def fromPrimitiveType(tpe: (PrimitiveType.Val, String)): TypeConstructor =
     (tpe._1, Option(tpe._2)) match {
       case (PrimitiveType.INTEGER, Some("int64")) => Domain.Lng
@@ -249,6 +250,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (PrimitiveType.STRING, Some("password")) => Domain.Password
       case (PrimitiveType.STRING, fmt) => Domain.Str.curried(fmt)
       case (PrimitiveType.NULL, _) => Domain.Null
+      case (a, b) => throw new IllegalArgumentException(s"Combination if $a and $b is not supported")
     }
 
   // ------------------------------------ Wrappers ------------------------------------

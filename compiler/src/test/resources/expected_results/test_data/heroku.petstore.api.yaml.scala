@@ -9,9 +9,9 @@ object Generators {
 
     def createStringGenerator = _generate(StringGenerator)
 
-    def createNullGenerator = _generate(NullGenerator)
-
     def createPetBirthdayGenerator = _generate(PetBirthdayGenerator)
+
+    def createNullGenerator = _generate(NullGenerator)
 
     def createGetResponses200Generator = _generate(GetResponses200Generator)
 
@@ -19,9 +19,9 @@ object Generators {
 
     def StringGenerator = arbitrary[String]
 
-    def NullGenerator = arbitrary[Null]
-
     def PetBirthdayGenerator = Gen.option(arbitrary[Int])
+
+    def NullGenerator = arbitrary[Null]
 
     def GetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 

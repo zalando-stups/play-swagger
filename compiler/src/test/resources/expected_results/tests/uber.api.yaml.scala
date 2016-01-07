@@ -26,7 +26,7 @@ import Generators._
         }
 
 "GET /v1/history" should {
-        def testInvalidInput(input: (ActivitiesLimit, ActivitiesLimit)) = {
+        def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
 
             val (offset, limit) = input
             val url = s"""/v1/history?${offset.map { i => "offset=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -44,7 +44,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (ActivitiesLimit, ActivitiesLimit)) = {
+        def testValidInput(input: (ErrorCode, ErrorCode)) = {
 
             val (offset, limit) = input
             val url = s"""/v1/history?${offset.map { i => "offset=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -54,8 +54,8 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    offset <- ActivitiesLimitGenerator
-                    limit <- ActivitiesLimitGenerator
+                    offset <- ErrorCodeGenerator
+                    limit <- ErrorCodeGenerator
                     
 
                 } yield (offset, limit)
@@ -68,8 +68,8 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                offset <- ActivitiesLimitGenerator
-                limit <- ActivitiesLimitGenerator
+                offset <- ErrorCodeGenerator
+                limit <- ErrorCodeGenerator
                 
 
             } yield (offset, limit)
@@ -83,7 +83,7 @@ import Generators._
 
     }
 "GET /v1/estimates/time" should {
-        def testInvalidInput(input: (Double, Double, ProductDescription, ProductDescription)) = {
+        def testInvalidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
 
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
             val url = s"""/v1/estimates/time?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&${customer_uuid.map { i => "customer_uuid=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${product_id.map { i => "product_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -101,7 +101,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (Double, Double, ProductDescription, ProductDescription)) = {
+        def testValidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
 
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
             val url = s"""/v1/estimates/time?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&${customer_uuid.map { i => "customer_uuid=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${product_id.map { i => "product_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -113,8 +113,8 @@ import Generators._
             val genInputs = for {
                     start_latitude <- DoubleGenerator
                     start_longitude <- DoubleGenerator
-                    customer_uuid <- ProductDescriptionGenerator
-                    product_id <- ProductDescriptionGenerator
+                    customer_uuid <- ProfilePictureGenerator
+                    product_id <- ProfilePictureGenerator
                     
 
                 } yield (start_latitude, start_longitude, customer_uuid, product_id)
@@ -129,8 +129,8 @@ import Generators._
             val genInputs = for {
                 start_latitude <- DoubleGenerator
                 start_longitude <- DoubleGenerator
-                customer_uuid <- ProductDescriptionGenerator
-                product_id <- ProductDescriptionGenerator
+                customer_uuid <- ProfilePictureGenerator
+                product_id <- ProfilePictureGenerator
                 
 
             } yield (start_latitude, start_longitude, customer_uuid, product_id)

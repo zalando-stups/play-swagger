@@ -1,8 +1,6 @@
 ⌿definitions⌿Activity -> 
 	TypeDef(⌿definitions⌿Activity, Seq(
-		Field(⌿definitions⌿Activity⌿actions, TypeRef(⌿/definitions/Activity⌿actions))))
-⌿/definitions/Activity⌿actions -> 
-	Opt(Str)
+		Field(⌿definitions⌿Activity⌿actions, TypeRef(⌿definitions⌿Activity⌿actions))))
 ⌿definitions⌿Example -> 
 	TypeDef(⌿definitions⌿Example, Seq(
 		Field(⌿definitions⌿Example⌿messages, TypeRef(⌿definitions⌿Example⌿messages)), 
@@ -11,6 +9,8 @@
 	Opt(TypeRef(⌿definitions⌿Example⌿messages⌿Opt))
 ⌿definitions⌿Example⌿nestedArrays -> 
 	Opt(TypeRef(⌿definitions⌿Example⌿nestedArrays⌿Opt))
+⌿definitions⌿Activity⌿actions -> 
+	Opt(Str)
 ⌿definitions⌿Example⌿nestedArrays⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr))
 ⌿definitions⌿Example⌿messages⌿Opt -> 

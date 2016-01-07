@@ -179,7 +179,7 @@ import Generators._
 
     }
 "GET /v1/locations/search" should {
-        def testInvalidInput(input: (MediaCreated_time, MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude)) = {
+        def testInvalidInput(input: (MediaId, MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)) = {
 
             val (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng) = input
             val url = s"""/v1/locations/search?${foursquare_v2_id.map { i => "foursquare_v2_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${facebook_places_id.map { i => "facebook_places_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${distance.map { i => "distance=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${lat.map { i => "lat=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${foursquare_id.map { i => "foursquare_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${lng.map { i => "lng=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -197,7 +197,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (MediaCreated_time, MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude)) = {
+        def testValidInput(input: (MediaId, MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)) = {
 
             val (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng) = input
             val url = s"""/v1/locations/search?${foursquare_v2_id.map { i => "foursquare_v2_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${facebook_places_id.map { i => "facebook_places_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${distance.map { i => "distance=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${lat.map { i => "lat=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${foursquare_id.map { i => "foursquare_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${lng.map { i => "lng=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -207,12 +207,12 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    foursquare_v2_id <- MediaCreated_timeGenerator
-                    facebook_places_id <- MediaCreated_timeGenerator
-                    distance <- MediaCreated_timeGenerator
-                    lat <- LocationLongitudeGenerator
-                    foursquare_id <- MediaCreated_timeGenerator
-                    lng <- LocationLongitudeGenerator
+                    foursquare_v2_id <- MediaIdGenerator
+                    facebook_places_id <- MediaIdGenerator
+                    distance <- MediaIdGenerator
+                    lat <- LocationLatitudeGenerator
+                    foursquare_id <- MediaIdGenerator
+                    lng <- LocationLatitudeGenerator
                     
 
                 } yield (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng)
@@ -225,12 +225,12 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                foursquare_v2_id <- MediaCreated_timeGenerator
-                facebook_places_id <- MediaCreated_timeGenerator
-                distance <- MediaCreated_timeGenerator
-                lat <- LocationLongitudeGenerator
-                foursquare_id <- MediaCreated_timeGenerator
-                lng <- LocationLongitudeGenerator
+                foursquare_v2_id <- MediaIdGenerator
+                facebook_places_id <- MediaIdGenerator
+                distance <- MediaIdGenerator
+                lat <- LocationLatitudeGenerator
+                foursquare_id <- MediaIdGenerator
+                lng <- LocationLatitudeGenerator
                 
 
             } yield (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng)
@@ -295,7 +295,7 @@ import Generators._
 
     }
 "GET /v1/users/self/media/liked" should {
-        def testInvalidInput(input: (MediaCreated_time, MediaCreated_time)) = {
+        def testInvalidInput(input: (MediaId, MediaId)) = {
 
             val (count, max_like_id) = input
             val url = s"""/v1/users/self/media/liked?${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${max_like_id.map { i => "max_like_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -313,7 +313,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (MediaCreated_time, MediaCreated_time)) = {
+        def testValidInput(input: (MediaId, MediaId)) = {
 
             val (count, max_like_id) = input
             val url = s"""/v1/users/self/media/liked?${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${max_like_id.map { i => "max_like_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -323,8 +323,8 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    count <- MediaCreated_timeGenerator
-                    max_like_id <- MediaCreated_timeGenerator
+                    count <- MediaIdGenerator
+                    max_like_id <- MediaIdGenerator
                     
 
                 } yield (count, max_like_id)
@@ -337,8 +337,8 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                count <- MediaCreated_timeGenerator
-                max_like_id <- MediaCreated_timeGenerator
+                count <- MediaIdGenerator
+                max_like_id <- MediaIdGenerator
                 
 
             } yield (count, max_like_id)
@@ -352,7 +352,7 @@ import Generators._
 
     }
 "GET /v1/tags/search" should {
-        def testInvalidInput(q: LikeUser_name) = {
+        def testInvalidInput(q: MediaFilter) = {
 
             val url = s"""/v1/tags/search?${q.map { i => "q=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
             val headers = Seq()
@@ -369,7 +369,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(q: LikeUser_name) = {
+        def testValidInput(q: MediaFilter) = {
 
             val url = s"""/v1/tags/search?${q.map { i => "q=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
             val headers = Seq()
@@ -378,7 +378,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    q <- LikeUser_nameGenerator
+                    q <- MediaFilterGenerator
 
                 } yield q
 
@@ -390,7 +390,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                q <- LikeUser_nameGenerator
+                q <- MediaFilterGenerator
 
             } yield q
 
@@ -607,7 +607,7 @@ import Generators._
 
     }
 "GET /v1/users/search" should {
-        def testInvalidInput(input: (String, LikeUser_name)) = {
+        def testInvalidInput(input: (String, MediaFilter)) = {
 
             val (q, count) = input
             val url = s"""/v1/users/search?q=${URLEncoder.encode(q.toString, "UTF-8")}&${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -625,7 +625,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (String, LikeUser_name)) = {
+        def testValidInput(input: (String, MediaFilter)) = {
 
             val (q, count) = input
             val url = s"""/v1/users/search?q=${URLEncoder.encode(q.toString, "UTF-8")}&${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -636,7 +636,7 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     q <- StringGenerator
-                    count <- LikeUser_nameGenerator
+                    count <- MediaFilterGenerator
                     
 
                 } yield (q, count)
@@ -650,7 +650,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 q <- StringGenerator
-                count <- LikeUser_nameGenerator
+                count <- MediaFilterGenerator
                 
 
             } yield (q, count)
@@ -664,7 +664,7 @@ import Generators._
 
     }
 "POST /v1/media/{media-id}/comments" should {
-        def testInvalidInput(input: (Int, LocationLongitude)) = {
+        def testInvalidInput(input: (Int, LocationLatitude)) = {
 
             val (`media-id`, tEXT) = input
             val url = s"""/v1/media/${media-id}/comments"""
@@ -683,7 +683,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (Int, LocationLongitude)) = {
+        def testValidInput(input: (Int, LocationLatitude)) = {
 
             val (`media-id`, tEXT) = input
             val parsed_TEXT = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(TEXT)
@@ -695,7 +695,7 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     `media-id` <- IntGenerator
-                    tEXT <- LocationLongitudeGenerator
+                    tEXT <- LocationLatitudeGenerator
                     
 
                 } yield (`media-id`, tEXT)
@@ -709,7 +709,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 `media-id` <- IntGenerator
-                tEXT <- LocationLongitudeGenerator
+                tEXT <- LocationLatitudeGenerator
                 
 
             } yield (`media-id`, tEXT)
@@ -774,7 +774,7 @@ import Generators._
 
     }
 "POST /v1/users/{user-id}/relationship" should {
-        def testInvalidInput(input: (Double, LikeUser_name)) = {
+        def testInvalidInput(input: (Double, MediaFilter)) = {
 
             val (`user-id`, action) = input
             val url = s"""/v1/users/${user-id}/relationship"""
@@ -793,7 +793,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (Double, LikeUser_name)) = {
+        def testValidInput(input: (Double, MediaFilter)) = {
 
             val (`user-id`, action) = input
             val parsed_action = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(action)
@@ -805,7 +805,7 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     `user-id` <- DoubleGenerator
-                    action <- LikeUser_nameGenerator
+                    action <- MediaFilterGenerator
                     
 
                 } yield (`user-id`, action)
@@ -819,7 +819,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 `user-id` <- DoubleGenerator
-                action <- LikeUser_nameGenerator
+                action <- MediaFilterGenerator
                 
 
             } yield (`user-id`, action)
@@ -935,7 +935,7 @@ import Generators._
 
     }
 "GET /v1/locations/{location-id}/media/recent" should {
-        def testInvalidInput(input: (Int, MediaCreated_time, MediaCreated_time, LikeUser_name, LikeUser_name)) = {
+        def testInvalidInput(input: (Int, MediaId, MediaId, MediaFilter, MediaFilter)) = {
 
             val (`location-id`, max_timestamp, min_timestamp, min_id, max_id) = input
             val url = s"""/v1/locations/${location-id}/media/recent?${max_timestamp.map { i => "max_timestamp=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_timestamp.map { i => "min_timestamp=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_id.map { i => "min_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${max_id.map { i => "max_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -953,7 +953,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (Int, MediaCreated_time, MediaCreated_time, LikeUser_name, LikeUser_name)) = {
+        def testValidInput(input: (Int, MediaId, MediaId, MediaFilter, MediaFilter)) = {
 
             val (`location-id`, max_timestamp, min_timestamp, min_id, max_id) = input
             val url = s"""/v1/locations/${location-id}/media/recent?${max_timestamp.map { i => "max_timestamp=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_timestamp.map { i => "min_timestamp=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_id.map { i => "min_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${max_id.map { i => "max_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -964,10 +964,10 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     `location-id` <- IntGenerator
-                    max_timestamp <- MediaCreated_timeGenerator
-                    min_timestamp <- MediaCreated_timeGenerator
-                    min_id <- LikeUser_nameGenerator
-                    max_id <- LikeUser_nameGenerator
+                    max_timestamp <- MediaIdGenerator
+                    min_timestamp <- MediaIdGenerator
+                    min_id <- MediaFilterGenerator
+                    max_id <- MediaFilterGenerator
                     
 
                 } yield (`location-id`, max_timestamp, min_timestamp, min_id, max_id)
@@ -981,10 +981,10 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 `location-id` <- IntGenerator
-                max_timestamp <- MediaCreated_timeGenerator
-                min_timestamp <- MediaCreated_timeGenerator
-                min_id <- LikeUser_nameGenerator
-                max_id <- LikeUser_nameGenerator
+                max_timestamp <- MediaIdGenerator
+                min_timestamp <- MediaIdGenerator
+                min_id <- MediaFilterGenerator
+                max_id <- MediaFilterGenerator
                 
 
             } yield (`location-id`, max_timestamp, min_timestamp, min_id, max_id)
@@ -998,7 +998,7 @@ import Generators._
 
     }
 "GET /v1/media/search" should {
-        def testInvalidInput(input: (MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude)) = {
+        def testInvalidInput(input: (MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)) = {
 
             val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
             val url = s"""/v1/media/search?${MAX_TIMESTAMP.map { i => "MAX_TIMESTAMP=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${DISTANCE.map { i => "DISTANCE=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${LNG.map { i => "LNG=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${MIN_TIMESTAMP.map { i => "MIN_TIMESTAMP=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${LAT.map { i => "LAT=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -1016,7 +1016,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude)) = {
+        def testValidInput(input: (MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)) = {
 
             val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
             val url = s"""/v1/media/search?${MAX_TIMESTAMP.map { i => "MAX_TIMESTAMP=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${DISTANCE.map { i => "DISTANCE=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${LNG.map { i => "LNG=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${MIN_TIMESTAMP.map { i => "MIN_TIMESTAMP=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${LAT.map { i => "LAT=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -1026,11 +1026,11 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    mAX_TIMESTAMP <- MediaCreated_timeGenerator
-                    dISTANCE <- MediaCreated_timeGenerator
-                    lNG <- LocationLongitudeGenerator
-                    mIN_TIMESTAMP <- MediaCreated_timeGenerator
-                    lAT <- LocationLongitudeGenerator
+                    mAX_TIMESTAMP <- MediaIdGenerator
+                    dISTANCE <- MediaIdGenerator
+                    lNG <- LocationLatitudeGenerator
+                    mIN_TIMESTAMP <- MediaIdGenerator
+                    lAT <- LocationLatitudeGenerator
                     
 
                 } yield (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT)
@@ -1043,11 +1043,11 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                mAX_TIMESTAMP <- MediaCreated_timeGenerator
-                dISTANCE <- MediaCreated_timeGenerator
-                lNG <- LocationLongitudeGenerator
-                mIN_TIMESTAMP <- MediaCreated_timeGenerator
-                lAT <- LocationLongitudeGenerator
+                mAX_TIMESTAMP <- MediaIdGenerator
+                dISTANCE <- MediaIdGenerator
+                lNG <- LocationLatitudeGenerator
+                mIN_TIMESTAMP <- MediaIdGenerator
+                lAT <- LocationLatitudeGenerator
                 
 
             } yield (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT)
@@ -1163,7 +1163,7 @@ import Generators._
 
     }
 "GET /v1/users/{user-id}/media/recent" should {
-        def testInvalidInput(input: (Double, MediaCreated_time, LikeUser_name, MediaCreated_time, LikeUser_name, MediaCreated_time)) = {
+        def testInvalidInput(input: (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)) = {
 
             val (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count) = input
             val url = s"""/v1/users/${user-id}/media/recent?${max_timestamp.map { i => "max_timestamp=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_id.map { i => "min_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_timestamp.map { i => "min_timestamp=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${max_id.map { i => "max_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -1181,7 +1181,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (Double, MediaCreated_time, LikeUser_name, MediaCreated_time, LikeUser_name, MediaCreated_time)) = {
+        def testValidInput(input: (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)) = {
 
             val (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count) = input
             val url = s"""/v1/users/${user-id}/media/recent?${max_timestamp.map { i => "max_timestamp=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_id.map { i => "min_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_timestamp.map { i => "min_timestamp=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${max_id.map { i => "max_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -1192,11 +1192,11 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     `user-id` <- DoubleGenerator
-                    max_timestamp <- MediaCreated_timeGenerator
-                    min_id <- LikeUser_nameGenerator
-                    min_timestamp <- MediaCreated_timeGenerator
-                    max_id <- LikeUser_nameGenerator
-                    count <- MediaCreated_timeGenerator
+                    max_timestamp <- MediaIdGenerator
+                    min_id <- MediaFilterGenerator
+                    min_timestamp <- MediaIdGenerator
+                    max_id <- MediaFilterGenerator
+                    count <- MediaIdGenerator
                     
 
                 } yield (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count)
@@ -1210,11 +1210,11 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 `user-id` <- DoubleGenerator
-                max_timestamp <- MediaCreated_timeGenerator
-                min_id <- LikeUser_nameGenerator
-                min_timestamp <- MediaCreated_timeGenerator
-                max_id <- LikeUser_nameGenerator
-                count <- MediaCreated_timeGenerator
+                max_timestamp <- MediaIdGenerator
+                min_id <- MediaFilterGenerator
+                min_timestamp <- MediaIdGenerator
+                max_id <- MediaFilterGenerator
+                count <- MediaIdGenerator
                 
 
             } yield (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count)
@@ -1228,7 +1228,7 @@ import Generators._
 
     }
 "GET /v1/users/self/feed" should {
-        def testInvalidInput(input: (MediaCreated_time, MediaCreated_time, MediaCreated_time)) = {
+        def testInvalidInput(input: (MediaId, MediaId, MediaId)) = {
 
             val (count, max_id, min_id) = input
             val url = s"""/v1/users/self/feed?${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${max_id.map { i => "max_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_id.map { i => "min_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -1246,7 +1246,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (MediaCreated_time, MediaCreated_time, MediaCreated_time)) = {
+        def testValidInput(input: (MediaId, MediaId, MediaId)) = {
 
             val (count, max_id, min_id) = input
             val url = s"""/v1/users/self/feed?${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${max_id.map { i => "max_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_id.map { i => "min_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -1256,9 +1256,9 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    count <- MediaCreated_timeGenerator
-                    max_id <- MediaCreated_timeGenerator
-                    min_id <- MediaCreated_timeGenerator
+                    count <- MediaIdGenerator
+                    max_id <- MediaIdGenerator
+                    min_id <- MediaIdGenerator
                     
 
                 } yield (count, max_id, min_id)
@@ -1271,9 +1271,9 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                count <- MediaCreated_timeGenerator
-                max_id <- MediaCreated_timeGenerator
-                min_id <- MediaCreated_timeGenerator
+                count <- MediaIdGenerator
+                max_id <- MediaIdGenerator
+                min_id <- MediaIdGenerator
                 
 
             } yield (count, max_id, min_id)
@@ -1287,7 +1287,7 @@ import Generators._
 
     }
 "GET /v1/geographies/{geo-id}/media/recent" should {
-        def testInvalidInput(input: (Int, MediaCreated_time, MediaCreated_time)) = {
+        def testInvalidInput(input: (Int, MediaId, MediaId)) = {
 
             val (`geo-id`, count, min_id) = input
             val url = s"""/v1/geographies/${geo-id}/media/recent?${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_id.map { i => "min_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -1305,7 +1305,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (Int, MediaCreated_time, MediaCreated_time)) = {
+        def testValidInput(input: (Int, MediaId, MediaId)) = {
 
             val (`geo-id`, count, min_id) = input
             val url = s"""/v1/geographies/${geo-id}/media/recent?${count.map { i => "count=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${min_id.map { i => "min_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -1316,8 +1316,8 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     `geo-id` <- IntGenerator
-                    count <- MediaCreated_timeGenerator
-                    min_id <- MediaCreated_timeGenerator
+                    count <- MediaIdGenerator
+                    min_id <- MediaIdGenerator
                     
 
                 } yield (`geo-id`, count, min_id)
@@ -1331,8 +1331,8 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 `geo-id` <- IntGenerator
-                count <- MediaCreated_timeGenerator
-                min_id <- MediaCreated_timeGenerator
+                count <- MediaIdGenerator
+                min_id <- MediaIdGenerator
                 
 
             } yield (`geo-id`, count, min_id)

@@ -5,7 +5,6 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
-import de.zalando.play.controllers.ArrayWrapper
 import de.zalando.play.controllers.PlayPathBindables
 trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaByMedia_idLikesResponseMimeType    = "application/json"
@@ -201,7 +200,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersSearchResponseMimeType    = "application/json"
     private val getusersSearchActionSuccessStatus = Status(200)
 
-    private type getusersSearchActionRequestType       = (String, LikeUser_name)
+    private type getusersSearchActionRequestType       = (String, MediaFilter)
     private type getusersSearchActionResultType        = `UsersUser-idFollowsGetResponses200`
     private type getusersSearchActionType              = getusersSearchActionRequestType => Try[getusersSearchActionResultType]
 
@@ -213,7 +212,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getusersSearchAction = (f: getusersSearchActionType) => (q: String, count: LikeUser_name) => Action { 
+    def getusersSearchAction = (f: getusersSearchActionType) => (q: String, count: MediaFilter) => Action { 
 
         val result = 
 
@@ -239,7 +238,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersSelfMediaLikedResponseMimeType    = "application/json"
     private val getusersSelfMediaLikedActionSuccessStatus = Status(200)
 
-    private type getusersSelfMediaLikedActionRequestType       = (MediaCreated_time, MediaCreated_time)
+    private type getusersSelfMediaLikedActionRequestType       = (MediaId, MediaId)
     private type getusersSelfMediaLikedActionResultType        = UsersSelfFeedGetResponses200
     private type getusersSelfMediaLikedActionType              = getusersSelfMediaLikedActionRequestType => Try[getusersSelfMediaLikedActionResultType]
 
@@ -251,7 +250,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getusersSelfMediaLikedAction = (f: getusersSelfMediaLikedActionType) => (count: MediaCreated_time, max_like_id: MediaCreated_time) => Action { 
+    def getusersSelfMediaLikedAction = (f: getusersSelfMediaLikedActionType) => (count: MediaId, max_like_id: MediaId) => Action { 
 
         val result = 
 
@@ -315,7 +314,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val gettagsSearchResponseMimeType    = "application/json"
     private val gettagsSearchActionSuccessStatus = Status(200)
 
-    private type gettagsSearchActionRequestType       = (LikeUser_name)
+    private type gettagsSearchActionRequestType       = (MediaFilter)
     private type gettagsSearchActionResultType        = TagsSearchGetResponses200
     private type gettagsSearchActionType              = gettagsSearchActionRequestType => Try[gettagsSearchActionResultType]
 
@@ -327,7 +326,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def gettagsSearchAction = (f: gettagsSearchActionType) => (q: LikeUser_name) => Action { 
+    def gettagsSearchAction = (f: gettagsSearchActionType) => (q: MediaFilter) => Action { 
 
         val result = 
 
@@ -429,7 +428,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val postmediaByMedia_idCommentsResponseMimeType    = "application/json"
     private val postmediaByMedia_idCommentsActionSuccessStatus = Status(200)
 
-    private type postmediaByMedia_idCommentsActionRequestType       = (Int, LocationLongitude)
+    private type postmediaByMedia_idCommentsActionRequestType       = (Int, LocationLatitude)
     private type postmediaByMedia_idCommentsActionResultType        = `MediaMedia-idCommentsDeleteResponses200`
     private type postmediaByMedia_idCommentsActionType              = postmediaByMedia_idCommentsActionRequestType => Try[postmediaByMedia_idCommentsActionResultType]
 
@@ -438,7 +437,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    private def postmediaByMedia_idCommentsParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[LocationLongitude]("application/json", "Invalid LocationLongitude", maxLength)
+    private def postmediaByMedia_idCommentsParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[LocationLatitude]("application/json", "Invalid LocationLatitude", maxLength)
     
 
 
@@ -545,7 +544,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val postusersByUser_idRelationshipResponseMimeType    = "application/json"
     private val postusersByUser_idRelationshipActionSuccessStatus = Status(200)
 
-    private type postusersByUser_idRelationshipActionRequestType       = (Double, LikeUser_name)
+    private type postusersByUser_idRelationshipActionRequestType       = (Double, MediaFilter)
     private type postusersByUser_idRelationshipActionResultType        = `UsersUser-idFollowsGetResponses200`
     private type postusersByUser_idRelationshipActionType              = postusersByUser_idRelationshipActionRequestType => Try[postusersByUser_idRelationshipActionResultType]
 
@@ -554,7 +553,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    private def postusersByUser_idRelationshipParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[LikeUser_name]("application/json", "Invalid LikeUser_name", maxLength)
+    private def postusersByUser_idRelationshipParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[MediaFilter]("application/json", "Invalid MediaFilter", maxLength)
     
 
 
@@ -585,7 +584,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersSelfFeedResponseMimeType    = "application/json"
     private val getusersSelfFeedActionSuccessStatus = Status(200)
 
-    private type getusersSelfFeedActionRequestType       = (MediaCreated_time, MediaCreated_time, MediaCreated_time)
+    private type getusersSelfFeedActionRequestType       = (MediaId, MediaId, MediaId)
     private type getusersSelfFeedActionResultType        = UsersSelfFeedGetResponses200
     private type getusersSelfFeedActionType              = getusersSelfFeedActionRequestType => Try[getusersSelfFeedActionResultType]
 
@@ -597,7 +596,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getusersSelfFeedAction = (f: getusersSelfFeedActionType) => (count: MediaCreated_time, max_id: MediaCreated_time, min_id: MediaCreated_time) => Action { 
+    def getusersSelfFeedAction = (f: getusersSelfFeedActionType) => (count: MediaId, max_id: MediaId, min_id: MediaId) => Action { 
 
         val result = 
 
@@ -661,7 +660,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaSearchResponseMimeType    = "application/json"
     private val getmediaSearchActionSuccessStatus = Status(200)
 
-    private type getmediaSearchActionRequestType       = (MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude)
+    private type getmediaSearchActionRequestType       = (MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)
     private type getmediaSearchActionResultType        = MediaSearchGetResponses200
     private type getmediaSearchActionType              = getmediaSearchActionRequestType => Try[getmediaSearchActionResultType]
 
@@ -673,7 +672,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaCreated_time, dISTANCE: MediaCreated_time, lNG: LocationLongitude, mIN_TIMESTAMP: MediaCreated_time, lAT: LocationLongitude) => Action { 
+    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: MediaId, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => Action { 
 
         val result = 
 
@@ -699,7 +698,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getgeographiesByGeo_idMediaRecentResponseMimeType    = "application/json"
     private val getgeographiesByGeo_idMediaRecentActionSuccessStatus = Status(200)
 
-    private type getgeographiesByGeo_idMediaRecentActionRequestType       = (Int, MediaCreated_time, MediaCreated_time)
+    private type getgeographiesByGeo_idMediaRecentActionRequestType       = (Int, MediaId, MediaId)
     private type getgeographiesByGeo_idMediaRecentActionResultType        = Null
     private type getgeographiesByGeo_idMediaRecentActionType              = getgeographiesByGeo_idMediaRecentActionRequestType => Try[getgeographiesByGeo_idMediaRecentActionResultType]
 
@@ -711,7 +710,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (`geo-id`: Int, count: MediaCreated_time, min_id: MediaCreated_time) => Action { 
+    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (`geo-id`: Int, count: MediaId, min_id: MediaId) => Action { 
 
         val result = 
 
@@ -738,7 +737,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaByShortcodeActionSuccessStatus = Status(200)
 
     private type getmediaByShortcodeActionRequestType       = (String)
-    private type getmediaByShortcodeActionResultType        = /definitions/Media
+    private type getmediaByShortcodeActionResultType        = Media
     private type getmediaByShortcodeActionType              = getmediaByShortcodeActionRequestType => Try[getmediaByShortcodeActionResultType]
 
     private val errorToStatusgetmediaByShortcode: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -775,7 +774,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getlocationsSearchResponseMimeType    = "application/json"
     private val getlocationsSearchActionSuccessStatus = Status(200)
 
-    private type getlocationsSearchActionRequestType       = (MediaCreated_time, MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude)
+    private type getlocationsSearchActionRequestType       = (MediaId, MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)
     private type getlocationsSearchActionResultType        = LocationsSearchGetResponses200
     private type getlocationsSearchActionType              = getlocationsSearchActionRequestType => Try[getlocationsSearchActionResultType]
 
@@ -787,7 +786,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getlocationsSearchAction = (f: getlocationsSearchActionType) => (foursquare_v2_id: MediaCreated_time, facebook_places_id: MediaCreated_time, distance: MediaCreated_time, lat: LocationLongitude, foursquare_id: MediaCreated_time, lng: LocationLongitude) => Action { 
+    def getlocationsSearchAction = (f: getlocationsSearchActionType) => (foursquare_v2_id: MediaId, facebook_places_id: MediaId, distance: MediaId, lat: LocationLatitude, foursquare_id: MediaId, lng: LocationLatitude) => Action { 
 
         val result = 
 
@@ -845,7 +844,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaByMedia_idActionSuccessStatus = Status(200)
 
     private type getmediaByMedia_idActionRequestType       = (Int)
-    private type getmediaByMedia_idActionResultType        = /definitions/Media
+    private type getmediaByMedia_idActionResultType        = Media
     private type getmediaByMedia_idActionType              = getmediaByMedia_idActionRequestType => Try[getmediaByMedia_idActionResultType]
 
     private val errorToStatusgetmediaByMedia_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -882,7 +881,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getlocationsByLocation_idMediaRecentResponseMimeType    = "application/json"
     private val getlocationsByLocation_idMediaRecentActionSuccessStatus = Status(200)
 
-    private type getlocationsByLocation_idMediaRecentActionRequestType       = (Int, MediaCreated_time, MediaCreated_time, LikeUser_name, LikeUser_name)
+    private type getlocationsByLocation_idMediaRecentActionRequestType       = (Int, MediaId, MediaId, MediaFilter, MediaFilter)
     private type getlocationsByLocation_idMediaRecentActionResultType        = UsersSelfFeedGetResponses200
     private type getlocationsByLocation_idMediaRecentActionType              = getlocationsByLocation_idMediaRecentActionRequestType => Try[getlocationsByLocation_idMediaRecentActionResultType]
 
@@ -894,7 +893,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (`location-id`: Int, max_timestamp: MediaCreated_time, min_timestamp: MediaCreated_time, min_id: LikeUser_name, max_id: LikeUser_name) => Action { 
+    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (`location-id`: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => Action { 
 
         val result = 
 
@@ -920,7 +919,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersByUser_idMediaRecentResponseMimeType    = "application/json"
     private val getusersByUser_idMediaRecentActionSuccessStatus = Status(200)
 
-    private type getusersByUser_idMediaRecentActionRequestType       = (Double, MediaCreated_time, LikeUser_name, MediaCreated_time, LikeUser_name, MediaCreated_time)
+    private type getusersByUser_idMediaRecentActionRequestType       = (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)
     private type getusersByUser_idMediaRecentActionResultType        = UsersSelfFeedGetResponses200
     private type getusersByUser_idMediaRecentActionType              = getusersByUser_idMediaRecentActionRequestType => Try[getusersByUser_idMediaRecentActionResultType]
 
@@ -932,7 +931,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (`user-id`: Double, max_timestamp: MediaCreated_time, min_id: LikeUser_name, min_timestamp: MediaCreated_time, max_id: LikeUser_name, count: MediaCreated_time) => Action { 
+    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (`user-id`: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => Action { 
 
         val result = 
 

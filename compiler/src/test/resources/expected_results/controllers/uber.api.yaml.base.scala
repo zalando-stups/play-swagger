@@ -80,7 +80,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val getestimatesTimeResponseMimeType    = "application/json"
     private val getestimatesTimeActionSuccessStatus = Status(200)
 
-    private type getestimatesTimeActionRequestType       = (Double, Double, ProductDescription, ProductDescription)
+    private type getestimatesTimeActionRequestType       = (Double, Double, ProfilePicture, ProfilePicture)
     private type getestimatesTimeActionResultType        = Seq[Product]
     private type getestimatesTimeActionType              = getestimatesTimeActionRequestType => Try[getestimatesTimeActionResultType]
 
@@ -92,7 +92,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getestimatesTimeAction = (f: getestimatesTimeActionType) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProductDescription, product_id: ProductDescription) => Action { 
+    def getestimatesTimeAction = (f: getestimatesTimeActionType) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) => Action { 
 
         val result = 
 
@@ -156,8 +156,8 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val gethistoryResponseMimeType    = "application/json"
     private val gethistoryActionSuccessStatus = Status(200)
 
-    private type gethistoryActionRequestType       = (ActivitiesLimit, ActivitiesLimit)
-    private type gethistoryActionResultType        = /definitions/Activities
+    private type gethistoryActionRequestType       = (ErrorCode, ErrorCode)
+    private type gethistoryActionResultType        = Activities
     private type gethistoryActionType              = gethistoryActionRequestType => Try[gethistoryActionResultType]
 
     private val errorToStatusgethistory: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -168,7 +168,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def gethistoryAction = (f: gethistoryActionType) => (offset: ActivitiesLimit, limit: ActivitiesLimit) => Action { 
+    def gethistoryAction = (f: gethistoryActionType) => (offset: ErrorCode, limit: ErrorCode) => Action { 
 
         val result = 
 

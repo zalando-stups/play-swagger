@@ -1,9 +1,7 @@
 ⌿definitions⌿NewPet -> 
 	TypeDef(⌿definitions⌿NewPet, Seq(
 		Field(⌿definitions⌿NewPet⌿name, Str), 
-		Field(⌿definitions⌿NewPet⌿tag, TypeRef(⌿/definitions/NewPet⌿tag))))
-⌿/definitions/NewPet⌿tag -> 
-	Opt(Str)
+		Field(⌿definitions⌿NewPet⌿tag, TypeRef(⌿definitions⌿NewPet⌿tag))))
 ⌿definitions⌿Pet -> 
 	AllOf(
 		TypeRef(⌿definitions⌿NewPet)
@@ -15,6 +13,8 @@
 ⌿definitions⌿Pet⌿AllOf1 -> 
 	TypeDef(⌿definitions⌿Pet, Seq(
 		Field(⌿definitions⌿Pet⌿id, Lng)))
+⌿definitions⌿NewPet⌿tag -> 
+	Opt(Str)
 ⌿paths⌿/pets/{id}⌿delete⌿id -> 
 	Lng
 ⌿paths⌿/pets⌿get⌿limit -> 

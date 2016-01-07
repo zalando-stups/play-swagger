@@ -4,37 +4,31 @@ import de.zalando.play.controllers.ArrayWrapper
 import de.zalando.play.controllers.PlayPathBindables
 type EstimatesPriceGetEnd_latitude = Double
 
-    type ProductDescription = Option[String]
+    type ActivitiesHistory = Option[ActivitiesHistoryOpt]
 
-    type ActivitiesHistory = Option[ActivitiesHistoryOptNameClash]
+    type ProfilePicture = Option[String]
 
-    type ActivitiesHistoryNameClash = Option[ActivitiesHistoryOpt]
-
-    type PriceEstimateLow_estimate = Option[Double]
+    type ErrorCode = Option[Int]
 
     type ProductsGetResponses200 = Seq[Product]
 
-    type ActivitiesHistoryOpt = Seq[Activity]
+    type PriceEstimateHigh_estimate = Option[Double]
 
     type EstimatesPriceGetResponses200 = Seq[PriceEstimate]
 
-    type ActivitiesHistoryOptNameClash = ArrayWrapper[Activity]
+    type ActivitiesHistoryOpt = ArrayWrapper[Activity]
 
-    type ActivitiesLimit = Option[Int]
+    case class Activity(uuid: ProfilePicture) 
 
-    case class Activity(uuid: ProductDescription) 
+    case class PriceEstimate(low_estimate: PriceEstimateHigh_estimate, display_name: ProfilePicture, estimate: ProfilePicture, high_estimate: PriceEstimateHigh_estimate, product_id: ProfilePicture, currency_code: ProfilePicture, surge_multiplier: PriceEstimateHigh_estimate) 
 
-    case class PriceEstimate(low_estimate: PriceEstimateLow_estimate, display_name: ProductDescription, estimate: ProductDescription, high_estimate: PriceEstimateLow_estimate, product_id: ProductDescription, currency_code: ProductDescription, surge_multiplier: PriceEstimateLow_estimate) 
+    case class Product(image: ProfilePicture, description: ProfilePicture, display_name: ProfilePicture, product_id: ProfilePicture, capacity: ProfilePicture) 
 
-    case class Product(image: ProductDescription, description: ProductDescription, display_name: ProductDescription, product_id: ProductDescription, capacity: ProductDescription) 
+    case class Profile(first_name: ProfilePicture, email: ProfilePicture, promo_code: ProfilePicture, last_name: ProfilePicture, picture: ProfilePicture) 
 
-    case class HistoryGetResponses200(offset: ActivitiesLimit, limit: ActivitiesLimit, count: ActivitiesLimit, history: ActivitiesHistoryNameClash) 
+    case class Activities(offset: ErrorCode, limit: ErrorCode, count: ErrorCode, history: ActivitiesHistory) 
 
-    case class Profile(first_name: ProductDescription, email: ProductDescription, promo_code: ProductDescription, last_name: ProductDescription, picture: ProductDescription) 
-
-    case class Activities(offset: ActivitiesLimit, limit: ActivitiesLimit, count: ActivitiesLimit, history: ActivitiesHistory) 
-
-    case class Error(code: ActivitiesLimit, message: ProductDescription, fields: ProductDescription) 
+    case class Error(code: ErrorCode, message: ProfilePicture, fields: ProfilePicture) 
 
     
 

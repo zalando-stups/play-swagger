@@ -12,8 +12,6 @@ object Generators {
 
     def createExampleMessagesOptGenerator = _generate(ExampleMessagesOptGenerator)
 
-    def createActivityActionsGenerator = _generate(ActivityActionsGenerator)
-
     def createExampleMessagesGenerator = _generate(ExampleMessagesGenerator)
 
     def createExampleMessagesOptArrGenerator = _generate(ExampleMessagesOptArrGenerator)
@@ -24,13 +22,13 @@ object Generators {
 
     def createExampleNestedArraysOptArrArrArrGenerator = _generate(ExampleNestedArraysOptArrArrArrGenerator)
 
+    def createActivityActionsGenerator = _generate(ActivityActionsGenerator)
+
     def ExampleNestedArraysOptArrGenerator = _genList(ExampleNestedArraysOptArrArrGenerator, "csv")
 
     def ExampleNestedArraysOptGenerator = _genList(ExampleNestedArraysOptArrGenerator, "csv")
 
     def ExampleMessagesOptGenerator = _genList(ExampleMessagesOptArrGenerator, "csv")
-
-    def ActivityActionsGenerator = Gen.option(arbitrary[String])
 
     def ExampleMessagesGenerator = Gen.option(ExampleMessagesOptGenerator)
 
@@ -41,6 +39,8 @@ object Generators {
     def ExampleNestedArraysGenerator = Gen.option(ExampleNestedArraysOptGenerator)
 
     def ExampleNestedArraysOptArrArrArrGenerator = _genList(arbitrary[String], "csv")
+
+    def ActivityActionsGenerator = Gen.option(arbitrary[String])
 
     def createActivityGenerator = _generate(ActivityGenerator)
 

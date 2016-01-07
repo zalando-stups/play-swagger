@@ -4,9 +4,9 @@ import de.zalando.play.controllers.ArrayWrapper
 import de.zalando.play.controllers.PlayPathBindables
 type PetsIdGetId = ArrayWrapper[String]
 
-    type PetTag = Option[String]
-
     type PetsIdGetResponses200 = Seq[Pet]
+
+    type PetTag = Option[String]
 
     case class ErrorModel(code: Int, message: String) 
 

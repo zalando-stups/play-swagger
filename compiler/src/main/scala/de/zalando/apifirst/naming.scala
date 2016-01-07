@@ -16,7 +16,7 @@ object naming {
   type Pointer = Reference
   object Pointer {
     def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
-    def deref(jstr: String) = Reference(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
+    def deref(jstr: String) = Reference.fromUrl(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
   }
 
   implicit def uriToReference(uri: URI): Reference = uriFragmentToReference(uri.getFragment)
@@ -56,7 +56,6 @@ object naming {
     val responses = "responses"
     val delimiter = "⌿"
     val root: Reference = Reference(List.empty)
-    def apply(base: String, s: String): Reference = parse(s, delimiter)
     def apply(base: String, s: Reference): Reference = s
     def fromUrl(url: String): Reference = parse(url, "/")
     def apply(ref: String): Reference = parse(ref, delimiter)

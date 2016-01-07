@@ -8,15 +8,15 @@ import de.zalando.play.controllers.ArrayWrapper
 object Generators {
     def createPetsIdGetIdGenerator = _generate(PetsIdGetIdGenerator)
 
-    def createPetTagGenerator = _generate(PetTagGenerator)
-
     def createPetsIdGetResponses200Generator = _generate(PetsIdGetResponses200Generator)
+
+    def createPetTagGenerator = _generate(PetTagGenerator)
 
     def PetsIdGetIdGenerator = _genList(arbitrary[String], "csv")
 
-    def PetTagGenerator = Gen.option(arbitrary[String])
-
     def PetsIdGetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
+
+    def PetTagGenerator = Gen.option(arbitrary[String])
 
     def createErrorModelGenerator = _generate(ErrorModelGenerator)
 

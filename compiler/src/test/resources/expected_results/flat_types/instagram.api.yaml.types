@@ -1,160 +1,136 @@
-⌿/definitions/Like⌿user_name -> 
-	Opt(Str)
-⌿/definitions/Media⌿user -> 
-	Opt(TypeRef(⌿definitions⌿MiniProfile))
-⌿/definitions/Location⌿longitude -> 
-	Opt(Dbl)
-⌿/definitions/Media⌿images -> 
-	Opt(TypeRef(⌿/definitions/Media⌿images⌿Opt))
 ⌿definitions⌿User -> 
 	TypeDef(⌿definitions⌿User, Seq(
-		Field(⌿definitions⌿User⌿website, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿User⌿profile_picture, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿User⌿username, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿User⌿full_name, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿User⌿bio, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿User⌿id, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿definitions⌿User⌿counts, TypeRef(⌿/definitions/User⌿counts))))
+		Field(⌿definitions⌿User⌿website, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿User⌿profile_picture, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿User⌿username, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿User⌿full_name, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿User⌿bio, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿User⌿id, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿definitions⌿User⌿counts, TypeRef(⌿definitions⌿User⌿counts))))
 ⌿definitions⌿Image -> 
 	TypeDef(⌿definitions⌿Image, Seq(
-		Field(⌿definitions⌿Image⌿width, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿definitions⌿Image⌿height, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿definitions⌿Image⌿url, TypeRef(⌿/definitions/Like⌿user_name))))
+		Field(⌿definitions⌿Image⌿width, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿definitions⌿Image⌿height, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿definitions⌿Image⌿url, TypeRef(⌿definitions⌿Media⌿filter))))
 ⌿definitions⌿Tag -> 
 	TypeDef(⌿definitions⌿Tag, Seq(
-		Field(⌿definitions⌿Tag⌿media_count, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿definitions⌿Tag⌿name, TypeRef(⌿/definitions/Like⌿user_name))))
-⌿/definitions/Media⌿likes -> 
-	Opt(TypeRef(⌿/definitions/Media⌿likes⌿Opt))
-⌿/definitions/Media⌿videos -> 
-	Opt(TypeRef(⌿/definitions/Media⌿videos⌿Opt))
+		Field(⌿definitions⌿Tag⌿media_count, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿definitions⌿Tag⌿name, TypeRef(⌿definitions⌿Media⌿filter))))
 ⌿definitions⌿Comment -> 
 	TypeDef(⌿definitions⌿Comment, Seq(
-		Field(⌿definitions⌿Comment⌿id, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Comment⌿created_time, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Comment⌿text, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Comment⌿from, TypeRef(⌿/definitions/Media⌿user))))
+		Field(⌿definitions⌿Comment⌿id, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Comment⌿created_time, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Comment⌿text, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Comment⌿from, TypeRef(⌿definitions⌿Comment⌿from))))
 ⌿definitions⌿Media -> 
 	TypeDef(⌿definitions⌿Media, Seq(
-		Field(⌿definitions⌿Media⌿location, TypeRef(⌿/definitions/Media⌿location)), 
-		Field(⌿definitions⌿Media⌿created_time, TypeRef(⌿/definitions/Media⌿created_time)), 
+		Field(⌿definitions⌿Media⌿location, TypeRef(⌿definitions⌿Media⌿location)), 
+		Field(⌿definitions⌿Media⌿created_time, TypeRef(⌿definitions⌿Media⌿id)), 
 		Field(⌿definitions⌿Media⌿comments:, TypeRef(⌿definitions⌿Media⌿comments:)), 
 		Field(⌿definitions⌿Media⌿tags, TypeRef(⌿definitions⌿Media⌿tags)), 
 		Field(⌿definitions⌿Media⌿users_in_photo, TypeRef(⌿definitions⌿Media⌿users_in_photo)), 
-		Field(⌿definitions⌿Media⌿filter, TypeRef(⌿/definitions/Like⌿user_name)), 
+		Field(⌿definitions⌿Media⌿filter, TypeRef(⌿definitions⌿Media⌿filter)), 
 		Field(⌿definitions⌿Media⌿likes, TypeRef(⌿definitions⌿Media⌿likes)), 
-		Field(⌿definitions⌿Media⌿id, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿definitions⌿Media⌿videos, TypeRef(⌿/definitions/Media⌿videos)), 
-		Field(⌿definitions⌿Media⌿type, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Media⌿images, TypeRef(⌿/definitions/Media⌿images)), 
-		Field(⌿definitions⌿Media⌿user, TypeRef(⌿/definitions/Media⌿user))))
-⌿/definitions/Media⌿created_time -> 
-	Opt(Intgr)
-⌿/definitions/Media⌿location -> 
-	Opt(TypeRef(⌿definitions⌿Location))
-⌿/definitions/Media⌿tags -> 
-	Opt(TypeRef(⌿/definitions/Media⌿tags⌿Opt))
+		Field(⌿definitions⌿Media⌿id, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿definitions⌿Media⌿videos, TypeRef(⌿definitions⌿Media⌿videos)), 
+		Field(⌿definitions⌿Media⌿type, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Media⌿images, TypeRef(⌿definitions⌿Media⌿images)), 
+		Field(⌿definitions⌿Media⌿user, TypeRef(⌿definitions⌿Comment⌿from))))
 ⌿definitions⌿Like -> 
 	TypeDef(⌿definitions⌿Like, Seq(
-		Field(⌿definitions⌿Like⌿first_name, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Like⌿id, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Like⌿last_name, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Like⌿type, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Like⌿user_name, TypeRef(⌿/definitions/Like⌿user_name))))
-⌿/definitions/Media⌿comments: -> 
-	Opt(TypeRef(⌿/definitions/Media⌿comments:⌿Opt))
-⌿/definitions/Media⌿users_in_photo -> 
-	Opt(TypeRef(⌿/definitions/Media⌿users_in_photo⌿Opt))
+		Field(⌿definitions⌿Like⌿first_name, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Like⌿id, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Like⌿last_name, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Like⌿type, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Like⌿user_name, TypeRef(⌿definitions⌿Media⌿filter))))
 ⌿definitions⌿Location -> 
 	TypeDef(⌿definitions⌿Location, Seq(
-		Field(⌿definitions⌿Location⌿id, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Location⌿name, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿Location⌿latitude, TypeRef(⌿/definitions/Location⌿longitude)), 
-		Field(⌿definitions⌿Location⌿longitude, TypeRef(⌿/definitions/Location⌿longitude))))
+		Field(⌿definitions⌿Location⌿id, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Location⌿name, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿Location⌿latitude, TypeRef(⌿definitions⌿Location⌿latitude)), 
+		Field(⌿definitions⌿Location⌿longitude, TypeRef(⌿definitions⌿Location⌿latitude))))
 ⌿definitions⌿MiniProfile -> 
 	TypeDef(⌿definitions⌿MiniProfile, Seq(
-		Field(⌿definitions⌿MiniProfile⌿user_name, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿MiniProfile⌿full_name, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿definitions⌿MiniProfile⌿id, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿definitions⌿MiniProfile⌿profile_picture, TypeRef(⌿/definitions/Like⌿user_name))))
-⌿/definitions/User⌿counts -> 
-	Opt(TypeRef(⌿/definitions/User⌿counts⌿Opt))
+		Field(⌿definitions⌿MiniProfile⌿user_name, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿MiniProfile⌿full_name, TypeRef(⌿definitions⌿Media⌿filter)), 
+		Field(⌿definitions⌿MiniProfile⌿id, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿definitions⌿MiniProfile⌿profile_picture, TypeRef(⌿definitions⌿Media⌿filter))))
+⌿definitions⌿Media⌿filter -> 
+	Opt(Str)
 ⌿definitions⌿Media⌿tags -> 
 	Opt(TypeRef(⌿definitions⌿Media⌿tags⌿Opt))
-⌿/definitions/Media⌿users_in_photo⌿Opt -> 
-	ArrResult(TypeRef(⌿definitions⌿MiniProfile))
+⌿definitions⌿Media⌿id -> 
+	Opt(Intgr)
+⌿definitions⌿Media⌿images -> 
+	Opt(TypeRef(⌿definitions⌿Media⌿images⌿Opt))
 ⌿definitions⌿Media⌿likes -> 
 	Opt(TypeRef(⌿definitions⌿Media⌿likes⌿Opt))
-⌿/definitions/Media⌿tags⌿Opt -> 
-	ArrResult(TypeRef(⌿definitions⌿Tag))
-⌿/definitions/Media⌿videos⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos, Seq(
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿low_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution))))
 ⌿definitions⌿Media⌿comments: -> 
 	Opt(TypeRef(⌿definitions⌿Media⌿comments:⌿Opt))
-⌿/definitions/Media⌿likes⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes, Seq(
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿count, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
-⌿/definitions/Media⌿images⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images, Seq(
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿low_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿thumbnail, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿standard_resolution, TypeRef(⌿definitions⌿Media⌿videos⌿low_resolution))))
+⌿definitions⌿Comment⌿from -> 
+	Opt(TypeRef(⌿definitions⌿MiniProfile))
+⌿definitions⌿Media⌿videos -> 
+	Opt(TypeRef(⌿definitions⌿Media⌿videos⌿Opt))
+⌿definitions⌿Media⌿location -> 
+	Opt(TypeRef(⌿definitions⌿Location))
 ⌿definitions⌿Media⌿users_in_photo -> 
 	Opt(TypeRef(⌿definitions⌿Media⌿users_in_photo⌿Opt))
+⌿definitions⌿Location⌿latitude -> 
+	Opt(Dbl)
 ⌿parameters⌿user-id-param⌿user-id -> 
 	Dbl
-⌿/definitions/User⌿counts⌿Opt -> 
-	TypeDef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data⌿counts, Seq(
-		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data⌿counts⌿media, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data⌿counts⌿follows, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data⌿counts⌿follwed_by, TypeRef(⌿/definitions/Media⌿created_time))))
-⌿/definitions/Media⌿comments:⌿Opt -> 
-	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:, Seq(
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿count, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿data, TypeRef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data))))
+⌿definitions⌿User⌿counts -> 
+	Opt(TypeRef(⌿definitions⌿User⌿counts⌿Opt))
 ⌿parameters⌿tag-name⌿tag-name -> 
 	Str
 ⌿paths⌿/locations/{location-id}⌿⌿location-id -> 
 	Intgr
-⌿definitions⌿Media⌿videos⌿low_resolution -> 
-	Opt(TypeRef(⌿definitions⌿Image))
 ⌿definitions⌿Media⌿tags⌿Opt -> 
-	Arr(TypeRef(⌿definitions⌿Tag))
+	ArrResult(TypeRef(⌿definitions⌿Tag))
+⌿definitions⌿User⌿counts⌿Opt -> 
+	TypeDef(⌿definitions⌿User⌿counts, Seq(
+		Field(⌿definitions⌿User⌿counts⌿media, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿definitions⌿User⌿counts⌿follows, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿definitions⌿User⌿counts⌿follwed_by, TypeRef(⌿definitions⌿Media⌿id))))
 ⌿definitions⌿Media⌿users_in_photo⌿Opt -> 
-	Arr(TypeRef(⌿definitions⌿MiniProfile))
+	ArrResult(TypeRef(⌿definitions⌿MiniProfile))
 ⌿definitions⌿Media⌿comments:⌿Opt -> 
-	TypeDef(⌿definitions⌿Media⌿comments:, Seq(
-		Field(⌿definitions⌿Media⌿comments:⌿count, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿definitions⌿Media⌿comments:⌿data, TypeRef(⌿definitions⌿Media⌿comments:⌿data))))
-⌿definitions⌿Media⌿comments:⌿data -> 
-	Opt(TypeRef(⌿definitions⌿Media⌿comments:⌿data⌿Opt))
+	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:, Seq(
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿count, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿data, TypeRef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data))))
+⌿definitions⌿Media⌿videos⌿Opt -> 
+	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos, Seq(
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿low_resolution, TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution)), 
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution, TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution))))
 ⌿definitions⌿Media⌿likes⌿Opt -> 
-	TypeDef(⌿definitions⌿Media⌿likes, Seq(
-		Field(⌿definitions⌿Media⌿likes⌿count, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿definitions⌿Media⌿likes⌿data, TypeRef(⌿definitions⌿Media⌿users_in_photo))))
+	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes, Seq(
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿count, TypeRef(⌿definitions⌿Media⌿id)), 
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿data, TypeRef(⌿definitions⌿Media⌿users_in_photo))))
+⌿definitions⌿Media⌿images⌿Opt -> 
+	TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images, Seq(
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿low_resolution, TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution)), 
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿thumbnail, TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution)), 
+		Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿images⌿standard_resolution, TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution))))
 ⌿paths⌿/users/self/feed⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data))))
 ⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
-		Field(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿data, TypeRef(⌿/definitions/Like⌿user_name))))
+		Field(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿filter))))
 ⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
+		Field(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿users_in_photo))))
 ⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿tags))))
+		Field(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿tags))))
 ⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta)), 
-		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿users_in_photo))))
+		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿users_in_photo))))
 ⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿location))))
+		Field(⌿paths⌿/locations/{location-id}⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿location))))
 ⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta)), 
@@ -165,23 +141,7 @@
 ⌿paths⌿/tags/search⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/tags/search⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta)), 
-		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿data, TypeRef(⌿/definitions/Media⌿tags))))
-⌿paths⌿/media/{media-id}⌿get⌿responses⌿200 -> 
-	TypeDef(⌿/definitions/Media, Seq(
-		Field(⌿/definitions/Media⌿location, TypeRef(⌿/definitions/Media⌿location)), 
-		Field(⌿/definitions/Media⌿created_time, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿/definitions/Media⌿comments:, TypeRef(⌿/definitions/Media⌿comments:)), 
-		Field(⌿/definitions/Media⌿tags, TypeRef(⌿/definitions/Media⌿tags)), 
-		Field(⌿/definitions/Media⌿users_in_photo, TypeRef(⌿/definitions/Media⌿users_in_photo)), 
-		Field(⌿/definitions/Media⌿filter, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿/definitions/Media⌿likes, TypeRef(⌿/definitions/Media⌿likes)), 
-		Field(⌿/definitions/Media⌿id, TypeRef(⌿/definitions/Media⌿created_time)), 
-		Field(⌿/definitions/Media⌿videos, TypeRef(⌿/definitions/Media⌿videos)), 
-		Field(⌿/definitions/Media⌿type, TypeRef(⌿/definitions/Like⌿user_name)), 
-		Field(⌿/definitions/Media⌿images, TypeRef(⌿/definitions/Media⌿images)), 
-		Field(⌿/definitions/Media⌿user, TypeRef(⌿/definitions/Media⌿user))))
-⌿definitions⌿Media⌿comments:⌿data⌿Opt -> 
-	Arr(TypeRef(⌿definitions⌿Comment))
+		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿tags))))
 ⌿paths⌿/users/{user-id}⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data))))
@@ -210,9 +170,11 @@
 	Opt(TypeRef(⌿definitions⌿User))
 ⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data⌿Opt))
+⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution -> 
+	Opt(TypeRef(⌿definitions⌿Image))
 ⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿Opt -> 
 	TypeDef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta, Seq(
-		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿code, TypeRef(⌿/definitions/Media⌿created_time))))
+		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿code, TypeRef(⌿definitions⌿Media⌿id))))
 ⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data⌿Opt -> 
 	ArrResult(TypeRef(⌿definitions⌿Comment))
 ⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data⌿Opt -> 
@@ -223,65 +185,65 @@
 	ArrResult(TypeRef(⌿definitions⌿Location))
 ⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta⌿Opt -> 
 	TypeDef(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿meta, Seq(
-		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta⌿code, TypeRef(⌿/definitions/Location⌿longitude))))
+		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta⌿code, TypeRef(⌿definitions⌿Location⌿latitude))))
 ⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿Opt -> 
-	ArrResult(TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200))
+	ArrResult(TypeRef(⌿definitions⌿Media))
 ⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt⌿ArrResult -> 
 	AllOf(
-		TypeRef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200)
+		TypeRef(⌿definitions⌿Media)
 		TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt⌿ArrResult⌿AllOf1))
 ⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt⌿ArrResult⌿AllOf1 -> 
 	TypeDef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data, Seq(
-		Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿distance, TypeRef(⌿/definitions/Location⌿longitude))))
+		Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿distance, TypeRef(⌿definitions⌿Location⌿latitude))))
 -- params --
 
-⌿paths⌿/locations/{location-id}/media/recent⌿get⌿min_timestamp -> Parameter(min_timestamp,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
+⌿paths⌿/locations/{location-id}/media/recent⌿get⌿min_timestamp -> Parameter(min_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/media/{media-id}/likes⌿delete⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/locations/{location-id}⌿get⌿location-id -> Parameter(location-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/media/search⌿get⌿MAX_TIMESTAMP -> Parameter(MAX_TIMESTAMP,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
+⌿paths⌿/media/search⌿get⌿MAX_TIMESTAMP -> Parameter(MAX_TIMESTAMP,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/media/{media-id}/likes⌿post⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/{user-id}/relationship⌿post⌿action -> Parameter(action,TypeRef(⌿/definitions/Like⌿user_name),None,None,.+,false,body)
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action -> Parameter(action,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,false,body)
 ⌿paths⌿/users/{user-id}⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user-id}/followed-by⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/self/feed⌿get⌿count -> Parameter(count,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/users/self/feed⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/locations/{location-id}/media/recent⌿get⌿max_timestamp -> Parameter(max_timestamp,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/locations/search⌿get⌿foursquare_v2_id -> Parameter(foursquare_v2_id,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/users/{user-id}/media/recent⌿get⌿max_timestamp -> Parameter(max_timestamp,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/users/{user-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿/definitions/Like⌿user_name),None,None,.+,true,query)
+⌿paths⌿/users/self/feed⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/users/self/feed⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/locations/{location-id}/media/recent⌿get⌿max_timestamp -> Parameter(max_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/locations/search⌿get⌿foursquare_v2_id -> Parameter(foursquare_v2_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/users/{user-id}/media/recent⌿get⌿max_timestamp -> Parameter(max_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/users/{user-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
 ⌿paths⌿/tags/{tag-name}⌿get⌿tag-name -> Parameter(tag-name,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/media/search⌿get⌿DISTANCE -> Parameter(DISTANCE,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
+⌿paths⌿/media/search⌿get⌿DISTANCE -> Parameter(DISTANCE,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿tag-name -> Parameter(tag-name,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/{user-id}/media/recent⌿get⌿min_timestamp -> Parameter(min_timestamp,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/media/{media-id}/comments⌿post⌿TEXT -> Parameter(TEXT,TypeRef(⌿/definitions/Location⌿longitude),None,None,.+,false,body)
+⌿paths⌿/users/{user-id}/media/recent⌿get⌿min_timestamp -> Parameter(min_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/media/{media-id}/comments⌿post⌿TEXT -> Parameter(TEXT,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,false,body)
 ⌿paths⌿/users/{user-id}/follows⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/locations/{location-id}/media/recent⌿get⌿location-id -> Parameter(location-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/self/feed⌿get⌿max_id -> Parameter(max_id,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/users/self/media/liked⌿get⌿count -> Parameter(count,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/media/search⌿get⌿LNG -> Parameter(LNG,TypeRef(⌿/definitions/Location⌿longitude),None,None,.+,true,query)
-⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/locations/search⌿get⌿facebook_places_id -> Parameter(facebook_places_id,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
+⌿paths⌿/users/self/feed⌿get⌿max_id -> Parameter(max_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/users/self/media/liked⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/media/search⌿get⌿LNG -> Parameter(LNG,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,true,query)
+⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/locations/search⌿get⌿facebook_places_id -> Parameter(facebook_places_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/media/{media-id}/comments⌿post⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/media/{media-id}⌿get⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/self/media/liked⌿get⌿max_like_id -> Parameter(max_like_id,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/media/search⌿get⌿MIN_TIMESTAMP -> Parameter(MIN_TIMESTAMP,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/locations/search⌿get⌿distance -> Parameter(distance,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/users/search⌿get⌿count -> Parameter(count,TypeRef(⌿/definitions/Like⌿user_name),None,None,.+,true,query)
-⌿paths⌿/locations/{location-id}/media/recent⌿get⌿max_id -> Parameter(max_id,TypeRef(⌿/definitions/Like⌿user_name),None,None,.+,true,query)
-⌿paths⌿/media/search⌿get⌿LAT -> Parameter(LAT,TypeRef(⌿/definitions/Location⌿longitude),None,None,.+,true,query)
-⌿paths⌿/locations/search⌿get⌿lat -> Parameter(lat,TypeRef(⌿/definitions/Location⌿longitude),None,None,.+,true,query)
-⌿paths⌿/locations/search⌿get⌿foursquare_id -> Parameter(foursquare_id,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/locations/{location-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿/definitions/Like⌿user_name),None,None,.+,true,query)
-⌿paths⌿/tags/search⌿get⌿q -> Parameter(q,TypeRef(⌿/definitions/Like⌿user_name),None,None,.+,true,query)
-⌿paths⌿/users/{user-id}/media/recent⌿get⌿max_id -> Parameter(max_id,TypeRef(⌿/definitions/Like⌿user_name),None,None,.+,true,query)
+⌿paths⌿/users/self/media/liked⌿get⌿max_like_id -> Parameter(max_like_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/media/search⌿get⌿MIN_TIMESTAMP -> Parameter(MIN_TIMESTAMP,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/locations/search⌿get⌿distance -> Parameter(distance,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/users/search⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
+⌿paths⌿/locations/{location-id}/media/recent⌿get⌿max_id -> Parameter(max_id,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
+⌿paths⌿/media/search⌿get⌿LAT -> Parameter(LAT,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,true,query)
+⌿paths⌿/locations/search⌿get⌿lat -> Parameter(lat,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,true,query)
+⌿paths⌿/locations/search⌿get⌿foursquare_id -> Parameter(foursquare_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/locations/{location-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
+⌿paths⌿/tags/search⌿get⌿q -> Parameter(q,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
+⌿paths⌿/users/{user-id}/media/recent⌿get⌿max_id -> Parameter(max_id,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
 ⌿paths⌿/media/{media-id}/likes⌿get⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user-id}/relationship⌿post⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/media/{media-id}/comments⌿delete⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/media/{media-id}/comments⌿get⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/search⌿get⌿q -> Parameter(q,Str(None,TypeMeta(None, List())),None,None,.+,true,query)
 ⌿paths⌿/media/{shortcode}⌿get⌿shortcode -> Parameter(shortcode,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/{user-id}/media/recent⌿get⌿count -> Parameter(count,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿count -> Parameter(count,TypeRef(⌿/definitions/Media⌿created_time),None,None,.+,true,query)
-⌿paths⌿/locations/search⌿get⌿lng -> Parameter(lng,TypeRef(⌿/definitions/Location⌿longitude),None,None,.+,true,query)
+⌿paths⌿/users/{user-id}/media/recent⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/locations/search⌿get⌿lng -> Parameter(lng,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,true,query)
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿geo-id -> Parameter(geo-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)

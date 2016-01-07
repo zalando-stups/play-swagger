@@ -12,9 +12,9 @@ object Generators {
 
     def createPetsGetLimitGenerator = _generate(PetsGetLimitGenerator)
 
-    def createNewPetTagGenerator = _generate(NewPetTagGenerator)
-
     def createPetsGetTagsOptGenerator = _generate(PetsGetTagsOptGenerator)
+
+    def createNewPetTagGenerator = _generate(NewPetTagGenerator)
 
     def createPetsGetResponses200Generator = _generate(PetsGetResponses200Generator)
 
@@ -26,9 +26,9 @@ object Generators {
 
     def PetsGetLimitGenerator = Gen.option(arbitrary[Int])
 
-    def NewPetTagGenerator = Gen.option(arbitrary[String])
-
     def PetsGetTagsOptGenerator = _genList(arbitrary[String], "csv")
+
+    def NewPetTagGenerator = Gen.option(arbitrary[String])
 
     def PetsGetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 

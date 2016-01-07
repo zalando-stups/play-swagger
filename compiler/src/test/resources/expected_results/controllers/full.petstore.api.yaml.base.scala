@@ -13,7 +13,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val findPetsByTagsActionSuccessStatus = Status(200)
 
     private type findPetsByTagsActionRequestType       = (PetsFindByStatusGetStatus)
-    private type findPetsByTagsActionResultType        = Seq[PetsPostBodyOpt]
+    private type findPetsByTagsActionResultType        = Seq[Pet]
     private type findPetsByTagsActionType              = findPetsByTagsActionRequestType => Try[findPetsByTagsActionResultType]
 
     private val errorToStatusfindPetsByTags: PartialFunction[Throwable, Status] = 
@@ -566,7 +566,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val getPetByIdActionSuccessStatus = Status(200)
 
     private type getPetByIdActionRequestType       = (Long)
-    private type getPetByIdActionResultType        = /definitions/Pet
+    private type getPetByIdActionResultType        = Pet
     private type getPetByIdActionType              = getPetByIdActionRequestType => Try[getPetByIdActionResultType]
 
     private val errorToStatusgetPetById: PartialFunction[Throwable, Status] = 
@@ -693,7 +693,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val findPetsByStatusActionSuccessStatus = Status(200)
 
     private type findPetsByStatusActionRequestType       = (PetsFindByStatusGetStatus)
-    private type findPetsByStatusActionResultType        = Seq[PetsPostBodyOpt]
+    private type findPetsByStatusActionResultType        = Seq[Pet]
     private type findPetsByStatusActionType              = findPetsByStatusActionRequestType => Try[findPetsByStatusActionResultType]
 
     private val errorToStatusfindPetsByStatus: PartialFunction[Throwable, Status] = 

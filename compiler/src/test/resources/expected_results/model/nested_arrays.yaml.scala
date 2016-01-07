@@ -7,8 +7,6 @@ type ExampleNestedArraysOptArr = ArrayWrapper[ExampleNestedArraysOptArrArr]
 
     type ExampleMessagesOpt = ArrayWrapper[ExampleMessagesOptArr]
 
-    type ActivityActions = Option[String]
-
     type ExampleMessages = Option[ExampleMessagesOpt]
 
     type ExampleMessagesOptArr = ArrayWrapper[Activity]
@@ -18,6 +16,8 @@ type ExampleNestedArraysOptArr = ArrayWrapper[ExampleNestedArraysOptArrArr]
     type ExampleNestedArrays = Option[ExampleNestedArraysOpt]
 
     type ExampleNestedArraysOptArrArrArr = ArrayWrapper[String]
+
+    type ActivityActions = Option[String]
 
     case class Activity(actions: ActivityActions) 
 

@@ -5,9 +5,9 @@ type PetName = Option[String]
 
     type PetIdGetPetId = String
 
-    type PostResponses200 = Null
-
     type PetBirthday = Option[Int]
+
+    type PostResponses200 = Null
 
     type GetResponses200 = Seq[Pet]
 

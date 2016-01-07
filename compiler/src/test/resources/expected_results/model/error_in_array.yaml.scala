@@ -1,21 +1,27 @@
 package error_in_array
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
-type MetaCopyright = Option[String]
+type ModelSchemaSpecialDescriptionsOpt = Seq[String]
+
+    type MetaCopyright = Option[String]
+
+    type ModelSchemaSpecialDescriptions = Option[ModelSchemaSpecialDescriptionsOpt]
 
     type ErrorsErrorsOpt = ArrayWrapper[Error]
 
-    type ModelSchemaSpecialDescriptions = Option[ModelSchemaAgeGroups]
-
-    type ModelSchemaRootLinks = Option[Links]
+    type ModelSchemaRootData = Option[ModelSchema]
 
     type ErrorSource = Option[ErrorSourceNameClash]
 
-    type ModelSchemaAgeGroups = ArrayWrapper[String]
+    type ModelSchemaArticleModelAttributesOpt = ArrayWrapper[String]
 
-    type ModelSchemaRootData = Option[ModelSchema]
+    type ModelSchemaRootLinks = Option[Links]
+
+    type ModelSchemaArticleModelAttributes = Option[ModelSchemaArticleModelAttributesOpt]
 
     type ErrorsErrors = Option[ErrorsErrorsOpt]
+
+    type ModelSchemaAgeGroups = ArrayWrapper[String]
 
     type ModelSchemaRootMeta = Option[Meta]
 
@@ -27,7 +33,7 @@ type MetaCopyright = Option[String]
 
     case class Meta(copyright: MetaCopyright) 
 
-    case class ModelSchema(name: String, sizeRegister: String, brand: String, partnerArticleModelId: Int, silhouetteId: String, description: MetaCopyright, ageGroups: ModelSchemaAgeGroups, keywords: MetaCopyright, lengthRegister: MetaCopyright, specialDescriptions: ModelSchemaSpecialDescriptions, articleModelAttributes: ModelSchemaSpecialDescriptions) 
+    case class ModelSchema(name: String, sizeRegister: String, brand: String, partnerArticleModelId: Int, silhouetteId: String, description: MetaCopyright, ageGroups: ModelSchemaAgeGroups, keywords: MetaCopyright, lengthRegister: MetaCopyright, specialDescriptions: ModelSchemaSpecialDescriptions, articleModelAttributes: ModelSchemaArticleModelAttributes) 
 
     case class Error(source: ErrorSource, code: MetaCopyright, status: MetaCopyright, detail: MetaCopyright, title: MetaCopyright) 
 

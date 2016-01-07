@@ -8,6 +8,8 @@ import de.zalando.play.controllers.ArrayWrapper
 object Generators {
     def createNullGenerator = _generate(NullGenerator)
 
+    def createNewPetTagGenerator = _generate(NewPetTagGenerator)
+
     def createLongGenerator = _generate(LongGenerator)
 
     def createPetsGetLimitGenerator = _generate(PetsGetLimitGenerator)
@@ -16,13 +18,13 @@ object Generators {
 
     def createPetsGetTagsOptGenerator = _generate(PetsGetTagsOptGenerator)
 
-    def createPetTagGenerator = _generate(PetTagGenerator)
-
     def createPetsGetResponses200Generator = _generate(PetsGetResponses200Generator)
 
     def createPetsGetTagsGenerator = _generate(PetsGetTagsGenerator)
 
     def NullGenerator = arbitrary[Null]
+
+    def NewPetTagGenerator = Gen.option(arbitrary[String])
 
     def LongGenerator = arbitrary[Long]
 
@@ -31,8 +33,6 @@ object Generators {
     def NewPetIdGenerator = Gen.option(arbitrary[Long])
 
     def PetsGetTagsOptGenerator = _genList(arbitrary[String], "csv")
-
-    def PetTagGenerator = Gen.option(arbitrary[String])
 
     def PetsGetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 
@@ -52,13 +52,13 @@ object Generators {
     def PetGenerator = for {
         id <- arbitrary[Long]
         name <- arbitrary[String]
-        tag <- PetTagGenerator
+        tag <- NewPetTagGenerator
         } yield Pet(id, name, tag)
 
     def NewPetGenerator = for {
         name <- arbitrary[String]
         id <- NewPetIdGenerator
-        tag <- PetTagGenerator
+        tag <- NewPetTagGenerator
         } yield NewPet(name, id, tag)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample

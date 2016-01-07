@@ -22,7 +22,7 @@ package uber.api.yaml {
             
         } //////// EOF ////////  getproductsAction
     val getestimatesTime = getestimatesTimeAction {
-            input: (Double, Double, ProductDescription, ProductDescription) =>
+            input: (Double, Double, ProfilePicture, ProfilePicture) =>
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
 
             ???
@@ -36,7 +36,7 @@ package uber.api.yaml {
             
         } //////// EOF ////////  getestimatesPriceAction
     val gethistory = gethistoryAction {
-            input: (ActivitiesLimit, ActivitiesLimit) =>
+            input: (ErrorCode, ErrorCode) =>
             val (offset, limit) = input
 
             ???
