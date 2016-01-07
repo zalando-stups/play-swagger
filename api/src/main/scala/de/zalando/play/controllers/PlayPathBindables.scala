@@ -121,7 +121,6 @@ object PlayPathBindables {
 
     def bind(key: String, value: String): Either[String, ArrayWrapper[T]] = try {
       val line = readArray(reader)(value)
-      println(s"Parsed $value into ${line.mkString("\n")} with separator ${wrapper.separator}, $wrapper")
       val xs = line map { tBinder.bind(key, _) }
 
       val lefts = xs collect {case Left(x) => x }
