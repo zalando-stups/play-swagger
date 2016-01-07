@@ -5,8 +5,6 @@ type MetaCopyright = Option[String]
 
     type ErrorsErrorsOpt = ArrayWrapper[Error]
 
-    type ModelSchemaRootData = Option[ModelSchema]
-
     type ModelSchemaSpecialDescriptions = Option[ModelSchemaAgeGroups]
 
     type ModelSchemaRootLinks = Option[Links]
@@ -14,6 +12,8 @@ type MetaCopyright = Option[String]
     type ErrorSource = Option[ErrorSourceNameClash]
 
     type ModelSchemaAgeGroups = ArrayWrapper[String]
+
+    type ModelSchemaRootData = Option[ModelSchema]
 
     type ErrorsErrors = Option[ErrorsErrorsOpt]
 

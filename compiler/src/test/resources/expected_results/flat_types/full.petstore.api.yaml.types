@@ -37,19 +37,23 @@
 ⌿definitions⌿Pet -> 
 	TypeDef(⌿definitions⌿Pet, Seq(
 		Field(⌿definitions⌿Pet⌿name, Str), 
-		Field(⌿definitions⌿Pet⌿tags, TypeRef(⌿/definitions/Pet⌿tags)), 
-		Field(⌿definitions⌿Pet⌿photoUrls, TypeRef(⌿/definitions/Pet⌿photoUrls)), 
+		Field(⌿definitions⌿Pet⌿tags, TypeRef(⌿definitions⌿Pet⌿tags)), 
+		Field(⌿definitions⌿Pet⌿photoUrls, TypeRef(⌿definitions⌿Pet⌿photoUrls)), 
 		Field(⌿definitions⌿Pet⌿id, TypeRef(⌿/definitions/Order⌿petId)), 
 		Field(⌿definitions⌿Pet⌿status, TypeRef(⌿/definitions/Order⌿status)), 
 		Field(⌿definitions⌿Pet⌿category, TypeRef(⌿/definitions/Pet⌿category))))
 ⌿/definitions/Pet⌿photoUrls -> 
-	Arr(Str)
+	ArrResult(Str)
+⌿definitions⌿Pet⌿tags -> 
+	Opt(TypeRef(⌿definitions⌿Pet⌿tags⌿Opt))
 ⌿/definitions/Pet⌿tags⌿Opt -> 
-	Arr(TypeRef(⌿definitions⌿Tag))
+	ArrResult(TypeRef(⌿definitions⌿Tag))
+⌿definitions⌿Pet⌿photoUrls -> 
+	Arr(Str)
 ⌿paths⌿/users/{username}⌿get⌿username -> 
 	Str
 ⌿paths⌿/pets⌿post⌿body -> 
-	Opt(TypeRef(⌿definitions⌿Pet))
+	Opt(TypeRef(⌿paths⌿/pets⌿post⌿body⌿Opt))
 ⌿paths⌿/users/{username}⌿put⌿body -> 
 	Opt(TypeRef(⌿definitions⌿User))
 ⌿paths⌿/stores/order⌿post⌿body -> 
@@ -59,13 +63,23 @@
 ⌿paths⌿/users/createWithList⌿post⌿body -> 
 	Opt(TypeRef(⌿paths⌿/users/createWithList⌿post⌿body⌿Opt))
 ⌿paths⌿/pets/findByStatus⌿get⌿status -> 
-	Opt(TypeRef(⌿/definitions/Pet⌿photoUrls))
+	Opt(TypeRef(⌿definitions⌿Pet⌿photoUrls))
+⌿definitions⌿Pet⌿tags⌿Opt -> 
+	Arr(TypeRef(⌿definitions⌿Tag))
 ⌿paths⌿/users/createWithList⌿post⌿responses⌿default -> 
 	Null
 ⌿paths⌿/users/createWithList⌿post⌿body⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿User))
 ⌿paths⌿/pets/findByStatus⌿get⌿responses⌿200 -> 
-	Arr(TypeRef(⌿definitions⌿Pet))
+	ArrResult(TypeRef(⌿paths⌿/pets⌿post⌿body⌿Opt))
+⌿paths⌿/pets⌿post⌿body⌿Opt -> 
+	TypeDef(⌿/definitions/Pet, Seq(
+		Field(⌿/definitions/Pet⌿name, Str), 
+		Field(⌿/definitions/Pet⌿tags, TypeRef(⌿/definitions/Pet⌿tags)), 
+		Field(⌿/definitions/Pet⌿photoUrls, TypeRef(⌿/definitions/Pet⌿photoUrls)), 
+		Field(⌿/definitions/Pet⌿id, TypeRef(⌿/definitions/Order⌿petId)), 
+		Field(⌿/definitions/Pet⌿status, TypeRef(⌿/definitions/Order⌿status)), 
+		Field(⌿/definitions/Pet⌿category, TypeRef(⌿/definitions/Pet⌿category))))
 -- params --
 
 ⌿paths⌿/pets/{petId}⌿get⌿petId -> Parameter(petId,Lng(TypeMeta(Some("int64"), List())),None,None,[^/]+,true,path)

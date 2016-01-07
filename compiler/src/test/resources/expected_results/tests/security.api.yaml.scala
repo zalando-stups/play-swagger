@@ -26,54 +26,54 @@ import Generators._
         }
 
 "GET /v1/pets/{id}" should {
-            def testInvalidInput(id: PetsIdGetId) = {
+        def testInvalidInput(id: PetsIdGetId) = {
 
-                val url = s"""/v1/pets/${id}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsIdGetValidator(id).errors
+            val url = s"""/v1/pets/${id}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new PetsIdGetValidator(id).errors
 
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
-            }
-            def testValidInput(id: PetsIdGetId) = {
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(id: PetsIdGetId) = {
 
-                val url = s"""/v1/pets/${id}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        id <- PetsIdGetIdGenerator
-
-                    } yield id
-
-                val inputs = genInputs suchThat { id=>
-                    new PetsIdGetValidator(id).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+            val url = s"""/v1/pets/${id}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     id <- PetsIdGetIdGenerator
 
                 } yield id
 
-                val inputs = genInputs suchThat { id=>
-                    new PetsIdGetValidator(id).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { id=>
+                new PetsIdGetValidator(id).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                id <- PetsIdGetIdGenerator
+
+            } yield id
+
+            val inputs = genInputs suchThat { id=>
+                new PetsIdGetValidator(id).errors.isEmpty
+            }
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
+
     }
+}

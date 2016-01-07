@@ -26,628 +26,613 @@ import Generators._
         }
 
 "POST /v2/users" should {
-            def testInvalidInput(body: UsersUsernamePutBody) = {
+        def testInvalidInput(body: UsersUsernamePutBody) = {
 
-                val url = s"""/v2/users"""
-                val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                val errors = new UsersPostValidator(body).errors
+            val url = s"""/v2/users"""
+            val headers = Seq()
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            val errors = new UsersPostValidator(body).errors
 
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
-            }
-            def testValidInput(body: UsersUsernamePutBody) = {
+            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(body: UsersUsernamePutBody) = {
 
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val url = s"""/v2/users"""
-                val headers = Seq()
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        body <- UsersUsernamePutBodyGenerator
-
-                    } yield body
-
-                val inputs = genInputs suchThat { body=>
-                    new UsersPostValidator(body).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val url = s"""/v2/users"""
+            val headers = Seq()
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     body <- UsersUsernamePutBodyGenerator
 
                 } yield body
 
-                val inputs = genInputs suchThat { body=>
-                    new UsersPostValidator(body).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { body=>
+                new UsersPostValidator(body).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "POST /v2/pets" should {
-            def testInvalidInput(body: PetsPostBody) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                body <- UsersUsernamePutBodyGenerator
 
-                val url = s"""/v2/pets"""
-                val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                val errors = new PetsPostValidator(body).errors
+            } yield body
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { body=>
+                new UsersPostValidator(body).errors.isEmpty
             }
-            def testValidInput(body: PetsPostBody) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val url = s"""/v2/pets"""
-                val headers = Seq()
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        body <- PetsPostBodyGenerator
+    }
+"POST /v2/pets" should {
+        def testInvalidInput(body: PetsPostBody) = {
 
-                    } yield body
+            val url = s"""/v2/pets"""
+            val headers = Seq()
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            val errors = new PetsPostValidator(body).errors
 
-                val inputs = genInputs suchThat { body=>
-                    new PetsPostValidator(body).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(body: PetsPostBody) = {
+
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val url = s"""/v2/pets"""
+            val headers = Seq()
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     body <- PetsPostBodyGenerator
 
                 } yield body
 
-                val inputs = genInputs suchThat { body=>
-                    new PetsPostValidator(body).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { body=>
+                new PetsPostValidator(body).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "PUT /v2/pets" should {
-            def testInvalidInput(body: PetsPostBody) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                body <- PetsPostBodyGenerator
 
-                val url = s"""/v2/pets"""
-                val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                val errors = new PetsPutValidator(body).errors
+            } yield body
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { body=>
+                new PetsPostValidator(body).errors.isEmpty
             }
-            def testValidInput(body: PetsPostBody) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val url = s"""/v2/pets"""
-                val headers = Seq()
-                val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        body <- PetsPostBodyGenerator
+    }
+"PUT /v2/pets" should {
+        def testInvalidInput(body: PetsPostBody) = {
 
-                    } yield body
+            val url = s"""/v2/pets"""
+            val headers = Seq()
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            val errors = new PetsPutValidator(body).errors
 
-                val inputs = genInputs suchThat { body=>
-                    new PetsPutValidator(body).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(body: PetsPostBody) = {
+
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val url = s"""/v2/pets"""
+            val headers = Seq()
+            val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     body <- PetsPostBodyGenerator
 
                 } yield body
 
-                val inputs = genInputs suchThat { body=>
-                    new PetsPutValidator(body).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { body=>
+                new PetsPutValidator(body).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v2/pets/findByStatus" should {
-            def testInvalidInput(status: PetsFindByStatusGetStatus) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                body <- PetsPostBodyGenerator
 
-                val url = s"""/v2/pets/findByStatus?${status.map { i => "status=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsFindByStatusGetValidator(status).errors
+            } yield body
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { body=>
+                new PetsPutValidator(body).errors.isEmpty
             }
-            def testValidInput(status: PetsFindByStatusGetStatus) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val url = s"""/v2/pets/findByStatus?${status.map { i => "status=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        status <- PetsFindByStatusGetStatusGenerator
+    }
+"GET /v2/pets/findByStatus" should {
+        def testInvalidInput(status: PetsFindByStatusGetStatus) = {
 
-                    } yield status
+            val url = s"""/v2/pets/findByStatus?${status.map { i => "status=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new PetsFindByStatusGetValidator(status).errors
 
-                val inputs = genInputs suchThat { status=>
-                    new PetsFindByStatusGetValidator(status).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(status: PetsFindByStatusGetStatus) = {
+
+            val url = s"""/v2/pets/findByStatus?${status.map { i => "status=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     status <- PetsFindByStatusGetStatusGenerator
 
                 } yield status
 
-                val inputs = genInputs suchThat { status=>
-                    new PetsFindByStatusGetValidator(status).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { status=>
+                new PetsFindByStatusGetValidator(status).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "POST /v2/stores/order" should {
-            def testInvalidInput(body: StoresOrderPostBody) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                status <- PetsFindByStatusGetStatusGenerator
 
-                val url = s"""/v2/stores/order"""
-                val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                val errors = new StoresOrderPostValidator(body).errors
+            } yield status
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { status=>
+                new PetsFindByStatusGetValidator(status).errors.isEmpty
             }
-            def testValidInput(body: StoresOrderPostBody) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val url = s"""/v2/stores/order"""
-                val headers = Seq()
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        body <- StoresOrderPostBodyGenerator
+    }
+"POST /v2/stores/order" should {
+        def testInvalidInput(body: StoresOrderPostBody) = {
 
-                    } yield body
+            val url = s"""/v2/stores/order"""
+            val headers = Seq()
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            val errors = new StoresOrderPostValidator(body).errors
 
-                val inputs = genInputs suchThat { body=>
-                    new StoresOrderPostValidator(body).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(body: StoresOrderPostBody) = {
+
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val url = s"""/v2/stores/order"""
+            val headers = Seq()
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     body <- StoresOrderPostBodyGenerator
 
                 } yield body
 
-                val inputs = genInputs suchThat { body=>
-                    new StoresOrderPostValidator(body).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { body=>
+                new StoresOrderPostValidator(body).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "POST /v2/users/createWithArray" should {
-            def testInvalidInput(body: UsersCreateWithListPostBody) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                body <- StoresOrderPostBodyGenerator
 
-                val url = s"""/v2/users/createWithArray"""
-                val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                val errors = new UsersCreateWithArrayPostValidator(body).errors
+            } yield body
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { body=>
+                new StoresOrderPostValidator(body).errors.isEmpty
             }
-            def testValidInput(body: UsersCreateWithListPostBody) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val url = s"""/v2/users/createWithArray"""
-                val headers = Seq()
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        body <- UsersCreateWithListPostBodyGenerator
+    }
+"POST /v2/users/createWithArray" should {
+        def testInvalidInput(body: UsersCreateWithListPostBody) = {
 
-                    } yield body
+            val url = s"""/v2/users/createWithArray"""
+            val headers = Seq()
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            val errors = new UsersCreateWithArrayPostValidator(body).errors
 
-                val inputs = genInputs suchThat { body=>
-                    new UsersCreateWithArrayPostValidator(body).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(body: UsersCreateWithListPostBody) = {
+
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val url = s"""/v2/users/createWithArray"""
+            val headers = Seq()
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     body <- UsersCreateWithListPostBodyGenerator
 
                 } yield body
 
-                val inputs = genInputs suchThat { body=>
-                    new UsersCreateWithArrayPostValidator(body).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { body=>
+                new UsersCreateWithArrayPostValidator(body).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v2/users/login" should {
-            def testInvalidInput(input: (OrderStatus, OrderStatus)) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                body <- UsersCreateWithListPostBodyGenerator
 
-                val (username, password) = input
-                val url = s"""/v2/users/login?${username.map { i => "username=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${password.map { i => "password=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new UsersLoginGetValidator(username, password).errors
+            } yield body
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { body=>
+                new UsersCreateWithArrayPostValidator(body).errors.isEmpty
             }
-            def testValidInput(input: (OrderStatus, OrderStatus)) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val (username, password) = input
-                val url = s"""/v2/users/login?${username.map { i => "username=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${password.map { i => "password=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        username <- OrderStatusGenerator
-                        password <- OrderStatusGenerator
-                        
+    }
+"GET /v2/users/login" should {
+        def testInvalidInput(input: (OrderStatus, OrderStatus)) = {
 
-                    } yield (username, password)
+            val (username, password) = input
+            val url = s"""/v2/users/login?${username.map { i => "username=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${password.map { i => "password=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new UsersLoginGetValidator(username, password).errors
 
-                val inputs = genInputs suchThat { case (username, password)=>
-                    new UsersLoginGetValidator(username, password).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(input: (OrderStatus, OrderStatus)) = {
+
+            val (username, password) = input
+            val url = s"""/v2/users/login?${username.map { i => "username=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${password.map { i => "password=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     username <- OrderStatusGenerator
                     password <- OrderStatusGenerator
                     
 
                 } yield (username, password)
 
-                val inputs = genInputs suchThat { case (username, password)=>
-                    new UsersLoginGetValidator(username, password).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { case (username, password)=>
+                new UsersLoginGetValidator(username, password).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v2/stores/order/{orderId}" should {
-            def testInvalidInput(orderId: String) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                username <- OrderStatusGenerator
+                password <- OrderStatusGenerator
+                
 
-                val url = s"""/v2/stores/order/${orderId}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new StoresOrderOrderIdGetValidator(orderId).errors
+            } yield (username, password)
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { case (username, password)=>
+                new UsersLoginGetValidator(username, password).errors.isEmpty
             }
-            def testValidInput(orderId: String) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val url = s"""/v2/stores/order/${orderId}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        orderId <- StringGenerator
+    }
+"GET /v2/stores/order/{orderId}" should {
+        def testInvalidInput(orderId: String) = {
 
-                    } yield orderId
+            val url = s"""/v2/stores/order/${orderId}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new StoresOrderOrderIdGetValidator(orderId).errors
 
-                val inputs = genInputs suchThat { orderId=>
-                    new StoresOrderOrderIdGetValidator(orderId).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(orderId: String) = {
+
+            val url = s"""/v2/stores/order/${orderId}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     orderId <- StringGenerator
 
                 } yield orderId
 
-                val inputs = genInputs suchThat { orderId=>
-                    new StoresOrderOrderIdGetValidator(orderId).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { orderId=>
+                new StoresOrderOrderIdGetValidator(orderId).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v2/pets/{petId}" should {
-            def testInvalidInput(petId: Long) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                orderId <- StringGenerator
 
-                val url = s"""/v2/pets/${petId}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsPetIdGetValidator(petId).errors
+            } yield orderId
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { orderId=>
+                new StoresOrderOrderIdGetValidator(orderId).errors.isEmpty
             }
-            def testValidInput(petId: Long) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val url = s"""/v2/pets/${petId}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        petId <- LongGenerator
+    }
+"GET /v2/pets/{petId}" should {
+        def testInvalidInput(petId: Long) = {
 
-                    } yield petId
+            val url = s"""/v2/pets/${petId}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new PetsPetIdGetValidator(petId).errors
 
-                val inputs = genInputs suchThat { petId=>
-                    new PetsPetIdGetValidator(petId).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(petId: Long) = {
+
+            val url = s"""/v2/pets/${petId}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     petId <- LongGenerator
 
                 } yield petId
 
-                val inputs = genInputs suchThat { petId=>
-                    new PetsPetIdGetValidator(petId).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { petId=>
+                new PetsPetIdGetValidator(petId).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v2/users/{username}" should {
-            def testInvalidInput(username: String) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                petId <- LongGenerator
 
-                val url = s"""/v2/users/${username}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new UsersUsernameGetValidator(username).errors
+            } yield petId
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { petId=>
+                new PetsPetIdGetValidator(petId).errors.isEmpty
             }
-            def testValidInput(username: String) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val url = s"""/v2/users/${username}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        username <- StringGenerator
+    }
+"GET /v2/users/{username}" should {
+        def testInvalidInput(username: String) = {
 
-                    } yield username
+            val url = s"""/v2/users/${username}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new UsersUsernameGetValidator(username).errors
 
-                val inputs = genInputs suchThat { username=>
-                    new UsersUsernameGetValidator(username).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(username: String) = {
+
+            val url = s"""/v2/users/${username}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     username <- StringGenerator
 
                 } yield username
 
-                val inputs = genInputs suchThat { username=>
-                    new UsersUsernameGetValidator(username).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { username=>
+                new UsersUsernameGetValidator(username).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "POST /v2/users/createWithList" should {
-            def testInvalidInput(body: UsersCreateWithListPostBody) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                username <- StringGenerator
 
-                val url = s"""/v2/users/createWithList"""
-                val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                val errors = new UsersCreateWithListPostValidator(body).errors
+            } yield username
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { username=>
+                new UsersUsernameGetValidator(username).errors.isEmpty
             }
-            def testValidInput(body: UsersCreateWithListPostBody) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val url = s"""/v2/users/createWithList"""
-                val headers = Seq()
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        body <- UsersCreateWithListPostBodyGenerator
+    }
+"POST /v2/users/createWithList" should {
+        def testInvalidInput(body: UsersCreateWithListPostBody) = {
 
-                    } yield body
+            val url = s"""/v2/users/createWithList"""
+            val headers = Seq()
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            val errors = new UsersCreateWithListPostValidator(body).errors
 
-                val inputs = genInputs suchThat { body=>
-                    new UsersCreateWithListPostValidator(body).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(body: UsersCreateWithListPostBody) = {
+
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val url = s"""/v2/users/createWithList"""
+            val headers = Seq()
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     body <- UsersCreateWithListPostBodyGenerator
 
                 } yield body
 
-                val inputs = genInputs suchThat { body=>
-                    new UsersCreateWithListPostValidator(body).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { body=>
+                new UsersCreateWithListPostValidator(body).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "POST /v2/pets/{petId}" should {
-            def testInvalidInput(input: (String, String, String)) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                body <- UsersCreateWithListPostBodyGenerator
 
-                val (petId, name, status) = input
-                val url = s"""/v2/pets/${petId}"""
-                val headers = Seq()
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
-                val errors = new PetsPetIdPostValidator(petId, name, status).errors
+            } yield body
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { body=>
+                new UsersCreateWithListPostValidator(body).errors.isEmpty
             }
-            def testValidInput(input: (String, String, String)) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val (petId, name, status) = input
-                val url = s"""/v2/pets/${petId}"""
-                val headers = Seq()
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        petId <- StringGenerator
-                        name <- StringGenerator
-                        status <- StringGenerator
-                        
+    }
+"POST /v2/pets/{petId}" should {
+        def testInvalidInput(input: (String, String, String)) = {
 
-                    } yield (petId, name, status)
+            val (petId, name, status) = input
+            val url = s"""/v2/pets/${petId}"""
+            val headers = Seq()
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+            val errors = new PetsPetIdPostValidator(petId, name, status).errors
 
-                val inputs = genInputs suchThat { case (petId, name, status)=>
-                    new PetsPetIdPostValidator(petId, name, status).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(input: (String, String, String)) = {
+
+            val (petId, name, status) = input
+            val url = s"""/v2/pets/${petId}"""
+            val headers = Seq()
+            val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     petId <- StringGenerator
                     name <- StringGenerator
                     status <- StringGenerator
@@ -655,281 +640,296 @@ import Generators._
 
                 } yield (petId, name, status)
 
-                val inputs = genInputs suchThat { case (petId, name, status)=>
-                    new PetsPetIdPostValidator(petId, name, status).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { case (petId, name, status)=>
+                new PetsPetIdPostValidator(petId, name, status).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "DELETE /v2/users/{username}" should {
-            def testInvalidInput(username: String) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                petId <- StringGenerator
+                name <- StringGenerator
+                status <- StringGenerator
+                
 
-                val url = s"""/v2/users/${username}"""
-                val headers = Seq()
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-                val errors = new UsersUsernameDeleteValidator(username).errors
+            } yield (petId, name, status)
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { case (petId, name, status)=>
+                new PetsPetIdPostValidator(petId, name, status).errors.isEmpty
             }
-            def testValidInput(username: String) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val url = s"""/v2/users/${username}"""
-                val headers = Seq()
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        username <- StringGenerator
+    }
+"DELETE /v2/users/{username}" should {
+        def testInvalidInput(username: String) = {
 
-                    } yield username
+            val url = s"""/v2/users/${username}"""
+            val headers = Seq()
+            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+            val errors = new UsersUsernameDeleteValidator(username).errors
 
-                val inputs = genInputs suchThat { username=>
-                    new UsersUsernameDeleteValidator(username).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(username: String) = {
+
+            val url = s"""/v2/users/${username}"""
+            val headers = Seq()
+            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     username <- StringGenerator
 
                 } yield username
 
-                val inputs = genInputs suchThat { username=>
-                    new UsersUsernameDeleteValidator(username).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { username=>
+                new UsersUsernameDeleteValidator(username).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "DELETE /v2/stores/order/{orderId}" should {
-            def testInvalidInput(orderId: String) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                username <- StringGenerator
 
-                val url = s"""/v2/stores/order/${orderId}"""
-                val headers = Seq()
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-                val errors = new StoresOrderOrderIdDeleteValidator(orderId).errors
+            } yield username
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { username=>
+                new UsersUsernameDeleteValidator(username).errors.isEmpty
             }
-            def testValidInput(orderId: String) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val url = s"""/v2/stores/order/${orderId}"""
-                val headers = Seq()
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        orderId <- StringGenerator
+    }
+"DELETE /v2/stores/order/{orderId}" should {
+        def testInvalidInput(orderId: String) = {
 
-                    } yield orderId
+            val url = s"""/v2/stores/order/${orderId}"""
+            val headers = Seq()
+            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+            val errors = new StoresOrderOrderIdDeleteValidator(orderId).errors
 
-                val inputs = genInputs suchThat { orderId=>
-                    new StoresOrderOrderIdDeleteValidator(orderId).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(orderId: String) = {
+
+            val url = s"""/v2/stores/order/${orderId}"""
+            val headers = Seq()
+            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     orderId <- StringGenerator
 
                 } yield orderId
 
-                val inputs = genInputs suchThat { orderId=>
-                    new StoresOrderOrderIdDeleteValidator(orderId).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { orderId=>
+                new StoresOrderOrderIdDeleteValidator(orderId).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "DELETE /v2/pets/{petId}" should {
-            def testInvalidInput(input: (String, Long)) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                orderId <- StringGenerator
 
-                val (api_key, petId) = input
-                val url = s"""/v2/pets/${petId}"""
-                val headers = Seq("api_key" -> api_key)
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-                val errors = new PetsPetIdDeleteValidator(api_key, petId).errors
+            } yield orderId
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { orderId=>
+                new StoresOrderOrderIdDeleteValidator(orderId).errors.isEmpty
             }
-            def testValidInput(input: (String, Long)) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val (api_key, petId) = input
-                val url = s"""/v2/pets/${petId}"""
-                val headers = Seq("api_key" -> api_key)
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        api_key <- StringGenerator
-                        petId <- LongGenerator
-                        
+    }
+"DELETE /v2/pets/{petId}" should {
+        def testInvalidInput(input: (String, Long)) = {
 
-                    } yield (api_key, petId)
+            val (api_key, petId) = input
+            val url = s"""/v2/pets/${petId}"""
+            val headers = Seq("api_key" -> api_key)
+            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+            val errors = new PetsPetIdDeleteValidator(api_key, petId).errors
 
-                val inputs = genInputs suchThat { case (api_key, petId)=>
-                    new PetsPetIdDeleteValidator(api_key, petId).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(input: (String, Long)) = {
+
+            val (api_key, petId) = input
+            val url = s"""/v2/pets/${petId}"""
+            val headers = Seq("api_key" -> api_key)
+            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     api_key <- StringGenerator
                     petId <- LongGenerator
                     
 
                 } yield (api_key, petId)
 
-                val inputs = genInputs suchThat { case (api_key, petId)=>
-                    new PetsPetIdDeleteValidator(api_key, petId).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { case (api_key, petId)=>
+                new PetsPetIdDeleteValidator(api_key, petId).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v2/pets/findByTags" should {
-            def testInvalidInput(tags: PetsFindByStatusGetStatus) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                api_key <- StringGenerator
+                petId <- LongGenerator
+                
 
-                val url = s"""/v2/pets/findByTags?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsFindByTagsGetValidator(tags).errors
+            } yield (api_key, petId)
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { case (api_key, petId)=>
+                new PetsPetIdDeleteValidator(api_key, petId).errors.isEmpty
             }
-            def testValidInput(tags: PetsFindByStatusGetStatus) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val url = s"""/v2/pets/findByTags?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        tags <- PetsFindByStatusGetStatusGenerator
+    }
+"GET /v2/pets/findByTags" should {
+        def testInvalidInput(tags: PetsFindByStatusGetStatus) = {
 
-                    } yield tags
+            val url = s"""/v2/pets/findByTags?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new PetsFindByTagsGetValidator(tags).errors
 
-                val inputs = genInputs suchThat { tags=>
-                    new PetsFindByTagsGetValidator(tags).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(tags: PetsFindByStatusGetStatus) = {
+
+            val url = s"""/v2/pets/findByTags?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     tags <- PetsFindByStatusGetStatusGenerator
 
                 } yield tags
 
-                val inputs = genInputs suchThat { tags=>
-                    new PetsFindByTagsGetValidator(tags).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { tags=>
+                new PetsFindByTagsGetValidator(tags).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "PUT /v2/users/{username}" should {
-            def testInvalidInput(input: (String, UsersUsernamePutBody)) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                tags <- PetsFindByStatusGetStatusGenerator
 
-                val (username, body) = input
-                val url = s"""/v2/users/${username}"""
-                val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                val errors = new UsersUsernamePutValidator(username, body).errors
+            } yield tags
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { tags=>
+                new PetsFindByTagsGetValidator(tags).errors.isEmpty
             }
-            def testValidInput(input: (String, UsersUsernamePutBody)) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val (username, body) = input
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-                val url = s"""/v2/users/${username}"""
-                val headers = Seq()
-                val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
-                ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        username <- StringGenerator
-                        body <- UsersUsernamePutBodyGenerator
-                        
+    }
+"PUT /v2/users/{username}" should {
+        def testInvalidInput(input: (String, UsersUsernamePutBody)) = {
 
-                    } yield (username, body)
+            val (username, body) = input
+            val url = s"""/v2/users/${username}"""
+            val headers = Seq()
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            val errors = new UsersUsernamePutValidator(username, body).errors
 
-                val inputs = genInputs suchThat { case (username, body)=>
-                    new UsersUsernamePutValidator(username, body).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(input: (String, UsersUsernamePutBody)) = {
+
+            val (username, body) = input
+            val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val url = s"""/v2/users/${username}"""
+            val headers = Seq()
+            val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     username <- StringGenerator
                     body <- UsersUsernamePutBodyGenerator
                     
 
                 } yield (username, body)
 
-                val inputs = genInputs suchThat { case (username, body)=>
-                    new UsersUsernamePutValidator(username, body).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { case (username, body)=>
+                new UsersUsernamePutValidator(username, body).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                username <- StringGenerator
+                body <- UsersUsernamePutBodyGenerator
+                
+
+            } yield (username, body)
+
+            val inputs = genInputs suchThat { case (username, body)=>
+                new UsersUsernamePutValidator(username, body).errors.isEmpty
+            }
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
+
     }
+}

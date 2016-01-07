@@ -6,17 +6,21 @@ type EstimatesPriceGetEnd_latitude = Double
 
     type ProductDescription = Option[String]
 
-    type ActivitiesHistory = Option[ActivitiesHistoryOpt]
+    type ActivitiesHistory = Option[ActivitiesHistoryOptNameClash]
 
-    type ErrorCode = Option[Int]
+    type ActivitiesHistoryNameClash = Option[ActivitiesHistoryOpt]
 
     type PriceEstimateLow_estimate = Option[Double]
 
-    type ProductsGetResponses200 = ArrayWrapper[Product]
+    type ProductsGetResponses200 = Seq[Product]
 
-    type EstimatesPriceGetResponses200 = ArrayWrapper[PriceEstimate]
+    type ActivitiesHistoryOpt = Seq[Activity]
 
-    type ActivitiesHistoryOpt = ArrayWrapper[Activity]
+    type EstimatesPriceGetResponses200 = Seq[PriceEstimate]
+
+    type ActivitiesHistoryOptNameClash = ArrayWrapper[Activity]
+
+    type ActivitiesLimit = Option[Int]
 
     case class Activity(uuid: ProductDescription) 
 
@@ -24,11 +28,13 @@ type EstimatesPriceGetEnd_latitude = Double
 
     case class Product(image: ProductDescription, description: ProductDescription, display_name: ProductDescription, product_id: ProductDescription, capacity: ProductDescription) 
 
+    case class HistoryGetResponses200(offset: ActivitiesLimit, limit: ActivitiesLimit, count: ActivitiesLimit, history: ActivitiesHistoryNameClash) 
+
     case class Profile(first_name: ProductDescription, email: ProductDescription, promo_code: ProductDescription, last_name: ProductDescription, picture: ProductDescription) 
 
-    case class Activities(offset: ErrorCode, limit: ErrorCode, count: ErrorCode, history: ActivitiesHistory) 
+    case class Activities(offset: ActivitiesLimit, limit: ActivitiesLimit, count: ActivitiesLimit, history: ActivitiesHistory) 
 
-    case class Error(code: ErrorCode, message: ProductDescription, fields: ProductDescription) 
+    case class Error(code: ActivitiesLimit, message: ProductDescription, fields: ProductDescription) 
 
     
 

@@ -1,7 +1,7 @@
 package nested_arrays
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
-    type ExampleNestedArraysOptArr = ArrayWrapper[ExampleNestedArraysOptArrArr]
+type ExampleNestedArraysOptArr = ArrayWrapper[ExampleNestedArraysOptArrArr]
 
     type ExampleNestedArraysOpt = ArrayWrapper[ExampleNestedArraysOptArr]
 
@@ -25,4 +25,7 @@ import de.zalando.play.controllers.ArrayWrapper
 
     
 
-}
+
+    
+    
+    }

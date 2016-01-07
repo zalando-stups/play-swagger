@@ -58,7 +58,7 @@
 		Field(⌿/definitions/Error⌿code, Intgr), 
 		Field(⌿/definitions/Error⌿message, Str)))
 ⌿paths⌿/pets⌿get⌿responses⌿200 ->
-	Arr(AllOf(
+	ArrResult(AllOf(
 		TypeDef(⌿/definitions/NewPet, Seq(
 			Field(⌿/definitions/NewPet⌿name, Str), 
 			Field(⌿/definitions/NewPet⌿tag, Opt(Str))))

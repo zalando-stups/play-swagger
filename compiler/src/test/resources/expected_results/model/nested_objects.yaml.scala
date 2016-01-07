@@ -1,6 +1,6 @@
 package nested_objects
 package object yaml {
-    type NestedObjectsNested = Option[NestedObjectsNestedOpt]
+type NestedObjectsNested = Option[NestedObjectsNestedOpt]
 
     type NestedObjectsNestedNested2Nested3Bottom = Option[String]
 
@@ -20,4 +20,7 @@ package object yaml {
 
     
 
-}
+
+    
+    
+    }

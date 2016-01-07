@@ -1,6 +1,6 @@
 package nested_options
 package object yaml {
-    type BasicOptional = Option[BasicOptionalOpt]
+type BasicOptional = Option[BasicOptionalOpt]
 
     type BasicOptionalNested_optional = Option[String]
 
@@ -10,4 +10,7 @@ package object yaml {
 
     
 
-}
+
+    
+    
+    }

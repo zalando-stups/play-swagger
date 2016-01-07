@@ -12,7 +12,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private val findPetsActionSuccessStatus = Status(200)
 
     private type findPetsActionRequestType       = (PetsGetTags, PetsGetLimit)
-    private type findPetsActionResultType        = ArrayWrapper[Pet]
+    private type findPetsActionResultType        = Seq[Pet]
     private type findPetsActionType              = findPetsActionRequestType => Try[findPetsActionResultType]
 
     private val errorToStatusfindPets: PartialFunction[Throwable, Status] = 

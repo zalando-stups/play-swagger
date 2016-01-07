@@ -54,7 +54,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val methodLevelActionSuccessStatus = Status(200)
 
     private type methodLevelActionRequestType       = (PetsGetTags, PetsGetLimit)
-    private type methodLevelActionResultType        = ArrayWrapper[Pet]
+    private type methodLevelActionResultType        = Seq[Pet]
     private type methodLevelActionType              = methodLevelActionRequestType => Try[methodLevelActionResultType]
 
     private val errorToStatusmethodLevel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]

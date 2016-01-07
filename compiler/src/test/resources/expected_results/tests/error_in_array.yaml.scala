@@ -26,56 +26,56 @@ import Generators._
         }
 
 "GET /schema/model" should {
-            def testInvalidInput(root: ModelSchemaRoot) = {
+        def testInvalidInput(root: ModelSchemaRoot) = {
 
-                val url = s"""/schema/model"""
-                val headers = Seq()
-                val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
-                val errors = new SchemaModelGetValidator(root).errors
+            val url = s"""/schema/model"""
+            val headers = Seq()
+            val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
+            val errors = new SchemaModelGetValidator(root).errors
 
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given an URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
-            }
-            def testValidInput(root: ModelSchemaRoot) = {
+            ("given an URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(root: ModelSchemaRoot) = {
 
-                val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
-                val url = s"""/schema/model"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
-                ("given an URL: [" + url + "]"+ " and body [" + parsed_root + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        root <- ModelSchemaRootGenerator
-
-                    } yield root
-
-                val inputs = genInputs suchThat { root=>
-                    new SchemaModelGetValidator(root).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+            val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
+            val url = s"""/schema/model"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_root + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     root <- ModelSchemaRootGenerator
 
                 } yield root
 
-                val inputs = genInputs suchThat { root=>
-                    new SchemaModelGetValidator(root).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { root=>
+                new SchemaModelGetValidator(root).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                root <- ModelSchemaRootGenerator
+
+            } yield root
+
+            val inputs = genInputs suchThat { root=>
+                new SchemaModelGetValidator(root).errors.isEmpty
+            }
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
+
     }
+}

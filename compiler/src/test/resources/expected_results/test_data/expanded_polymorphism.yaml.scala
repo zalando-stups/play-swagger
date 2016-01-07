@@ -30,7 +30,7 @@ object Generators {
 
     def PetsGetTagsOptGenerator = _genList(arbitrary[String], "csv")
 
-    def PetsGetResponses200Generator = _genList(PetGenerator, "csv")
+    def PetsGetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 
     def PetsGetTagsGenerator = Gen.option(PetsGetTagsOptGenerator)
 

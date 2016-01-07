@@ -13,9 +13,9 @@ type OrderQuantity = Option[Int]
 
     type OrderPetId = Option[Long]
 
-    type PetsFindByStatusGetResponses200 = ArrayWrapper[Pet]
+    type PetsFindByStatusGetResponses200 = Seq[PetsPostBodyOpt]
 
-    type PetsPostBody = Option[Pet]
+    type PetsPostBody = Option[PetsPostBodyOpt]
 
     type UsersUsernamePutBody = Option[User]
 
@@ -25,11 +25,15 @@ type OrderQuantity = Option[Int]
 
     type PetTags = Option[PetTagsOpt]
 
+    type PetTagsNameClash = Option[PetTagsOptNameClash]
+
     type OrderComplete = Option[Boolean]
 
     type PetsPetIdDeletePetId = Long
 
-    type PetTagsOpt = ArrayWrapper[Tag]
+    type PetTagsOpt = Seq[Tag]
+
+    type PetPhotoUrls = ArrayWrapper[String]
 
     type PetCategory = Option[Tag]
 
@@ -39,7 +43,9 @@ type OrderQuantity = Option[Int]
 
     type PetsFindByStatusGetStatus = Option[PetPhotoUrls]
 
-    type PetPhotoUrls = ArrayWrapper[String]
+    type PetPhotoUrlsNameClash = Seq[String]
+
+    type PetTagsOptNameClash = ArrayWrapper[Tag]
 
     case class User(email: OrderStatus, username: OrderStatus, userStatus: OrderQuantity, lastName: OrderStatus, firstName: OrderStatus, id: OrderPetId, phone: OrderStatus, password: OrderStatus) 
 
@@ -47,8 +53,15 @@ type OrderQuantity = Option[Int]
 
     case class Tag(id: OrderPetId, name: OrderStatus) 
 
-    case class Pet(name: String, tags: PetTags, photoUrls: PetPhotoUrls, id: OrderPetId, status: OrderStatus, category: PetCategory) 
+    case class PetsPostBodyOpt(name: String, tags: PetTags, photoUrls: PetPhotoUrlsNameClash, id: OrderPetId, status: OrderStatus, category: PetCategory) 
 
+    case class Pet(name: String, tags: PetTagsNameClash, photoUrls: PetPhotoUrls, id: OrderPetId, status: OrderStatus, category: PetCategory) 
+
+    
+
+
+    
+    
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
     implicit val bindable_OptionPetPhotoUrlsQuery = PlayPathBindables.createOptionQueryBindable[PetPhotoUrls]
     implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("csv")

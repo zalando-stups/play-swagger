@@ -47,10 +47,13 @@ object naming {
     def prepend(part: String) = Reference(part :: parts)
     val tokens = parts
     val pointer = this
+    lazy val isResponsePath = parts.contains(responses)
+    lazy val isTopResponsePath = parts.last == responses
   }
 
 
   object Reference {
+    val responses = "responses"
     val delimiter = "⌿"
     val root: Reference = Reference(List.empty)
     def apply(base: String, s: String): Reference = parse(s, delimiter)

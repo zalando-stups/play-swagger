@@ -21,6 +21,6 @@
 ⌿paths⌿/⌿put⌿responses⌿200 ->
 	Null
 ⌿paths⌿/⌿get⌿responses⌿200 ->
-	Arr(TypeDef(⌿/definitions/Pet, Seq(
+	ArrResult(TypeDef(⌿/definitions/Pet, Seq(
 		Field(⌿/definitions/Pet⌿name, Opt(Str)), 
 		Field(⌿/definitions/Pet⌿birthday, Opt(Intgr)))))

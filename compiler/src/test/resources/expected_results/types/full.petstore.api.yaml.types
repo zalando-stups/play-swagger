@@ -161,12 +161,12 @@
 ⌿paths⌿/users/login⌿get⌿responses⌿400 ->
 	Null
 ⌿paths⌿/pets/findByStatus⌿get⌿responses⌿200 ->
-	Arr(TypeDef(⌿/definitions/Pet, Seq(
+	ArrResult(TypeDef(⌿/definitions/Pet, Seq(
 		Field(⌿/definitions/Pet⌿name, Str), 
-		Field(⌿/definitions/Pet⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+		Field(⌿/definitions/Pet⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿id, Opt(Lng)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-		Field(⌿/definitions/Pet⌿photoUrls, Arr(Str)), 
+		Field(⌿/definitions/Pet⌿photoUrls, ArrResult(Str)), 
 		Field(⌿/definitions/Pet⌿id, Opt(Lng)), 
 		Field(⌿/definitions/Pet⌿status, Opt(Str)), 
 		Field(⌿/definitions/Pet⌿category, Opt(TypeDef(⌿/definitions/Category, Seq(
@@ -207,10 +207,10 @@
 ⌿paths⌿/pets/{petId}⌿get⌿responses⌿200 ->
 	TypeDef(⌿/definitions/Pet, Seq(
 		Field(⌿/definitions/Pet⌿name, Str), 
-		Field(⌿/definitions/Pet⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+		Field(⌿/definitions/Pet⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿id, Opt(Lng)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-		Field(⌿/definitions/Pet⌿photoUrls, Arr(Str)), 
+		Field(⌿/definitions/Pet⌿photoUrls, ArrResult(Str)), 
 		Field(⌿/definitions/Pet⌿id, Opt(Lng)), 
 		Field(⌿/definitions/Pet⌿status, Opt(Str)), 
 		Field(⌿/definitions/Pet⌿category, Opt(TypeDef(⌿/definitions/Category, Seq(
@@ -219,12 +219,12 @@
 ⌿paths⌿/stores/order/{orderId}⌿delete⌿responses⌿404 ->
 	Null
 ⌿paths⌿/pets/findByTags⌿get⌿responses⌿200 ->
-	Arr(TypeDef(⌿/definitions/Pet, Seq(
+	ArrResult(TypeDef(⌿/definitions/Pet, Seq(
 		Field(⌿/definitions/Pet⌿name, Str), 
-		Field(⌿/definitions/Pet⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+		Field(⌿/definitions/Pet⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿id, Opt(Lng)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-		Field(⌿/definitions/Pet⌿photoUrls, Arr(Str)), 
+		Field(⌿/definitions/Pet⌿photoUrls, ArrResult(Str)), 
 		Field(⌿/definitions/Pet⌿id, Opt(Lng)), 
 		Field(⌿/definitions/Pet⌿status, Opt(Str)), 
 		Field(⌿/definitions/Pet⌿category, Opt(TypeDef(⌿/definitions/Category, Seq(

@@ -43,7 +43,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val getproductsActionSuccessStatus = Status(200)
 
     private type getproductsActionRequestType       = (Double, Double)
-    private type getproductsActionResultType        = ArrayWrapper[Product]
+    private type getproductsActionResultType        = Seq[Product]
     private type getproductsActionType              = getproductsActionRequestType => Try[getproductsActionResultType]
 
     private val errorToStatusgetproducts: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -81,7 +81,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val getestimatesTimeActionSuccessStatus = Status(200)
 
     private type getestimatesTimeActionRequestType       = (Double, Double, ProductDescription, ProductDescription)
-    private type getestimatesTimeActionResultType        = ArrayWrapper[Product]
+    private type getestimatesTimeActionResultType        = Seq[Product]
     private type getestimatesTimeActionType              = getestimatesTimeActionRequestType => Try[getestimatesTimeActionResultType]
 
     private val errorToStatusgetestimatesTime: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -119,7 +119,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val getestimatesPriceActionSuccessStatus = Status(200)
 
     private type getestimatesPriceActionRequestType       = (Double, Double, Double, Double)
-    private type getestimatesPriceActionResultType        = ArrayWrapper[PriceEstimate]
+    private type getestimatesPriceActionResultType        = Seq[PriceEstimate]
     private type getestimatesPriceActionType              = getestimatesPriceActionRequestType => Try[getestimatesPriceActionResultType]
 
     private val errorToStatusgetestimatesPrice: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -156,8 +156,8 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val gethistoryResponseMimeType    = "application/json"
     private val gethistoryActionSuccessStatus = Status(200)
 
-    private type gethistoryActionRequestType       = (ErrorCode, ErrorCode)
-    private type gethistoryActionResultType        = Activities
+    private type gethistoryActionRequestType       = (ActivitiesLimit, ActivitiesLimit)
+    private type gethistoryActionResultType        = /definitions/Activities
     private type gethistoryActionType              = gethistoryActionRequestType => Try[gethistoryActionResultType]
 
     private val errorToStatusgethistory: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -168,7 +168,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def gethistoryAction = (f: gethistoryActionType) => (offset: ErrorCode, limit: ErrorCode) => Action { 
+    def gethistoryAction = (f: gethistoryActionType) => (offset: ActivitiesLimit, limit: ActivitiesLimit) => Action { 
 
         val result = 
 

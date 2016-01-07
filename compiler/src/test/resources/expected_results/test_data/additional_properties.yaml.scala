@@ -7,7 +7,7 @@ import Arbitrary._
 import scala.collection.immutable.Map
 import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditionalPropertiesGenerator)
+    def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditionalPropertiesGenerator)
 
     def createKeyedArraysAdditionalPropertiesCatchAllGenerator = _generate(KeyedArraysAdditionalPropertiesCatchAllGenerator)
 
@@ -33,4 +33,4 @@ def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditi
 
     } yield keys.zip(values).toMap
 
-}
+    }

@@ -1,11 +1,15 @@
+
+
+
+
 import play.api.mvc.{Action, Controller}
 import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-package echo.api.yaml {
+package echo.api.yaml { 
 
-  class EchoApiYaml extends EchoApiYamlBase {
+    class EchoApiYaml extends EchoApiYamlBase {
     val get = getAction {
             ???
             
@@ -24,4 +28,3 @@ package echo.api.yaml {
         } //////// EOF ////////  gettest_pathByIdAction
     }
 }
-

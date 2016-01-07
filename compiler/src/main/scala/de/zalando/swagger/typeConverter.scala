@@ -68,7 +68,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   private def fromResponses(paths: Paths): Seq[NamedTypes] = for {
     (prefix, responses) <- forAllOperations(paths, responseCollector)
     (suffix, response) <- responses
-    fullName = prefix / "responses" / suffix
+    fullName = prefix / Reference.responses / suffix
   } yield fromSchemaOrFileSchema(fullName, response.schema, Some(Nil))
 
   private def fromNamedParamListItem[T](pair: (Reference, ParametersListItem)): NamedTypes =
@@ -253,8 +253,12 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 
   // ------------------------------------ Wrappers ------------------------------------
 
-  private def wrapInArray(t: NamedType, m: TypeMeta, collectionFormat: Option[String]): NamedType =
-    t._1 -> Domain.Arr(t._2, m, collectionFormat.map(_.toString).getOrElse(CollectionFormat.default.toString))
+  private def wrapInArray(t: NamedType, m: TypeMeta, collectionFormat: Option[String]): NamedType = {
+    val wrapper =
+      if (t._1.isResponsePath) Domain.ArrResult(t._2, m)
+      else Domain.Arr(t._2, m, collectionFormat.map(_.toString).getOrElse(CollectionFormat.default.toString))
+    t._1 -> wrapper
+  }
 
   private def wrapInOption(t: NamedType): NamedType =
     t._1 -> Domain.Opt(t._2, TypeMeta(None))
@@ -274,7 +278,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   // Use required = Some(Nil) to define that everything is optional
   // The return type is also required by definition
   private def isRequired[T](name: Reference, required: Option[Seq[String]]): Boolean =
-    required.isEmpty || required.get.contains(name.simple) || name.parent.parts.last == "responses"
+    required.isEmpty || required.get.contains(name.simple) || name.parent.isTopResponsePath
 
 }
 

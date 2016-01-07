@@ -11,7 +11,7 @@
 ⌿paths⌿/⌿post⌿responses⌿200 -> 
 	Null
 ⌿paths⌿/⌿get⌿responses⌿200 -> 
-	Arr(TypeRef(⌿definitions⌿Pet))
+	ArrResult(TypeRef(⌿definitions⌿Pet))
 -- params --
 
 ⌿paths⌿/⌿get⌿limit -> Parameter(limit,TypeRef(⌿/definitions/Pet⌿birthday),None,None,.+,true,query)

@@ -738,7 +738,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaByShortcodeActionSuccessStatus = Status(200)
 
     private type getmediaByShortcodeActionRequestType       = (String)
-    private type getmediaByShortcodeActionResultType        = Media
+    private type getmediaByShortcodeActionResultType        = /definitions/Media
     private type getmediaByShortcodeActionType              = getmediaByShortcodeActionRequestType => Try[getmediaByShortcodeActionResultType]
 
     private val errorToStatusgetmediaByShortcode: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -845,7 +845,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaByMedia_idActionSuccessStatus = Status(200)
 
     private type getmediaByMedia_idActionRequestType       = (Int)
-    private type getmediaByMedia_idActionResultType        = Media
+    private type getmediaByMedia_idActionResultType        = /definitions/Media
     private type getmediaByMedia_idActionType              = getmediaByMedia_idActionRequestType => Try[getmediaByMedia_idActionResultType]
 
     private val errorToStatusgetmediaByMedia_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]

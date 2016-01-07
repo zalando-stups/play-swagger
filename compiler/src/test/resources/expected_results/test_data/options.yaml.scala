@@ -6,7 +6,7 @@ import Arbitrary._
 
 import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createBasicRequiredGenerator = _generate(BasicRequiredGenerator)
+    def createBasicRequiredGenerator = _generate(BasicRequiredGenerator)
 
     def createBasicOptionalGenerator = _generate(BasicOptionalGenerator)
 
@@ -26,4 +26,4 @@ def createBasicRequiredGenerator = _generate(BasicRequiredGenerator)
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
-}
+    }

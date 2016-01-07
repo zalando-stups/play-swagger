@@ -14,7 +14,7 @@ type PetsIdDeleteResponses204 = Null
 
     type PetTag = Option[String]
 
-    type PetsGetResponses200 = ArrayWrapper[Pet]
+    type PetsGetResponses200 = Seq[Pet]
 
     type PetsGetTags = Option[PetsGetTagsOpt]
 

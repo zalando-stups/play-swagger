@@ -4,7 +4,6 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
 import Arbitrary._
 
-import de.zalando.play.controllers.ArrayWrapper
 object Generators {
     def createPetNameGenerator = _generate(PetNameGenerator)
 
@@ -24,7 +23,7 @@ object Generators {
 
     def PetBirthdayGenerator = Gen.option(arbitrary[Int])
 
-    def GetResponses200Generator = _genList(PetGenerator, "csv")
+    def GetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 
     def createPetGenerator = _generate(PetGenerator)
 
@@ -34,7 +33,4 @@ object Generators {
         } yield Pet(name, birthday)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
-        items <- Gen.containerOf[List,T](gen)
-    } yield ArrayWrapper(format)(items)
     }

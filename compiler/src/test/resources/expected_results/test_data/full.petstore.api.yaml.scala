@@ -29,11 +29,15 @@ object Generators {
 
     def createPetTagsGenerator = _generate(PetTagsGenerator)
 
+    def createPetTagsNameClashGenerator = _generate(PetTagsNameClashGenerator)
+
     def createOrderCompleteGenerator = _generate(OrderCompleteGenerator)
 
     def createLongGenerator = _generate(LongGenerator)
 
     def createPetTagsOptGenerator = _generate(PetTagsOptGenerator)
+
+    def createPetPhotoUrlsGenerator = _generate(PetPhotoUrlsGenerator)
 
     def createPetCategoryGenerator = _generate(PetCategoryGenerator)
 
@@ -43,7 +47,9 @@ object Generators {
 
     def createPetsFindByStatusGetStatusGenerator = _generate(PetsFindByStatusGetStatusGenerator)
 
-    def createPetPhotoUrlsGenerator = _generate(PetPhotoUrlsGenerator)
+    def createPetPhotoUrlsNameClashGenerator = _generate(PetPhotoUrlsNameClashGenerator)
+
+    def createPetTagsOptNameClashGenerator = _generate(PetTagsOptNameClashGenerator)
 
     def OrderQuantityGenerator = Gen.option(arbitrary[Int])
 
@@ -55,9 +61,9 @@ object Generators {
 
     def OrderPetIdGenerator = Gen.option(arbitrary[Long])
 
-    def PetsFindByStatusGetResponses200Generator = _genList(PetGenerator, "csv")
+    def PetsFindByStatusGetResponses200Generator = Gen.containerOf[List,PetsPostBodyOpt](PetsPostBodyOptGenerator)
 
-    def PetsPostBodyGenerator = Gen.option(PetGenerator)
+    def PetsPostBodyGenerator = Gen.option(PetsPostBodyOptGenerator)
 
     def UsersUsernamePutBodyGenerator = Gen.option(UserGenerator)
 
@@ -67,11 +73,15 @@ object Generators {
 
     def PetTagsGenerator = Gen.option(PetTagsOptGenerator)
 
+    def PetTagsNameClashGenerator = Gen.option(PetTagsOptNameClashGenerator)
+
     def OrderCompleteGenerator = Gen.option(arbitrary[Boolean])
 
     def LongGenerator = arbitrary[Long]
 
-    def PetTagsOptGenerator = _genList(TagGenerator, "csv")
+    def PetTagsOptGenerator = Gen.containerOf[List,Tag](TagGenerator)
+
+    def PetPhotoUrlsGenerator = _genList(arbitrary[String], "csv")
 
     def PetCategoryGenerator = Gen.option(TagGenerator)
 
@@ -81,13 +91,17 @@ object Generators {
 
     def PetsFindByStatusGetStatusGenerator = Gen.option(PetPhotoUrlsGenerator)
 
-    def PetPhotoUrlsGenerator = _genList(arbitrary[String], "csv")
+    def PetPhotoUrlsNameClashGenerator = Gen.containerOf[List,String](arbitrary[String])
+
+    def PetTagsOptNameClashGenerator = _genList(TagGenerator, "csv")
 
     def createUserGenerator = _generate(UserGenerator)
 
     def createOrderGenerator = _generate(OrderGenerator)
 
     def createTagGenerator = _generate(TagGenerator)
+
+    def createPetsPostBodyOptGenerator = _generate(PetsPostBodyOptGenerator)
 
     def createPetGenerator = _generate(PetGenerator)
 
@@ -116,9 +130,18 @@ object Generators {
         name <- OrderStatusGenerator
         } yield Tag(id, name)
 
-    def PetGenerator = for {
+    def PetsPostBodyOptGenerator = for {
         name <- arbitrary[String]
         tags <- PetTagsGenerator
+        photoUrls <- PetPhotoUrlsNameClashGenerator
+        id <- OrderPetIdGenerator
+        status <- OrderStatusGenerator
+        category <- PetCategoryGenerator
+        } yield PetsPostBodyOpt(name, tags, photoUrls, id, status, category)
+
+    def PetGenerator = for {
+        name <- arbitrary[String]
+        tags <- PetTagsNameClashGenerator
         photoUrls <- PetPhotoUrlsGenerator
         id <- OrderPetIdGenerator
         status <- OrderStatusGenerator

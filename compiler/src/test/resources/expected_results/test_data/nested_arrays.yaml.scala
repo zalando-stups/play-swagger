@@ -6,7 +6,7 @@ import Arbitrary._
 
 import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createExampleNestedArraysOptArrGenerator = _generate(ExampleNestedArraysOptArrGenerator)
+    def createExampleNestedArraysOptArrGenerator = _generate(ExampleNestedArraysOptArrGenerator)
 
     def createExampleNestedArraysOptGenerator = _generate(ExampleNestedArraysOptGenerator)
 
@@ -59,4 +59,4 @@ def createExampleNestedArraysOptArrGenerator = _generate(ExampleNestedArraysOptA
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
-}
+    }

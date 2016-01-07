@@ -4,7 +4,6 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class PetIdGetPetIdConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =

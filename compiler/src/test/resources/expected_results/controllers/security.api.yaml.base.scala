@@ -12,7 +12,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
     private val getPetsByIdActionSuccessStatus = Status(200)
 
     private type getPetsByIdActionRequestType       = (PetsIdGetId)
-    private type getPetsByIdActionResultType        = ArrayWrapper[Pet]
+    private type getPetsByIdActionResultType        = Seq[Pet]
     private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[getPetsByIdActionResultType]
 
     private val errorToStatusgetPetsById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]

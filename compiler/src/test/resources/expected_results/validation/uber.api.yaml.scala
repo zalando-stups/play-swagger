@@ -38,12 +38,12 @@ class EstimatesTimeGetStart_longitudeValidator(instance: Double) extends Recursi
     override val validators = Seq(new EstimatesTimeGetStart_longitudeConstraints(instance))
 
 }
-class ErrorCodeOptConstraints(override val instance: Int) extends ValidationBase[Int] {
+class ActivitiesLimitOptConstraints(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
         Seq()
 }
-class ErrorCodeOptValidator(instance: Int) extends RecursiveValidator {
-    override val validators = Seq(new ErrorCodeOptConstraints(instance))
+class ActivitiesLimitOptValidator(instance: Int) extends RecursiveValidator {
+    override val validators = Seq(new ActivitiesLimitOptConstraints(instance))
 
 }
 class ProductDescriptionOptConstraints(override val instance: String) extends ValidationBase[String] {
@@ -88,8 +88,8 @@ class EstimatesPriceGetStart_longitudeValidator(instance: Double) extends Recurs
 }
 // ----- complex type validators -----
 // ----- option delegating validators -----
-class ErrorCodeValidator(instance: ErrorCode) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new ErrorCodeOptValidator(_) }
+class ActivitiesLimitValidator(instance: ActivitiesLimit) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new ActivitiesLimitOptValidator(_) }
 }
 class ProductDescriptionValidator(instance: ProductDescription) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new ProductDescriptionOptValidator(_) }
@@ -97,9 +97,9 @@ class ProductDescriptionValidator(instance: ProductDescription) extends Recursiv
 // ----- array delegating validators -----
 // ----- catch all simple validators -----
 // ----- call validations -----
-class HistoryGetValidator(offset: ErrorCode, limit: ErrorCode) extends RecursiveValidator {
+class HistoryGetValidator(offset: ActivitiesLimit, limit: ActivitiesLimit) extends RecursiveValidator {
     override val validators = Seq(
-        new ErrorCodeValidator(offset), new ErrorCodeValidator(limit))
+        new ActivitiesLimitValidator(offset), new ActivitiesLimitValidator(limit))
 }
 class EstimatesTimeGetValidator(start_latitude: Double, start_longitude: Double, customer_uuid: ProductDescription, product_id: ProductDescription) extends RecursiveValidator {
     override val validators = Seq(

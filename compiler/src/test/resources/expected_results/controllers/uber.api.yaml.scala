@@ -36,7 +36,7 @@ package uber.api.yaml {
             
         } //////// EOF ////////  getestimatesPriceAction
     val gethistory = gethistoryAction {
-            input: (ErrorCode, ErrorCode) =>
+            input: (ActivitiesLimit, ActivitiesLimit) =>
             val (offset, limit) = input
 
             ???

@@ -210,7 +210,7 @@
 	Str
 ⌿paths⌿/users/self/feed⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Media, Seq(
+		Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Media, Seq(
 			Field(⌿/definitions/Media⌿location, Opt(TypeDef(⌿/definitions/Location, Seq(
 				Field(⌿/definitions/Location⌿id, Opt(Str)), 
 				Field(⌿/definitions/Location⌿name, Opt(Str)), 
@@ -219,7 +219,7 @@
 			Field(⌿/definitions/Media⌿created_time, Opt(Intgr)), 
 			Field(⌿/definitions/Media⌿comments:, Opt(TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿comments:, Seq(
 				Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿comments:⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+				Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -228,10 +228,10 @@
 						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
-			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+			Field(⌿/definitions/Media⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-			Field(⌿/definitions/Media⌿users_in_photo, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+			Field(⌿/definitions/Media⌿users_in_photo, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 				Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -239,7 +239,7 @@
 			Field(⌿/definitions/Media⌿filter, Opt(Str)), 
 			Field(⌿/definitions/Media⌿likes, Opt(TypeDef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿likes, Seq(
 				Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿likes⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+				Field(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 					Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -275,7 +275,7 @@
 				Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str)))))))))))))
 ⌿paths⌿/media/popular⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/media/popular⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Media, Seq(
+		Field(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Media, Seq(
 			Field(⌿/definitions/Media⌿location, Opt(TypeDef(⌿/definitions/Location, Seq(
 				Field(⌿/definitions/Location⌿id, Opt(Str)), 
 				Field(⌿/definitions/Location⌿name, Opt(Str)), 
@@ -284,7 +284,7 @@
 			Field(⌿/definitions/Media⌿created_time, Opt(Intgr)), 
 			Field(⌿/definitions/Media⌿comments:, Opt(TypeDef(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data⌿comments:, Seq(
 				Field(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data⌿comments:⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+				Field(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -293,10 +293,10 @@
 						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
-			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+			Field(⌿/definitions/Media⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-			Field(⌿/definitions/Media⌿users_in_photo, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+			Field(⌿/definitions/Media⌿users_in_photo, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 				Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -304,7 +304,7 @@
 			Field(⌿/definitions/Media⌿filter, Opt(Str)), 
 			Field(⌿/definitions/Media⌿likes, Opt(TypeDef(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data⌿likes, Seq(
 				Field(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data⌿likes⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+				Field(⌿paths⌿/media/popular⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 					Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -345,21 +345,21 @@
 		Field(⌿paths⌿/media/{media-id}/comments⌿delete⌿responses⌿200⌿data, Opt(Str))))
 ⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+		Field(⌿paths⌿/users/{user-id}/follows⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 			Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 			Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str)))))))))
 ⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+		Field(⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str)))))))))
 ⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta, Opt(TypeDef(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta, Seq(
 			Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿code, Opt(Intgr)))))), 
-		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+		Field(⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 			Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -371,7 +371,7 @@
 		Field(⌿paths⌿/media/{media-id}/likes⌿post⌿responses⌿200⌿data, Opt(Str))))
 ⌿paths⌿/users/{user-id}/followed-by⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/users/{user-id}/followed-by⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/{user-id}/followed-by⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+		Field(⌿paths⌿/users/{user-id}/followed-by⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 			Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -385,7 +385,7 @@
 			Field(⌿/definitions/Location⌿longitude, Opt(Dbl))))))))
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Media, Seq(
+		Field(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Media, Seq(
 			Field(⌿/definitions/Media⌿location, Opt(TypeDef(⌿/definitions/Location, Seq(
 				Field(⌿/definitions/Location⌿id, Opt(Str)), 
 				Field(⌿/definitions/Location⌿name, Opt(Str)), 
@@ -394,7 +394,7 @@
 			Field(⌿/definitions/Media⌿created_time, Opt(Intgr)), 
 			Field(⌿/definitions/Media⌿comments:, Opt(TypeDef(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data⌿comments:, Seq(
 				Field(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data⌿comments:⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+				Field(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -403,10 +403,10 @@
 						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
-			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+			Field(⌿/definitions/Media⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-			Field(⌿/definitions/Media⌿users_in_photo, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+			Field(⌿/definitions/Media⌿users_in_photo, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 				Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -414,7 +414,7 @@
 			Field(⌿/definitions/Media⌿filter, Opt(Str)), 
 			Field(⌿/definitions/Media⌿likes, Opt(TypeDef(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data⌿likes, Seq(
 				Field(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data⌿likes⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+				Field(⌿paths⌿/users/{user-id}/media/recent⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 					Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -450,7 +450,7 @@
 				Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str)))))))))))))
 ⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Media, Seq(
+		Field(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Media, Seq(
 			Field(⌿/definitions/Media⌿location, Opt(TypeDef(⌿/definitions/Location, Seq(
 				Field(⌿/definitions/Location⌿id, Opt(Str)), 
 				Field(⌿/definitions/Location⌿name, Opt(Str)), 
@@ -459,7 +459,7 @@
 			Field(⌿/definitions/Media⌿created_time, Opt(Intgr)), 
 			Field(⌿/definitions/Media⌿comments:, Opt(TypeDef(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data⌿comments:, Seq(
 				Field(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data⌿comments:⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+				Field(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -468,10 +468,10 @@
 						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
-			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+			Field(⌿/definitions/Media⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-			Field(⌿/definitions/Media⌿users_in_photo, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+			Field(⌿/definitions/Media⌿users_in_photo, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 				Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -479,7 +479,7 @@
 			Field(⌿/definitions/Media⌿filter, Opt(Str)), 
 			Field(⌿/definitions/Media⌿likes, Opt(TypeDef(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data⌿likes, Seq(
 				Field(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data⌿likes⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+				Field(⌿paths⌿/users/self/media/liked⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 					Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -515,7 +515,7 @@
 				Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str)))))))))))))
 ⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Media, Seq(
+		Field(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Media, Seq(
 			Field(⌿/definitions/Media⌿location, Opt(TypeDef(⌿/definitions/Location, Seq(
 				Field(⌿/definitions/Location⌿id, Opt(Str)), 
 				Field(⌿/definitions/Location⌿name, Opt(Str)), 
@@ -524,7 +524,7 @@
 			Field(⌿/definitions/Media⌿created_time, Opt(Intgr)), 
 			Field(⌿/definitions/Media⌿comments:, Opt(TypeDef(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿comments:, Seq(
 				Field(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿comments:⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+				Field(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 					Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 					Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -533,10 +533,10 @@
 						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 						Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
-			Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+			Field(⌿/definitions/Media⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 				Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 				Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-			Field(⌿/definitions/Media⌿users_in_photo, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+			Field(⌿/definitions/Media⌿users_in_photo, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 				Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -544,7 +544,7 @@
 			Field(⌿/definitions/Media⌿filter, Opt(Str)), 
 			Field(⌿/definitions/Media⌿likes, Opt(TypeDef(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿likes, Seq(
 				Field(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿likes⌿count, Opt(Intgr)), 
-				Field(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+				Field(⌿paths⌿/locations/{location-id}/media/recent⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 					Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -586,7 +586,7 @@
 	TypeDef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta, Opt(TypeDef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta, Seq(
 			Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿meta⌿code, Opt(Dbl)))))), 
-		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Like, Seq(
+		Field(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Like, Seq(
 			Field(⌿/definitions/Like⌿first_name, Opt(Str)), 
 			Field(⌿/definitions/Like⌿id, Opt(Str)), 
 			Field(⌿/definitions/Like⌿last_name, Opt(Str)), 
@@ -594,7 +594,7 @@
 			Field(⌿/definitions/Like⌿user_name, Opt(Str)))))))))
 ⌿paths⌿/media/search⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/media/search⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data, Opt(Arr(AllOf(
+		Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data, Opt(ArrResult(AllOf(
 			TypeDef(⌿/definitions/Media, Seq(
 				Field(⌿/definitions/Media⌿location, Opt(TypeDef(⌿/definitions/Location, Seq(
 					Field(⌿/definitions/Location⌿id, Opt(Str)), 
@@ -604,7 +604,7 @@
 				Field(⌿/definitions/Media⌿created_time, Opt(Intgr)), 
 				Field(⌿/definitions/Media⌿comments:, Opt(TypeDef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿comments:, Seq(
 					Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿comments:⌿count, Opt(Intgr)), 
-					Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+					Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿comments:⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 						Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 						Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 						Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -613,10 +613,10 @@
 							Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 							Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 							Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
-				Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+				Field(⌿/definitions/Media⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 					Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 					Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-				Field(⌿/definitions/Media⌿users_in_photo, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+				Field(⌿/definitions/Media⌿users_in_photo, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 					Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -624,7 +624,7 @@
 				Field(⌿/definitions/Media⌿filter, Opt(Str)), 
 				Field(⌿/definitions/Media⌿likes, Opt(TypeDef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿likes, Seq(
 					Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿likes⌿count, Opt(Intgr)), 
-					Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+					Field(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿likes⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 						Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 						Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 						Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -664,7 +664,7 @@
 	TypeDef(⌿paths⌿/tags/search⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta, Opt(TypeDef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta, Seq(
 			Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta⌿code, Opt(Intgr)))))), 
-		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str)))))))))
 ⌿paths⌿/media/{media-id}⌿get⌿responses⌿200 ->
@@ -677,7 +677,7 @@
 		Field(⌿/definitions/Media⌿created_time, Opt(Intgr)), 
 		Field(⌿/definitions/Media⌿comments:, Opt(TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:, Seq(
 			Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿count, Opt(Intgr)), 
-			Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+			Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿comments:⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 				Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 				Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 				Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -686,10 +686,10 @@
 					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 					Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
-		Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+		Field(⌿/definitions/Media⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-		Field(⌿/definitions/Media⌿users_in_photo, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+		Field(⌿/definitions/Media⌿users_in_photo, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 			Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -697,7 +697,7 @@
 		Field(⌿/definitions/Media⌿filter, Opt(Str)), 
 		Field(⌿/definitions/Media⌿likes, Opt(TypeDef(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes, Seq(
 			Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿count, Opt(Intgr)), 
-			Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+			Field(⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿likes⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 				Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -741,7 +741,7 @@
 		Field(⌿/definitions/Media⌿created_time, Opt(Intgr)), 
 		Field(⌿/definitions/Media⌿comments:, Opt(TypeDef(⌿paths⌿/media/{shortcode}⌿get⌿responses⌿200⌿comments:, Seq(
 			Field(⌿paths⌿/media/{shortcode}⌿get⌿responses⌿200⌿comments:⌿count, Opt(Intgr)), 
-			Field(⌿paths⌿/media/{shortcode}⌿get⌿responses⌿200⌿comments:⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+			Field(⌿paths⌿/media/{shortcode}⌿get⌿responses⌿200⌿comments:⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 				Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 				Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 				Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -750,10 +750,10 @@
 					Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 					Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 					Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))))))))), 
-		Field(⌿/definitions/Media⌿tags, Opt(Arr(TypeDef(⌿/definitions/Tag, Seq(
+		Field(⌿/definitions/Media⌿tags, Opt(ArrResult(TypeDef(⌿/definitions/Tag, Seq(
 			Field(⌿/definitions/Tag⌿media_count, Opt(Intgr)), 
 			Field(⌿/definitions/Tag⌿name, Opt(Str))))))), 
-		Field(⌿/definitions/Media⌿users_in_photo, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+		Field(⌿/definitions/Media⌿users_in_photo, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 			Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -761,7 +761,7 @@
 		Field(⌿/definitions/Media⌿filter, Opt(Str)), 
 		Field(⌿/definitions/Media⌿likes, Opt(TypeDef(⌿paths⌿/media/{shortcode}⌿get⌿responses⌿200⌿likes, Seq(
 			Field(⌿paths⌿/media/{shortcode}⌿get⌿responses⌿200⌿likes⌿count, Opt(Intgr)), 
-			Field(⌿paths⌿/media/{shortcode}⌿get⌿responses⌿200⌿likes⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+			Field(⌿paths⌿/media/{shortcode}⌿get⌿responses⌿200⌿likes⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 				Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 				Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -797,7 +797,7 @@
 			Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str))))))))
 ⌿paths⌿/users/search⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/users/search⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/search⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+		Field(⌿paths⌿/users/search⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 			Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
@@ -819,7 +819,7 @@
 	TypeDef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿meta, Opt(TypeDef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿meta, Seq(
 			Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿meta⌿code, Opt(Dbl)))))), 
-		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Comment, Seq(
+		Field(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Comment, Seq(
 			Field(⌿/definitions/Comment⌿id, Opt(Str)), 
 			Field(⌿/definitions/Comment⌿created_time, Opt(Str)), 
 			Field(⌿/definitions/Comment⌿text, Opt(Str)), 
@@ -842,14 +842,14 @@
 		Field(⌿paths⌿/media/{media-id}/comments⌿post⌿responses⌿200⌿data, Opt(Str))))
 ⌿paths⌿/users/{user-id}/relationship⌿post⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/users/{user-id}/relationship⌿post⌿responses⌿200, Seq(
-		Field(⌿paths⌿/users/{user-id}/relationship⌿post⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/MiniProfile, Seq(
+		Field(⌿paths⌿/users/{user-id}/relationship⌿post⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/MiniProfile, Seq(
 			Field(⌿/definitions/MiniProfile⌿user_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿full_name, Opt(Str)), 
 			Field(⌿/definitions/MiniProfile⌿id, Opt(Intgr)), 
 			Field(⌿/definitions/MiniProfile⌿profile_picture, Opt(Str)))))))))
 ⌿paths⌿/locations/search⌿get⌿responses⌿200 ->
 	TypeDef(⌿paths⌿/locations/search⌿get⌿responses⌿200, Seq(
-		Field(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data, Opt(Arr(TypeDef(⌿/definitions/Location, Seq(
+		Field(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data, Opt(ArrResult(TypeDef(⌿/definitions/Location, Seq(
 			Field(⌿/definitions/Location⌿id, Opt(Str)), 
 			Field(⌿/definitions/Location⌿name, Opt(Str)), 
 			Field(⌿/definitions/Location⌿latitude, Opt(Dbl)), 

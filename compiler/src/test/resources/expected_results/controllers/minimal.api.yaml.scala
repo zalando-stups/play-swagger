@@ -7,11 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-package minimal.api.yaml {
-
-
-
-
+package minimal.api.yaml { 
 
     class Dashboard extends DashboardBase {
     val index = indexAction {
@@ -20,4 +16,3 @@ package minimal.api.yaml {
         } //////// EOF ////////  indexAction
     }
 }
-

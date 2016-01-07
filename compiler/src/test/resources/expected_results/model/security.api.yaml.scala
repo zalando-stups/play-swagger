@@ -6,7 +6,7 @@ type PetsIdGetId = ArrayWrapper[String]
 
     type PetTag = Option[String]
 
-    type PetsIdGetResponses200 = ArrayWrapper[Pet]
+    type PetsIdGetResponses200 = Seq[Pet]
 
     case class ErrorModel(code: Int, message: String) 
 

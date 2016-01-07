@@ -26,7 +26,7 @@ import Generators._
         }
 
 "GET /v1/history" should {
-        def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (ActivitiesLimit, ActivitiesLimit)) = {
 
             val (offset, limit) = input
             val url = s"""/v1/history?${offset.map { i => "offset=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -44,7 +44,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (ActivitiesLimit, ActivitiesLimit)) = {
 
             val (offset, limit) = input
             val url = s"""/v1/history?${offset.map { i => "offset=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
@@ -54,8 +54,8 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    offset <- ErrorCodeGenerator
-                    limit <- ErrorCodeGenerator
+                    offset <- ActivitiesLimitGenerator
+                    limit <- ActivitiesLimitGenerator
                     
 
                 } yield (offset, limit)
@@ -68,8 +68,8 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                offset <- ErrorCodeGenerator
-                limit <- ErrorCodeGenerator
+                offset <- ActivitiesLimitGenerator
+                limit <- ActivitiesLimitGenerator
                 
 
             } yield (offset, limit)

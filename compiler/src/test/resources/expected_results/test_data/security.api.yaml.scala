@@ -16,7 +16,7 @@ object Generators {
 
     def PetTagGenerator = Gen.option(arbitrary[String])
 
-    def PetsIdGetResponses200Generator = _genList(PetGenerator, "csv")
+    def PetsIdGetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 
     def createErrorModelGenerator = _generate(ErrorModelGenerator)
 

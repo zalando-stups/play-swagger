@@ -12,37 +12,47 @@ object Generators {
 
     def createActivitiesHistoryGenerator = _generate(ActivitiesHistoryGenerator)
 
-    def createErrorCodeGenerator = _generate(ErrorCodeGenerator)
+    def createActivitiesHistoryNameClashGenerator = _generate(ActivitiesHistoryNameClashGenerator)
 
     def createPriceEstimateLow_estimateGenerator = _generate(PriceEstimateLow_estimateGenerator)
 
     def createProductsGetResponses200Generator = _generate(ProductsGetResponses200Generator)
 
+    def createActivitiesHistoryOptGenerator = _generate(ActivitiesHistoryOptGenerator)
+
     def createEstimatesPriceGetResponses200Generator = _generate(EstimatesPriceGetResponses200Generator)
 
-    def createActivitiesHistoryOptGenerator = _generate(ActivitiesHistoryOptGenerator)
+    def createActivitiesHistoryOptNameClashGenerator = _generate(ActivitiesHistoryOptNameClashGenerator)
+
+    def createActivitiesLimitGenerator = _generate(ActivitiesLimitGenerator)
 
     def DoubleGenerator = arbitrary[Double]
 
     def ProductDescriptionGenerator = Gen.option(arbitrary[String])
 
-    def ActivitiesHistoryGenerator = Gen.option(ActivitiesHistoryOptGenerator)
+    def ActivitiesHistoryGenerator = Gen.option(ActivitiesHistoryOptNameClashGenerator)
 
-    def ErrorCodeGenerator = Gen.option(arbitrary[Int])
+    def ActivitiesHistoryNameClashGenerator = Gen.option(ActivitiesHistoryOptGenerator)
 
     def PriceEstimateLow_estimateGenerator = Gen.option(arbitrary[Double])
 
-    def ProductsGetResponses200Generator = _genList(ProductGenerator, "csv")
+    def ProductsGetResponses200Generator = Gen.containerOf[List,Product](ProductGenerator)
 
-    def EstimatesPriceGetResponses200Generator = _genList(PriceEstimateGenerator, "csv")
+    def ActivitiesHistoryOptGenerator = Gen.containerOf[List,Activity](ActivityGenerator)
 
-    def ActivitiesHistoryOptGenerator = _genList(ActivityGenerator, "csv")
+    def EstimatesPriceGetResponses200Generator = Gen.containerOf[List,PriceEstimate](PriceEstimateGenerator)
+
+    def ActivitiesHistoryOptNameClashGenerator = _genList(ActivityGenerator, "csv")
+
+    def ActivitiesLimitGenerator = Gen.option(arbitrary[Int])
 
     def createActivityGenerator = _generate(ActivityGenerator)
 
     def createPriceEstimateGenerator = _generate(PriceEstimateGenerator)
 
     def createProductGenerator = _generate(ProductGenerator)
+
+    def createHistoryGetResponses200Generator = _generate(HistoryGetResponses200Generator)
 
     def createProfileGenerator = _generate(ProfileGenerator)
 
@@ -72,6 +82,13 @@ object Generators {
         capacity <- ProductDescriptionGenerator
         } yield Product(image, description, display_name, product_id, capacity)
 
+    def HistoryGetResponses200Generator = for {
+        offset <- ActivitiesLimitGenerator
+        limit <- ActivitiesLimitGenerator
+        count <- ActivitiesLimitGenerator
+        history <- ActivitiesHistoryNameClashGenerator
+        } yield HistoryGetResponses200(offset, limit, count, history)
+
     def ProfileGenerator = for {
         first_name <- ProductDescriptionGenerator
         email <- ProductDescriptionGenerator
@@ -81,14 +98,14 @@ object Generators {
         } yield Profile(first_name, email, promo_code, last_name, picture)
 
     def ActivitiesGenerator = for {
-        offset <- ErrorCodeGenerator
-        limit <- ErrorCodeGenerator
-        count <- ErrorCodeGenerator
+        offset <- ActivitiesLimitGenerator
+        limit <- ActivitiesLimitGenerator
+        count <- ActivitiesLimitGenerator
         history <- ActivitiesHistoryGenerator
         } yield Activities(offset, limit, count, history)
 
     def ErrorGenerator = for {
-        code <- ErrorCodeGenerator
+        code <- ActivitiesLimitGenerator
         message <- ProductDescriptionGenerator
         fields <- ProductDescriptionGenerator
         } yield Error(code, message, fields)

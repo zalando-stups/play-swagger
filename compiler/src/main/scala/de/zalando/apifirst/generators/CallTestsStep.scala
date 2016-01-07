@@ -69,12 +69,10 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     val paramName = app.findParameter(param)
     val typeName = paramName.typeName
     val genName = generator(typeName.name, table)
-    // TODO
-    // val genPckg = if (genName.indexOf(']')>0) "" else typeName.name.qualifiedName("", generatorsSuffix)._1 + "."
     Map(
       "name" -> ScalaName.escape(ScalaName.camelize("\\.", param.simple)),
       "type" -> typeNameDenotation(table, param.name),
-      "generator" -> (/*genPckg + */genName)
+      "generator" -> genName
     )
   }
 
@@ -106,7 +104,8 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     case c: Domain.Opt =>
       containerParam(name) + "getOrElse(\"\")}"
     case c: Domain.Arr =>
-      containerParam(name) + "mkString(\"&\")}"
+      if (c.format == "multi") containerParam(name) + "mkString(\"&\")}"
+      else containerParam(name) + "mkString(\"&\")}" // FIXME provide correct formatting here
     case d: Domain.CatchAll =>
       "" // TODO no marshalling / unmarshalling yet
     case d: Domain.TypeDef =>

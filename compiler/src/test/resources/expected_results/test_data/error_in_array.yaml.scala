@@ -10,8 +10,6 @@ object Generators {
 
     def createErrorsErrorsOptGenerator = _generate(ErrorsErrorsOptGenerator)
 
-    def createModelSchemaRootDataGenerator = _generate(ModelSchemaRootDataGenerator)
-
     def createModelSchemaSpecialDescriptionsGenerator = _generate(ModelSchemaSpecialDescriptionsGenerator)
 
     def createModelSchemaRootLinksGenerator = _generate(ModelSchemaRootLinksGenerator)
@@ -19,6 +17,8 @@ object Generators {
     def createErrorSourceGenerator = _generate(ErrorSourceGenerator)
 
     def createModelSchemaAgeGroupsGenerator = _generate(ModelSchemaAgeGroupsGenerator)
+
+    def createModelSchemaRootDataGenerator = _generate(ModelSchemaRootDataGenerator)
 
     def createErrorsErrorsGenerator = _generate(ErrorsErrorsGenerator)
 
@@ -28,8 +28,6 @@ object Generators {
 
     def ErrorsErrorsOptGenerator = _genList(ErrorGenerator, "csv")
 
-    def ModelSchemaRootDataGenerator = Gen.option(ModelSchemaGenerator)
-
     def ModelSchemaSpecialDescriptionsGenerator = Gen.option(ModelSchemaAgeGroupsGenerator)
 
     def ModelSchemaRootLinksGenerator = Gen.option(LinksGenerator)
@@ -37,6 +35,8 @@ object Generators {
     def ErrorSourceGenerator = Gen.option(ErrorSourceNameClashGenerator)
 
     def ModelSchemaAgeGroupsGenerator = _genList(arbitrary[String], "csv")
+
+    def ModelSchemaRootDataGenerator = Gen.option(ModelSchemaGenerator)
 
     def ErrorsErrorsGenerator = Gen.option(ErrorsErrorsOptGenerator)
 

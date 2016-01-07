@@ -41,9 +41,9 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
   private def resultTypes(prefix: Reference, operation: Operation): Iterable[ParameterRef] = {
     operation.responses map {
       case (code, definition) if code.forall(_.isDigit) =>
-        ParameterRef(prefix / "responses" / code)
+        ParameterRef(prefix / Reference.responses / code)
       case ("default", definition)  =>
-        ParameterRef(prefix / "responses" / "default")
+        ParameterRef(prefix / Reference.responses / "default")
       case (other, _) =>
         throw new IllegalArgumentException(s"Expected numeric error code or 'default', but was $other")
     }

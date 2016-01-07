@@ -1,6 +1,5 @@
 package heroku.petstore.api
 package object yaml {
-import de.zalando.play.controllers.ArrayWrapper
 import de.zalando.play.controllers.PlayPathBindables
 type PetName = Option[String]
 
@@ -10,7 +9,7 @@ type PetName = Option[String]
 
     type PetBirthday = Option[Int]
 
-    type GetResponses200 = ArrayWrapper[Pet]
+    type GetResponses200 = Seq[Pet]
 
     case class Pet(name: PetName, birthday: PetBirthday) 
 

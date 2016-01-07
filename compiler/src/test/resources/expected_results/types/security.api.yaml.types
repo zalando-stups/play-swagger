@@ -13,6 +13,6 @@
 		Field(⌿/definitions/ErrorModel⌿code, Intgr), 
 		Field(⌿/definitions/ErrorModel⌿message, Str)))
 ⌿paths⌿/pets/{id}⌿get⌿responses⌿200 ->
-	Arr(TypeDef(⌿/definitions/Pet, Seq(
+	ArrResult(TypeDef(⌿/definitions/Pet, Seq(
 		Field(⌿/definitions/Pet⌿name, Str), 
 		Field(⌿/definitions/Pet⌿tag, Opt(Str)))))

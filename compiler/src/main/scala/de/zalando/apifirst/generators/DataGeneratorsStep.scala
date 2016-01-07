@@ -72,6 +72,7 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
     c match {
       case Opt(tpe, _) => s"Gen.option($innerGenerator)"
       case Arr(tpe, _, format) => s"""_genList($innerGenerator, "$format")"""
+      case ArrResult(tpe, _) => s"Gen.containerOf[List,$className]($innerGenerator)"
       case c@CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
     }
   }

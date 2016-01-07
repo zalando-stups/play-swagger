@@ -1,7 +1,7 @@
 package nested_arrays_validation
 package object yaml {
 import de.zalando.play.controllers.ArrayWrapper
-    type ExampleNestedArraysOpt = ArrayWrapper[ExampleNestedArraysOptArr]
+type ExampleNestedArraysOpt = ArrayWrapper[ExampleNestedArraysOptArr]
 
     type ActivityActions = Option[String]
 
@@ -29,4 +29,7 @@ import de.zalando.play.controllers.ArrayWrapper
 
     
 
-}
+
+    
+    
+    }

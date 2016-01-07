@@ -5,7 +5,7 @@ import org.scalacheck.Arbitrary
 import Arbitrary._
 
 object Generators {
-def createErrorModelGenerator = _generate(ErrorModelGenerator)
+    def createErrorModelGenerator = _generate(ErrorModelGenerator)
 
     def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)
 
@@ -21,4 +21,4 @@ def createErrorModelGenerator = _generate(ErrorModelGenerator)
         } yield ExtendedErrorModel(message, code, rootCause)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-}
+    }

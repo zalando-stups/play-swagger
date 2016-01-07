@@ -5,7 +5,7 @@ import org.scalacheck.Arbitrary
 import Arbitrary._
 
 object Generators {
-def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)
+    def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)
 
     def createNestedObjectsNestedNested2Nested3BottomGenerator = _generate(NestedObjectsNestedNested2Nested3BottomGenerator)
 
@@ -53,4 +53,4 @@ def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)
         } yield NestedObjectsNestedNested2(nested3)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-}
+    }

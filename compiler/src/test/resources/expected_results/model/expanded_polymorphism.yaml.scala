@@ -12,7 +12,7 @@ type PetsIdDeleteResponses204 = Null
 
     type PetsGetTagsOpt = ArrayWrapper[String]
 
-    type PetsGetResponses200 = ArrayWrapper[Pet]
+    type PetsGetResponses200 = Seq[Pet]
 
     type PetsGetTags = Option[PetsGetTagsOpt]
 

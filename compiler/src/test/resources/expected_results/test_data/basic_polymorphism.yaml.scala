@@ -5,7 +5,7 @@ import org.scalacheck.Arbitrary
 import Arbitrary._
 
 object Generators {
-def createCatGenerator = _generate(CatGenerator)
+    def createCatGenerator = _generate(CatGenerator)
 
     def createDogGenerator = _generate(DogGenerator)
 
@@ -47,4 +47,4 @@ def createCatGenerator = _generate(CatGenerator)
         } yield Labrador(name, petType, packSize, cuteness)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-}
+    }

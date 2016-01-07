@@ -152,7 +152,7 @@ class UsersUsernameDeleteUsernameValidator(instance: String) extends RecursiveVa
 
 }
 // ----- complex type validators -----
-class PetValidator(instance: Pet) extends RecursiveValidator {
+class PetsPostBodyOptValidator(instance: PetsPostBodyOpt) extends RecursiveValidator {
     override val validators = Seq(
     new PetNameValidator(instance.name), 
 
@@ -217,7 +217,7 @@ class OrderStatusValidator(instance: OrderStatus) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new OrderStatusOptValidator(_) }
 }
 class PetsPostBodyValidator(instance: PetsPostBody) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new PetValidator(_) }
+    override val validators = instance.toSeq.map { new PetsPostBodyOptValidator(_) }
 }
 class PetTagsValidator(instance: PetTags) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new PetTagsOptValidator(_) }
@@ -257,11 +257,11 @@ class PetTagsOptConstraints(override val instance: PetTagsOpt) extends Validatio
 class PetTagsOptValidator(instance: PetTagsOpt) extends RecursiveValidator {
     override val validators = new PetTagsOptConstraints(instance) +: instance.map { new TagValidator(_)}
 }
-class PetPhotoUrlsConstraints(override val instance: PetPhotoUrls) extends ValidationBase[PetPhotoUrls] {
-    override def constraints: Seq[Constraint[PetPhotoUrls]] =
+class PetPhotoUrlsConstraints(override val instance: PetPhotoUrlsNameClash) extends ValidationBase[PetPhotoUrlsNameClash] {
+    override def constraints: Seq[Constraint[PetPhotoUrlsNameClash]] =
         Seq()
 }
-class PetPhotoUrlsValidator(instance: PetPhotoUrls) extends RecursiveValidator {
+class PetPhotoUrlsValidator(instance: PetPhotoUrlsNameClash) extends RecursiveValidator {
     override val validators = new PetPhotoUrlsConstraints(instance) +: instance.map { new PetPhotoUrlsArrValidator(_)}
 }
 class UsersCreateWithListPostBodyOptConstraints(override val instance: UsersCreateWithListPostBodyOpt) extends ValidationBase[UsersCreateWithListPostBodyOpt] {
@@ -270,6 +270,13 @@ class UsersCreateWithListPostBodyOptConstraints(override val instance: UsersCrea
 }
 class UsersCreateWithListPostBodyOptValidator(instance: UsersCreateWithListPostBodyOpt) extends RecursiveValidator {
     override val validators = new UsersCreateWithListPostBodyOptConstraints(instance) +: instance.map { new UserValidator(_)}
+}
+class PetPhotoUrlsConstraints(override val instance: PetPhotoUrls) extends ValidationBase[PetPhotoUrls] {
+    override def constraints: Seq[Constraint[PetPhotoUrls]] =
+        Seq()
+}
+class PetPhotoUrlsValidator(instance: PetPhotoUrls) extends RecursiveValidator {
+    override val validators = new PetPhotoUrlsConstraints(instance) +: instance.map { new PetPhotoUrlsArrValidator(_)}
 }
 // ----- catch all simple validators -----
 // ----- call validations -----

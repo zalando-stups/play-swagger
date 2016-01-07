@@ -68,7 +68,6 @@ object Domain {
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
     def toShortString(pad: String) = getClass.getSimpleName
-//    def alias = imports.headOption.getOrElse(name.simple)
   }
   
   case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None)) {
@@ -147,7 +146,6 @@ object Domain {
 
   /**
    * Container is just a wrapper for another single type with some unique properties
-   *
    */
   abstract class Container(name: TypeName, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
     extends Type(name, meta) {
@@ -159,6 +157,11 @@ object Domain {
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: String)
     extends Container(tpe.name / "ArrayWrapper", tpe, meta, Set("de.zalando.play.controllers.ArrayWrapper")) {
+    def withType(t: Type) = this.copy(tpe = t)
+  }
+
+  case class ArrResult(override val tpe: Type, override val meta: TypeMeta)
+    extends Container(tpe.name / "Seq", tpe, meta, Set.empty[String]) {
     def withType(t: Type) = this.copy(tpe = t)
   }
 

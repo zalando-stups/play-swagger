@@ -1,7 +1,5 @@
 package de.zalando.play.controllers
 
-import scala.collection.generic.CanBuildFrom
-
 /**
   * An abstraction over parameters of type Array
   *

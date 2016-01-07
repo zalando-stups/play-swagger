@@ -27,7 +27,7 @@
 ⌿paths⌿/pets⌿get⌿tags⌿Opt -> 
 	Arr(Str)
 ⌿paths⌿/pets⌿get⌿responses⌿200 -> 
-	Arr(TypeRef(⌿definitions⌿pet))
+	ArrResult(TypeRef(⌿definitions⌿pet))
 -- params --
 
 ⌿paths⌿/pets/{id}⌿get⌿id -> Parameter(id,Lng(TypeMeta(Some("int64"), List())),None,None,[^/]+,true,path)

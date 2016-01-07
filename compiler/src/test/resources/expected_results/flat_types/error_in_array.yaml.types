@@ -1,8 +1,8 @@
 ⌿definitions⌿ModelSchemaRoot -> 
 	TypeDef(⌿definitions⌿ModelSchemaRoot, Seq(
-		Field(⌿definitions⌿ModelSchemaRoot⌿data, TypeRef(⌿definitions⌿ModelSchemaRoot⌿data)), 
-		Field(⌿definitions⌿ModelSchemaRoot⌿meta, TypeRef(⌿definitions⌿ModelSchemaRoot⌿meta)), 
-		Field(⌿definitions⌿ModelSchemaRoot⌿links, TypeRef(⌿definitions⌿ModelSchemaRoot⌿links))))
+		Field(⌿definitions⌿ModelSchemaRoot⌿data, TypeRef(⌿/definitions/ModelSchemaRoot⌿data)), 
+		Field(⌿definitions⌿ModelSchemaRoot⌿meta, TypeRef(⌿/definitions/ModelSchemaRoot⌿meta)), 
+		Field(⌿definitions⌿ModelSchemaRoot⌿links, TypeRef(⌿/definitions/ModelSchemaRoot⌿links))))
 ⌿/definitions/Meta⌿copyright -> 
 	Opt(Str)
 ⌿definitions⌿Errors -> 
@@ -10,6 +10,8 @@
 		Field(⌿definitions⌿Errors⌿errors, TypeRef(⌿definitions⌿Errors⌿errors))))
 ⌿/definitions/ModelSchema⌿specialDescriptions -> 
 	Opt(TypeRef(⌿/definitions/ModelSchema⌿ageGroups))
+⌿/definitions/ModelSchemaRoot⌿links -> 
+	Opt(TypeRef(⌿definitions⌿Links))
 ⌿/definitions/Error⌿source -> 
 	Opt(TypeRef(⌿definitions⌿ErrorSource))
 ⌿/definitions/ModelSchema⌿ageGroups -> 
@@ -34,6 +36,8 @@
 		Field(⌿definitions⌿ModelSchema⌿lengthRegister, TypeRef(⌿/definitions/Meta⌿copyright)), 
 		Field(⌿definitions⌿ModelSchema⌿specialDescriptions, TypeRef(⌿/definitions/ModelSchema⌿specialDescriptions)), 
 		Field(⌿definitions⌿ModelSchema⌿articleModelAttributes, TypeRef(⌿/definitions/ModelSchema⌿specialDescriptions))))
+⌿/definitions/ModelSchemaRoot⌿data -> 
+	Opt(TypeRef(⌿definitions⌿ModelSchema))
 ⌿definitions⌿Error -> 
 	TypeDef(⌿definitions⌿Error, Seq(
 		Field(⌿definitions⌿Error⌿source, TypeRef(⌿/definitions/Error⌿source)), 
@@ -41,18 +45,14 @@
 		Field(⌿definitions⌿Error⌿status, TypeRef(⌿/definitions/Meta⌿copyright)), 
 		Field(⌿definitions⌿Error⌿detail, TypeRef(⌿/definitions/Meta⌿copyright)), 
 		Field(⌿definitions⌿Error⌿title, TypeRef(⌿/definitions/Meta⌿copyright))))
+⌿/definitions/ModelSchemaRoot⌿meta -> 
+	Opt(TypeRef(⌿definitions⌿Meta))
 ⌿definitions⌿Links -> 
 	TypeDef(⌿definitions⌿Links, Seq(
 		Field(⌿definitions⌿Links⌿self, TypeRef(⌿/definitions/Meta⌿copyright)), 
 		Field(⌿definitions⌿Links⌿related, TypeRef(⌿/definitions/Meta⌿copyright))))
-⌿definitions⌿ModelSchemaRoot⌿data -> 
-	Opt(TypeRef(⌿definitions⌿ModelSchema))
-⌿definitions⌿ModelSchemaRoot⌿links -> 
-	Opt(TypeRef(⌿definitions⌿Links))
 ⌿definitions⌿Errors⌿errors -> 
 	Opt(TypeRef(⌿definitions⌿Errors⌿errors⌿Opt))
-⌿definitions⌿ModelSchemaRoot⌿meta -> 
-	Opt(TypeRef(⌿definitions⌿Meta))
 ⌿definitions⌿Errors⌿errors⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Error))
 -- params --
