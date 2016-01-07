@@ -4,18 +4,18 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object pathsGenerator {
-    def `createTest-pathIdGetResponses200Generator` = _generate(`Test-pathIdGetResponses200Generator`)
+object Generators {
+def createNullGenerator = _generate(NullGenerator)
 
     def createPostNameGenerator = _generate(PostNameGenerator)
 
-    def `createTest-pathIdGetIdGenerator` = _generate(`Test-pathIdGetIdGenerator`)
+    def createStringGenerator = _generate(StringGenerator)
 
-    def `Test-pathIdGetResponses200Generator` = arbitrary[Null]
+    def NullGenerator = arbitrary[Null]
 
     def PostNameGenerator = Gen.option(arbitrary[String])
 
-    def `Test-pathIdGetIdGenerator` = arbitrary[String]
+    def StringGenerator = arbitrary[String]
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

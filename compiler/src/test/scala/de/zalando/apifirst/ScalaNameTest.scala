@@ -1,7 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.ScalaName._
-import de.zalando.apifirst.new_naming.dsl._
+import de.zalando.apifirst.naming.dsl._
 import org.scalatest.{FunSpec, MustMatchers}
 /**
   * @author  slasch 

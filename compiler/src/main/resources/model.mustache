@@ -3,14 +3,8 @@ package {{&main_package_prefix}}
 package object {{&main_package_suffix}} {
 {{/main_package}}
 
-import java.util.Date
-import java.io.File
-
-{{#packages}}
-{{!object {{&package}}
-    {{#imports}}
-    import {{&name}}
-    {{/imports}}
+    import java.util.Date
+    import java.io.File
 
     {{#aliases}}
     type {{& name }} = {{& alias }}{{#underlying_type}}[{{& underlying_type }}]{{/underlying_type}}⮐
@@ -19,13 +13,12 @@ import java.io.File
     {{#traits}}
     trait I{{& name}} {⮐
     {{#fields}}
-        def {{&name}}: {{&typeName}}⮐
+        def {{&name}}: {{&type_name}}⮐
     {{/fields}}
     }⮐
     {{/traits}}
 
     {{#classes}}
-    case class {{& name }}({{#fields}}{{&name}}: {{&typeName}}{{^last}}, {{/last}}⮐{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
+    case class {{& name }}({{#fields}}{{&name}}: {{&type_name}}{{^last}}, {{/last}}{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
     {{/classes}}⮐
-{{/packages}}
 }

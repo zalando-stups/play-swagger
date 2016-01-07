@@ -5,7 +5,7 @@ import java.net.URI
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef}
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst._
-import de.zalando.apifirst.new_naming.{Pointer, Reference, uriToReference}
+import de.zalando.apifirst.naming.{Pointer, Reference, uriToReference}
 import de.zalando.swagger.strictModel._
 
 import scala.language.postfixOps

@@ -1,9 +1,8 @@
-package de.zalando.swagger
+package de.zalando.apifirst
 
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.new_naming.{Reference, TypeName}
-import de.zalando.apifirst.{ParameterDereferencer, ParameterPlace}
+import de.zalando.apifirst.naming.{Reference, TypeName}
 import org.scalatest.{FunSpec, MustMatchers}
 
 /**

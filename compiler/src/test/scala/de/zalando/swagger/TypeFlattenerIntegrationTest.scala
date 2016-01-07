@@ -3,7 +3,7 @@ package de.zalando.swagger
 import java.io.File
 
 import de.zalando.ExpectedResults
-import de.zalando.apifirst.{TypeDeduplicator, TypeFlattener, ParameterDereferencer}
+import de.zalando.apifirst.TypeNormaliser
 import de.zalando.swagger.strictModel.SwaggerModel
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -14,6 +14,8 @@ class TypeFlattenerIntegrationTest extends FunSpec with MustMatchers with Expect
   val modelFixtures = new File("compiler/src/test/resources/model").listFiles
 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
+
+  val validationFixtures = new File("compiler/src/test/resources/validations").listFiles
 
   describe("Strict Swagger Parser model") {
     modelFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
@@ -27,12 +29,18 @@ class TypeFlattenerIntegrationTest extends FunSpec with MustMatchers with Expect
     }
   }
 
+  describe("Strict Swagger Parser validations") {
+    validationFixtures.filter(_.getName.endsWith(".yaml")).foreach { file =>
+      testTypeFlattener(file)
+    }
+  }
+
   def testTypeFlattener(file: File): Unit = {
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val (base, model) = StrictYamlParser.parse(file)
       model mustBe a[SwaggerModel]
       val ast       = ModelConverter.fromModel(base, model, Some(file))
-      val flatAst   = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (ast)
+      val flatAst   = TypeNormaliser.flatten(ast)
       val typeDefs  = flatAst.typeDefs
       val typeMap   = typeDefs map { case (k, v) => k -> ("\n\t" + v.toShortString("\t\t")) }
       val typesStr  = typeMap.toSeq.sortBy(_._1.parts.size).map(p => p._1 + " -> " + p._2).mkString("\n").replace(base.toString, "")
@@ -40,7 +48,8 @@ class TypeFlattenerIntegrationTest extends FunSpec with MustMatchers with Expect
       val paramsStr = params.toSeq.sortBy(_._1.name.parts.size).map(p => p._1.name.toString + " -> " + p._2).mkString("\n").replace(base.toString, "")
       val expected  = asInFile(file, "types")
       val fullResult = typesStr + "\n-- params --\n\n" + paramsStr
-      if (expected.isEmpty) dump(fullResult, file, "types")
+      // if (expected.isEmpty)
+        dump(fullResult, file, "types")
       clean(fullResult) mustBe clean(expected)
     }
   }

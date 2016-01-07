@@ -2,15 +2,15 @@ package de.zalando.apifirst
 
 import java.net.URI
 
-import de.zalando.apifirst.new_naming.Reference
-import de.zalando.apifirst.new_naming.dsl.NameDsl
+import de.zalando.apifirst.naming.Reference
+import de.zalando.apifirst.naming.dsl.NameDsl
 
 import scala.language.{implicitConversions, postfixOps}
 
 /**
  * @since   03.11.2015.
  */
-object new_naming {
+object naming {
   // FIXME helper types to simplify migration from JsonPointer
   type TypeName = Reference
   type Pointer = Reference
@@ -140,6 +140,7 @@ trait StringUtil {
 
 case class ScalaName(ref: Reference) {
   import ScalaName._
+  private val partsSeparator = "" // FIXME "_"
   val parts = ref.parts.flatMap(_.split("/").filter(_.nonEmpty)) match {
     case Nil =>
       throw new IllegalArgumentException(s"At least one part required to construct a name, but got $ref")
@@ -155,7 +156,7 @@ case class ScalaName(ref: Reference) {
     val withSuffix = if (suffix.trim.isEmpty) parts.tail else parts.tail.:+(suffix)
     val (withPrefix, caseTransformer) =
       if (prefix.trim.isEmpty) (withSuffix, capitalize _) else (prefix :: withSuffix, camelize _)
-    escape(caseTransformer("/", withPrefix.mkString("/")))
+    escape(caseTransformer("/", withPrefix.mkString("/"+partsSeparator)))
   }
 
   def methodName = escape(camelize("/", parts.last))

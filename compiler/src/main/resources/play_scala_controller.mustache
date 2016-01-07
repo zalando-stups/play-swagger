@@ -1,6 +1,6 @@
-{{!main_package}}
-{{!package {{&main_package}}
-{{!main_package}}
+
+
+
 
 {{#controller_imports}}
 import {{&name}}
@@ -10,31 +10,21 @@ import {{&name}}
 import {{&name}}
 {{/unmanaged_imports}}
 
-{{#packages}}
 {{#controllers}}
-
-
-package {{&main_package}} {
-
-{{!imports}}
-{{!    import {{&name}}
-{{!imports}}
+package {{&effective_package}} { {{!main_package}}
 
     class {{&controller}} extends {{&base}} {
     {{#methods}}
         {{&signature}}
             {{#parameters?}}
-            input: ({{#parameters}}{{&type}}{{^last}}, {{/last}}{{/parameters}}) =>
-            val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input⮐
+            input: ({{#parameters}}{{&type_name}}{{^last}}, {{/last}}{{/parameters}}) =>
+            val ({{#parameters}}{{&field_name}}{{^last}}, {{/last}}{{/parameters}}) = input⮐
             {{/parameters?}}
-            {{#single_parameter?}}({{&name}}: {{&type}}) =>⮐{{/single_parameter?}}
+            {{#single_parameter?}}({{&field_name}}: {{&type_name}}) =>⮐{{/single_parameter?}}
             {{&implementation}}
             {{&dead_code}}
         } {{&comment}}
     {{/methods}}
     }
 }
-
 {{/controllers}}
-
-{{/packages}}

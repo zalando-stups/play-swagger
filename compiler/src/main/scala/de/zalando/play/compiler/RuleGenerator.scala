@@ -3,7 +3,7 @@ package de.zalando.play.compiler
 import de.zalando.apifirst.Application.{ApiCall, StrictModel}
 import de.zalando.apifirst.ParameterPlace
 import de.zalando.apifirst.ScalaName._
-import de.zalando.apifirst.new_naming.{Path, Reference}
+import de.zalando.apifirst.naming.{Path, Reference}
 import play.routes.compiler._
 
 /**

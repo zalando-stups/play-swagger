@@ -9,65 +9,56 @@ import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
 
-{{#packages}}
+{{#controllers}}
 
-    {{#controllers}}
-    {{!imports}}
-    {{!import {{&name}}
-    {{!imports}}
+trait {{&base}} extends Controller with PlayBodyParsing {
+    {{#methods}}
+    private val {{&response_mime_type_name}}    = "{{&response_mime_type_value}}"
+    private val {{&action_success_status_name}} = Status({{&action_success_status_value}})
 
+    private type {{&action_request_type}}       = ({{#validations}}{{#fields}}{{&type_name}}{{^last}}, {{/last}}{{/fields}}{{/validations}}{{^validations}}Unit{{/validations}})
+    private type {{&action_result_type}}        = {{&action_result_type_value}}
+    private type {{&action_type}}              = {{&action_request_type}} => Try[{{&action_result_type}}]
 
-    trait {{&base}} extends Controller with PlayBodyParsing {
-        {{#methods}}
-        private val {{&response_mime_type_name}}    = "{{&response_mime_type_value}}"
-        private val {{&action_success_status_name}} = Status({{&action_success_status_value}})
+    private val {{&error_to_status}}: PartialFunction[Throwable, Status] = {{^error_mappings}}PartialFunction.empty[Throwable, Status]{{/error_mappings}}⮐
+    {{#error_mappings}} { {{/error_mappings}}{{#error_mappings}}
+        case _: {{&exception_name}} => Status({{&exception_code}})⮐
+    {{/error_mappings}}{{#error_mappings}} } {{/error_mappings}}⮐
 
-        private type {{&action_request_type}}       = ({{#validations}}{{#all_fields}}{{&field_type}}{{^last}}, {{/last}}{{/all_fields}}{{/validations}}{{^validations}}Unit{{/validations}})
-        private type {{&action_result_type}}        = {{&action_result_type_value}}
-        private type {{&action_type}}              = {{&action_request_type}} => Try[{{&action_result_type}}]
+    {{#body_param}}
+        private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&type_name}}]("{{&request_mime_type_value}}", "Invalid {{&type_name}}", maxLength)
+    {{/body_param}}⮐
 
-        private val {{&error_to_status}}: PartialFunction[Throwable, Status] = {{^error_mappings}}PartialFunction.empty[Throwable, Status]{{/error_mappings}}⮐
-        {{#error_mappings}} { {{/error_mappings}}{{#error_mappings}}
-            case _: {{&exception_name}} => Status({{&exception_code}})⮐
-        {{/error_mappings}}{{#error_mappings}} } {{/error_mappings}}⮐
-
+    def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&type_name}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#request_needed?}}request =>{{/request_needed?}}⮐
         {{#body_param}}
-            private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&field_type}}]("{{&method}}", "Invalid {{&method}}", maxLength)
-        {{/body_param}}⮐
-
-        def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&field_type}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#request_needed?}}request =>{{/request_needed?}}⮐
-            {{#body_param}}
-            val {{&field_name}} = request.body
-            {{/body_param}}
-            {{#header_params}}
-            val {{&field_name}} = request.headers.{{&method}}("{{&field_name}}")
-            {{/header_params}}
-            val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
-                {{#validations?}}
-                {{#validations}}
-                    new {{&validation_name}}({{#all_fields}}{{&field_name}}{{^last}}, {{/last}}{{/all_fields}}).errors match {
-                        case e if e.isEmpty => {{&process_valid_request}}(f)(({{#all_fields}}{{&field_name}}{{^last}}, {{/last}}{{/all_fields}}))
-                        case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{&response_mime_type_name}})
-                            BadRequest(l)
-                    }⮐
-                {{/validations}}
-                {{/validations?}}
-            result
-        }
-
-        private def {{&process_valid_request}}(f: {{&action_type}})(request: {{&action_request_type}}) = {
-            implicit val {{&writable_json}} = anyToWritable[{{&action_result_type}}]({{&response_mime_type_name}})
-            val callerResult = f(request)
-            val status = callerResult match {
-                case Failure(error) => ({{&error_to_status}} orElse defaultErrorMapping)(error)
-                case Success(result) => {{&action_success_status_name}}(result)
-            }
-            status
-        }
-        {{/methods}}
+        val {{&field_name}} = request.body
+        {{/body_param}}
+        {{#header_params}}
+        val {{&field_name}} = request.headers.{{&header_method}}("{{&field_name}}")
+        {{/header_params}}
+        val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
+            {{#validations?}}
+            {{#validations}}
+                new {{&validation_name}}({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}).errors match {
+                    case e if e.isEmpty => {{&process_valid_request}}(f)(({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}))
+                    case l =>
+                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{&response_mime_type_name}})
+                        BadRequest(l)
+                }⮐
+            {{/validations}}
+            {{/validations?}}
+        result
     }
 
-
-    {{/controllers}}
-{{/packages}}
+    private def {{&process_valid_request}}(f: {{&action_type}})(request: {{&action_request_type}}) = {
+        implicit val {{&writable_json}} = anyToWritable[{{&action_result_type}}]({{&response_mime_type_name}})
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => ({{&error_to_status}} orElse defaultErrorMapping)(error)
+            case Success(result) => {{&action_success_status_name}}(result)
+        }
+        status
+    }
+    {{/methods}}
+}
+{{/controllers}}

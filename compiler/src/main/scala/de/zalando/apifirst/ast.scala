@@ -1,7 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.apifirst.new_naming.{Path, Reference, TypeName}
+import de.zalando.apifirst.naming.{Path, Reference, TypeName}
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -60,9 +60,11 @@ object Domain {
 
   implicit def option2TypeMeta(o: Option[String]): TypeMeta = TypeMeta(o)
 
-  trait PrimitiveType
+  trait PrimitiveType {
+    def name: TypeName
+  }
 
-  abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
+  abstract class Type(val name: TypeName, val meta: TypeMeta, denotation: Map[String, Any] = Map.empty) extends Expr {
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
     def toShortString(pad: String) = getClass.getSimpleName
@@ -92,15 +94,15 @@ object Domain {
 
   case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta) with PrimitiveType
 
-  case class Date(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta)  with PrimitiveType {
+  case class Date(override val meta: TypeMeta) extends ProvidedType("Date", meta)  with PrimitiveType {
     override val imports = Set("java.util.Date")
   }
 
-  case class File(override val meta: TypeMeta) extends ProvidedType("java.io/File", meta)  with PrimitiveType {
+  case class File(override val meta: TypeMeta) extends ProvidedType("File", meta)  with PrimitiveType {
     override val imports = Set("java.io.File")
   }
 
-  case class DateTime(override val meta: TypeMeta) extends ProvidedType("java.util/Date", meta)  with PrimitiveType {
+  case class DateTime(override val meta: TypeMeta) extends ProvidedType("Date", meta)  with PrimitiveType {
     override val imports = Set("java.util.Date")
   }
 
@@ -147,8 +149,8 @@ object Domain {
    * Container is just a wrapper for another single type with some unique properties
    *
    */
-  abstract class Container(name: String, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
-    extends ProvidedType(name, meta) {
+  abstract class Container(name: TypeName, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
+    extends Type(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
     override def nestedTypes = Seq(tpe)
     override def toShortString(pad: String) = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
@@ -156,17 +158,17 @@ object Domain {
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: Option[String] = None)
-    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.Seq")) {
+    extends Container(tpe.name / "Arr", tpe, meta, Set("scala.collection.Seq")) {
     def withType(t: Type) = this.copy(tpe = t)
   }
 
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("Option")) {
+    extends Container(tpe.name / "Opt", tpe, meta, Set("Option")) {
     def withType(t: Type) = this.copy(tpe = t)
   }
 
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
-    extends Container(s"${tpe.name.parent.simple}", tpe, meta, Set("scala.collection.immutable.Map")) {
+    extends Container(tpe.name / "CatchAll", tpe, meta, Set("scala.collection.immutable.Map")) {
     def withType(t: Type) = this.copy(tpe = t)
     override def nestedTypes = Str(None, None) +: super.nestedTypes
   }

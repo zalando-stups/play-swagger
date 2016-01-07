@@ -4,8 +4,8 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object definitionsGenerator {
-    def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditionalPropertiesGenerator)
+object Generators {
+def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditionalPropertiesGenerator)
 
     def createKeyedArraysAdditionalPropertiesCatchAllGenerator = _generate(KeyedArraysAdditionalPropertiesCatchAllGenerator)
 
@@ -15,15 +15,9 @@ object definitionsGenerator {
 
     def createKeyedArraysGenerator = _generate(KeyedArraysGenerator)
 
-    def KeyedArraysGenerator =
-
-        for {
-
+    def KeyedArraysGenerator = for {
         additionalProperties <- KeyedArraysAdditionalPropertiesGenerator
-
         } yield KeyedArrays(additionalProperties)
-
-    
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

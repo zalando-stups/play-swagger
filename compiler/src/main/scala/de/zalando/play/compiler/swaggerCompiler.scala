@@ -3,7 +3,7 @@ package de.zalando.play.compiler
 import java.io.File
 
 import de.zalando.apifirst.Application.StrictModel
-import de.zalando.apifirst.{TypeDeduplicator, TypeFlattener, ParameterDereferencer}
+import de.zalando.apifirst.{TypeNormaliser, TypeDeduplicator, TypeFlattener, ParameterDereferencer}
 import de.zalando.apifirst.generators.ScalaGenerator
 import de.zalando.swagger.{ModelConverter, StrictJsonParser, StrictYamlParser}
 import org.apache.commons.io.FileUtils
@@ -37,8 +37,7 @@ object SwaggerCompiler {
     val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "../../../../" + controllerDir)
     val generator     = new ScalaGenerator(flatAst)
     val currentCtrlr  = readFile(outputDir, fullFileName(task, places.last))
-    val (code, imports) = generator.analyzeController(currentCtrlr)
-    val artifacts     = generator.generate(task.definitionFile.getName, code, imports) zip places
+    val artifacts     = generator.generate(task.definitionFile.getName, currentCtrlr) zip places
     val persister     = persist(task, outputDir) _
     val swaggerFiles  = artifacts map { persister.tupled } map { Seq(_) }
     swaggerFiles
@@ -60,7 +59,7 @@ object SwaggerCompiler {
     val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
     val (uri, model) = parser.parse(task.definitionFile)
     val initialAst = ModelConverter.fromModel(uri, model, Option(task.definitionFile))
-    implicit val flatAst = (ParameterDereferencer.apply _ andThen TypeFlattener.apply andThen TypeDeduplicator.apply) (initialAst)
+    implicit val flatAst = TypeNormaliser.flatten(initialAst)
     flatAst
   }
 

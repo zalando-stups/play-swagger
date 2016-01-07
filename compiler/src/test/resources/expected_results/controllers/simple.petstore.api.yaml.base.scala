@@ -6,12 +6,7 @@ import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
 
-
-    
-    
-
-
-    trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
+trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
         private val addPetResponseMimeType    = "application/json"
         private val addPetActionSuccessStatus = Status(200)
 
@@ -24,7 +19,7 @@ import scala.util._
         
 
 
-        private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[NewPet]("apply", "Invalid apply", maxLength)
+        private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[NewPet]("application/json", "Invalid NewPet", maxLength)
         
 
 
@@ -53,11 +48,6 @@ import scala.util._
             status
         }
         }
-
-
-    
-    
-    
 
 
     trait DashboardBase extends Controller with PlayBodyParsing {

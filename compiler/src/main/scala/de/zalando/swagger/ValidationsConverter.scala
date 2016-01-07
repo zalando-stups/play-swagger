@@ -33,9 +33,9 @@ object ValidationsConverter {
 
   def toArrayValidations[T](a: ArrayValidation[T]): Seq[String] =
     Seq(
-      ifDefined(a.maxItems, s"maxItems(${a.maxItems})" ),
-      ifDefined(a.minItems, s"minItems(${a.minItems})" ),
-      ifDefined(a.uniqueItems, s"uniqueItems(${a.uniqueItems})"),
+      ifDefined(a.maxItems, s"maxItems(${a.maxItems.get})" ),
+      ifDefined(a.minItems, s"minItems(${a.minItems.get})" ),
+      ifDefined(a.uniqueItems, s"uniqueItems(${a.uniqueItems.get})"),
       ifDefined(a.enum, "enum(\"" + a.enum.get.map(a => a.toString.replaceAll(",",",,")).mkString(",") + "\")" )
     ).flatten
 

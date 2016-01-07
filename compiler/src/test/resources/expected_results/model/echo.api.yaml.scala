@@ -3,8 +3,7 @@ package object yaml {
 import java.util.Date
 import java.io.File
 
-
-    type `Test-pathIdGetResponses200` = Null
+type `Test-pathIdGetResponses200` = Null
 
     type PostName = Option[String]
 

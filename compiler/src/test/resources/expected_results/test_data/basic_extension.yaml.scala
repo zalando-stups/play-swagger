@@ -4,36 +4,21 @@ import org.scalacheck.Arbitrary._
 import java.util.Date
 import java.io.File
 
-object definitionsGenerator {
-    def createErrorModelGenerator = _generate(ErrorModelGenerator)
+object Generators {
+def createErrorModelGenerator = _generate(ErrorModelGenerator)
 
     def createExtendedErrorModelGenerator = _generate(ExtendedErrorModelGenerator)
 
-    def ErrorModelGenerator =
-
-        for {
-
+    def ErrorModelGenerator = for {
         message <- arbitrary[String]
-
         code <- arbitrary[Int]
-
         } yield ErrorModel(message, code)
 
-    
-
-    def ExtendedErrorModelGenerator =
-
-        for {
-
+    def ExtendedErrorModelGenerator = for {
         message <- arbitrary[String]
-
         code <- arbitrary[Int]
-
         rootCause <- arbitrary[String]
-
         } yield ExtendedErrorModel(message, code, rootCause)
-
-    
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 

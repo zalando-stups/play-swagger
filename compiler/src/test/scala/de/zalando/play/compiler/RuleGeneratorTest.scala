@@ -1,7 +1,7 @@
 package de.zalando.play.compiler
 
 import de.zalando.apifirst.Application.StrictModel
-import de.zalando.apifirst.new_naming.Path
+import de.zalando.apifirst.naming.Path
 import org.scalatest.{FunSpec, MustMatchers}
 import play.routes.compiler.{DynamicPart, StaticPart}
 

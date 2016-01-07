@@ -1,5 +1,3 @@
-⌿/definitions/newPet⌿tag -> 
-	Opt(Str)
 ⌿definitions⌿errorModel -> 
 	TypeDef(⌿definitions⌿errorModel, Seq(
 		Field(⌿definitions⌿errorModel⌿code, Intgr), 
@@ -8,14 +6,16 @@
 	TypeDef(⌿definitions⌿pet, Seq(
 		Field(⌿definitions⌿pet⌿id, Lng), 
 		Field(⌿definitions⌿pet⌿name, Str), 
-		Field(⌿definitions⌿pet⌿tag, TypeRef(⌿/definitions/newPet⌿tag))))
-⌿/definitions/newPet⌿id -> 
-	Opt(Lng)
+		Field(⌿definitions⌿pet⌿tag, TypeRef(⌿/definitions/pet⌿tag))))
+⌿/definitions/pet⌿tag -> 
+	Opt(Str)
 ⌿definitions⌿newPet -> 
 	TypeDef(⌿definitions⌿newPet, Seq(
 		Field(⌿definitions⌿newPet⌿name, Str), 
-		Field(⌿definitions⌿newPet⌿id, TypeRef(⌿/definitions/newPet⌿id)), 
-		Field(⌿definitions⌿newPet⌿tag, TypeRef(⌿/definitions/newPet⌿tag))))
+		Field(⌿definitions⌿newPet⌿id, TypeRef(⌿definitions⌿newPet⌿id)), 
+		Field(⌿definitions⌿newPet⌿tag, TypeRef(⌿/definitions/pet⌿tag))))
+⌿definitions⌿newPet⌿id -> 
+	Opt(Lng)
 ⌿paths⌿/pets/{id}⌿delete⌿id -> 
 	Lng
 ⌿paths⌿/pets⌿get⌿limit -> 
