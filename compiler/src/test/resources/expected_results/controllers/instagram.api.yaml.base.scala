@@ -12,7 +12,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaByMedia_idLikesActionSuccessStatus = Status(200)
 
     private type getmediaByMedia_idLikesActionRequestType       = (Int)
-    private type getmediaByMedia_idLikesActionResultType        = Media
+    private type getmediaByMedia_idLikesActionResultType        = `MediaMedia-idLikesGetResponses200`
     private type getmediaByMedia_idLikesActionType              = getmediaByMedia_idLikesActionRequestType => Try[getmediaByMedia_idLikesActionResultType]
 
     private val errorToStatusgetmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -50,7 +50,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val postmediaByMedia_idLikesActionSuccessStatus = Status(200)
 
     private type postmediaByMedia_idLikesActionRequestType       = (Int)
-    private type postmediaByMedia_idLikesActionResultType        = Media
+    private type postmediaByMedia_idLikesActionResultType        = `MediaMedia-idCommentsDeleteResponses200`
     private type postmediaByMedia_idLikesActionType              = postmediaByMedia_idLikesActionRequestType => Try[postmediaByMedia_idLikesActionResultType]
 
     private val errorToStatuspostmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -88,7 +88,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val deletemediaByMedia_idLikesActionSuccessStatus = Status(200)
 
     private type deletemediaByMedia_idLikesActionRequestType       = (Int)
-    private type deletemediaByMedia_idLikesActionResultType        = Media
+    private type deletemediaByMedia_idLikesActionResultType        = `MediaMedia-idCommentsDeleteResponses200`
     private type deletemediaByMedia_idLikesActionType              = deletemediaByMedia_idLikesActionRequestType => Try[deletemediaByMedia_idLikesActionResultType]
 
     private val errorToStatusdeletemediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -126,7 +126,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersByUser_idFollowsActionSuccessStatus = Status(200)
 
     private type getusersByUser_idFollowsActionRequestType       = (Double)
-    private type getusersByUser_idFollowsActionResultType        = Users
+    private type getusersByUser_idFollowsActionResultType        = `UsersUser-idFollowsGetResponses200`
     private type getusersByUser_idFollowsActionType              = getusersByUser_idFollowsActionRequestType => Try[getusersByUser_idFollowsActionResultType]
 
     private val errorToStatusgetusersByUser_idFollows: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -164,7 +164,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getlocationsByLocation_idActionSuccessStatus = Status(200)
 
     private type getlocationsByLocation_idActionRequestType       = (Int)
-    private type getlocationsByLocation_idActionResultType        = Locations
+    private type getlocationsByLocation_idActionResultType        = `LocationsLocation-idGetResponses200`
     private type getlocationsByLocation_idActionType              = getlocationsByLocation_idActionRequestType => Try[getlocationsByLocation_idActionResultType]
 
     private val errorToStatusgetlocationsByLocation_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -202,7 +202,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersSearchActionSuccessStatus = Status(200)
 
     private type getusersSearchActionRequestType       = (String, LikeUser_name)
-    private type getusersSearchActionResultType        = Users
+    private type getusersSearchActionResultType        = `UsersUser-idFollowsGetResponses200`
     private type getusersSearchActionType              = getusersSearchActionRequestType => Try[getusersSearchActionResultType]
 
     private val errorToStatusgetusersSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -240,7 +240,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersSelfMediaLikedActionSuccessStatus = Status(200)
 
     private type getusersSelfMediaLikedActionRequestType       = (MediaCreated_time, MediaCreated_time)
-    private type getusersSelfMediaLikedActionResultType        = Users
+    private type getusersSelfMediaLikedActionResultType        = UsersSelfFeedGetResponses200
     private type getusersSelfMediaLikedActionType              = getusersSelfMediaLikedActionRequestType => Try[getusersSelfMediaLikedActionResultType]
 
     private val errorToStatusgetusersSelfMediaLiked: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -316,7 +316,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val gettagsSearchActionSuccessStatus = Status(200)
 
     private type gettagsSearchActionRequestType       = (LikeUser_name)
-    private type gettagsSearchActionResultType        = Tags
+    private type gettagsSearchActionResultType        = TagsSearchGetResponses200
     private type gettagsSearchActionType              = gettagsSearchActionRequestType => Try[gettagsSearchActionResultType]
 
     private val errorToStatusgettagsSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -354,7 +354,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersByUser_idFollowed_byActionSuccessStatus = Status(200)
 
     private type getusersByUser_idFollowed_byActionRequestType       = (Double)
-    private type getusersByUser_idFollowed_byActionResultType        = Users
+    private type getusersByUser_idFollowed_byActionResultType        = `UsersUser-idFollowsGetResponses200`
     private type getusersByUser_idFollowed_byActionType              = getusersByUser_idFollowed_byActionRequestType => Try[getusersByUser_idFollowed_byActionResultType]
 
     private val errorToStatusgetusersByUser_idFollowed_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -392,7 +392,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaByMedia_idCommentsActionSuccessStatus = Status(200)
 
     private type getmediaByMedia_idCommentsActionRequestType       = (Int)
-    private type getmediaByMedia_idCommentsActionResultType        = Media
+    private type getmediaByMedia_idCommentsActionResultType        = `MediaMedia-idCommentsGetResponses200`
     private type getmediaByMedia_idCommentsActionType              = getmediaByMedia_idCommentsActionRequestType => Try[getmediaByMedia_idCommentsActionResultType]
 
     private val errorToStatusgetmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -430,7 +430,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val postmediaByMedia_idCommentsActionSuccessStatus = Status(200)
 
     private type postmediaByMedia_idCommentsActionRequestType       = (Int, LocationLongitude)
-    private type postmediaByMedia_idCommentsActionResultType        = Media
+    private type postmediaByMedia_idCommentsActionResultType        = `MediaMedia-idCommentsDeleteResponses200`
     private type postmediaByMedia_idCommentsActionType              = postmediaByMedia_idCommentsActionRequestType => Try[postmediaByMedia_idCommentsActionResultType]
 
     private val errorToStatuspostmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -470,7 +470,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val deletemediaByMedia_idCommentsActionSuccessStatus = Status(200)
 
     private type deletemediaByMedia_idCommentsActionRequestType       = (Int)
-    private type deletemediaByMedia_idCommentsActionResultType        = Media
+    private type deletemediaByMedia_idCommentsActionResultType        = `MediaMedia-idCommentsDeleteResponses200`
     private type deletemediaByMedia_idCommentsActionType              = deletemediaByMedia_idCommentsActionRequestType => Try[deletemediaByMedia_idCommentsActionResultType]
 
     private val errorToStatusdeletemediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -508,7 +508,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val gettagsByTag_nameMediaRecentActionSuccessStatus = Status(200)
 
     private type gettagsByTag_nameMediaRecentActionRequestType       = (String)
-    private type gettagsByTag_nameMediaRecentActionResultType        = Tags
+    private type gettagsByTag_nameMediaRecentActionResultType        = `TagsTag-nameMediaRecentGetResponses200`
     private type gettagsByTag_nameMediaRecentActionType              = gettagsByTag_nameMediaRecentActionRequestType => Try[gettagsByTag_nameMediaRecentActionResultType]
 
     private val errorToStatusgettagsByTag_nameMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -546,7 +546,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val postusersByUser_idRelationshipActionSuccessStatus = Status(200)
 
     private type postusersByUser_idRelationshipActionRequestType       = (Double, LikeUser_name)
-    private type postusersByUser_idRelationshipActionResultType        = Users
+    private type postusersByUser_idRelationshipActionResultType        = `UsersUser-idFollowsGetResponses200`
     private type postusersByUser_idRelationshipActionType              = postusersByUser_idRelationshipActionRequestType => Try[postusersByUser_idRelationshipActionResultType]
 
     private val errorToStatuspostusersByUser_idRelationship: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -586,7 +586,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersSelfFeedActionSuccessStatus = Status(200)
 
     private type getusersSelfFeedActionRequestType       = (MediaCreated_time, MediaCreated_time, MediaCreated_time)
-    private type getusersSelfFeedActionResultType        = Users
+    private type getusersSelfFeedActionResultType        = UsersSelfFeedGetResponses200
     private type getusersSelfFeedActionType              = getusersSelfFeedActionRequestType => Try[getusersSelfFeedActionResultType]
 
     private val errorToStatusgetusersSelfFeed: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -624,7 +624,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersByUser_idActionSuccessStatus = Status(200)
 
     private type getusersByUser_idActionRequestType       = (Double)
-    private type getusersByUser_idActionResultType        = Users
+    private type getusersByUser_idActionResultType        = `UsersUser-idGetResponses200`
     private type getusersByUser_idActionType              = getusersByUser_idActionRequestType => Try[getusersByUser_idActionResultType]
 
     private val errorToStatusgetusersByUser_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -662,7 +662,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaSearchActionSuccessStatus = Status(200)
 
     private type getmediaSearchActionRequestType       = (MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude)
-    private type getmediaSearchActionResultType        = Media
+    private type getmediaSearchActionResultType        = MediaSearchGetResponses200
     private type getmediaSearchActionType              = getmediaSearchActionRequestType => Try[getmediaSearchActionResultType]
 
     private val errorToStatusgetmediaSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -776,7 +776,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getlocationsSearchActionSuccessStatus = Status(200)
 
     private type getlocationsSearchActionRequestType       = (MediaCreated_time, MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude)
-    private type getlocationsSearchActionResultType        = Locations
+    private type getlocationsSearchActionResultType        = LocationsSearchGetResponses200
     private type getlocationsSearchActionType              = getlocationsSearchActionRequestType => Try[getlocationsSearchActionResultType]
 
     private val errorToStatusgetlocationsSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -814,7 +814,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersSelfRequested_byActionSuccessStatus = Status(200)
 
     private type getusersSelfRequested_byActionRequestType       = (Unit)
-    private type getusersSelfRequested_byActionResultType        = Users
+    private type getusersSelfRequested_byActionResultType        = `UsersSelfRequested-byGetResponses200`
     private type getusersSelfRequested_byActionType              = getusersSelfRequested_byActionRequestType => Try[getusersSelfRequested_byActionResultType]
 
     private val errorToStatusgetusersSelfRequested_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -883,7 +883,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getlocationsByLocation_idMediaRecentActionSuccessStatus = Status(200)
 
     private type getlocationsByLocation_idMediaRecentActionRequestType       = (Int, MediaCreated_time, MediaCreated_time, LikeUser_name, LikeUser_name)
-    private type getlocationsByLocation_idMediaRecentActionResultType        = Users
+    private type getlocationsByLocation_idMediaRecentActionResultType        = UsersSelfFeedGetResponses200
     private type getlocationsByLocation_idMediaRecentActionType              = getlocationsByLocation_idMediaRecentActionRequestType => Try[getlocationsByLocation_idMediaRecentActionResultType]
 
     private val errorToStatusgetlocationsByLocation_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -921,7 +921,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getusersByUser_idMediaRecentActionSuccessStatus = Status(200)
 
     private type getusersByUser_idMediaRecentActionRequestType       = (Double, MediaCreated_time, LikeUser_name, MediaCreated_time, LikeUser_name, MediaCreated_time)
-    private type getusersByUser_idMediaRecentActionResultType        = Users
+    private type getusersByUser_idMediaRecentActionResultType        = UsersSelfFeedGetResponses200
     private type getusersByUser_idMediaRecentActionType              = getusersByUser_idMediaRecentActionRequestType => Try[getusersByUser_idMediaRecentActionResultType]
 
     private val errorToStatusgetusersByUser_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -959,7 +959,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaPopularActionSuccessStatus = Status(200)
 
     private type getmediaPopularActionRequestType       = (Unit)
-    private type getmediaPopularActionResultType        = Users
+    private type getmediaPopularActionResultType        = UsersSelfFeedGetResponses200
     private type getmediaPopularActionType              = getmediaPopularActionRequestType => Try[getmediaPopularActionResultType]
 
     private val errorToStatusgetmediaPopular: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
