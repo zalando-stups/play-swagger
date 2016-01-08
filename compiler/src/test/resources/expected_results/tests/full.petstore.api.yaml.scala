@@ -8,13 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
+import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class FullPetstoreApiYamlSpec extends Specification {
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+
+
       
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
@@ -187,7 +194,7 @@ import Generators._
 "GET /v2/pets/findByStatus" should {
         def testInvalidInput(status: PetsFindByStatusGetStatus) = {
 
-            val url = s"""/v2/pets/findByStatus?${status.map { i => "status=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v2/pets/findByStatus?${toQuery("status", status)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetsFindByStatusGetValidator(status).errors
@@ -204,7 +211,7 @@ import Generators._
         }
         def testValidInput(status: PetsFindByStatusGetStatus) = {
 
-            val url = s"""/v2/pets/findByStatus?${status.map { i => "status=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v2/pets/findByStatus?${toQuery("status", status)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -345,7 +352,7 @@ import Generators._
         def testInvalidInput(input: (OrderStatus, OrderStatus)) = {
 
             val (username, password) = input
-            val url = s"""/v2/users/login?${username.map { i => "username=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${password.map { i => "password=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v2/users/login?${toQuery("username", username)}&${toQuery("password", password)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UsersLoginGetValidator(username, password).errors
@@ -363,7 +370,7 @@ import Generators._
         def testValidInput(input: (OrderStatus, OrderStatus)) = {
 
             val (username, password) = input
-            val url = s"""/v2/users/login?${username.map { i => "username=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${password.map { i => "password=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v2/users/login?${toQuery("username", username)}&${toQuery("password", password)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -401,7 +408,7 @@ import Generators._
 "GET /v2/stores/order/{orderId}" should {
         def testInvalidInput(orderId: String) = {
 
-            val url = s"""/v2/stores/order/${orderId}"""
+            val url = s"""/v2/stores/order/${toPath(orderId)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new StoresOrderOrderIdGetValidator(orderId).errors
@@ -418,7 +425,7 @@ import Generators._
         }
         def testValidInput(orderId: String) = {
 
-            val url = s"""/v2/stores/order/${orderId}"""
+            val url = s"""/v2/stores/order/${toPath(orderId)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -452,7 +459,7 @@ import Generators._
 "GET /v2/pets/{petId}" should {
         def testInvalidInput(petId: Long) = {
 
-            val url = s"""/v2/pets/${petId}"""
+            val url = s"""/v2/pets/${toPath(petId)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetsPetIdGetValidator(petId).errors
@@ -469,7 +476,7 @@ import Generators._
         }
         def testValidInput(petId: Long) = {
 
-            val url = s"""/v2/pets/${petId}"""
+            val url = s"""/v2/pets/${toPath(petId)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -503,7 +510,7 @@ import Generators._
 "GET /v2/users/{username}" should {
         def testInvalidInput(username: String) = {
 
-            val url = s"""/v2/users/${username}"""
+            val url = s"""/v2/users/${toPath(username)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UsersUsernameGetValidator(username).errors
@@ -520,7 +527,7 @@ import Generators._
         }
         def testValidInput(username: String) = {
 
-            val url = s"""/v2/users/${username}"""
+            val url = s"""/v2/users/${toPath(username)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -608,7 +615,7 @@ import Generators._
         def testInvalidInput(input: (String, String, String)) = {
 
             val (petId, name, status) = input
-            val url = s"""/v2/pets/${petId}"""
+            val url = s"""/v2/pets/${toPath(petId)}"""
             val headers = Seq()
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
             val errors = new PetsPetIdPostValidator(petId, name, status).errors
@@ -626,7 +633,7 @@ import Generators._
         def testValidInput(input: (String, String, String)) = {
 
             val (petId, name, status) = input
-            val url = s"""/v2/pets/${petId}"""
+            val url = s"""/v2/pets/${toPath(petId)}"""
             val headers = Seq()
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -666,7 +673,7 @@ import Generators._
 "DELETE /v2/users/{username}" should {
         def testInvalidInput(username: String) = {
 
-            val url = s"""/v2/users/${username}"""
+            val url = s"""/v2/users/${toPath(username)}"""
             val headers = Seq()
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new UsersUsernameDeleteValidator(username).errors
@@ -683,7 +690,7 @@ import Generators._
         }
         def testValidInput(username: String) = {
 
-            val url = s"""/v2/users/${username}"""
+            val url = s"""/v2/users/${toPath(username)}"""
             val headers = Seq()
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -717,7 +724,7 @@ import Generators._
 "DELETE /v2/stores/order/{orderId}" should {
         def testInvalidInput(orderId: String) = {
 
-            val url = s"""/v2/stores/order/${orderId}"""
+            val url = s"""/v2/stores/order/${toPath(orderId)}"""
             val headers = Seq()
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new StoresOrderOrderIdDeleteValidator(orderId).errors
@@ -734,7 +741,7 @@ import Generators._
         }
         def testValidInput(orderId: String) = {
 
-            val url = s"""/v2/stores/order/${orderId}"""
+            val url = s"""/v2/stores/order/${toPath(orderId)}"""
             val headers = Seq()
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -769,8 +776,8 @@ import Generators._
         def testInvalidInput(input: (String, Long)) = {
 
             val (api_key, petId) = input
-            val url = s"""/v2/pets/${petId}"""
-            val headers = Seq("api_key" -> api_key)
+            val url = s"""/v2/pets/${toPath(petId)}"""
+            val headers = Seq("api_key" -> toHeader(api_key))
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new PetsPetIdDeleteValidator(api_key, petId).errors
 
@@ -787,7 +794,7 @@ import Generators._
         def testValidInput(input: (String, Long)) = {
 
             val (api_key, petId) = input
-            val url = s"""/v2/pets/${petId}"""
+            val url = s"""/v2/pets/${toPath(petId)}"""
             val headers = Seq("api_key" -> api_key)
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -825,7 +832,7 @@ import Generators._
 "GET /v2/pets/findByTags" should {
         def testInvalidInput(tags: PetsFindByStatusGetStatus) = {
 
-            val url = s"""/v2/pets/findByTags?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v2/pets/findByTags?${toQuery("tags", tags)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetsFindByTagsGetValidator(tags).errors
@@ -842,7 +849,7 @@ import Generators._
         }
         def testValidInput(tags: PetsFindByStatusGetStatus) = {
 
-            val url = s"""/v2/pets/findByTags?${tags.map { i => "tags=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v2/pets/findByTags?${toQuery("tags", tags)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -877,7 +884,7 @@ import Generators._
         def testInvalidInput(input: (String, UsersUsernamePutBody)) = {
 
             val (username, body) = input
-            val url = s"""/v2/users/${username}"""
+            val url = s"""/v2/users/${toPath(username)}"""
             val headers = Seq()
             val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
@@ -897,7 +904,7 @@ import Generators._
 
             val (username, body) = input
             val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-            val url = s"""/v2/users/${username}"""
+            val url = s"""/v2/users/${toPath(username)}"""
             val headers = Seq()
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
             ("given an URL: [" + url + "]"+ " and body [" + parsed_body + "]") |: (status(path) ?= OK)

@@ -8,13 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
+import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class Error_in_arrayYamlSpec extends Specification {
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+
+
       
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {

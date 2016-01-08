@@ -8,13 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
+import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class UberApiYamlSpec extends Specification {
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+
+
       
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
@@ -29,7 +36,7 @@ import Generators._
         def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
 
             val (offset, limit) = input
-            val url = s"""/v1/history?${offset.map { i => "offset=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new HistoryGetValidator(offset, limit).errors
@@ -47,7 +54,7 @@ import Generators._
         def testValidInput(input: (ErrorCode, ErrorCode)) = {
 
             val (offset, limit) = input
-            val url = s"""/v1/history?${offset.map { i => "offset=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -86,7 +93,7 @@ import Generators._
         def testInvalidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
 
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
-            val url = s"""/v1/estimates/time?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&${customer_uuid.map { i => "customer_uuid=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${product_id.map { i => "product_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors
@@ -104,7 +111,7 @@ import Generators._
         def testValidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
 
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
-            val url = s"""/v1/estimates/time?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&${customer_uuid.map { i => "customer_uuid=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${product_id.map { i => "product_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -147,7 +154,7 @@ import Generators._
         def testInvalidInput(input: (Double, Double)) = {
 
             val (latitude, longitude) = input
-            val url = s"""/v1/products?latitude=${URLEncoder.encode(latitude.toString, "UTF-8")}&longitude=${URLEncoder.encode(longitude.toString, "UTF-8")}"""
+            val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new ProductsGetValidator(latitude, longitude).errors
@@ -165,7 +172,7 @@ import Generators._
         def testValidInput(input: (Double, Double)) = {
 
             val (latitude, longitude) = input
-            val url = s"""/v1/products?latitude=${URLEncoder.encode(latitude.toString, "UTF-8")}&longitude=${URLEncoder.encode(longitude.toString, "UTF-8")}"""
+            val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -204,7 +211,7 @@ import Generators._
         def testInvalidInput(input: (Double, Double, Double, Double)) = {
 
             val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-            val url = s"""/v1/estimates/price?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&end_latitude=${URLEncoder.encode(end_latitude.toString, "UTF-8")}&end_longitude=${URLEncoder.encode(end_longitude.toString, "UTF-8")}"""
+            val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors
@@ -222,7 +229,7 @@ import Generators._
         def testValidInput(input: (Double, Double, Double, Double)) = {
 
             val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-            val url = s"""/v1/estimates/price?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&end_latitude=${URLEncoder.encode(end_latitude.toString, "UTF-8")}&end_longitude=${URLEncoder.encode(end_longitude.toString, "UTF-8")}"""
+            val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)

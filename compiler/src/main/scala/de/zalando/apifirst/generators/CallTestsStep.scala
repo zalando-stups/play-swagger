@@ -98,23 +98,5 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     "s\"\"\"" + url + fullQuery + "\"\"\""
   }
 
-  private def singleQueryParam(name: String, typeName: Type): String = typeName match {
-    case r@ TypeRef(ref) =>
-      singleQueryParam(name, app.findType(ref))
-    case c: Domain.Opt =>
-      containerParam(name) + "getOrElse(\"\")}"
-    case c: Domain.Arr =>
-      if (c.format == "multi") containerParam(name) + "mkString(\"&\")}"
-      else containerParam(name) + "mkString(\"&\")}" // FIXME provide correct formatting here
-    case d: Domain.CatchAll =>
-      "" // TODO no marshalling / unmarshalling yet
-    case d: Domain.TypeDef =>
-      "" // TODO no marshalling / unmarshalling yet
-    case o =>
-      name + "=${URLEncoder.encode(" + name + ".toString, \"UTF-8\")}"
-  }
-
-  private def containerParam(name: String) =
-    "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."
-
+  private def singleQueryParam(name: String, typeName: Type): String = "$" + s"""{toQuery("$name", $name)}"""
 }

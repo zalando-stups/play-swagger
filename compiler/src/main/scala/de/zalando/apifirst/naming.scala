@@ -75,7 +75,7 @@ object naming {
     private def sep(c: Char) = c == '/'
     val asPlay = (ref.parts map Path.toString(":", "")).mkString("/", "/", "")
     lazy val asSwagger = ref.parts.mkString("/", "/", "")
-    val interpolated = (ref.parts map Path.toString("${", "}")).mkString("/", "/", "")
+    val interpolated = (ref.parts map Path.toString("${toPath(", ")}")).mkString("/", "/", "")
     val asMethod = {
       val newParts = ref.parts map { p => Path.toString("By", "", s => s.capitalize)(p).replace('-','_') }
       val method = newParts.mkString

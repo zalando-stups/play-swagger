@@ -1,9 +1,11 @@
 package de.zalando.play.controllers
 
-import com.fasterxml.jackson.databind.{ObjectReader, MappingIterator}
+import com.fasterxml.jackson.databind.{JavaType, ObjectWriter, ObjectReader, MappingIterator}
 import com.fasterxml.jackson.dataformat.csv.{CsvSchema, CsvMapper, CsvParser}
 import org.joda.time.{DateMidnight, DateTime}
 import play.api.mvc.{PathBindable, QueryStringBindable}
+
+import scala.reflect.ClassTag
 
 /**
   * @author slasch 
@@ -11,13 +13,17 @@ import play.api.mvc.{PathBindable, QueryStringBindable}
   */
 object PlayPathBindables {
 
+  private def schema[T](wrapper: ArrayWrapper[T]) =
+    CsvSchema.emptySchema().withColumnSeparator(wrapper.separator).withLineSeparator("\n")
+
   private[controllers] def createMapper =
     new CsvMapper().enable(CsvParser.Feature.WRAP_AS_ARRAY)
 
   private[controllers] def createReader[T](mapper: CsvMapper, wrapper: ArrayWrapper[T]) =
-    mapper.readerFor(classOf[Array[String]]).`with`(
-      CsvSchema.emptySchema().withColumnSeparator(wrapper.separator).withLineSeparator("\n")
-    )
+    mapper.readerFor(classOf[Array[String]]).`with`(schema(wrapper))
+
+  private[controllers] def createWriter[T](mapper: CsvMapper, wrapper: ArrayWrapper[T]) =
+    mapper.writer(schema(wrapper))
 
   private[controllers] def readArray(reader: ObjectReader)(line: String) = {
     val array = reader.readValues(line.getBytes).asInstanceOf[MappingIterator[Array[String]]]
@@ -25,8 +31,8 @@ object PlayPathBindables {
     resArray
   }
 
-  private[controllers] def writeArray(mapper: CsvMapper)(items: Seq[String]): String = mapper.writer().writeValueAsString(items)
-
+  private[controllers] def writeArray(writer: ObjectWriter)(items: Seq[String]): String =
+    writer.writeValueAsString(items.toArray)
 
   implicit object pathBindableDateTime extends PathBindable.Parsing[DateTime](
     Rfc3339Util.parseDateTime,
@@ -118,6 +124,7 @@ object PlayPathBindables {
 
     val mapper = createMapper
     val reader = createReader(mapper, wrapper)
+    val writer = createWriter(mapper, wrapper)
 
     def bind(key: String, value: String): Either[String, ArrayWrapper[T]] = try {
       val line = readArray(reader)(value)
@@ -139,7 +146,7 @@ object PlayPathBindables {
       * @param w    wrapper to convert
       * @return
       */
-    def unbind(key: String, w: ArrayWrapper[T]): String = writeArray(mapper)(w.items map (tBinder.unbind(key, _)))
+    def unbind(key: String, w: ArrayWrapper[T]): String = writeArray(writer)(w.items map (tBinder.unbind(key, _)))
 
   }
 
@@ -156,6 +163,7 @@ object PlayPathBindables {
 
   val mapper = createMapper
   val reader = createReader(mapper, wrapper)
+  val writer = createWriter(mapper, wrapper)
 
     def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, ArrayWrapper[T]]] = Some(try {
       val line: Option[Seq[String]] = params.get(key) flatMap {
@@ -183,7 +191,7 @@ object PlayPathBindables {
       * @param w    wrapper to convert
       * @return
       */
-    def unbind(key: String, w: ArrayWrapper[T]): String = writeArray(mapper)(w.items map (tBinder.unbind(key, _)))
+    def unbind(key: String, w: ArrayWrapper[T]): String = writeArray(writer)(w.items map (tBinder.unbind(key, _)))
 
   }
 }

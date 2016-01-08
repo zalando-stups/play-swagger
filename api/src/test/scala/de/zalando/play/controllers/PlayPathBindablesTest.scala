@@ -9,12 +9,20 @@ import org.specs2.mutable._
 class PlayPathBindablesTest extends Specification {
 
   "createMapper" should {
-    "should create csv mapper" in {
+    "should read different formats" in {
       val wrapper = PipesArrayWrapper.apply(Nil)
       val mapper = PlayPathBindables.createMapper
       val reader = PlayPathBindables.createReader(mapper, wrapper)
       val result = PlayPathBindables.readArray(reader)("a|b|c|d")
       result must have size(4)
+    }
+
+    "should write different formats" in {
+      val wrapper = PipesArrayWrapper.apply(Nil)
+      val mapper = PlayPathBindables.createMapper
+      val writer = PlayPathBindables.createWriter(mapper, wrapper)
+      val result = PlayPathBindables.writeArray(writer)(Seq("a","b","c","d"))
+      result must_== """"a"|"b"|"c"|"d"""" + "\n"
     }
 
   }

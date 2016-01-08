@@ -8,13 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
+import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class HerokuPetstoreApiYamlSpec extends Specification {
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+
+
       
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
@@ -81,7 +88,7 @@ import Generators._
 "GET /pet/" should {
         def testInvalidInput(limit: PetBirthday) = {
 
-            val url = s"""/pet/?${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/pet/?${toQuery("limit", limit)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new GetValidator(limit).errors
@@ -98,7 +105,7 @@ import Generators._
         }
         def testValidInput(limit: PetBirthday) = {
 
-            val url = s"""/pet/?${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
+            val url = s"""/pet/?${toQuery("limit", limit)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)
@@ -132,7 +139,7 @@ import Generators._
 "GET /pet/{petId}" should {
         def testInvalidInput(petId: String) = {
 
-            val url = s"""/pet/${petId}"""
+            val url = s"""/pet/${toPath(petId)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetIdGetValidator(petId).errors
@@ -149,7 +156,7 @@ import Generators._
         }
         def testValidInput(petId: String) = {
 
-            val url = s"""/pet/${petId}"""
+            val url = s"""/pet/${toPath(petId)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             ("given an URL: [" + url + "]") |: (status(path) ?= OK)

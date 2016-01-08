@@ -8,13 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
+import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class {{&spec_name}} extends Specification {
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+
+
       {{! TODO use specs2 scalacheck integration instead of doing this manually }}
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
@@ -33,7 +40,7 @@ import Generators._
                 val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input
             {{/parameters?}}
             val url = {{&full_url}}
-            val headers = Seq({{#headers}}"{{&name}}" -> {{&name}}{{/headers}})
+            val headers = Seq({{#headers}}"{{&name}}" -> toHeader({{&name}}){{/headers}})
             {{#body?}}
                 val parsed_{{&body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{&expected_result_type}}").writeValueAsString({{&body_parameter_name}})
             {{/body?}}
