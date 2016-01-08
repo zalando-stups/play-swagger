@@ -26,7 +26,7 @@ object Rfc3339Util {
   private val dateTime = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
 
   def parseDateTime(datestring: String): DateTime =
-    if(datestring.endsWith("Z")) parseFull(datestring)
+    if(datestring.endsWith("Z") || datestring.endsWith("z")) parseFull(datestring)
     else parseParts(datestring)
 
   def parseDate(datestring: String): DateMidnight =
@@ -38,8 +38,9 @@ object Rfc3339Util {
 
   private def parseParts(datestring: String): DateTime = {
     //step one, split off the timezone.
-    val firstpart = datestring.substring(0, datestring.lastIndexOf('-'))
-    val secondpart = datestring.substring(datestring.lastIndexOf('-'))
+    val sepChar = if (datestring.indexOf('+')>0) '+' else '-'
+    val firstpart = datestring.substring(0, datestring.lastIndexOf(sepChar))
+    val secondpart = datestring.substring(datestring.lastIndexOf(sepChar))
     //step two, remove the colon from the timezone offset
     val thirdpart = secondpart.substring(0, secondpart.indexOf(':')) + secondpart.substring(secondpart.indexOf(':') + 1)
     val dstring = firstpart + thirdpart
