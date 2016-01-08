@@ -71,6 +71,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "validations?"                  -> allValidations.nonEmpty,
       "non_body_params?"              -> nonBodyParams.nonEmpty,
       "body_param?"                   -> bodyParam.nonEmpty,
+      "header_params?"                -> (if (headerParams.nonEmpty) Some(Map("header_params" -> headerParams)) else None),
       "request_needed?"               -> (bodyParam.nonEmpty || headerParams.nonEmpty)
     ) ++ nameMappings + nameParamPair
   }
@@ -117,7 +118,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val typeName = app.findParameter(param).typeName
     Map(
       "field_name" -> escape(camelize("\\.", param.simple)), // should be taken from the validation
-      "header_method" -> "get",
       "type_name" -> typeNameDenotation(table, typeName.name)
     )
   }

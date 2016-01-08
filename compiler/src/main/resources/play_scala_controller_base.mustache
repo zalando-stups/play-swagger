@@ -41,20 +41,33 @@ trait {{&base}} extends Controller with PlayBodyParsing {
         val {{&field_name}} = request.body
         {{/body_param}}
         {{#header_params}}
-        val {{&field_name}} = request.headers.{{&header_method}}("{{&field_name}}")
+        val {{&field_name}}_either =
+            fromHeaders[{{&type_name}}]("{{&field_name}}", request.headers.toMap)
         {{/header_params}}
-        val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
-            {{#validations?}}
-            {{#validations}}
-                new {{&validation_name}}({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}).errors match {
-                    case e if e.isEmpty => {{&process_valid_request}}(f)(({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{&response_mime_type_name}})
-                        BadRequest(l)
-                }⮐
-            {{/validations}}
-            {{/validations?}}
-        result
+        {{#header_params?}}
+            ({{#header_params}}{{&field_name}}_either{{^last}}, {{/last}}{{/header_params}}) match {
+                case ({{#header_params}}Right({{&field_name}}){{^last}}, {{/last}}{{/header_params}}) =>
+        {{/header_params?}}
+            {{! this part is wrapped in match statement in the case if there are any header parameters }}
+            val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
+                {{#validations?}}
+                {{#validations}}
+                    new {{&validation_name}}({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}).errors match {
+                        case e if e.isEmpty => {{&process_valid_request}}(f)(({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{&response_mime_type_name}})
+                            BadRequest(l)
+                    }⮐
+                {{/validations}}
+                {{/validations?}}
+            result
+            {{! EO wraped part }}
+        {{#header_params?}}
+            case ({{#header_params}}_{{^last}}, {{/last}}{{/header_params}}) =>
+                val msg = Seq({{#header_params}}{{&field_name}}_either{{^last}}, {{/last}}{{/header_params}}).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                BadRequest(msg)
+            }
+        {{/header_params?}}
     }
 
     private def {{&process_valid_request}}(f: {{&action_type}})(request: {{&action_request_type}}) = {

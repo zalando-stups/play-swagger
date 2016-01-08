@@ -30,17 +30,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def findPetsByTagsAction = (f: findPetsByTagsActionType) => (tags: PetsFindByStatusGetStatus) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new PetsFindByTagsGetValidator(tags).errors match {
-                    case e if e.isEmpty => processValidfindPetsByTagsRequest(f)((tags))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetsByTagsResponseMimeType)
-                        BadRequest(l)
-                }
+                new PetsFindByTagsGetValidator(tags).errors match {
+                        case e if e.isEmpty => processValidfindPetsByTagsRequest(f)((tags))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetsByTagsResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidfindPetsByTagsRequest(f: findPetsByTagsActionType)(request: findPetsByTagsActionRequestType) = {
         implicit val findPetsByTagsWritableJson = anyToWritable[findPetsByTagsActionResultType](findPetsByTagsResponseMimeType)
@@ -74,17 +76,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     def placeOrderAction = (f: placeOrderActionType) => Action (placeOrderParser()){ request =>
 
         val body = request.body
-        val result = 
+        
+            val result = 
 
-            new StoresOrderPostValidator(body).errors match {
-                    case e if e.isEmpty => processValidplaceOrderRequest(f)((body))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(placeOrderResponseMimeType)
-                        BadRequest(l)
-                }
+                new StoresOrderPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidplaceOrderRequest(f)((body))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(placeOrderResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidplaceOrderRequest(f: placeOrderActionType)(request: placeOrderActionRequestType) = {
         implicit val placeOrderWritableJson = anyToWritable[placeOrderActionResultType](placeOrderResponseMimeType)
@@ -118,17 +122,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     def createUserAction = (f: createUserActionType) => Action (createUserParser()){ request =>
 
         val body = request.body
-        val result = 
+        
+            val result = 
 
-            new UsersPostValidator(body).errors match {
-                    case e if e.isEmpty => processValidcreateUserRequest(f)((body))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUserResponseMimeType)
-                        BadRequest(l)
-                }
+                new UsersPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidcreateUserRequest(f)((body))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUserResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidcreateUserRequest(f: createUserActionType)(request: createUserActionRequestType) = {
         implicit val createUserWritableJson = anyToWritable[createUserActionResultType](createUserResponseMimeType)
@@ -162,17 +168,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     def createUsersWithListInputAction = (f: createUsersWithListInputActionType) => Action (createUsersWithListInputParser()){ request =>
 
         val body = request.body
-        val result = 
+        
+            val result = 
 
-            new UsersCreateWithListPostValidator(body).errors match {
-                    case e if e.isEmpty => processValidcreateUsersWithListInputRequest(f)((body))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUsersWithListInputResponseMimeType)
-                        BadRequest(l)
-                }
+                new UsersCreateWithListPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidcreateUsersWithListInputRequest(f)((body))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUsersWithListInputResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidcreateUsersWithListInputRequest(f: createUsersWithListInputActionType)(request: createUsersWithListInputActionRequestType) = {
         implicit val createUsersWithListInputWritableJson = anyToWritable[createUsersWithListInputActionResultType](createUsersWithListInputResponseMimeType)
@@ -204,17 +212,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def getUserByNameAction = (f: getUserByNameActionType) => (username: String) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new UsersUsernameGetValidator(username).errors match {
-                    case e if e.isEmpty => processValidgetUserByNameRequest(f)((username))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getUserByNameResponseMimeType)
-                        BadRequest(l)
-                }
+                new UsersUsernameGetValidator(username).errors match {
+                        case e if e.isEmpty => processValidgetUserByNameRequest(f)((username))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getUserByNameResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidgetUserByNameRequest(f: getUserByNameActionType)(request: getUserByNameActionRequestType) = {
         implicit val getUserByNameWritableJson = anyToWritable[getUserByNameActionResultType](getUserByNameResponseMimeType)
@@ -248,17 +258,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     def updateUserAction = (f: updateUserActionType) => (username: String) => Action (updateUserParser()){ request =>
 
         val body = request.body
-        val result = 
+        
+            val result = 
 
-            new UsersUsernamePutValidator(username, body).errors match {
-                    case e if e.isEmpty => processValidupdateUserRequest(f)((username, body))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updateUserResponseMimeType)
-                        BadRequest(l)
-                }
+                new UsersUsernamePutValidator(username, body).errors match {
+                        case e if e.isEmpty => processValidupdateUserRequest(f)((username, body))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updateUserResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidupdateUserRequest(f: updateUserActionType)(request: updateUserActionRequestType) = {
         implicit val updateUserWritableJson = anyToWritable[updateUserActionResultType](updateUserResponseMimeType)
@@ -290,17 +302,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def deleteUserAction = (f: deleteUserActionType) => (username: String) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new UsersUsernameDeleteValidator(username).errors match {
-                    case e if e.isEmpty => processValiddeleteUserRequest(f)((username))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deleteUserResponseMimeType)
-                        BadRequest(l)
-                }
+                new UsersUsernameDeleteValidator(username).errors match {
+                        case e if e.isEmpty => processValiddeleteUserRequest(f)((username))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deleteUserResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValiddeleteUserRequest(f: deleteUserActionType)(request: deleteUserActionRequestType) = {
         implicit val deleteUserWritableJson = anyToWritable[deleteUserActionResultType](deleteUserResponseMimeType)
@@ -334,17 +348,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     def updatePetAction = (f: updatePetActionType) => Action (updatePetParser()){ request =>
 
         val body = request.body
-        val result = 
+        
+            val result = 
 
-            new PetsPutValidator(body).errors match {
-                    case e if e.isEmpty => processValidupdatePetRequest(f)((body))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updatePetResponseMimeType)
-                        BadRequest(l)
-                }
+                new PetsPutValidator(body).errors match {
+                        case e if e.isEmpty => processValidupdatePetRequest(f)((body))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updatePetResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidupdatePetRequest(f: updatePetActionType)(request: updatePetActionRequestType) = {
         implicit val updatePetWritableJson = anyToWritable[updatePetActionResultType](updatePetResponseMimeType)
@@ -378,17 +394,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     def addPetAction = (f: addPetActionType) => Action (addPetParser()){ request =>
 
         val body = request.body
-        val result = 
+        
+            val result = 
 
-            new PetsPostValidator(body).errors match {
-                    case e if e.isEmpty => processValidaddPetRequest(f)((body))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(addPetResponseMimeType)
-                        BadRequest(l)
-                }
+                new PetsPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidaddPetRequest(f)((body))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(addPetResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidaddPetRequest(f: addPetActionType)(request: addPetActionRequestType) = {
         implicit val addPetWritableJson = anyToWritable[addPetActionResultType](addPetResponseMimeType)
@@ -422,17 +440,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     def createUsersWithArrayInputAction = (f: createUsersWithArrayInputActionType) => Action (createUsersWithArrayInputParser()){ request =>
 
         val body = request.body
-        val result = 
+        
+            val result = 
 
-            new UsersCreateWithArrayPostValidator(body).errors match {
-                    case e if e.isEmpty => processValidcreateUsersWithArrayInputRequest(f)((body))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUsersWithArrayInputResponseMimeType)
-                        BadRequest(l)
-                }
+                new UsersCreateWithArrayPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidcreateUsersWithArrayInputRequest(f)((body))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUsersWithArrayInputResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidcreateUsersWithArrayInputRequest(f: createUsersWithArrayInputActionType)(request: createUsersWithArrayInputActionRequestType) = {
         implicit val createUsersWithArrayInputWritableJson = anyToWritable[createUsersWithArrayInputActionResultType](createUsersWithArrayInputResponseMimeType)
@@ -464,17 +484,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def getOrderByIdAction = (f: getOrderByIdActionType) => (orderId: String) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new StoresOrderOrderIdGetValidator(orderId).errors match {
-                    case e if e.isEmpty => processValidgetOrderByIdRequest(f)((orderId))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getOrderByIdResponseMimeType)
-                        BadRequest(l)
-                }
+                new StoresOrderOrderIdGetValidator(orderId).errors match {
+                        case e if e.isEmpty => processValidgetOrderByIdRequest(f)((orderId))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getOrderByIdResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidgetOrderByIdRequest(f: getOrderByIdActionType)(request: getOrderByIdActionRequestType) = {
         implicit val getOrderByIdWritableJson = anyToWritable[getOrderByIdActionResultType](getOrderByIdResponseMimeType)
@@ -506,17 +528,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def deleteOrderAction = (f: deleteOrderActionType) => (orderId: String) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new StoresOrderOrderIdDeleteValidator(orderId).errors match {
-                    case e if e.isEmpty => processValiddeleteOrderRequest(f)((orderId))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deleteOrderResponseMimeType)
-                        BadRequest(l)
-                }
+                new StoresOrderOrderIdDeleteValidator(orderId).errors match {
+                        case e if e.isEmpty => processValiddeleteOrderRequest(f)((orderId))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deleteOrderResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValiddeleteOrderRequest(f: deleteOrderActionType)(request: deleteOrderActionRequestType) = {
         implicit val deleteOrderWritableJson = anyToWritable[deleteOrderActionResultType](deleteOrderResponseMimeType)
@@ -548,10 +572,12 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def logoutUserAction = (f: logoutUserActionType) => Action { 
 
-        val result = processValidlogoutUserRequest(f)()
+        
+            val result = processValidlogoutUserRequest(f)()
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidlogoutUserRequest(f: logoutUserActionType)(request: logoutUserActionRequestType) = {
         implicit val logoutUserWritableJson = anyToWritable[logoutUserActionResultType](logoutUserResponseMimeType)
@@ -583,17 +609,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def getPetByIdAction = (f: getPetByIdActionType) => (petId: Long) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new PetsPetIdGetValidator(petId).errors match {
-                    case e if e.isEmpty => processValidgetPetByIdRequest(f)((petId))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetByIdResponseMimeType)
-                        BadRequest(l)
-                }
+                new PetsPetIdGetValidator(petId).errors match {
+                        case e if e.isEmpty => processValidgetPetByIdRequest(f)((petId))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetByIdResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidgetPetByIdRequest(f: getPetByIdActionType)(request: getPetByIdActionRequestType) = {
         implicit val getPetByIdWritableJson = anyToWritable[getPetByIdActionResultType](getPetByIdResponseMimeType)
@@ -625,17 +653,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def updatePetWithFormAction = (f: updatePetWithFormActionType) => (petId: String, name: String, status: String) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new PetsPetIdPostValidator(petId, name, status).errors match {
-                    case e if e.isEmpty => processValidupdatePetWithFormRequest(f)((petId, name, status))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updatePetWithFormResponseMimeType)
-                        BadRequest(l)
-                }
+                new PetsPetIdPostValidator(petId, name, status).errors match {
+                        case e if e.isEmpty => processValidupdatePetWithFormRequest(f)((petId, name, status))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updatePetWithFormResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidupdatePetWithFormRequest(f: updatePetWithFormActionType)(request: updatePetWithFormActionRequestType) = {
         implicit val updatePetWithFormWritableJson = anyToWritable[updatePetWithFormActionResultType](updatePetWithFormResponseMimeType)
@@ -667,18 +697,27 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def deletePetAction = (f: deletePetActionType) => (petId: Long) => Action { request =>
 
-        val api_key = request.headers.get("api_key")
-        val result = 
+        val api_key_either =
+            fromHeaders[String]("api_key", request.headers.toMap)
+        (api_key_either) match {
+                case (Right(api_key)) =>
+        
+            val result = 
 
-            new PetsPetIdDeleteValidator(api_key, petId).errors match {
-                    case e if e.isEmpty => processValiddeletePetRequest(f)((api_key, petId))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletePetResponseMimeType)
-                        BadRequest(l)
-                }
+                new PetsPetIdDeleteValidator(api_key, petId).errors match {
+                        case e if e.isEmpty => processValiddeletePetRequest(f)((api_key, petId))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletePetResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        case (_) =>
+                val msg = Seq(api_key_either).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                BadRequest(msg)
+            }
+        }
 
     private def processValiddeletePetRequest(f: deletePetActionType)(request: deletePetActionRequestType) = {
         implicit val deletePetWritableJson = anyToWritable[deletePetActionResultType](deletePetResponseMimeType)
@@ -710,17 +749,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def findPetsByStatusAction = (f: findPetsByStatusActionType) => (status: PetsFindByStatusGetStatus) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new PetsFindByStatusGetValidator(status).errors match {
-                    case e if e.isEmpty => processValidfindPetsByStatusRequest(f)((status))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetsByStatusResponseMimeType)
-                        BadRequest(l)
-                }
+                new PetsFindByStatusGetValidator(status).errors match {
+                        case e if e.isEmpty => processValidfindPetsByStatusRequest(f)((status))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetsByStatusResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidfindPetsByStatusRequest(f: findPetsByStatusActionType)(request: findPetsByStatusActionRequestType) = {
         implicit val findPetsByStatusWritableJson = anyToWritable[findPetsByStatusActionResultType](findPetsByStatusResponseMimeType)
@@ -752,17 +793,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def loginUserAction = (f: loginUserActionType) => (username: OrderStatus, password: OrderStatus) => Action { 
 
-        val result = 
+        
+            val result = 
 
-            new UsersLoginGetValidator(username, password).errors match {
-                    case e if e.isEmpty => processValidloginUserRequest(f)((username, password))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(loginUserResponseMimeType)
-                        BadRequest(l)
-                }
+                new UsersLoginGetValidator(username, password).errors match {
+                        case e if e.isEmpty => processValidloginUserRequest(f)((username, password))
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(loginUserResponseMimeType)
+                            BadRequest(l)
+                    }
 
-            result
-    }
+                result
+            
+        }
 
     private def processValidloginUserRequest(f: loginUserActionType)(request: loginUserActionRequestType) = {
         implicit val loginUserWritableJson = anyToWritable[loginUserActionResultType](loginUserResponseMimeType)
