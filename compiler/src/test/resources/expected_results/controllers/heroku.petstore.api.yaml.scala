@@ -7,11 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-package heroku.petstore.api.yaml {
-
-
-
-
+package heroku.petstore.api.yaml { 
 
     class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
     val get = getAction {
@@ -36,4 +32,3 @@ package heroku.petstore.api.yaml {
         } //////// EOF ////////  getbyPetIdAction
     }
 }
-

@@ -7,11 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-package simple.petstore.api.yaml {
-
-
-
-
+package simple.petstore.api.yaml { 
 
     class SimplePetstoreApiYaml extends SimplePetstoreApiYamlBase {
     val addPet = addPetAction {
@@ -21,12 +17,7 @@ package simple.petstore.api.yaml {
         } //////// EOF ////////  addPetAction
     }
 }
-
-package simple.petstore.api.yaml {
-
-
-
-
+package simple.petstore.api.yaml { 
 
     class Dashboard extends DashboardBase {
     val methodLevel = methodLevelAction {
@@ -48,4 +39,3 @@ package simple.petstore.api.yaml {
         } //////// EOF ////////  pathLevelDeleteAction
     }
 }
-

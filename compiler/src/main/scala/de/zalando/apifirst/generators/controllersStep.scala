@@ -71,6 +71,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "validations?"                  -> allValidations.nonEmpty,
       "non_body_params?"              -> nonBodyParams.nonEmpty,
       "body_param?"                   -> bodyParam.nonEmpty,
+      "header_params?"                -> (if (headerParams.nonEmpty) Some(Map("header_params" -> headerParams)) else None),
       "request_needed?"               -> (bodyParam.nonEmpty || headerParams.nonEmpty)
     ) ++ nameMappings + nameParamPair
   }
@@ -82,8 +83,11 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     call.resultTypes.toSeq.sortBy(_.simple).headOption.map { t =>
       val tpe = app.findType(t.name)
       tpe match {
-        case c: Container => c.imports.head + "[" + typeNameDenotation(table, c.tpe.name) + "]" // FIXME won't work with MAP
+        case c: Container =>
+          // TODO this should be readable from model
+          c.name.simple + c.nestedTypes.map{ t => typeNameDenotation(table, t.name)}.mkString("[", ", ", "]")
         case p: ProvidedType => typeNameDenotation(table, p.name)
+        case p: TypeDef => typeNameDenotation(table, p.name)
         case o => o.name.className
       }
     }
@@ -114,7 +118,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val typeName = app.findParameter(param).typeName
     Map(
       "field_name" -> escape(camelize("\\.", param.simple)), // should be taken from the validation
-      "header_method" -> "get",
       "type_name" -> typeNameDenotation(table, typeName.name)
     )
   }

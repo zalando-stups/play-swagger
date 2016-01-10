@@ -1,15 +1,14 @@
 package simple.petstore.api.yaml
+
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
+import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponsesDefaultGenerator)
-
-    def createPetsPostResponses200Generator = _generate(PetsPostResponses200Generator)
-
     def createNullGenerator = _generate(NullGenerator)
+
+    def createNewPetTagGenerator = _generate(NewPetTagGenerator)
 
     def createLongGenerator = _generate(LongGenerator)
 
@@ -19,19 +18,13 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
 
     def createPetsGetTagsOptGenerator = _generate(PetsGetTagsOptGenerator)
 
-    def createPetsGetResponses200OptGenerator = _generate(PetsGetResponses200OptGenerator)
-
-    def createPetTagGenerator = _generate(PetTagGenerator)
-
     def createPetsGetResponses200Generator = _generate(PetsGetResponses200Generator)
 
     def createPetsGetTagsGenerator = _generate(PetsGetTagsGenerator)
 
-    def PetsIdDeleteResponsesDefaultGenerator = Gen.option(ErrorModelGenerator)
-
-    def PetsPostResponses200Generator = Gen.option(PetGenerator)
-
     def NullGenerator = arbitrary[Null]
+
+    def NewPetTagGenerator = Gen.option(arbitrary[String])
 
     def LongGenerator = arbitrary[Long]
 
@@ -39,13 +32,9 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
 
     def NewPetIdGenerator = Gen.option(arbitrary[Long])
 
-    def PetsGetTagsOptGenerator = Gen.containerOf[List,String](arbitrary[String])
+    def PetsGetTagsOptGenerator = _genList(arbitrary[String], "csv")
 
-    def PetsGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
-
-    def PetTagGenerator = Gen.option(arbitrary[String])
-
-    def PetsGetResponses200Generator = Gen.option(PetsGetResponses200OptGenerator)
+    def PetsGetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 
     def PetsGetTagsGenerator = Gen.option(PetsGetTagsOptGenerator)
 
@@ -63,23 +52,17 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
     def PetGenerator = for {
         id <- arbitrary[Long]
         name <- arbitrary[String]
-        tag <- PetTagGenerator
+        tag <- NewPetTagGenerator
         } yield Pet(id, name, tag)
 
     def NewPetGenerator = for {
         name <- arbitrary[String]
         id <- NewPetIdGenerator
-        tag <- PetTagGenerator
+        tag <- NewPetTagGenerator
         } yield NewPet(name, id, tag)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
-}
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
+    }

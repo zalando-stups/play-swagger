@@ -1,15 +1,19 @@
 package full.petstore.api.yaml
+
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
+import de.zalando.play.controllers.ArrayWrapper
+import org.joda.time.DateTime
 object Generators {
-def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
-
     def createStringGenerator = _generate(StringGenerator)
 
     def createNullGenerator = _generate(NullGenerator)
+
+    def createOrderStatusGenerator = _generate(OrderStatusGenerator)
+
+    def createPetsFindByStatusGetStatusOptGenerator = _generate(PetsFindByStatusGetStatusOptGenerator)
 
     def createUsersCreateWithListPostBodyOptGenerator = _generate(UsersCreateWithListPostBodyOptGenerator)
 
@@ -19,71 +23,69 @@ def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
 
     def createPetsPostBodyGenerator = _generate(PetsPostBodyGenerator)
 
+    def createOrderShipDateGenerator = _generate(OrderShipDateGenerator)
+
     def createUsersUsernamePutBodyGenerator = _generate(UsersUsernamePutBodyGenerator)
 
     def createStoresOrderPostBodyGenerator = _generate(StoresOrderPostBodyGenerator)
 
-    def createOrderStatusGenerator = _generate(OrderStatusGenerator)
+    def createOrderCompleteGenerator = _generate(OrderCompleteGenerator)
 
     def createPetTagsGenerator = _generate(PetTagsGenerator)
 
-    def createOrderCompleteGenerator = _generate(OrderCompleteGenerator)
-
     def createLongGenerator = _generate(LongGenerator)
 
-    def createPetTagsOptGenerator = _generate(PetTagsOptGenerator)
+    def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
 
-    def createPetsFindByStatusGetResponses200OptGenerator = _generate(PetsFindByStatusGetResponses200OptGenerator)
-
-    def createPetCategoryGenerator = _generate(PetCategoryGenerator)
-
-    def createOrderShipDateGenerator = _generate(OrderShipDateGenerator)
+    def createPetPhotoUrlsGenerator = _generate(PetPhotoUrlsGenerator)
 
     def createUsersCreateWithListPostBodyGenerator = _generate(UsersCreateWithListPostBodyGenerator)
 
     def createPetsFindByStatusGetStatusGenerator = _generate(PetsFindByStatusGetStatusGenerator)
 
-    def createPetPhotoUrlsGenerator = _generate(PetPhotoUrlsGenerator)
+    def createPetCategoryGenerator = _generate(PetCategoryGenerator)
 
-    def OrderQuantityGenerator = Gen.option(arbitrary[Int])
+    def createPetTagsOptGenerator = _generate(PetTagsOptGenerator)
 
     def StringGenerator = arbitrary[String]
 
     def NullGenerator = arbitrary[Null]
 
-    def UsersCreateWithListPostBodyOptGenerator = Gen.containerOf[List,User](UserGenerator)
+    def OrderStatusGenerator = Gen.option(arbitrary[String])
+
+    def PetsFindByStatusGetStatusOptGenerator = _genList(arbitrary[String], "multi")
+
+    def UsersCreateWithListPostBodyOptGenerator = _genList(UserGenerator, "csv")
 
     def OrderPetIdGenerator = Gen.option(arbitrary[Long])
 
-    def PetsFindByStatusGetResponses200Generator = Gen.option(PetsFindByStatusGetResponses200OptGenerator)
+    def PetsFindByStatusGetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 
     def PetsPostBodyGenerator = Gen.option(PetGenerator)
+
+    def OrderShipDateGenerator = Gen.option(arbitrary[DateTime])
 
     def UsersUsernamePutBodyGenerator = Gen.option(UserGenerator)
 
     def StoresOrderPostBodyGenerator = Gen.option(OrderGenerator)
 
-    def OrderStatusGenerator = Gen.option(arbitrary[String])
+    def OrderCompleteGenerator = Gen.option(arbitrary[Boolean])
 
     def PetTagsGenerator = Gen.option(PetTagsOptGenerator)
 
-    def OrderCompleteGenerator = Gen.option(arbitrary[Boolean])
-
     def LongGenerator = arbitrary[Long]
 
-    def PetTagsOptGenerator = Gen.containerOf[List,Tag](TagGenerator)
+    def OrderQuantityGenerator = Gen.option(arbitrary[Int])
 
-    def PetsFindByStatusGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
-
-    def PetCategoryGenerator = Gen.option(TagGenerator)
-
-    def OrderShipDateGenerator = Gen.option(arbitrary[Date])
+    def PetPhotoUrlsGenerator = Gen.containerOf[List,String](arbitrary[String])
 
     def UsersCreateWithListPostBodyGenerator = Gen.option(UsersCreateWithListPostBodyOptGenerator)
 
-    def PetsFindByStatusGetStatusGenerator = Gen.option(PetPhotoUrlsGenerator)
+    def PetsFindByStatusGetStatusGenerator = Gen.option(PetsFindByStatusGetStatusOptGenerator)
 
-    def PetPhotoUrlsGenerator = Gen.containerOf[List,String](arbitrary[String])
+    def PetCategoryGenerator = Gen.option(TagGenerator)
+
+    def PetTagsOptGenerator = _genList(TagGenerator, "csv")
 
     def createUserGenerator = _generate(UserGenerator)
 
@@ -128,13 +130,10 @@ def createOrderQuantityGenerator = _generate(OrderQuantityGenerator)
         } yield Pet(name, tags, photoUrls, id, status, category)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
-}
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
+    implicit lazy val arbDateTime: Arbitrary[DateTime] = Arbitrary(for {
+        l <- arbitrary[Long]
+    } yield new DateTime(System.currentTimeMillis + l))
+    }

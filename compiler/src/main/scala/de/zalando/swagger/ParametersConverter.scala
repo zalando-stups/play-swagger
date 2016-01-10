@@ -58,6 +58,8 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
         paramRef -> fromBodyParameter(prefix, bp)
       case nbp: NonBodyParameterCommons[_, _] =>
         paramRef -> fromNonBodyParameter(prefix, nbp)
+      case nbp: NonBodyParameter[_] =>
+        throw new IllegalStateException("Something went wrong, this case should not be reachable")
     }
   }
 

@@ -9,11 +9,12 @@ import play.api.http.Status._
 import play.api.http.{Writeable, LazyHttpErrorHandler}
 import play.api.libs.iteratee._
 import play.api.mvc.Results.Status
-import play.api.mvc.{BodyParser, BodyParsers, RequestHeader, Result}
+import play.api.mvc._
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
+import scala.util.{Left, Right, Either}
 import scala.util.control.NonFatal
 
 /**
@@ -36,7 +37,8 @@ object PlayBodyParsing extends PlayBodyParsing {
 
   /**
    * Returns proper jackson mapper for given mime type
-   * @param mimeType  the mimeType of the required mapper
+    *
+    * @param mimeType  the mimeType of the required mapper
    * @return
    */
   def jacksonMapper(mimeType: String) = {
@@ -49,7 +51,8 @@ object PlayBodyParsing extends PlayBodyParsing {
 
   /**
    * Parser factory for any type
-   * @param mimeType name of the parser
+    *
+    * @param mimeType name of the parser
    * @param errorMsg error message to return if an input cannot be parsed
    * @param maxLength the maximal length of the content
    * @param tag the ClassTag to use at runtime
@@ -100,6 +103,15 @@ trait PlayBodyParsing extends BodyParsers {
     case _: IndexOutOfBoundsException => Status(NOT_FOUND)
     case _ => Status(INTERNAL_SERVER_ERROR)
   }
+
+  /**
+    * Helper method to parse parameters sent as Headers
+    */
+  def fromHeaders[T](key: String, headers: Map[String, Seq[String]], default: Option[T] = None)(implicit binder: QueryStringBindable[T]): Either[String,T] =
+    binder.bind(key, headers).getOrElse {
+      default.map(d => Right(d)).getOrElse(Left("Missing header parameter(s): " + key))
+    }
+
   /**
    * This is private in play codebase. Copy-pasted it.
    */

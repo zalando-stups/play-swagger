@@ -1,11 +1,11 @@
 package nested_objects.yaml
+
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
 object Generators {
-def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)
+    def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)
 
     def createNestedObjectsNestedNested2Nested3BottomGenerator = _generate(NestedObjectsNestedNested2Nested3BottomGenerator)
 
@@ -53,13 +53,4 @@ def createNestedObjectsNestedGenerator = _generate(NestedObjectsNestedGenerator)
         } yield NestedObjectsNestedNested2(nested3)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
-}
+    }

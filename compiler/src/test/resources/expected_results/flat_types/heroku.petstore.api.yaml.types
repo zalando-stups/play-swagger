@@ -1,22 +1,20 @@
-⌿/definitions/Pet⌿name -> 
-	Opt(Str)
-⌿/definitions/Pet⌿birthday -> 
-	Opt(Intgr)
 ⌿definitions⌿Pet -> 
 	TypeDef(⌿definitions⌿Pet, Seq(
-		Field(⌿definitions⌿Pet⌿name, TypeRef(⌿/definitions/Pet⌿name)), 
-		Field(⌿definitions⌿Pet⌿birthday, TypeRef(⌿/definitions/Pet⌿birthday))))
+		Field(⌿definitions⌿Pet⌿name, TypeRef(⌿definitions⌿Pet⌿name)), 
+		Field(⌿definitions⌿Pet⌿birthday, TypeRef(⌿definitions⌿Pet⌿birthday))))
+⌿definitions⌿Pet⌿name -> 
+	Opt(Str)
+⌿definitions⌿Pet⌿birthday -> 
+	Opt(Intgr)
 ⌿paths⌿/{petId}⌿get⌿petId -> 
 	Str
 ⌿paths⌿/⌿post⌿responses⌿200 -> 
 	Null
 ⌿paths⌿/⌿get⌿responses⌿200 -> 
-	Opt(TypeRef(⌿paths⌿/⌿get⌿responses⌿200⌿Opt))
-⌿paths⌿/⌿get⌿responses⌿200⌿Opt -> 
-	Arr(TypeRef(⌿definitions⌿Pet))
+	ArrResult(TypeRef(⌿definitions⌿Pet))
 -- params --
 
-⌿paths⌿/⌿get⌿limit -> Parameter(limit,TypeRef(⌿/definitions/Pet⌿birthday),None,None,.+,true,query)
+⌿paths⌿/⌿get⌿limit -> Parameter(limit,TypeRef(⌿definitions⌿Pet⌿birthday),None,None,.+,true,query)
 ⌿paths⌿/⌿put⌿pet -> Parameter(pet,TypeRef(⌿definitions⌿Pet),None,None,.+,false,body)
 ⌿paths⌿/⌿post⌿pet -> Parameter(pet,TypeRef(⌿definitions⌿Pet),None,None,.+,false,body)
 ⌿paths⌿/{petId}⌿get⌿petId -> Parameter(petId,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

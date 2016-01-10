@@ -69,12 +69,10 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     val paramName = app.findParameter(param)
     val typeName = paramName.typeName
     val genName = generator(typeName.name, table)
-    // TODO
-    // val genPckg = if (genName.indexOf(']')>0) "" else typeName.name.qualifiedName("", generatorsSuffix)._1 + "."
     Map(
       "name" -> ScalaName.escape(ScalaName.camelize("\\.", param.simple)),
       "type" -> typeNameDenotation(table, param.name),
-      "generator" -> (/*genPckg + */genName)
+      "generator" -> genName
     )
   }
 
@@ -100,22 +98,5 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     "s\"\"\"" + url + fullQuery + "\"\"\""
   }
 
-  private def singleQueryParam(name: String, typeName: Type): String = typeName match {
-    case r@ TypeRef(ref) =>
-      singleQueryParam(name, app.findType(ref))
-    case c: Domain.Opt =>
-      containerParam(name) + "getOrElse(\"\")}"
-    case c: Domain.Arr =>
-      containerParam(name) + "mkString(\"&\")}"
-    case d: Domain.CatchAll =>
-      "" // TODO no marshalling / unmarshalling yet
-    case d: Domain.TypeDef =>
-      "" // TODO no marshalling / unmarshalling yet
-    case o =>
-      name + "=${URLEncoder.encode(" + name + ".toString, \"UTF-8\")}"
-  }
-
-  private def containerParam(name: String) =
-    "${" + name + ".map { i => \"" + name + "=\" + URLEncoder.encode(i.toString, \"UTF-8\")}."
-
+  private def singleQueryParam(name: String, typeName: Type): String = "$" + s"""{toQuery("$name", $name)}"""
 }

@@ -6,6 +6,8 @@ import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
 
+import scala.annotation.tailrec
+
 /**
   * @author  slasch 
   * @since   21.12.2015.
@@ -76,7 +78,7 @@ class ScalaPlayCallEnricher(val app: StrictModel) extends Transformation[ApiCall
   * Enriches AST with information related to Parameters
   */
 class ScalaPlayParameterEnricher(val app: StrictModel) extends Transformation[Parameter]
-  with ParametersValidatorsStep with CommonParamDataStep {
+  with ParamBindingsStep with ParametersValidatorsStep with CommonParamDataStep {
 
   override def data = app.params.toSeq.map { case (r, p) => r.name -> p }
 
@@ -106,7 +108,10 @@ object DenotationNames {
   val GENERATOR_NAME = "generator_name"
 
   def typeNameDenotation(table: DenotationTable, r: Reference): String = {
-    table.get(r).map(_ (COMMON)(TYPE_NAME).toString).getOrElse { r.simple }
+    table.get(r).map(_ (COMMON)(TYPE_NAME).toString).getOrElse {
+      if (r.simple.indexOf('/') < 0) r.simple
+      else throw new IllegalStateException(s"Could not find a type for $r in ${table.mkString("\n")}")
+    }
   }
 
   def memberNameDenotation(table: DenotationTable, r: Reference): String = {
@@ -161,17 +166,39 @@ object ReShaper {
 
 object LastListElementMarks {
   def set(d: Map[String, Any]): Map[String, Any] = d map {
-    case (ss, tt: Map[String, Any]) =>
+    case (ss, tt: Map[String @unchecked, _]) =>
       ss -> set(tt)
-    case (ss, Some(tt: Map[String, Any])) =>
+    case (ss, Some(tt: Map[String @unchecked, _])) =>
       ss -> Some(set(tt))
     case (ss, l: List[_]) if l.isEmpty || !l.head.isInstanceOf[Map[_,_]] =>
       ss -> l
-    case (ss, l: List[Map[String, Any]]) =>
-      val newList: List[Map[String, Any]] =
+    case (ss, l: List[Map[String @unchecked, _] @unchecked]) =>
+      val newList: List[Map[String @unchecked, _] @unchecked] =
         l.zipWithIndex map { case (le, i: Int) => set(le.updated("last", i == l.length - 1)) }
       ss -> newList
     case (ss, other) =>
       ss -> other
+  }
+}
+object KeyCollector {
+  def collect(key: String)(d: Map[String, Any]): Seq[String] = d.toSeq flatMap {
+    case (ss, tt: Map[_, _]) =>
+      tt.values flatMap {
+        case ttt: Map[String @unchecked, _] =>
+          collect(key)(ttt)
+        case ttt: List[Map[String @unchecked, _] @unchecked] =>
+          ttt flatMap collect(key)
+        case _ => Nil
+      }
+    case (ss, Some(tt: Map[String @unchecked, _])) =>
+      collect(key)(tt)
+    case (ss, l: List[_]) if l.isEmpty || !l.head.isInstanceOf[Map[_,_]] =>
+      Nil
+    case (ss, l: List[Map[String @unchecked, _] @unchecked]) =>
+      l flatMap collect(key)
+    case (ss, other: Set[String @unchecked]) if ss == key && other.nonEmpty =>
+      other
+    case (ss, other) =>
+      Nil
   }
 }

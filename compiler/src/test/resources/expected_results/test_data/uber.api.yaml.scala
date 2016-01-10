@@ -1,61 +1,42 @@
 package uber.api.yaml
+
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
+import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createDoubleGenerator = _generate(DoubleGenerator)
-
-    def createProfileLast_nameGenerator = _generate(ProfileLast_nameGenerator)
-
-    def createProductsGetResponses200OptGenerator = _generate(ProductsGetResponses200OptGenerator)
-
-    def createEstimatesPriceGetResponses200OptGenerator = _generate(EstimatesPriceGetResponses200OptGenerator)
+    def createDoubleGenerator = _generate(DoubleGenerator)
 
     def createActivitiesHistoryGenerator = _generate(ActivitiesHistoryGenerator)
 
-    def createPriceEstimateLow_estimateGenerator = _generate(PriceEstimateLow_estimateGenerator)
+    def createProfilePictureGenerator = _generate(ProfilePictureGenerator)
 
-    def createHistoryGetResponsesDefaultGenerator = _generate(HistoryGetResponsesDefaultGenerator)
-
-    def createHistoryGetResponses200Generator = _generate(HistoryGetResponses200Generator)
+    def createErrorCodeGenerator = _generate(ErrorCodeGenerator)
 
     def createProductsGetResponses200Generator = _generate(ProductsGetResponses200Generator)
 
-    def createMeGetResponses200Generator = _generate(MeGetResponses200Generator)
-
-    def createActivitiesHistoryOptGenerator = _generate(ActivitiesHistoryOptGenerator)
+    def createPriceEstimateHigh_estimateGenerator = _generate(PriceEstimateHigh_estimateGenerator)
 
     def createEstimatesPriceGetResponses200Generator = _generate(EstimatesPriceGetResponses200Generator)
 
-    def createActivitiesLimitGenerator = _generate(ActivitiesLimitGenerator)
+    def createActivitiesHistoryOptGenerator = _generate(ActivitiesHistoryOptGenerator)
 
     def DoubleGenerator = arbitrary[Double]
 
-    def ProfileLast_nameGenerator = Gen.option(arbitrary[String])
-
-    def ProductsGetResponses200OptGenerator = Gen.containerOf[List,Product](ProductGenerator)
-
-    def EstimatesPriceGetResponses200OptGenerator = Gen.containerOf[List,PriceEstimate](PriceEstimateGenerator)
-
     def ActivitiesHistoryGenerator = Gen.option(ActivitiesHistoryOptGenerator)
 
-    def PriceEstimateLow_estimateGenerator = Gen.option(arbitrary[Double])
+    def ProfilePictureGenerator = Gen.option(arbitrary[String])
 
-    def HistoryGetResponsesDefaultGenerator = Gen.option(ErrorGenerator)
+    def ErrorCodeGenerator = Gen.option(arbitrary[Int])
 
-    def HistoryGetResponses200Generator = Gen.option(ActivitiesGenerator)
+    def ProductsGetResponses200Generator = Gen.containerOf[List,Product](ProductGenerator)
 
-    def ProductsGetResponses200Generator = Gen.option(ProductsGetResponses200OptGenerator)
+    def PriceEstimateHigh_estimateGenerator = Gen.option(arbitrary[Double])
 
-    def MeGetResponses200Generator = Gen.option(ProfileGenerator)
+    def EstimatesPriceGetResponses200Generator = Gen.containerOf[List,PriceEstimate](PriceEstimateGenerator)
 
-    def ActivitiesHistoryOptGenerator = Gen.containerOf[List,Activity](ActivityGenerator)
-
-    def EstimatesPriceGetResponses200Generator = Gen.option(EstimatesPriceGetResponses200OptGenerator)
-
-    def ActivitiesLimitGenerator = Gen.option(arbitrary[Int])
+    def ActivitiesHistoryOptGenerator = _genList(ActivityGenerator, "csv")
 
     def createActivityGenerator = _generate(ActivityGenerator)
 
@@ -70,56 +51,50 @@ def createDoubleGenerator = _generate(DoubleGenerator)
     def createErrorGenerator = _generate(ErrorGenerator)
 
     def ActivityGenerator = for {
-        uuid <- ProfileLast_nameGenerator
+        uuid <- ProfilePictureGenerator
         } yield Activity(uuid)
 
     def PriceEstimateGenerator = for {
-        low_estimate <- PriceEstimateLow_estimateGenerator
-        display_name <- ProfileLast_nameGenerator
-        estimate <- ProfileLast_nameGenerator
-        high_estimate <- PriceEstimateLow_estimateGenerator
-        product_id <- ProfileLast_nameGenerator
-        currency_code <- ProfileLast_nameGenerator
-        surge_multiplier <- PriceEstimateLow_estimateGenerator
+        low_estimate <- PriceEstimateHigh_estimateGenerator
+        display_name <- ProfilePictureGenerator
+        estimate <- ProfilePictureGenerator
+        high_estimate <- PriceEstimateHigh_estimateGenerator
+        product_id <- ProfilePictureGenerator
+        currency_code <- ProfilePictureGenerator
+        surge_multiplier <- PriceEstimateHigh_estimateGenerator
         } yield PriceEstimate(low_estimate, display_name, estimate, high_estimate, product_id, currency_code, surge_multiplier)
 
     def ProductGenerator = for {
-        image <- ProfileLast_nameGenerator
-        description <- ProfileLast_nameGenerator
-        display_name <- ProfileLast_nameGenerator
-        product_id <- ProfileLast_nameGenerator
-        capacity <- ProfileLast_nameGenerator
+        image <- ProfilePictureGenerator
+        description <- ProfilePictureGenerator
+        display_name <- ProfilePictureGenerator
+        product_id <- ProfilePictureGenerator
+        capacity <- ProfilePictureGenerator
         } yield Product(image, description, display_name, product_id, capacity)
 
     def ProfileGenerator = for {
-        first_name <- ProfileLast_nameGenerator
-        email <- ProfileLast_nameGenerator
-        promo_code <- ProfileLast_nameGenerator
-        last_name <- ProfileLast_nameGenerator
-        picture <- ProfileLast_nameGenerator
+        first_name <- ProfilePictureGenerator
+        email <- ProfilePictureGenerator
+        promo_code <- ProfilePictureGenerator
+        last_name <- ProfilePictureGenerator
+        picture <- ProfilePictureGenerator
         } yield Profile(first_name, email, promo_code, last_name, picture)
 
     def ActivitiesGenerator = for {
-        offset <- ActivitiesLimitGenerator
-        limit <- ActivitiesLimitGenerator
-        count <- ActivitiesLimitGenerator
+        offset <- ErrorCodeGenerator
+        limit <- ErrorCodeGenerator
+        count <- ErrorCodeGenerator
         history <- ActivitiesHistoryGenerator
         } yield Activities(offset, limit, count, history)
 
     def ErrorGenerator = for {
-        code <- ActivitiesLimitGenerator
-        message <- ProfileLast_nameGenerator
-        fields <- ProfileLast_nameGenerator
+        code <- ErrorCodeGenerator
+        message <- ProfilePictureGenerator
+        fields <- ProfilePictureGenerator
         } yield Error(code, message, fields)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
-}
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
+    }

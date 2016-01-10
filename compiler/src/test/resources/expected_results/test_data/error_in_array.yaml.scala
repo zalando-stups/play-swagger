@@ -1,49 +1,58 @@
 package error_in_array.yaml
+
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
+import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
+    def createModelSchemaSpecialDescriptionsOptGenerator = _generate(ModelSchemaSpecialDescriptionsOptGenerator)
 
-    def createErrorsErrorsOptGenerator = _generate(ErrorsErrorsOptGenerator)
+    def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
 
     def createModelSchemaSpecialDescriptionsGenerator = _generate(ModelSchemaSpecialDescriptionsGenerator)
 
-    def createModelSchemaRootLinksGenerator = _generate(ModelSchemaRootLinksGenerator)
-
-    def createErrorSourceGenerator = _generate(ErrorSourceGenerator)
-
-    def createModelSchemaAgeGroupsGenerator = _generate(ModelSchemaAgeGroupsGenerator)
+    def createErrorsErrorsOptGenerator = _generate(ErrorsErrorsOptGenerator)
 
     def createModelSchemaRootDataGenerator = _generate(ModelSchemaRootDataGenerator)
 
+    def createErrorSourceGenerator = _generate(ErrorSourceGenerator)
+
+    def createModelSchemaArticleModelAttributesOptGenerator = _generate(ModelSchemaArticleModelAttributesOptGenerator)
+
+    def createModelSchemaRootLinksGenerator = _generate(ModelSchemaRootLinksGenerator)
+
+    def createModelSchemaArticleModelAttributesGenerator = _generate(ModelSchemaArticleModelAttributesGenerator)
+
     def createErrorsErrorsGenerator = _generate(ErrorsErrorsGenerator)
+
+    def createModelSchemaAgeGroupsGenerator = _generate(ModelSchemaAgeGroupsGenerator)
 
     def createModelSchemaRootMetaGenerator = _generate(ModelSchemaRootMetaGenerator)
 
-    def createSchemaModelGetResponses200Generator = _generate(SchemaModelGetResponses200Generator)
+    def ModelSchemaSpecialDescriptionsOptGenerator = Gen.containerOf[List,String](arbitrary[String])
 
     def MetaCopyrightGenerator = Gen.option(arbitrary[String])
 
-    def ErrorsErrorsOptGenerator = Gen.containerOf[List,Error](ErrorGenerator)
+    def ModelSchemaSpecialDescriptionsGenerator = Gen.option(ModelSchemaSpecialDescriptionsOptGenerator)
 
-    def ModelSchemaSpecialDescriptionsGenerator = Gen.option(ModelSchemaAgeGroupsGenerator)
-
-    def ModelSchemaRootLinksGenerator = Gen.option(LinksGenerator)
-
-    def ErrorSourceGenerator = Gen.option(ErrorSourceNameClashGenerator)
-
-    def ModelSchemaAgeGroupsGenerator = Gen.containerOf[List,String](arbitrary[String])
+    def ErrorsErrorsOptGenerator = _genList(ErrorGenerator, "csv")
 
     def ModelSchemaRootDataGenerator = Gen.option(ModelSchemaGenerator)
 
+    def ErrorSourceGenerator = Gen.option(ErrorSourceNameClashGenerator)
+
+    def ModelSchemaArticleModelAttributesOptGenerator = _genList(arbitrary[String], "csv")
+
+    def ModelSchemaRootLinksGenerator = Gen.option(LinksGenerator)
+
+    def ModelSchemaArticleModelAttributesGenerator = Gen.option(ModelSchemaArticleModelAttributesOptGenerator)
+
     def ErrorsErrorsGenerator = Gen.option(ErrorsErrorsOptGenerator)
 
-    def ModelSchemaRootMetaGenerator = Gen.option(MetaGenerator)
+    def ModelSchemaAgeGroupsGenerator = _genList(arbitrary[String], "csv")
 
-    def SchemaModelGetResponses200Generator = Gen.option(ModelSchemaRootGenerator)
+    def ModelSchemaRootMetaGenerator = Gen.option(MetaGenerator)
 
     def createModelSchemaRootGenerator = _generate(ModelSchemaRootGenerator)
 
@@ -89,7 +98,7 @@ def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
         keywords <- MetaCopyrightGenerator
         lengthRegister <- MetaCopyrightGenerator
         specialDescriptions <- ModelSchemaSpecialDescriptionsGenerator
-        articleModelAttributes <- ModelSchemaSpecialDescriptionsGenerator
+        articleModelAttributes <- ModelSchemaArticleModelAttributesGenerator
         } yield ModelSchema(name, sizeRegister, brand, partnerArticleModelId, silhouetteId, description, ageGroups, keywords, lengthRegister, specialDescriptions, articleModelAttributes)
 
     def ErrorGenerator = for {
@@ -106,13 +115,7 @@ def createMetaCopyrightGenerator = _generate(MetaCopyrightGenerator)
         } yield Links(self, related)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
-}
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
+    }

@@ -4,8 +4,8 @@
 		Field(⌿definitions⌿ErrorModel⌿code, Intgr)))
 ⌿definitions⌿ExtendedErrorModel ->
 	AllOf(
-		TypeDef(⌿/definitions/ErrorModel, Seq(
-			Field(⌿/definitions/ErrorModel⌿message, Str), 
-			Field(⌿/definitions/ErrorModel⌿code, Intgr)))
+		TypeDef(⌿definitions⌿ErrorModel, Seq(
+			Field(⌿definitions⌿ErrorModel⌿message, Str), 
+			Field(⌿definitions⌿ErrorModel⌿code, Intgr)))
 		TypeDef(⌿definitions⌿ExtendedErrorModel, Seq(
 			Field(⌿definitions⌿ExtendedErrorModel⌿rootCause, Str))))

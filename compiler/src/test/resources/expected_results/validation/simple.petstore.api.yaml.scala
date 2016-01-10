@@ -4,9 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-import java.util.Date
-import java.io.File
-
+import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class PetsIdDeleteIdConstraints(override val instance: Long) extends ValidationBase[Long] {
     override def constraints: Seq[Constraint[Long]] =
@@ -56,12 +54,12 @@ class NewPetIdOptValidator(instance: Long) extends RecursiveValidator {
     override val validators = Seq(new NewPetIdOptConstraints(instance))
 
 }
-class PetTagOptConstraints(override val instance: String) extends ValidationBase[String] {
+class NewPetTagOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
         Seq()
 }
-class PetTagOptValidator(instance: String) extends RecursiveValidator {
-    override val validators = Seq(new PetTagOptConstraints(instance))
+class NewPetTagOptValidator(instance: String) extends RecursiveValidator {
+    override val validators = Seq(new NewPetTagOptConstraints(instance))
 
 }
 // ----- complex type validators -----
@@ -71,7 +69,7 @@ class NewPetValidator(instance: NewPet) extends RecursiveValidator {
 
     new NewPetIdValidator(instance.id), 
 
-    new PetTagValidator(instance.tag)
+    new NewPetTagValidator(instance.tag)
 
     )
 }
@@ -85,8 +83,8 @@ class PetsGetTagsValidator(instance: PetsGetTags) extends RecursiveValidator {
 class NewPetIdValidator(instance: NewPetId) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new NewPetIdOptValidator(_) }
 }
-class PetTagValidator(instance: PetTag) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new PetTagOptValidator(_) }
+class NewPetTagValidator(instance: NewPetTag) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new NewPetTagOptValidator(_) }
 }
 // ----- array delegating validators -----
 class PetsGetTagsOptConstraints(override val instance: PetsGetTagsOpt) extends ValidationBase[PetsGetTagsOpt] {

@@ -94,6 +94,10 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
         val delegate = delegateName(r, t, "Arr")
         val result = ("array_validations" -> optValidations(r, t, delegate)) +: constraints0(delegate -> t.tpe)
         result
+      case (r: Reference, t: ArrResult) =>
+        val delegate = delegateName(r, t, "Arr")
+        val result = ("array_validations" -> optValidations(r, t, delegate)) +: constraints0(delegate -> t.tpe)
+        result
       case (r: Reference, t: CatchAll) =>
         val result = ("catch_validations" -> typeConstraints(r, t)) +: constraints0((r / "CatchAll") -> t.tpe)
         result

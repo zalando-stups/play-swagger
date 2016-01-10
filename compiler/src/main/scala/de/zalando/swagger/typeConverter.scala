@@ -68,7 +68,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   private def fromResponses(paths: Paths): Seq[NamedTypes] = for {
     (prefix, responses) <- forAllOperations(paths, responseCollector)
     (suffix, response) <- responses
-    fullName = prefix / "responses" / suffix
+    fullName = prefix / Reference.responses / suffix
   } yield fromSchemaOrFileSchema(fullName, response.schema, Some(Nil))
 
   private def fromNamedParamListItem[T](pair: (Reference, ParametersListItem)): NamedTypes =
@@ -78,6 +78,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     case r : JsonReference => Seq(fromReference(name, r, None))
     case nb: NonBodyParameterCommons[_, _] => Seq(fromNonBodyParameter(name, nb))
     case bp: BodyParameter[_] => fromBodyParameter(name, bp)
+    case nbp: NonBodyParameter[_] =>
+      throw new IllegalStateException("Something went wrong, this case should not be reachable")
   }
 
   private def fromBodyParameter[T](name: Reference, param: BodyParameter[T]): NamedTypes =
@@ -215,7 +217,6 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 
   // ------------------------------------ Primitives ------------------------------------
 
-  @throws[MatchError]
   private implicit def fromParameterType(tpe: (ParameterType.Value, String)): TypeConstructor =
     (tpe._1, Option(tpe._2)) match {
       case (ParameterType.INTEGER, Some("int64")) => Domain.Lng
@@ -231,9 +232,9 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (ParameterType.STRING, Some("password")) => Domain.Password
       case (ParameterType.STRING, fmt) => Domain.Str.curried(fmt)
       case (ParameterType.FILE, _) => Domain.File
+      case (a, b) => throw new IllegalArgumentException(s"Combination if $a and $b is not supported")
     }
 
-  @throws[MatchError]
   private implicit def fromPrimitiveType(tpe: (PrimitiveType.Val, String)): TypeConstructor =
     (tpe._1, Option(tpe._2)) match {
       case (PrimitiveType.INTEGER, Some("int64")) => Domain.Lng
@@ -249,12 +250,17 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (PrimitiveType.STRING, Some("password")) => Domain.Password
       case (PrimitiveType.STRING, fmt) => Domain.Str.curried(fmt)
       case (PrimitiveType.NULL, _) => Domain.Null
+      case (a, b) => throw new IllegalArgumentException(s"Combination if $a and $b is not supported")
     }
 
   // ------------------------------------ Wrappers ------------------------------------
 
-  private def wrapInArray(t: NamedType, m: TypeMeta, collectionFormat: Option[String]): NamedType =
-    t._1 -> Domain.Arr(t._2, m, collectionFormat.map(_.toString))
+  private def wrapInArray(t: NamedType, m: TypeMeta, collectionFormat: Option[String]): NamedType = {
+    val wrapper =
+      if (t._1.isResponsePath) Domain.ArrResult(t._2, m)
+      else Domain.Arr(t._2, m, collectionFormat.map(_.toString).getOrElse(CollectionFormat.default.toString))
+    t._1 -> wrapper
+  }
 
   private def wrapInOption(t: NamedType): NamedType =
     t._1 -> Domain.Opt(t._2, TypeMeta(None))
@@ -272,8 +278,9 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   // Use required = None if everything is required
   // Use required = Some(listOfFields) to specify what exactly is required
   // Use required = Some(Nil) to define that everything is optional
+  // The return type is also required by definition
   private def isRequired[T](name: Reference, required: Option[Seq[String]]): Boolean =
-    required.isEmpty || required.get.contains(name.simple)
+    required.isEmpty || required.get.contains(name.simple) || name.parent.isTopResponsePath
 
 }
 

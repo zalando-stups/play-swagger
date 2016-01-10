@@ -1,8 +1,5 @@
 package nested_objects_validation
 package object yaml {
-import java.util.Date
-import java.io.File
-
 type NestedObjectsNested = Option[NestedObjectsNestedOpt]
 
     type NestedObjectsNestedNested2Nested3Bottom = Option[String]
@@ -25,4 +22,7 @@ type NestedObjectsNested = Option[NestedObjectsNestedOpt]
 
     
 
-}
+
+    
+    
+    }

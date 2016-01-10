@@ -8,13 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
+import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class SecurityApiYamlSpec extends Specification {
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+
+
       
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
@@ -26,54 +33,54 @@ import Generators._
         }
 
 "GET /v1/pets/{id}" should {
-            def testInvalidInput(id: PetsIdGetId) = {
+        def testInvalidInput(id: PetsIdGetId) = {
 
-                val url = s"""/v1/pets/${id}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsIdGetValidator(id).errors
+            val url = s"""/v1/pets/${toPath(id)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new PetsIdGetValidator(id).errors
 
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
-            }
-            def testValidInput(id: PetsIdGetId) = {
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(id: PetsIdGetId) = {
 
-                val url = s"""/v1/pets/${id}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        id <- PetsIdGetIdGenerator
-
-                    } yield id
-
-                val inputs = genInputs suchThat { id=>
-                    new PetsIdGetValidator(id).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+            val url = s"""/v1/pets/${toPath(id)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     id <- PetsIdGetIdGenerator
 
                 } yield id
 
-                val inputs = genInputs suchThat { id=>
-                    new PetsIdGetValidator(id).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { id=>
+                new PetsIdGetValidator(id).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                id <- PetsIdGetIdGenerator
+
+            } yield id
+
+            val inputs = genInputs suchThat { id=>
+                new PetsIdGetValidator(id).errors.isEmpty
+            }
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
+
     }
+}

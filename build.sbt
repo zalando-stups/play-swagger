@@ -13,6 +13,8 @@ lazy val api = (project in file("api"))
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
+      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-csv" % "2.6.4",
+      "joda-time" % "joda-time" % "2.9.1",
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "org.scalacheck" %% "scalacheck" % "1.12.4",
       "org.specs2" %% "specs2-scalacheck" % "3.6"

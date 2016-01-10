@@ -7,11 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-package full.petstore.api.yaml {
-
-
-
-
+package full.petstore.api.yaml { 
 
     class FullPetstoreApiYaml extends FullPetstoreApiYamlBase {
     val findPetsByTags = findPetsByTagsAction {
@@ -113,4 +109,3 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  loginUserAction
     }
 }
-

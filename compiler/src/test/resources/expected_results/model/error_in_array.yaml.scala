@@ -1,27 +1,29 @@
 package error_in_array
 package object yaml {
-import java.util.Date
-import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
+type ModelSchemaSpecialDescriptionsOpt = Seq[String]
 
-type MetaCopyright = Option[String]
+    type MetaCopyright = Option[String]
 
-    type ErrorsErrorsOpt = scala.collection.Seq[Error]
+    type ModelSchemaSpecialDescriptions = Option[ModelSchemaSpecialDescriptionsOpt]
 
-    type ModelSchemaSpecialDescriptions = Option[ModelSchemaAgeGroups]
-
-    type ModelSchemaRootLinks = Option[Links]
-
-    type ErrorSource = Option[ErrorSourceNameClash]
-
-    type ModelSchemaAgeGroups = scala.collection.Seq[String]
+    type ErrorsErrorsOpt = ArrayWrapper[Error]
 
     type ModelSchemaRootData = Option[ModelSchema]
 
+    type ErrorSource = Option[ErrorSourceNameClash]
+
+    type ModelSchemaArticleModelAttributesOpt = ArrayWrapper[String]
+
+    type ModelSchemaRootLinks = Option[Links]
+
+    type ModelSchemaArticleModelAttributes = Option[ModelSchemaArticleModelAttributesOpt]
+
     type ErrorsErrors = Option[ErrorsErrorsOpt]
 
-    type ModelSchemaRootMeta = Option[Meta]
+    type ModelSchemaAgeGroups = ArrayWrapper[String]
 
-    type SchemaModelGetResponses200 = Option[ModelSchemaRoot]
+    type ModelSchemaRootMeta = Option[Meta]
 
     case class ModelSchemaRoot(data: ModelSchemaRootData, meta: ModelSchemaRootMeta, links: ModelSchemaRootLinks) 
 
@@ -31,7 +33,7 @@ type MetaCopyright = Option[String]
 
     case class Meta(copyright: MetaCopyright) 
 
-    case class ModelSchema(name: String, sizeRegister: String, brand: String, partnerArticleModelId: Int, silhouetteId: String, description: MetaCopyright, ageGroups: ModelSchemaAgeGroups, keywords: MetaCopyright, lengthRegister: MetaCopyright, specialDescriptions: ModelSchemaSpecialDescriptions, articleModelAttributes: ModelSchemaSpecialDescriptions) 
+    case class ModelSchema(name: String, sizeRegister: String, brand: String, partnerArticleModelId: Int, silhouetteId: String, description: MetaCopyright, ageGroups: ModelSchemaAgeGroups, keywords: MetaCopyright, lengthRegister: MetaCopyright, specialDescriptions: ModelSchemaSpecialDescriptions, articleModelAttributes: ModelSchemaArticleModelAttributes) 
 
     case class Error(source: ErrorSource, code: MetaCopyright, status: MetaCopyright, detail: MetaCopyright, title: MetaCopyright) 
 
@@ -39,4 +41,7 @@ type MetaCopyright = Option[String]
 
     
 
-}
+
+    
+    
+    }

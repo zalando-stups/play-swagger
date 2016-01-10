@@ -1,29 +1,24 @@
 package expanded_polymorphism.yaml
+
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
-import java.util.Date
-import java.io.File
+import org.scalacheck.Arbitrary
+import Arbitrary._
 
+import de.zalando.play.controllers.ArrayWrapper
 object Generators {
-def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponsesDefaultGenerator)
-
     def createNullGenerator = _generate(NullGenerator)
 
     def createLongGenerator = _generate(LongGenerator)
 
     def createPetsGetLimitGenerator = _generate(PetsGetLimitGenerator)
 
-    def createNewPetTagGenerator = _generate(NewPetTagGenerator)
-
     def createPetsGetTagsOptGenerator = _generate(PetsGetTagsOptGenerator)
 
-    def createPetsGetResponses200OptGenerator = _generate(PetsGetResponses200OptGenerator)
+    def createNewPetTagGenerator = _generate(NewPetTagGenerator)
 
     def createPetsGetResponses200Generator = _generate(PetsGetResponses200Generator)
 
     def createPetsGetTagsGenerator = _generate(PetsGetTagsGenerator)
-
-    def PetsIdDeleteResponsesDefaultGenerator = Gen.option(ErrorGenerator)
 
     def NullGenerator = arbitrary[Null]
 
@@ -31,13 +26,11 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
 
     def PetsGetLimitGenerator = Gen.option(arbitrary[Int])
 
+    def PetsGetTagsOptGenerator = _genList(arbitrary[String], "csv")
+
     def NewPetTagGenerator = Gen.option(arbitrary[String])
 
-    def PetsGetTagsOptGenerator = Gen.containerOf[List,String](arbitrary[String])
-
-    def PetsGetResponses200OptGenerator = Gen.containerOf[List,Pet](PetGenerator)
-
-    def PetsGetResponses200Generator = Gen.option(PetsGetResponses200OptGenerator)
+    def PetsGetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 
     def PetsGetTagsGenerator = Gen.option(PetsGetTagsOptGenerator)
 
@@ -64,13 +57,7 @@ def createPetsIdDeleteResponsesDefaultGenerator = _generate(PetsIdDeleteResponse
         } yield Error(code, message)
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
-
-        keys <- Gen.containerOf[List,K](keyGen)
-
-        values <- Gen.containerOfN[List,V](keys.size, valGen)
-
-    } yield keys.zip(values).toMap
-
-}
+    def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
+        items <- Gen.containerOf[List,T](gen)
+    } yield ArrayWrapper(format)(items)
+    }

@@ -1,13 +1,10 @@
 package simple.petstore.api
 package object yaml {
-import java.util.Date
-import java.io.File
+import de.zalando.play.controllers.ArrayWrapper
+import de.zalando.play.controllers.PlayPathBindables
+type PetsIdDeleteResponses204 = Null
 
-type PetsIdDeleteResponsesDefault = Option[ErrorModel]
-
-    type PetsPostResponses200 = Option[Pet]
-
-    type PetsIdDeleteResponses204 = Null
+    type NewPetTag = Option[String]
 
     type PetsIdDeleteId = Long
 
@@ -15,22 +12,24 @@ type PetsIdDeleteResponsesDefault = Option[ErrorModel]
 
     type NewPetId = Option[Long]
 
-    type PetsGetTagsOpt = scala.collection.Seq[String]
+    type PetsGetTagsOpt = ArrayWrapper[String]
 
-    type PetsGetResponses200Opt = scala.collection.Seq[Pet]
-
-    type PetTag = Option[String]
-
-    type PetsGetResponses200 = Option[PetsGetResponses200Opt]
+    type PetsGetResponses200 = Seq[Pet]
 
     type PetsGetTags = Option[PetsGetTagsOpt]
 
     case class ErrorModel(code: Int, message: String) 
 
-    case class Pet(id: Long, name: String, tag: PetTag) 
+    case class Pet(id: Long, name: String, tag: NewPetTag) 
 
-    case class NewPet(name: String, id: NewPetId, tag: PetTag) 
+    case class NewPet(name: String, id: NewPetId, tag: NewPetTag) 
 
     
 
-}
+
+    
+    
+    implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
+    implicit val bindable_OptionPetsGetTagsOptQuery = PlayPathBindables.createOptionQueryBindable[PetsGetTagsOpt]
+    implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("csv")
+    }

@@ -36,7 +36,8 @@ trait ClassesStep extends EnrichmentStep[Type] {
           "name" -> escape(f.name.simple),
           "type_name" -> typeNameDenotation(table, f.tpe.name)
         )
-      }
+      },
+      "imports" -> t.imports
     )
   }
 
@@ -83,11 +84,9 @@ trait AliasesStep extends EnrichmentStep[Type] {
   private def aliasProps(k: Reference, v: Container)(table: DenotationTable): Map[String, Any] = {
     Map(
       "name" -> typeNameDenotation(table, k),
-      "alias" -> v.alias,
-      "underlying_type" -> v.imports.headOption.map { _ => v.nestedTypes.map { t =>
-        typeNameDenotation(table, t.name)
-      }.mkString(", ")
-      }
+      "alias" -> v.name.simple,
+      "underlying_type" -> v.nestedTypes.map { t => typeNameDenotation(table, t.name) }.mkString(", "),
+      "imports" -> v.allImports
     )
   }
 

@@ -4,9 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-import java.util.Date
-import java.io.File
-
+import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class ModelSchemaNameConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -64,6 +62,22 @@ class ModelSchemaAgeGroupsArrValidator(instance: String) extends RecursiveValida
     override val validators = Seq(new ModelSchemaAgeGroupsArrConstraints(instance))
 
 }
+class ModelSchemaSpecialDescriptionsOptArrConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
+        Seq()
+}
+class ModelSchemaSpecialDescriptionsOptArrValidator(instance: String) extends RecursiveValidator {
+    override val validators = Seq(new ModelSchemaSpecialDescriptionsOptArrConstraints(instance))
+
+}
+class ModelSchemaArticleModelAttributesOptArrConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
+        Seq()
+}
+class ModelSchemaArticleModelAttributesOptArrValidator(instance: String) extends RecursiveValidator {
+    override val validators = Seq(new ModelSchemaArticleModelAttributesOptArrConstraints(instance))
+
+}
 // ----- complex type validators -----
 class ModelSchemaRootValidator(instance: ModelSchemaRoot) extends RecursiveValidator {
     override val validators = Seq(
@@ -97,7 +111,7 @@ class ModelSchemaValidator(instance: ModelSchema) extends RecursiveValidator {
 
     new ModelSchemaSpecialDescriptionsValidator(instance.specialDescriptions), 
 
-    new ModelSchemaSpecialDescriptionsValidator(instance.articleModelAttributes)
+    new ModelSchemaArticleModelAttributesValidator(instance.articleModelAttributes)
 
     )
 }
@@ -123,7 +137,10 @@ class MetaCopyrightValidator(instance: MetaCopyright) extends RecursiveValidator
     override val validators = instance.toSeq.map { new MetaCopyrightOptValidator(_) }
 }
 class ModelSchemaSpecialDescriptionsValidator(instance: ModelSchemaSpecialDescriptions) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new ModelSchemaAgeGroupsValidator(_) }
+    override val validators = instance.toSeq.map { new ModelSchemaSpecialDescriptionsOptValidator(_) }
+}
+class ModelSchemaArticleModelAttributesValidator(instance: ModelSchemaArticleModelAttributes) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new ModelSchemaArticleModelAttributesOptValidator(_) }
 }
 class ModelSchemaRootMetaValidator(instance: ModelSchemaRootMeta) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new MetaValidator(_) }
@@ -138,6 +155,20 @@ class ModelSchemaAgeGroupsConstraints(override val instance: ModelSchemaAgeGroup
 }
 class ModelSchemaAgeGroupsValidator(instance: ModelSchemaAgeGroups) extends RecursiveValidator {
     override val validators = new ModelSchemaAgeGroupsConstraints(instance) +: instance.map { new ModelSchemaAgeGroupsArrValidator(_)}
+}
+class ModelSchemaSpecialDescriptionsOptConstraints(override val instance: ModelSchemaSpecialDescriptionsOpt) extends ValidationBase[ModelSchemaSpecialDescriptionsOpt] {
+    override def constraints: Seq[Constraint[ModelSchemaSpecialDescriptionsOpt]] =
+        Seq()
+}
+class ModelSchemaSpecialDescriptionsOptValidator(instance: ModelSchemaSpecialDescriptionsOpt) extends RecursiveValidator {
+    override val validators = new ModelSchemaSpecialDescriptionsOptConstraints(instance) +: instance.map { new ModelSchemaSpecialDescriptionsOptArrValidator(_)}
+}
+class ModelSchemaArticleModelAttributesOptConstraints(override val instance: ModelSchemaArticleModelAttributesOpt) extends ValidationBase[ModelSchemaArticleModelAttributesOpt] {
+    override def constraints: Seq[Constraint[ModelSchemaArticleModelAttributesOpt]] =
+        Seq(minItems(1))
+}
+class ModelSchemaArticleModelAttributesOptValidator(instance: ModelSchemaArticleModelAttributesOpt) extends RecursiveValidator {
+    override val validators = new ModelSchemaArticleModelAttributesOptConstraints(instance) +: instance.map { new ModelSchemaArticleModelAttributesOptArrValidator(_)}
 }
 // ----- catch all simple validators -----
 // ----- call validations -----

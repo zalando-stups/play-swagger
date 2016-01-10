@@ -4,9 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-import java.util.Date
-import java.io.File
-
+import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class EstimatesPriceGetEnd_latitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =
@@ -40,20 +38,20 @@ class EstimatesTimeGetStart_longitudeValidator(instance: Double) extends Recursi
     override val validators = Seq(new EstimatesTimeGetStart_longitudeConstraints(instance))
 
 }
-class ActivitiesLimitOptConstraints(override val instance: Int) extends ValidationBase[Int] {
+class ErrorCodeOptConstraints(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
         Seq()
 }
-class ActivitiesLimitOptValidator(instance: Int) extends RecursiveValidator {
-    override val validators = Seq(new ActivitiesLimitOptConstraints(instance))
+class ErrorCodeOptValidator(instance: Int) extends RecursiveValidator {
+    override val validators = Seq(new ErrorCodeOptConstraints(instance))
 
 }
-class ProfileLast_nameOptConstraints(override val instance: String) extends ValidationBase[String] {
+class ProfilePictureOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
         Seq()
 }
-class ProfileLast_nameOptValidator(instance: String) extends RecursiveValidator {
-    override val validators = Seq(new ProfileLast_nameOptConstraints(instance))
+class ProfilePictureOptValidator(instance: String) extends RecursiveValidator {
+    override val validators = Seq(new ProfilePictureOptConstraints(instance))
 
 }
 class ProductsGetLatitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
@@ -90,22 +88,22 @@ class EstimatesPriceGetStart_longitudeValidator(instance: Double) extends Recurs
 }
 // ----- complex type validators -----
 // ----- option delegating validators -----
-class ActivitiesLimitValidator(instance: ActivitiesLimit) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new ActivitiesLimitOptValidator(_) }
+class ErrorCodeValidator(instance: ErrorCode) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new ErrorCodeOptValidator(_) }
 }
-class ProfileLast_nameValidator(instance: ProfileLast_name) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new ProfileLast_nameOptValidator(_) }
+class ProfilePictureValidator(instance: ProfilePicture) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new ProfilePictureOptValidator(_) }
 }
 // ----- array delegating validators -----
 // ----- catch all simple validators -----
 // ----- call validations -----
-class HistoryGetValidator(offset: ActivitiesLimit, limit: ActivitiesLimit) extends RecursiveValidator {
+class HistoryGetValidator(offset: ErrorCode, limit: ErrorCode) extends RecursiveValidator {
     override val validators = Seq(
-        new ActivitiesLimitValidator(offset), new ActivitiesLimitValidator(limit))
+        new ErrorCodeValidator(offset), new ErrorCodeValidator(limit))
 }
-class EstimatesTimeGetValidator(start_latitude: Double, start_longitude: Double, customer_uuid: ProfileLast_name, product_id: ProfileLast_name) extends RecursiveValidator {
+class EstimatesTimeGetValidator(start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) extends RecursiveValidator {
     override val validators = Seq(
-        new EstimatesTimeGetStart_latitudeValidator(start_latitude), new EstimatesTimeGetStart_longitudeValidator(start_longitude), new ProfileLast_nameValidator(customer_uuid), new ProfileLast_nameValidator(product_id))
+        new EstimatesTimeGetStart_latitudeValidator(start_latitude), new EstimatesTimeGetStart_longitudeValidator(start_longitude), new ProfilePictureValidator(customer_uuid), new ProfilePictureValidator(product_id))
 }
 class ProductsGetValidator(latitude: Double, longitude: Double) extends RecursiveValidator {
     override val validators = Seq(

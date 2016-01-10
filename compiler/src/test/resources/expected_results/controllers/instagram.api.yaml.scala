@@ -7,11 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-package instagram.api.yaml {
-
-
-
-
+package instagram.api.yaml { 
 
     class InstagramApiYaml extends InstagramApiYamlBase {
     val getmediaByMedia_idLikes = getmediaByMedia_idLikesAction {
@@ -40,14 +36,14 @@ package instagram.api.yaml {
             
         } //////// EOF ////////  getlocationsByLocation_idAction
     val getusersSearch = getusersSearchAction {
-            input: (String, LikeUser_name) =>
+            input: (String, MediaFilter) =>
             val (q, count) = input
 
             ???
             
         } //////// EOF ////////  getusersSearchAction
     val getusersSelfMediaLiked = getusersSelfMediaLikedAction {
-            input: (MediaCreated_time, MediaCreated_time) =>
+            input: (MediaId, MediaId) =>
             val (count, max_like_id) = input
 
             ???
@@ -59,7 +55,7 @@ package instagram.api.yaml {
             
         } //////// EOF ////////  gettagsByTag_nameAction
     val gettagsSearch = gettagsSearchAction {
-            (q: LikeUser_name) =>
+            (q: MediaFilter) =>
 ???
             
         } //////// EOF ////////  gettagsSearchAction
@@ -74,7 +70,7 @@ package instagram.api.yaml {
             
         } //////// EOF ////////  getmediaByMedia_idCommentsAction
     val postmediaByMedia_idComments = postmediaByMedia_idCommentsAction {
-            input: (Int, LocationLongitude) =>
+            input: (Int, LocationLatitude) =>
             val (`media-id`, tEXT) = input
 
             ???
@@ -91,14 +87,14 @@ package instagram.api.yaml {
             
         } //////// EOF ////////  gettagsByTag_nameMediaRecentAction
     val postusersByUser_idRelationship = postusersByUser_idRelationshipAction {
-            input: (Double, LikeUser_name) =>
+            input: (Double, MediaFilter) =>
             val (`user-id`, action) = input
 
             ???
             
         } //////// EOF ////////  postusersByUser_idRelationshipAction
     val getusersSelfFeed = getusersSelfFeedAction {
-            input: (MediaCreated_time, MediaCreated_time, MediaCreated_time) =>
+            input: (MediaId, MediaId, MediaId) =>
             val (count, max_id, min_id) = input
 
             ???
@@ -110,14 +106,14 @@ package instagram.api.yaml {
             
         } //////// EOF ////////  getusersByUser_idAction
     val getmediaSearch = getmediaSearchAction {
-            input: (MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude) =>
+            input: (MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude) =>
             val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
 
             ???
             
         } //////// EOF ////////  getmediaSearchAction
     val getgeographiesByGeo_idMediaRecent = getgeographiesByGeo_idMediaRecentAction {
-            input: (Int, MediaCreated_time, MediaCreated_time) =>
+            input: (Int, MediaId, MediaId) =>
             val (`geo-id`, count, min_id) = input
 
             ???
@@ -129,7 +125,7 @@ package instagram.api.yaml {
             
         } //////// EOF ////////  getmediaByShortcodeAction
     val getlocationsSearch = getlocationsSearchAction {
-            input: (MediaCreated_time, MediaCreated_time, MediaCreated_time, LocationLongitude, MediaCreated_time, LocationLongitude) =>
+            input: (MediaId, MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude) =>
             val (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng) = input
 
             ???
@@ -145,14 +141,14 @@ package instagram.api.yaml {
             
         } //////// EOF ////////  getmediaByMedia_idAction
     val getlocationsByLocation_idMediaRecent = getlocationsByLocation_idMediaRecentAction {
-            input: (Int, MediaCreated_time, MediaCreated_time, LikeUser_name, LikeUser_name) =>
+            input: (Int, MediaId, MediaId, MediaFilter, MediaFilter) =>
             val (`location-id`, max_timestamp, min_timestamp, min_id, max_id) = input
 
             ???
             
         } //////// EOF ////////  getlocationsByLocation_idMediaRecentAction
     val getusersByUser_idMediaRecent = getusersByUser_idMediaRecentAction {
-            input: (Double, MediaCreated_time, LikeUser_name, MediaCreated_time, LikeUser_name, MediaCreated_time) =>
+            input: (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId) =>
             val (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count) = input
 
             ???
@@ -164,4 +160,3 @@ package instagram.api.yaml {
         } //////// EOF ////////  getmediaPopularAction
     }
 }
-

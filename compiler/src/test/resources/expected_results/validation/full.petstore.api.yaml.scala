@@ -4,9 +4,8 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
-import java.util.Date
-import java.io.File
-
+import de.zalando.play.controllers.ArrayWrapper
+import org.joda.time.DateTime
 // ----- constraints and wrapper validations -----
 class UsersUsernameGetUsernameConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -64,11 +63,11 @@ class OrderQuantityOptValidator(instance: Int) extends RecursiveValidator {
     override val validators = Seq(new OrderQuantityOptConstraints(instance))
 
 }
-class OrderShipDateOptConstraints(override val instance: Date) extends ValidationBase[Date] {
-    override def constraints: Seq[Constraint[Date]] =
+class OrderShipDateOptConstraints(override val instance: DateTime) extends ValidationBase[DateTime] {
+    override def constraints: Seq[Constraint[DateTime]] =
         Seq()
 }
-class OrderShipDateOptValidator(instance: Date) extends RecursiveValidator {
+class OrderShipDateOptValidator(instance: DateTime) extends RecursiveValidator {
     override val validators = Seq(new OrderShipDateOptConstraints(instance))
 
 }
@@ -118,6 +117,14 @@ class UsersUsernamePutUsernameConstraints(override val instance: String) extends
 }
 class UsersUsernamePutUsernameValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new UsersUsernamePutUsernameConstraints(instance))
+
+}
+class PetsFindByStatusGetStatusOptArrConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
+        Seq()
+}
+class PetsFindByStatusGetStatusOptArrValidator(instance: String) extends RecursiveValidator {
+    override val validators = Seq(new PetsFindByStatusGetStatusOptArrConstraints(instance))
 
 }
 class PetsPetIdGetPetIdConstraints(override val instance: Long) extends ValidationBase[Long] {
@@ -248,7 +255,7 @@ class UsersCreateWithListPostBodyValidator(instance: UsersCreateWithListPostBody
     override val validators = instance.toSeq.map { new UsersCreateWithListPostBodyOptValidator(_) }
 }
 class PetsFindByStatusGetStatusValidator(instance: PetsFindByStatusGetStatus) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new PetPhotoUrlsValidator(_) }
+    override val validators = instance.toSeq.map { new PetsFindByStatusGetStatusOptValidator(_) }
 }
 // ----- array delegating validators -----
 class PetTagsOptConstraints(override val instance: PetTagsOpt) extends ValidationBase[PetTagsOpt] {
@@ -271,6 +278,13 @@ class UsersCreateWithListPostBodyOptConstraints(override val instance: UsersCrea
 }
 class UsersCreateWithListPostBodyOptValidator(instance: UsersCreateWithListPostBodyOpt) extends RecursiveValidator {
     override val validators = new UsersCreateWithListPostBodyOptConstraints(instance) +: instance.map { new UserValidator(_)}
+}
+class PetsFindByStatusGetStatusOptConstraints(override val instance: PetsFindByStatusGetStatusOpt) extends ValidationBase[PetsFindByStatusGetStatusOpt] {
+    override def constraints: Seq[Constraint[PetsFindByStatusGetStatusOpt]] =
+        Seq()
+}
+class PetsFindByStatusGetStatusOptValidator(instance: PetsFindByStatusGetStatusOpt) extends RecursiveValidator {
+    override val validators = new PetsFindByStatusGetStatusOptConstraints(instance) +: instance.map { new PetsFindByStatusGetStatusOptArrValidator(_)}
 }
 // ----- catch all simple validators -----
 // ----- call validations -----

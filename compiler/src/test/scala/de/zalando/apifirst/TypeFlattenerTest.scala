@@ -44,14 +44,14 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
 
     it("should flatten nested Arr types") {
       val nested = Map[Reference, Type](
-        reference1 -> Arr(Arr(Arr(Intgr(None), noMeta), noMeta), noMeta)
+        reference1 -> Arr(Arr(Arr(Intgr(None), noMeta, "tsv"), noMeta, "csv"), noMeta, "pipes")
       )
       val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 3
       flat.typeDefs mustBe Map(
-        reference1 -> Arr(TypeRef(reference1 / "Arr"), noMeta),
-        reference1 / "Arr" -> Arr(TypeRef(reference1 / "Arr" / "Arr"), noMeta),
-        reference1 / "Arr" / "Arr" -> Arr(Intgr(noMeta), noMeta))
+        reference1 -> Arr(TypeRef(reference1 / "Arr"), noMeta, "pipes"),
+        reference1 / "Arr" -> Arr(TypeRef(reference1 / "Arr" / "Arr"), noMeta, "csv"),
+        reference1 / "Arr" / "Arr" -> Arr(Intgr(noMeta), noMeta, "tsv"))
     }
 
     it("should flatten CatchAll types") {
@@ -71,7 +71,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
         reference1 -> OneOf(reference1, noMeta,
           Seq(
             Opt(Intgr(None), noMeta),
-            Arr(Str(None, None), noMeta)
+            Arr(Str(None, None), noMeta, "csv")
           )
         ))
       val flat = TypeFlattener(nested)
@@ -84,7 +84,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
           )
         ),
         reference1 / "OneOf0" -> Opt(Intgr(None), noMeta),
-        reference1 / "OneOf1" -> Arr(Str(None, None), noMeta)
+        reference1 / "OneOf1" -> Arr(Str(None, None), noMeta, "csv")
       )
     }
 

@@ -3,8 +3,12 @@ package {{&main_package_prefix}}
 package object {{&main_package_suffix}} {
 {{/main_package}}
 
-    import java.util.Date
-    import java.io.File
+{{#imports}}
+    import {{&name}}
+{{/imports}}
+{{#binding_imports}}
+    import {{&name}}
+{{/binding_imports}}
 
     {{#aliases}}
     type {{& name }} = {{& alias }}{{#underlying_type}}[{{& underlying_type }}]{{/underlying_type}}⮐
@@ -21,4 +25,12 @@ package object {{&main_package_suffix}} {
     {{#classes}}
     case class {{& name }}({{#fields}}{{&name}}: {{&type_name}}{{^last}}, {{/last}}{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
     {{/classes}}⮐
+
+    {{! seems like the package object is the only way to dynamically bring }}
+    {{! marshalling infrastructure into the scope of play routes }}
+    {{#bindings}}
+    {{#binding}}
+    {{&name}}{{&format}}
+    {{/binding}}
+    {{/bindings}}
 }

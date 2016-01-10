@@ -1,8 +1,5 @@
 package basic_polymorphism
 package object yaml {
-import java.util.Date
-import java.io.File
-
 trait IPet {
 
     def name: String
@@ -23,4 +20,7 @@ trait IPet {
 
     
 
-}
+
+    
+    
+    }

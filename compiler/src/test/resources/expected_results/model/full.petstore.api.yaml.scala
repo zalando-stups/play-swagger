@@ -1,47 +1,47 @@
 package full.petstore.api
 package object yaml {
-import java.util.Date
-import java.io.File
-
-type OrderQuantity = Option[Int]
-
-    type UsersUsernameGetUsername = String
+import de.zalando.play.controllers.ArrayWrapper
+import org.joda.time.DateTime
+import de.zalando.play.controllers.PlayPathBindables
+type UsersUsernameGetUsername = String
 
     type UsersCreateWithListPostResponsesDefault = Null
 
-    type UsersCreateWithListPostBodyOpt = scala.collection.Seq[User]
+    type OrderStatus = Option[String]
+
+    type PetsFindByStatusGetStatusOpt = ArrayWrapper[String]
+
+    type UsersCreateWithListPostBodyOpt = ArrayWrapper[User]
 
     type OrderPetId = Option[Long]
 
-    type PetsFindByStatusGetResponses200 = Option[PetsFindByStatusGetResponses200Opt]
+    type PetsFindByStatusGetResponses200 = Seq[Pet]
 
     type PetsPostBody = Option[Pet]
+
+    type OrderShipDate = Option[DateTime]
 
     type UsersUsernamePutBody = Option[User]
 
     type StoresOrderPostBody = Option[Order]
 
-    type OrderStatus = Option[String]
+    type OrderComplete = Option[Boolean]
 
     type PetTags = Option[PetTagsOpt]
 
-    type OrderComplete = Option[Boolean]
-
     type PetsPetIdDeletePetId = Long
 
-    type PetTagsOpt = scala.collection.Seq[Tag]
+    type OrderQuantity = Option[Int]
 
-    type PetsFindByStatusGetResponses200Opt = scala.collection.Seq[Pet]
-
-    type PetCategory = Option[Tag]
-
-    type OrderShipDate = Option[Date]
+    type PetPhotoUrls = Seq[String]
 
     type UsersCreateWithListPostBody = Option[UsersCreateWithListPostBodyOpt]
 
-    type PetsFindByStatusGetStatus = Option[PetPhotoUrls]
+    type PetsFindByStatusGetStatus = Option[PetsFindByStatusGetStatusOpt]
 
-    type PetPhotoUrls = scala.collection.Seq[String]
+    type PetCategory = Option[Tag]
+
+    type PetTagsOpt = ArrayWrapper[Tag]
 
     case class User(email: OrderStatus, username: OrderStatus, userStatus: OrderQuantity, lastName: OrderStatus, firstName: OrderStatus, id: OrderPetId, phone: OrderStatus, password: OrderStatus) 
 
@@ -53,4 +53,10 @@ type OrderQuantity = Option[Int]
 
     
 
-}
+
+    
+    
+    implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
+    implicit val bindable_OptionPetsFindByStatusGetStatusOptQuery = PlayPathBindables.createOptionQueryBindable[PetsFindByStatusGetStatusOpt]
+    implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("multi")
+    }

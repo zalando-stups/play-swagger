@@ -8,13 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
+import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class UberApiYamlSpec extends Specification {
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+
+
       
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
@@ -26,225 +33,209 @@ import Generators._
         }
 
 "GET /v1/history" should {
-            def testInvalidInput(input: (ActivitiesLimit, ActivitiesLimit)) = {
+        def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
 
-                val (offset, limit) = input
-                val url = s"""/v1/history?${offset.map { i => "offset=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new HistoryGetValidator(offset, limit).errors
+            val (offset, limit) = input
+            val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new HistoryGetValidator(offset, limit).errors
 
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
-            }
-            def testValidInput(input: (ActivitiesLimit, ActivitiesLimit)) = {
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(input: (ErrorCode, ErrorCode)) = {
 
-                val (offset, limit) = input
-                val url = s"""/v1/history?${offset.map { i => "offset=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${limit.map { i => "limit=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        offset <- ActivitiesLimitGenerator
-                        limit <- ActivitiesLimitGenerator
-                        
-
-                    } yield (offset, limit)
-
-                val inputs = genInputs suchThat { case (offset, limit)=>
-                    new HistoryGetValidator(offset, limit).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
-                    offset <- ActivitiesLimitGenerator
-                    limit <- ActivitiesLimitGenerator
+            val (offset, limit) = input
+            val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
+                    offset <- ErrorCodeGenerator
+                    limit <- ErrorCodeGenerator
                     
 
                 } yield (offset, limit)
 
-                val inputs = genInputs suchThat { case (offset, limit)=>
-                    new HistoryGetValidator(offset, limit).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { case (offset, limit)=>
+                new HistoryGetValidator(offset, limit).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v1/estimates/time" should {
-            def testInvalidInput(input: (Double, Double, ProfileLast_name, ProfileLast_name)) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                offset <- ErrorCodeGenerator
+                limit <- ErrorCodeGenerator
+                
 
-                val (start_latitude, start_longitude, customer_uuid, product_id) = input
-                val url = s"""/v1/estimates/time?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&${customer_uuid.map { i => "customer_uuid=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${product_id.map { i => "product_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors
+            } yield (offset, limit)
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { case (offset, limit)=>
+                new HistoryGetValidator(offset, limit).errors.isEmpty
             }
-            def testValidInput(input: (Double, Double, ProfileLast_name, ProfileLast_name)) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val (start_latitude, start_longitude, customer_uuid, product_id) = input
-                val url = s"""/v1/estimates/time?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&${customer_uuid.map { i => "customer_uuid=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}&${product_id.map { i => "product_id=" + URLEncoder.encode(i.toString, "UTF-8")}.getOrElse("")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        start_latitude <- DoubleGenerator
-                        start_longitude <- DoubleGenerator
-                        customer_uuid <- ProfileLast_nameGenerator
-                        product_id <- ProfileLast_nameGenerator
-                        
+    }
+"GET /v1/estimates/time" should {
+        def testInvalidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
 
-                    } yield (start_latitude, start_longitude, customer_uuid, product_id)
+            val (start_latitude, start_longitude, customer_uuid, product_id) = input
+            val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors
 
-                val inputs = genInputs suchThat { case (start_latitude, start_longitude, customer_uuid, product_id)=>
-                    new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
+
+            val (start_latitude, start_longitude, customer_uuid, product_id) = input
+            val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     start_latitude <- DoubleGenerator
                     start_longitude <- DoubleGenerator
-                    customer_uuid <- ProfileLast_nameGenerator
-                    product_id <- ProfileLast_nameGenerator
+                    customer_uuid <- ProfilePictureGenerator
+                    product_id <- ProfilePictureGenerator
                     
 
                 } yield (start_latitude, start_longitude, customer_uuid, product_id)
 
-                val inputs = genInputs suchThat { case (start_latitude, start_longitude, customer_uuid, product_id)=>
-                    new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { case (start_latitude, start_longitude, customer_uuid, product_id)=>
+                new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v1/products" should {
-            def testInvalidInput(input: (Double, Double)) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                start_latitude <- DoubleGenerator
+                start_longitude <- DoubleGenerator
+                customer_uuid <- ProfilePictureGenerator
+                product_id <- ProfilePictureGenerator
+                
 
-                val (latitude, longitude) = input
-                val url = s"""/v1/products?latitude=${URLEncoder.encode(latitude.toString, "UTF-8")}&longitude=${URLEncoder.encode(longitude.toString, "UTF-8")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new ProductsGetValidator(latitude, longitude).errors
+            } yield (start_latitude, start_longitude, customer_uuid, product_id)
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { case (start_latitude, start_longitude, customer_uuid, product_id)=>
+                new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors.isEmpty
             }
-            def testValidInput(input: (Double, Double)) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val (latitude, longitude) = input
-                val url = s"""/v1/products?latitude=${URLEncoder.encode(latitude.toString, "UTF-8")}&longitude=${URLEncoder.encode(longitude.toString, "UTF-8")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        latitude <- DoubleGenerator
-                        longitude <- DoubleGenerator
-                        
+    }
+"GET /v1/products" should {
+        def testInvalidInput(input: (Double, Double)) = {
 
-                    } yield (latitude, longitude)
+            val (latitude, longitude) = input
+            val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new ProductsGetValidator(latitude, longitude).errors
 
-                val inputs = genInputs suchThat { case (latitude, longitude)=>
-                    new ProductsGetValidator(latitude, longitude).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(input: (Double, Double)) = {
+
+            val (latitude, longitude) = input
+            val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     latitude <- DoubleGenerator
                     longitude <- DoubleGenerator
                     
 
                 } yield (latitude, longitude)
 
-                val inputs = genInputs suchThat { case (latitude, longitude)=>
-                    new ProductsGetValidator(latitude, longitude).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { case (latitude, longitude)=>
+                new ProductsGetValidator(latitude, longitude).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
-    "GET /v1/estimates/price" should {
-            def testInvalidInput(input: (Double, Double, Double, Double)) = {
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                latitude <- DoubleGenerator
+                longitude <- DoubleGenerator
+                
 
-                val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-                val url = s"""/v1/estimates/price?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&end_latitude=${URLEncoder.encode(end_latitude.toString, "UTF-8")}&end_longitude=${URLEncoder.encode(end_longitude.toString, "UTF-8")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors
+            } yield (latitude, longitude)
 
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given an URL: [" + url + "]" ) |: all(
-                    status(path) ?= BAD_REQUEST ,
-                    contentType(path) ?= Some("application/json"),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
+            val inputs = genInputs suchThat { case (latitude, longitude)=>
+                new ProductsGetValidator(latitude, longitude).errors.isEmpty
             }
-            def testValidInput(input: (Double, Double, Double, Double)) = {
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
 
-                val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-                val url = s"""/v1/estimates/price?start_latitude=${URLEncoder.encode(start_latitude.toString, "UTF-8")}&start_longitude=${URLEncoder.encode(start_longitude.toString, "UTF-8")}&end_latitude=${URLEncoder.encode(end_latitude.toString, "UTF-8")}&end_longitude=${URLEncoder.encode(end_longitude.toString, "UTF-8")}"""
-                val headers = Seq()
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                ("given an URL: [" + url + "]") |: (status(path) ?= OK)
-            }
-            "discard invalid data" in new WithApplication {
-                val genInputs = for {
-                        start_latitude <- DoubleGenerator
-                        start_longitude <- DoubleGenerator
-                        end_latitude <- DoubleGenerator
-                        end_longitude <- DoubleGenerator
-                        
+    }
+"GET /v1/estimates/price" should {
+        def testInvalidInput(input: (Double, Double, Double, Double)) = {
 
-                    } yield (start_latitude, start_longitude, end_latitude, end_longitude)
+            val (start_latitude, start_longitude, end_latitude, end_longitude) = input
+            val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            val errors = new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors
 
-                val inputs = genInputs suchThat { case (start_latitude, start_longitude, end_latitude, end_longitude)=>
-                    new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors.nonEmpty
-                }
-                val props = forAll(inputs) { i => testInvalidInput(i) }
-                checkResult(props)
-            }
-            "do something with valid data" in new WithApplication {
-                val genInputs = for {
+
+            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+            ("given an URL: [" + url + "]" ) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("application/json"),
+                errors.nonEmpty ?= true,
+                all(validations:_*)
+            )
+        }
+        def testValidInput(input: (Double, Double, Double, Double)) = {
+
+            val (start_latitude, start_longitude, end_latitude, end_longitude) = input
+            val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
+            val headers = Seq()
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+        }
+        "discard invalid data" in new WithApplication {
+            val genInputs = for {
                     start_latitude <- DoubleGenerator
                     start_longitude <- DoubleGenerator
                     end_latitude <- DoubleGenerator
@@ -253,12 +244,28 @@ import Generators._
 
                 } yield (start_latitude, start_longitude, end_latitude, end_longitude)
 
-                val inputs = genInputs suchThat { case (start_latitude, start_longitude, end_latitude, end_longitude)=>
-                    new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors.isEmpty
-                }
-                val props = forAll(inputs) { i => testValidInput(i) }
-                checkResult(props)
+            val inputs = genInputs suchThat { case (start_latitude, start_longitude, end_latitude, end_longitude)=>
+                new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors.nonEmpty
             }
-
+            val props = forAll(inputs) { i => testInvalidInput(i) }
+            checkResult(props)
         }
+        "do something with valid data" in new WithApplication {
+            val genInputs = for {
+                start_latitude <- DoubleGenerator
+                start_longitude <- DoubleGenerator
+                end_latitude <- DoubleGenerator
+                end_longitude <- DoubleGenerator
+                
+
+            } yield (start_latitude, start_longitude, end_latitude, end_longitude)
+
+            val inputs = genInputs suchThat { case (start_latitude, start_longitude, end_latitude, end_longitude)=>
+                new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors.isEmpty
+            }
+            val props = forAll(inputs) { i => testValidInput(i) }
+            checkResult(props)
+        }
+
     }
+}
