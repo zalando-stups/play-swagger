@@ -23,7 +23,7 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def getschemaModelAction = (f: getschemaModelActionType) => Action (getschemaModelParser()){ request =>
+    def getschemaModelAction = (f: getschemaModelActionType) => Action(getschemaModelParser()) { request =>
 
         val root = request.body
         val result = 

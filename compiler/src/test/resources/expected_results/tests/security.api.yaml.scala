@@ -63,7 +63,7 @@ import Generators._
 
                 } yield id
 
-            val inputs = genInputs suchThat { id=>
+            val inputs = genInputs suchThat { id =>
                 new PetsIdGetValidator(id).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -75,7 +75,7 @@ import Generators._
 
             } yield id
 
-            val inputs = genInputs suchThat { id=>
+            val inputs = genInputs suchThat { id =>
                 new PetsIdGetValidator(id).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }

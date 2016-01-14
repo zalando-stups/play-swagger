@@ -99,17 +99,29 @@ class ProfilePictureValidator(instance: ProfilePicture) extends RecursiveValidat
 // ----- call validations -----
 class HistoryGetValidator(offset: ErrorCode, limit: ErrorCode) extends RecursiveValidator {
     override val validators = Seq(
-        new ErrorCodeValidator(offset), new ErrorCodeValidator(limit))
+        new ErrorCodeValidator(offset),
+        new ErrorCodeValidator(limit)
+    )
 }
 class EstimatesTimeGetValidator(start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) extends RecursiveValidator {
     override val validators = Seq(
-        new EstimatesTimeGetStart_latitudeValidator(start_latitude), new EstimatesTimeGetStart_longitudeValidator(start_longitude), new ProfilePictureValidator(customer_uuid), new ProfilePictureValidator(product_id))
+        new EstimatesTimeGetStart_latitudeValidator(start_latitude),
+        new EstimatesTimeGetStart_longitudeValidator(start_longitude),
+        new ProfilePictureValidator(customer_uuid),
+        new ProfilePictureValidator(product_id)
+    )
 }
 class ProductsGetValidator(latitude: Double, longitude: Double) extends RecursiveValidator {
     override val validators = Seq(
-        new ProductsGetLatitudeValidator(latitude), new ProductsGetLongitudeValidator(longitude))
+        new ProductsGetLatitudeValidator(latitude),
+        new ProductsGetLongitudeValidator(longitude)
+    )
 }
 class EstimatesPriceGetValidator(start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) extends RecursiveValidator {
     override val validators = Seq(
-        new EstimatesPriceGetStart_latitudeValidator(start_latitude), new EstimatesPriceGetStart_longitudeValidator(start_longitude), new EstimatesPriceGetEnd_latitudeValidator(end_latitude), new EstimatesPriceGetEnd_longitudeValidator(end_longitude))
+        new EstimatesPriceGetStart_latitudeValidator(start_latitude),
+        new EstimatesPriceGetStart_longitudeValidator(start_longitude),
+        new EstimatesPriceGetEnd_latitudeValidator(end_latitude),
+        new EstimatesPriceGetEnd_longitudeValidator(end_longitude)
+    )
 }

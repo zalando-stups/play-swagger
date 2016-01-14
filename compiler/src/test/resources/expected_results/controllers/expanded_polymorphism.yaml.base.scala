@@ -15,11 +15,9 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private type findPetsActionResultType        = Seq[Pet]
     private type findPetsActionType              = findPetsActionRequestType => Try[findPetsActionResultType]
 
-    private val errorToStatusfindPets: PartialFunction[Throwable, Status] = 
-
-    { case _: java.util.NoSuchElementException => Status(404)
-
-    } 
+    private val errorToStatusfindPets: PartialFunction[Throwable, Status] = {
+        case _: java.util.NoSuchElementException => Status(404)
+    }
 
 
     
@@ -55,18 +53,16 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private type addPetActionResultType        = Error
     private type addPetActionType              = addPetActionRequestType => Try[addPetActionResultType]
 
-    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = 
-
-    { case _: java.util.NoSuchElementException => Status(404)
-
-    } 
+    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = {
+        case _: java.util.NoSuchElementException => Status(404)
+    }
 
 
     private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[NewPet]("application/json", "Invalid NewPet", maxLength)
     
 
 
-    def addPetAction = (f: addPetActionType) => Action (addPetParser()){ request =>
+    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
 
         val pet = request.body
         val result = 
@@ -97,11 +93,9 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private type findPetByIdActionResultType        = Error
     private type findPetByIdActionType              = findPetByIdActionRequestType => Try[findPetByIdActionResultType]
 
-    private val errorToStatusfindPetById: PartialFunction[Throwable, Status] = 
-
-    { case _: java.util.NoSuchElementException => Status(404)
-
-    } 
+    private val errorToStatusfindPetById: PartialFunction[Throwable, Status] = {
+        case _: java.util.NoSuchElementException => Status(404)
+    }
 
 
     
@@ -137,11 +131,9 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private type deletePetActionResultType        = Null
     private type deletePetActionType              = deletePetActionRequestType => Try[deletePetActionResultType]
 
-    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = 
-
-    { case _: java.util.NoSuchElementException => Status(404)
-
-    } 
+    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = {
+        case _: java.util.NoSuchElementException => Status(404)
+    }
 
 
     

@@ -31,9 +31,12 @@ class PostNameValidator(instance: PostName) extends RecursiveValidator {
 // ----- call validations -----
 class `Test-pathIdGetValidator`(id: String) extends RecursiveValidator {
     override val validators = Seq(
-        new `Test-pathIdGetIdValidator`(id))
+        new `Test-pathIdGetIdValidator`(id)
+    )
 }
 class PostValidator(name: PostName, year: PostName) extends RecursiveValidator {
     override val validators = Seq(
-        new PostNameValidator(name), new PostNameValidator(year))
+        new PostNameValidator(name),
+        new PostNameValidator(year)
+    )
 }

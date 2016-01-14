@@ -38,5 +38,5 @@ class ScalaValidatorsGeneratorIntegrationTest extends FunSpec with MustMatchers 
     }
   }
 
-  def clean(str: String) = str.split("\n").map(_.trim).mkString("\n")
+  def clean(str: String) = str.split("\n").map(_.trim).filterNot(_.isEmpty).mkString("\n")
 }

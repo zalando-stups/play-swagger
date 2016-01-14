@@ -3,7 +3,7 @@ package de.zalando.apifirst.generators
 import de.zalando.apifirst.Application.{ApiCall, ParameterRef}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.generators.DenotationNames._
-import de.zalando.apifirst.{ScalaName, Domain, ParameterPlace}
+import de.zalando.apifirst.{ParameterPlace, ScalaName}
 
 /**
   * @author  slasch
@@ -31,12 +31,11 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
       "full_path" -> call.path.prepend(namespace).asSwagger,
       "full_url" -> fullUrl(namespace, call),
       "validation_name" -> validator(call.asReference, table),
-      "body?" -> bodyParameter(call),
+      "body_param" -> bodyParameter(call),
       expectedSuccessCode(call),
       expectedResultType(call),
-      parameters(call)(table),
-      "headers" -> headers(call).toMap
-    )
+      "headers" -> headers(call)
+    ) ++ parameters(call)(table)
   }
 
   // FIXME extend ApiCall to hold needed information
@@ -60,8 +59,8 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
   def headers(call: ApiCall) = {
     call.handler.parameters.filter { p =>
       app.findParameter(p).place == ParameterPlace.HEADER
-    }.map {
-      "name" -> _.name.simple
+    }.map { p =>
+      Map("name" -> p.name.simple)
     }
   }
 
@@ -77,13 +76,10 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
   }
 
   private def parameters(call: ApiCall)(table: DenotationTable) = {
-    lazy val parameters = Map("parameters" -> call.handler.parameters.map { singleParameter(table) })
-    lazy val parameter = singleParameter(table)(call.handler.parameters.head)
-    val nameParamPair =
-      if (call.handler.parameters.isEmpty) "" -> None
-      else if (call.handler.parameters.length == 1) "single_parameter?" -> Some(parameter)
-      else "parameters?" -> Some(parameters)
-    nameParamPair
+    lazy val parameters = call.handler.parameters.map { singleParameter(table) }
+    lazy val parameter = call.handler.parameters.headOption map singleParameter(table)
+    Map("multiple_parameters" -> (if (call.handler.parameters.length > 1) parameters else Nil),
+       "single_parameter" -> (if (call.handler.parameters.length == 1) parameter else None))
   }
 
   private def fullUrl(namespace: String, call: ApiCall) = {

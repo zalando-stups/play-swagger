@@ -68,12 +68,11 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "non_body_params"               -> nonBodyParams,
       "header_params"                 -> headerParams,
 
-      "validations?"                  -> allValidations.nonEmpty,
-      "non_body_params?"              -> nonBodyParams.nonEmpty,
-      "body_param?"                   -> bodyParam.nonEmpty,
-      "header_params?"                -> (if (headerParams.nonEmpty) Some(Map("header_params" -> headerParams)) else None),
-      "request_needed?"               -> (bodyParam.nonEmpty || headerParams.nonEmpty)
-    ) ++ nameMappings + nameParamPair
+      "request_needed"                -> (bodyParam.nonEmpty || headerParams.nonEmpty),
+
+      "has_no_validations"            -> allValidations.isEmpty,
+      "has_no_error_mappings"         -> actionErrorMappings.isEmpty
+    ) ++ nameMappings ++ nameParamPair
   }
 
   private def nameWithSuffix(call: ApiCall, suffix: String): String =
@@ -104,14 +103,13 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
   private def parametersByPlace(call: ApiCall, filter: Parameter => Boolean): Seq[ParameterRef] =
     call.handler.parameters.filter { p => filter(app.findParameter(p)) }
 
-  private def singleOrMultipleParameters(call: ApiCall)(table: DenotationTable): (String, Option[Map[String, Any]]) = {
-    lazy val parameters = Map("parameters" -> call.handler.parameters.map { parameterMap(table) })
-    lazy val parameter = parameterMap(table)(call.handler.parameters.head)
-    val nameParamPair =
-      if (call.handler.parameters.isEmpty) "" -> None
-      else if (call.handler.parameters.length == 1) "single_parameter?" -> Some(parameter)
-      else "parameters?" -> Some(parameters)
-    nameParamPair
+  private def singleOrMultipleParameters(call: ApiCall)(table: DenotationTable) = {
+    val parameters = call.handler.parameters map parameterMap(table)
+    val parameter = parameters.headOption
+    Map(
+      "single_parameter" -> (if (call.handler.parameters.length == 1) parameter else None),
+      "multiple_parameters" -> (if (call.handler.parameters.length > 1) parameters else Nil)
+    )
   }
 
   private def parameterMap(table: DenotationTable): ParameterRef => Map[String, String] = param => {

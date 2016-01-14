@@ -1,36 +1,32 @@
-{{#main_package}}
-package {{&main_package_prefix}}
-package object {{&main_package_suffix}} {
-{{/main_package}}
+package {{main_package_prefix}}
+package object {{main_package_suffix}} {
 
-{{#imports}}
-    import {{&name}}
-{{/imports}}
-{{#binding_imports}}
-    import {{&name}}
-{{/binding_imports}}
+{{for import in imports}}
+    import {{import.name}}
+{{/for}}
+{{for import in binding_imports}}
+    import {{import.name}}
+{{/for}}
 
-    {{#aliases}}
-    type {{& name }} = {{& alias }}{{#underlying_type}}[{{& underlying_type }}]{{/underlying_type}}⮐
-    {{/aliases}}
 
-    {{#traits}}
-    trait I{{& name}} {⮐
-    {{#fields}}
-        def {{&name}}: {{&type_name}}⮐
-    {{/fields}}
-    }⮐
-    {{/traits}}
+{{for alias in aliases}}
+    type {{alias.name}} = {{alias.alias}}{{alias.underlying_type}}
+{{/for}}
 
-    {{#classes}}
-    case class {{& name }}({{#fields}}{{&name}}: {{&type_name}}{{^last}}, {{/last}}{{/fields}}) {{#trait}}extends I{{&name}} {{/trait}}⮐
-    {{/classes}}⮐
+{{for trait in traits}}
+    trait I{{trait.name}} {
+    {{for field in trait.fields}}
+        def {{field.name}}: {{field.type_name}}
+    {{/for}}
+    }
+{{/for}}
 
-    {{! seems like the package object is the only way to dynamically bring }}
-    {{! marshalling infrastructure into the scope of play routes }}
-    {{#bindings}}
-    {{#binding}}
-    {{&name}}{{&format}}
-    {{/binding}}
-    {{/bindings}}
+{{for class in classes}}
+    case class {{class.name}}({{for field in class.fields}}{{field.name}}: {{field.type_name}}{{if field.isNotLast}}, {{/if}}{{/for}}) {{for trait in class.trait}}extends I{{trait.name}}{{/for}}
+{{/for}}
+
+{{for binding in bindings.binding}}
+    {{binding.name}}{{binding.format}}
+{{/for}}
+
 }

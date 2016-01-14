@@ -441,7 +441,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (`media-id`: Int) => Action (postmediaByMedia_idCommentsParser()){ request =>
+    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (`media-id`: Int) => Action(postmediaByMedia_idCommentsParser()) { request =>
 
         val tEXT = request.body
         val result = 
@@ -557,7 +557,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (`user-id`: Double) => Action (postusersByUser_idRelationshipParser()){ request =>
+    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (`user-id`: Double) => Action(postusersByUser_idRelationshipParser()) { request =>
 
         val action = request.body
         val result = 

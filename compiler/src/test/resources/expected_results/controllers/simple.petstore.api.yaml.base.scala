@@ -24,7 +24,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def addPetAction = (f: addPetActionType) => Action (addPetParser()){ request =>
+    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
 
         val pet = request.body
         val result = 

@@ -67,7 +67,7 @@ import Generators._
 
                 } yield (offset, limit)
 
-            val inputs = genInputs suchThat { case (offset, limit)=>
+            val inputs = genInputs suchThat { case (offset, limit) =>
                 new HistoryGetValidator(offset, limit).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -81,7 +81,7 @@ import Generators._
 
             } yield (offset, limit)
 
-            val inputs = genInputs suchThat { case (offset, limit)=>
+            val inputs = genInputs suchThat { case (offset, limit) =>
                 new HistoryGetValidator(offset, limit).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -126,7 +126,7 @@ import Generators._
 
                 } yield (start_latitude, start_longitude, customer_uuid, product_id)
 
-            val inputs = genInputs suchThat { case (start_latitude, start_longitude, customer_uuid, product_id)=>
+            val inputs = genInputs suchThat { case (start_latitude, start_longitude, customer_uuid, product_id) =>
                 new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -142,7 +142,7 @@ import Generators._
 
             } yield (start_latitude, start_longitude, customer_uuid, product_id)
 
-            val inputs = genInputs suchThat { case (start_latitude, start_longitude, customer_uuid, product_id)=>
+            val inputs = genInputs suchThat { case (start_latitude, start_longitude, customer_uuid, product_id) =>
                 new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -185,7 +185,7 @@ import Generators._
 
                 } yield (latitude, longitude)
 
-            val inputs = genInputs suchThat { case (latitude, longitude)=>
+            val inputs = genInputs suchThat { case (latitude, longitude) =>
                 new ProductsGetValidator(latitude, longitude).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -199,7 +199,7 @@ import Generators._
 
             } yield (latitude, longitude)
 
-            val inputs = genInputs suchThat { case (latitude, longitude)=>
+            val inputs = genInputs suchThat { case (latitude, longitude) =>
                 new ProductsGetValidator(latitude, longitude).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -244,7 +244,7 @@ import Generators._
 
                 } yield (start_latitude, start_longitude, end_latitude, end_longitude)
 
-            val inputs = genInputs suchThat { case (start_latitude, start_longitude, end_latitude, end_longitude)=>
+            val inputs = genInputs suchThat { case (start_latitude, start_longitude, end_latitude, end_longitude) =>
                 new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -260,7 +260,7 @@ import Generators._
 
             } yield (start_latitude, start_longitude, end_latitude, end_longitude)
 
-            val inputs = genInputs suchThat { case (start_latitude, start_longitude, end_latitude, end_longitude)=>
+            val inputs = genInputs suchThat { case (start_latitude, start_longitude, end_latitude, end_longitude) =>
                 new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }

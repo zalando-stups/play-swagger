@@ -85,7 +85,7 @@ trait AliasesStep extends EnrichmentStep[Type] {
     Map(
       "name" -> typeNameDenotation(table, k),
       "alias" -> v.name.simple,
-      "underlying_type" -> v.nestedTypes.map { t => typeNameDenotation(table, t.name) }.mkString(", "),
+      "underlying_type" -> v.nestedTypes.map { t => typeNameDenotation(table, t.name) }.mkString("[", ", ", "]"),
       "imports" -> v.allImports
     )
   }
@@ -94,7 +94,7 @@ trait AliasesStep extends EnrichmentStep[Type] {
     Map(
       "name" -> memberNameDenotation(table, k),
       "alias" -> typeNameDenotation(table, v.name),
-      "underlying_type" -> None
+      "underlying_type" -> ""
     )
   }
 }

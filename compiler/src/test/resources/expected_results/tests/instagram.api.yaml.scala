@@ -63,7 +63,7 @@ import Generators._
 
                 } yield `user-id`
 
-            val inputs = genInputs suchThat { `user-id`=>
+            val inputs = genInputs suchThat { `user-id` =>
                 new `UsersUser-idGetValidator`(`user-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -75,7 +75,7 @@ import Generators._
 
             } yield `user-id`
 
-            val inputs = genInputs suchThat { `user-id`=>
+            val inputs = genInputs suchThat { `user-id` =>
                 new `UsersUser-idGetValidator`(`user-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -114,7 +114,7 @@ import Generators._
 
                 } yield `user-id`
 
-            val inputs = genInputs suchThat { `user-id`=>
+            val inputs = genInputs suchThat { `user-id` =>
                 new `UsersUser-idFollowed-byGetValidator`(`user-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -126,7 +126,7 @@ import Generators._
 
             } yield `user-id`
 
-            val inputs = genInputs suchThat { `user-id`=>
+            val inputs = genInputs suchThat { `user-id` =>
                 new `UsersUser-idFollowed-byGetValidator`(`user-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -165,7 +165,7 @@ import Generators._
 
                 } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idLikesGetValidator`(`media-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -177,7 +177,7 @@ import Generators._
 
             } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idLikesGetValidator`(`media-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -224,7 +224,7 @@ import Generators._
 
                 } yield (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng)
 
-            val inputs = genInputs suchThat { case (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng)=>
+            val inputs = genInputs suchThat { case (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng) =>
                 new LocationsSearchGetValidator(foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -242,7 +242,7 @@ import Generators._
 
             } yield (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng)
 
-            val inputs = genInputs suchThat { case (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng)=>
+            val inputs = genInputs suchThat { case (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng) =>
                 new LocationsSearchGetValidator(foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -281,7 +281,7 @@ import Generators._
 
                 } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idCommentsDeleteValidator`(`media-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -293,7 +293,7 @@ import Generators._
 
             } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idCommentsDeleteValidator`(`media-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -336,7 +336,7 @@ import Generators._
 
                 } yield (count, max_like_id)
 
-            val inputs = genInputs suchThat { case (count, max_like_id)=>
+            val inputs = genInputs suchThat { case (count, max_like_id) =>
                 new UsersSelfMediaLikedGetValidator(count, max_like_id).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -350,7 +350,7 @@ import Generators._
 
             } yield (count, max_like_id)
 
-            val inputs = genInputs suchThat { case (count, max_like_id)=>
+            val inputs = genInputs suchThat { case (count, max_like_id) =>
                 new UsersSelfMediaLikedGetValidator(count, max_like_id).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -389,7 +389,7 @@ import Generators._
 
                 } yield q
 
-            val inputs = genInputs suchThat { q=>
+            val inputs = genInputs suchThat { q =>
                 new TagsSearchGetValidator(q).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -401,7 +401,7 @@ import Generators._
 
             } yield q
 
-            val inputs = genInputs suchThat { q=>
+            val inputs = genInputs suchThat { q =>
                 new TagsSearchGetValidator(q).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -440,7 +440,7 @@ import Generators._
 
                 } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idCommentsGetValidator`(`media-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -452,7 +452,7 @@ import Generators._
 
             } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idCommentsGetValidator`(`media-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -491,7 +491,7 @@ import Generators._
 
                 } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idLikesDeleteValidator`(`media-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -503,7 +503,7 @@ import Generators._
 
             } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idLikesDeleteValidator`(`media-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -542,7 +542,7 @@ import Generators._
 
                 } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idGetValidator`(`media-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -554,7 +554,7 @@ import Generators._
 
             } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idGetValidator`(`media-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -593,7 +593,7 @@ import Generators._
 
                 } yield shortcode
 
-            val inputs = genInputs suchThat { shortcode=>
+            val inputs = genInputs suchThat { shortcode =>
                 new MediaShortcodeGetValidator(shortcode).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -605,7 +605,7 @@ import Generators._
 
             } yield shortcode
 
-            val inputs = genInputs suchThat { shortcode=>
+            val inputs = genInputs suchThat { shortcode =>
                 new MediaShortcodeGetValidator(shortcode).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -648,7 +648,7 @@ import Generators._
 
                 } yield (q, count)
 
-            val inputs = genInputs suchThat { case (q, count)=>
+            val inputs = genInputs suchThat { case (q, count) =>
                 new UsersSearchGetValidator(q, count).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -662,7 +662,7 @@ import Generators._
 
             } yield (q, count)
 
-            val inputs = genInputs suchThat { case (q, count)=>
+            val inputs = genInputs suchThat { case (q, count) =>
                 new UsersSearchGetValidator(q, count).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -707,7 +707,7 @@ import Generators._
 
                 } yield (`media-id`, tEXT)
 
-            val inputs = genInputs suchThat { case (`media-id`, tEXT)=>
+            val inputs = genInputs suchThat { case (`media-id`, tEXT) =>
                 new `MediaMedia-idCommentsPostValidator`(`media-id`, tEXT).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -721,7 +721,7 @@ import Generators._
 
             } yield (`media-id`, tEXT)
 
-            val inputs = genInputs suchThat { case (`media-id`, tEXT)=>
+            val inputs = genInputs suchThat { case (`media-id`, tEXT) =>
                 new `MediaMedia-idCommentsPostValidator`(`media-id`, tEXT).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -760,7 +760,7 @@ import Generators._
 
                 } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idLikesPostValidator`(`media-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -772,7 +772,7 @@ import Generators._
 
             } yield `media-id`
 
-            val inputs = genInputs suchThat { `media-id`=>
+            val inputs = genInputs suchThat { `media-id` =>
                 new `MediaMedia-idLikesPostValidator`(`media-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -817,7 +817,7 @@ import Generators._
 
                 } yield (`user-id`, action)
 
-            val inputs = genInputs suchThat { case (`user-id`, action)=>
+            val inputs = genInputs suchThat { case (`user-id`, action) =>
                 new `UsersUser-idRelationshipPostValidator`(`user-id`, action).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -831,7 +831,7 @@ import Generators._
 
             } yield (`user-id`, action)
 
-            val inputs = genInputs suchThat { case (`user-id`, action)=>
+            val inputs = genInputs suchThat { case (`user-id`, action) =>
                 new `UsersUser-idRelationshipPostValidator`(`user-id`, action).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -870,7 +870,7 @@ import Generators._
 
                 } yield `tag-name`
 
-            val inputs = genInputs suchThat { `tag-name`=>
+            val inputs = genInputs suchThat { `tag-name` =>
                 new `TagsTag-nameGetValidator`(`tag-name`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -882,7 +882,7 @@ import Generators._
 
             } yield `tag-name`
 
-            val inputs = genInputs suchThat { `tag-name`=>
+            val inputs = genInputs suchThat { `tag-name` =>
                 new `TagsTag-nameGetValidator`(`tag-name`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -921,7 +921,7 @@ import Generators._
 
                 } yield `location-id`
 
-            val inputs = genInputs suchThat { `location-id`=>
+            val inputs = genInputs suchThat { `location-id` =>
                 new `LocationsLocation-idGetValidator`(`location-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -933,7 +933,7 @@ import Generators._
 
             } yield `location-id`
 
-            val inputs = genInputs suchThat { `location-id`=>
+            val inputs = genInputs suchThat { `location-id` =>
                 new `LocationsLocation-idGetValidator`(`location-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -979,7 +979,7 @@ import Generators._
 
                 } yield (`location-id`, max_timestamp, min_timestamp, min_id, max_id)
 
-            val inputs = genInputs suchThat { case (`location-id`, max_timestamp, min_timestamp, min_id, max_id)=>
+            val inputs = genInputs suchThat { case (`location-id`, max_timestamp, min_timestamp, min_id, max_id) =>
                 new `LocationsLocation-idMediaRecentGetValidator`(`location-id`, max_timestamp, min_timestamp, min_id, max_id).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -996,7 +996,7 @@ import Generators._
 
             } yield (`location-id`, max_timestamp, min_timestamp, min_id, max_id)
 
-            val inputs = genInputs suchThat { case (`location-id`, max_timestamp, min_timestamp, min_id, max_id)=>
+            val inputs = genInputs suchThat { case (`location-id`, max_timestamp, min_timestamp, min_id, max_id) =>
                 new `LocationsLocation-idMediaRecentGetValidator`(`location-id`, max_timestamp, min_timestamp, min_id, max_id).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -1042,7 +1042,7 @@ import Generators._
 
                 } yield (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT)
 
-            val inputs = genInputs suchThat { case (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT)=>
+            val inputs = genInputs suchThat { case (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) =>
                 new MediaSearchGetValidator(mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -1059,7 +1059,7 @@ import Generators._
 
             } yield (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT)
 
-            val inputs = genInputs suchThat { case (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT)=>
+            val inputs = genInputs suchThat { case (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) =>
                 new MediaSearchGetValidator(mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -1098,7 +1098,7 @@ import Generators._
 
                 } yield `tag-name`
 
-            val inputs = genInputs suchThat { `tag-name`=>
+            val inputs = genInputs suchThat { `tag-name` =>
                 new `TagsTag-nameMediaRecentGetValidator`(`tag-name`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -1110,7 +1110,7 @@ import Generators._
 
             } yield `tag-name`
 
-            val inputs = genInputs suchThat { `tag-name`=>
+            val inputs = genInputs suchThat { `tag-name` =>
                 new `TagsTag-nameMediaRecentGetValidator`(`tag-name`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -1149,7 +1149,7 @@ import Generators._
 
                 } yield `user-id`
 
-            val inputs = genInputs suchThat { `user-id`=>
+            val inputs = genInputs suchThat { `user-id` =>
                 new `UsersUser-idFollowsGetValidator`(`user-id`).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -1161,7 +1161,7 @@ import Generators._
 
             } yield `user-id`
 
-            val inputs = genInputs suchThat { `user-id`=>
+            val inputs = genInputs suchThat { `user-id` =>
                 new `UsersUser-idFollowsGetValidator`(`user-id`).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -1208,7 +1208,7 @@ import Generators._
 
                 } yield (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count)
 
-            val inputs = genInputs suchThat { case (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count)=>
+            val inputs = genInputs suchThat { case (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count) =>
                 new `UsersUser-idMediaRecentGetValidator`(`user-id`, max_timestamp, min_id, min_timestamp, max_id, count).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -1226,7 +1226,7 @@ import Generators._
 
             } yield (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count)
 
-            val inputs = genInputs suchThat { case (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count)=>
+            val inputs = genInputs suchThat { case (`user-id`, max_timestamp, min_id, min_timestamp, max_id, count) =>
                 new `UsersUser-idMediaRecentGetValidator`(`user-id`, max_timestamp, min_id, min_timestamp, max_id, count).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -1270,7 +1270,7 @@ import Generators._
 
                 } yield (count, max_id, min_id)
 
-            val inputs = genInputs suchThat { case (count, max_id, min_id)=>
+            val inputs = genInputs suchThat { case (count, max_id, min_id) =>
                 new UsersSelfFeedGetValidator(count, max_id, min_id).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -1285,7 +1285,7 @@ import Generators._
 
             } yield (count, max_id, min_id)
 
-            val inputs = genInputs suchThat { case (count, max_id, min_id)=>
+            val inputs = genInputs suchThat { case (count, max_id, min_id) =>
                 new UsersSelfFeedGetValidator(count, max_id, min_id).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -1329,7 +1329,7 @@ import Generators._
 
                 } yield (`geo-id`, count, min_id)
 
-            val inputs = genInputs suchThat { case (`geo-id`, count, min_id)=>
+            val inputs = genInputs suchThat { case (`geo-id`, count, min_id) =>
                 new `GeographiesGeo-idMediaRecentGetValidator`(`geo-id`, count, min_id).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -1344,7 +1344,7 @@ import Generators._
 
             } yield (`geo-id`, count, min_id)
 
-            val inputs = genInputs suchThat { case (`geo-id`, count, min_id)=>
+            val inputs = genInputs suchThat { case (`geo-id`, count, min_id) =>
                 new `GeographiesGeo-idMediaRecentGetValidator`(`geo-id`, count, min_id).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }

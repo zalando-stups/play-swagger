@@ -284,12 +284,12 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |   def ErrorModelGenerator = for {
           |       message <- arbitrary[String]
           |       code <- arbitrary[Int]
-          |     } yield ErrorModel(message, code)
+          |   } yield ErrorModel(message, code)
           |   def ExtendedErrorModelGenerator = for {
           |       message <- arbitrary[String]
           |       code <- arbitrary[Int]
           |       rootCause <- arbitrary[String]
-          |     } yield ExtendedErrorModel(message, code, rootCause)
+          |   } yield ExtendedErrorModel(message, code, rootCause)
           |   def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
           |}"""
     }

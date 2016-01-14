@@ -4,7 +4,7 @@ import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames.DenotationTable
-import org.fusesource.scalate.{TemplateEngine, TemplateSource}
+import de.zalando.beard.renderer._
 
 /**
   * @author slasch
@@ -17,12 +17,12 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _) = strictModel
 
-  val testsTemplateName           = "play_scala_test.mustache"
-  val validatorsTemplateName      = "play_validation.mustache"
-  val generatorsTemplateName      = "generators.mustache"
-  val modelTemplateName           = "model.mustache"
-  val controllersTemplateName     = "play_scala_controller.mustache"
-  val controllerBaseTemplateName  = "play_scala_controller_base.mustache"
+  val testsTemplateName           = "play_scala_test"
+  val validatorsTemplateName      = "play_validation"
+  val generatorsTemplateName      = "generators"
+  val modelTemplateName           = "model"
+  val controllersTemplateName     = "play_scala_controller"
+  val controllerBaseTemplateName  = "play_scala_controller_base"
 
 
   def generate(fileName: String, currentController: String) = Seq(
@@ -69,7 +69,14 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   }
 
   private def nonEmptyTemplate(map: Map[String, Any], templateName: String, currentController: String): String = {
-    val engine = new TemplateEngine
+    val loader = new ClasspathTemplateLoader(
+      templatePrefix = "/",
+      templateSuffix = ".mustache"
+    )
+
+    val templateCompiler = new CustomizableTemplateCompiler(loader)
+    val template = templateCompiler.compile(TemplateName(templateName)).get
+    val renderer = new BeardTemplateRenderer(templateCompiler)
 
     val validations         = ReShaper.filterByType("validators", denotationTable)
     val validationsByType   = ReShaper.groupByType(validations.toSeq).toMap
@@ -99,11 +106,20 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
     val allPackages         = enrichWithStructuralInfo(rawAllPackages)
 
+/*
     val template            = getClass.getClassLoader.getResource(templateName)
     val templateSource      = TemplateSource.fromURL(template)
     val output              = engine.layout(templateSource, map ++ allPackages)
+*/
 
-    output.replaceAll("\u2B90", "\n")
+
+    val output = renderer.render(template,
+      StringWriterRenderResult(),
+      map ++ allPackages,
+      None)
+
+    output.toString.replaceAll("\u2B90", "\n")
+
   }
 
   def enrichWithStructuralInfo(rawAllPackages: Map[String, Iterable[Any]]): Map[String, Any] = {
@@ -119,10 +135,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   }
 
   private val partsMapping = Map(
-    "lists?"      -> "ArrayWrapper",
-    "maps?"       -> "Map",
-    "date?"       -> "DateMidnight",
-    "date_time?"  -> "DateTime"
+    "lists_part"      -> "ArrayWrapper",
+    "maps_part"       -> "Map",
+    "date_part"       -> "DateMidnight",
+    "date_time_part"  -> "DateTime"
   )
   private def neededParts(imports: Seq[String]): Map[String, Boolean] = partsMapping map {
     case (k,v) => k -> imports.exists(_.contains(v))
@@ -168,8 +184,8 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
       val controllerDenotations = table(call.asReference)("controller")
       val signature = controllerDenotations("signature")
       val markerSize = // FIXME this will fail if parameter types will change
-        if (controllerDenotations.contains("parameters?")) 3
-        else if (controllerDenotations.contains("single_parameter?")) 2
+        if (controllerDenotations.contains("multiple_parameters")) 2
+        else if (controllerDenotations.contains("single_parameter")) 1
         else 1
       call -> (signature, markerSize)
     }

@@ -16,13 +16,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type findPetsByTagsActionResultType        = Seq[Pet]
     private type findPetsByTagsActionType              = findPetsByTagsActionRequestType => Try[findPetsByTagsActionResultType]
 
-    private val errorToStatusfindPetsByTags: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusfindPetsByTags: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     
@@ -60,20 +57,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type placeOrderActionResultType        = Order
     private type placeOrderActionType              = placeOrderActionRequestType => Try[placeOrderActionResultType]
 
-    private val errorToStatusplaceOrder: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusplaceOrder: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     private def placeOrderParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[StoresOrderPostBody]("application/json", "Invalid StoresOrderPostBody", maxLength)
     
 
 
-    def placeOrderAction = (f: placeOrderActionType) => Action (placeOrderParser()){ request =>
+    def placeOrderAction = (f: placeOrderActionType) => Action(placeOrderParser()) { request =>
 
         val body = request.body
         
@@ -106,20 +100,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type createUserActionResultType        = Null
     private type createUserActionType              = createUserActionRequestType => Try[createUserActionResultType]
 
-    private val errorToStatuscreateUser: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatuscreateUser: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     private def createUserParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[UsersUsernamePutBody]("application/json", "Invalid UsersUsernamePutBody", maxLength)
     
 
 
-    def createUserAction = (f: createUserActionType) => Action (createUserParser()){ request =>
+    def createUserAction = (f: createUserActionType) => Action(createUserParser()) { request =>
 
         val body = request.body
         
@@ -152,20 +143,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type createUsersWithListInputActionResultType        = Null
     private type createUsersWithListInputActionType              = createUsersWithListInputActionRequestType => Try[createUsersWithListInputActionResultType]
 
-    private val errorToStatuscreateUsersWithListInput: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatuscreateUsersWithListInput: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     private def createUsersWithListInputParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[UsersCreateWithListPostBody]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
     
 
 
-    def createUsersWithListInputAction = (f: createUsersWithListInputActionType) => Action (createUsersWithListInputParser()){ request =>
+    def createUsersWithListInputAction = (f: createUsersWithListInputActionType) => Action(createUsersWithListInputParser()) { request =>
 
         val body = request.body
         
@@ -198,13 +186,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type getUserByNameActionResultType        = User
     private type getUserByNameActionType              = getUserByNameActionRequestType => Try[getUserByNameActionResultType]
 
-    private val errorToStatusgetUserByName: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusgetUserByName: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     
@@ -242,20 +227,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type updateUserActionResultType        = Null
     private type updateUserActionType              = updateUserActionRequestType => Try[updateUserActionResultType]
 
-    private val errorToStatusupdateUser: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusupdateUser: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     private def updateUserParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[UsersUsernamePutBody]("application/json", "Invalid UsersUsernamePutBody", maxLength)
     
 
 
-    def updateUserAction = (f: updateUserActionType) => (username: String) => Action (updateUserParser()){ request =>
+    def updateUserAction = (f: updateUserActionType) => (username: String) => Action(updateUserParser()) { request =>
 
         val body = request.body
         
@@ -288,13 +270,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type deleteUserActionResultType        = Null
     private type deleteUserActionType              = deleteUserActionRequestType => Try[deleteUserActionResultType]
 
-    private val errorToStatusdeleteUser: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusdeleteUser: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     
@@ -332,20 +311,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type updatePetActionResultType        = Null
     private type updatePetActionType              = updatePetActionRequestType => Try[updatePetActionResultType]
 
-    private val errorToStatusupdatePet: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusupdatePet: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     private def updatePetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[PetsPostBody]("application/json", "Invalid PetsPostBody", maxLength)
     
 
 
-    def updatePetAction = (f: updatePetActionType) => Action (updatePetParser()){ request =>
+    def updatePetAction = (f: updatePetActionType) => Action(updatePetParser()) { request =>
 
         val body = request.body
         
@@ -378,20 +354,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type addPetActionResultType        = Null
     private type addPetActionType              = addPetActionRequestType => Try[addPetActionResultType]
 
-    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[PetsPostBody]("application/json", "Invalid PetsPostBody", maxLength)
     
 
 
-    def addPetAction = (f: addPetActionType) => Action (addPetParser()){ request =>
+    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
 
         val body = request.body
         
@@ -424,20 +397,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type createUsersWithArrayInputActionResultType        = Null
     private type createUsersWithArrayInputActionType              = createUsersWithArrayInputActionRequestType => Try[createUsersWithArrayInputActionResultType]
 
-    private val errorToStatuscreateUsersWithArrayInput: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatuscreateUsersWithArrayInput: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     private def createUsersWithArrayInputParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[UsersCreateWithListPostBody]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
     
 
 
-    def createUsersWithArrayInputAction = (f: createUsersWithArrayInputActionType) => Action (createUsersWithArrayInputParser()){ request =>
+    def createUsersWithArrayInputAction = (f: createUsersWithArrayInputActionType) => Action(createUsersWithArrayInputParser()) { request =>
 
         val body = request.body
         
@@ -470,14 +440,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type getOrderByIdActionResultType        = Order
     private type getOrderByIdActionType              = getOrderByIdActionRequestType => Try[getOrderByIdActionResultType]
 
-    private val errorToStatusgetOrderById: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
-
+    private val errorToStatusgetOrderById: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
     
 
@@ -514,14 +480,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type deleteOrderActionResultType        = Null
     private type deleteOrderActionType              = deleteOrderActionRequestType => Try[deleteOrderActionResultType]
 
-    private val errorToStatusdeleteOrder: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
-
+    private val errorToStatusdeleteOrder: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
     
 
@@ -558,13 +520,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type logoutUserActionResultType        = Null
     private type logoutUserActionType              = logoutUserActionRequestType => Try[logoutUserActionResultType]
 
-    private val errorToStatuslogoutUser: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatuslogoutUser: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     
@@ -595,13 +554,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type getPetByIdActionResultType        = Pet
     private type getPetByIdActionType              = getPetByIdActionRequestType => Try[getPetByIdActionResultType]
 
-    private val errorToStatusgetPetById: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusgetPetById: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     
@@ -639,13 +595,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type updatePetWithFormActionResultType        = Null
     private type updatePetWithFormActionType              = updatePetWithFormActionRequestType => Try[updatePetWithFormActionResultType]
 
-    private val errorToStatusupdatePetWithForm: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusupdatePetWithForm: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     
@@ -683,13 +636,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type deletePetActionResultType        = Null
     private type deletePetActionType              = deletePetActionRequestType => Try[deletePetActionResultType]
 
-    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     
@@ -735,13 +685,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type findPetsByStatusActionResultType        = Seq[Pet]
     private type findPetsByStatusActionType              = findPetsByStatusActionRequestType => Try[findPetsByStatusActionResultType]
 
-    private val errorToStatusfindPetsByStatus: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
+    private val errorToStatusfindPetsByStatus: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
 
     
@@ -779,14 +726,10 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type loginUserActionResultType        = Null
     private type loginUserActionType              = loginUserActionRequestType => Try[loginUserActionResultType]
 
-    private val errorToStatusloginUser: PartialFunction[Throwable, Status] = 
-
-    { { case _: java.lang.IllegalArgumentException => Status(405)
-
-    case _: java.lang.IndexOutOfBoundsException => Status(405)
-
-    } } 
-
+    private val errorToStatusloginUser: PartialFunction[Throwable, Status] = {
+        case _: java.lang.IllegalArgumentException => Status(405)
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+    }
 
     
 

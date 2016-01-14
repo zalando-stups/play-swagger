@@ -65,7 +65,7 @@ import Generators._
 
                 } yield pet
 
-            val inputs = genInputs suchThat { pet=>
+            val inputs = genInputs suchThat { pet =>
                 new PutValidator(pet).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -77,7 +77,7 @@ import Generators._
 
             } yield pet
 
-            val inputs = genInputs suchThat { pet=>
+            val inputs = genInputs suchThat { pet =>
                 new PutValidator(pet).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -116,7 +116,7 @@ import Generators._
 
                 } yield limit
 
-            val inputs = genInputs suchThat { limit=>
+            val inputs = genInputs suchThat { limit =>
                 new GetValidator(limit).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -128,7 +128,7 @@ import Generators._
 
             } yield limit
 
-            val inputs = genInputs suchThat { limit=>
+            val inputs = genInputs suchThat { limit =>
                 new GetValidator(limit).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -167,7 +167,7 @@ import Generators._
 
                 } yield petId
 
-            val inputs = genInputs suchThat { petId=>
+            val inputs = genInputs suchThat { petId =>
                 new PetIdGetValidator(petId).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -179,7 +179,7 @@ import Generators._
 
             } yield petId
 
-            val inputs = genInputs suchThat { petId=>
+            val inputs = genInputs suchThat { petId =>
                 new PetIdGetValidator(petId).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -220,7 +220,7 @@ import Generators._
 
                 } yield pet
 
-            val inputs = genInputs suchThat { pet=>
+            val inputs = genInputs suchThat { pet =>
                 new PostValidator(pet).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -232,7 +232,7 @@ import Generators._
 
             } yield pet
 
-            val inputs = genInputs suchThat { pet=>
+            val inputs = genInputs suchThat { pet =>
                 new PostValidator(pet).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }

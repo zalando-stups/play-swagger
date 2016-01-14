@@ -38,5 +38,6 @@ class BasicOptionalNested_optionalValidator(instance: BasicOptionalNested_option
 // ----- call validations -----
 class GetValidator(basic: Basic) extends RecursiveValidator {
     override val validators = Seq(
-        new BasicValidator(basic))
+        new BasicValidator(basic)
+    )
 }

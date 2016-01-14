@@ -50,17 +50,21 @@ class PetBirthdayValidator(instance: PetBirthday) extends RecursiveValidator {
 // ----- call validations -----
 class PutValidator(pet: Pet) extends RecursiveValidator {
     override val validators = Seq(
-        new PetValidator(pet))
+        new PetValidator(pet)
+    )
 }
 class GetValidator(limit: PetBirthday) extends RecursiveValidator {
     override val validators = Seq(
-        new PetBirthdayValidator(limit))
+        new PetBirthdayValidator(limit)
+    )
 }
 class PetIdGetValidator(petId: String) extends RecursiveValidator {
     override val validators = Seq(
-        new PetIdGetPetIdValidator(petId))
+        new PetIdGetPetIdValidator(petId)
+    )
 }
 class PostValidator(pet: Pet) extends RecursiveValidator {
     override val validators = Seq(
-        new PetValidator(pet))
+        new PetValidator(pet)
+    )
 }

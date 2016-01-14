@@ -1,4 +1,4 @@
-package {{&main_package}}
+package {{main_package}}
 
 import de.zalando.play.controllers.PlayBodyParsing
 import org.scalacheck._
@@ -16,13 +16,11 @@ import java.net.URLEncoder
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
-    class {{&spec_name}} extends Specification {
+    class {{spec_name}} extends Specification {
         def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
         def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
         def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
 
-
-      {{! TODO use specs2 scalacheck integration instead of doing this manually }}
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
           case Failed(_, labels) => failure(labels.mkString("\\n"))
@@ -32,70 +30,75 @@ import Generators._
             failure(error)
         }
 
-{{#tests}}
+{{for test in tests}}
 
-    "{{&verb_name}} {{&full_path}}" should {
-        def testInvalidInput({{#parameters?}}input: ({{#parameters}}{{&type}}{{^last}}, {{/last}}{{/parameters}}){{/parameters?}}{{#single_parameter?}}{{&name}}: {{&type}}{{/single_parameter?}}) = {⮐
-            {{#parameters?}}
-                val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input
-            {{/parameters?}}
-            val url = {{&full_url}}
-            val headers = Seq({{#headers}}"{{&name}}" -> toHeader({{&name}}){{/headers}})
-            {{#body?}}
-                val parsed_{{&body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{&expected_result_type}}").writeValueAsString({{&body_parameter_name}})
-            {{/body?}}
+    "{{test.verb_name}} {{test.full_path}}" should {
+        def testInvalidInput({{if test.multiple_parameters}}input: ({{for p in test.multiple_parameters}}{{p.type}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}}{{p.name}}: {{p.type}}{{/for}}) = {
 
-            val path = route(FakeRequest({{verb_name}}, url).withHeaders(headers:_*){{#body?}}.withBody(parsed_{{&body_parameter_name}}){{/body?}}).get
-            val errors = new {{&validation_name}}({{#parameters?}}{{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}{{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}}).errors⮐
+            {{if test.multiple_parameters}}
+                val ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
+            {{/if}}
+
+            val url = {{test.full_url}}
+            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> toHeader({{header.name}}){{/for}})
+            {{for b in test.body_param}}
+                val parsed_{{b.body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
+            {{/for}}
+
+            val path = route(FakeRequest({{test.verb_name}}, url).withHeaders(headers:_*){{for b in test.body_param}}.withBody(parsed_{{b.body_parameter_name}}){{/for}}).get
+            val errors = new {{test.validation_name}}({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{for p in test.single_parameter}}{{p.name}}{{/for}}).errors
 
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-            ("given an URL: [" + url + "]" {{#body?}}+ "and body [" + parsed_{{&body_parameter_name}} + "]"{{/body?}}) |: all(
-                status(path) ?= BAD_REQUEST {{!expected_code}},
-                contentType(path) ?= Some("{{&expected_result_type}}"),
+            ("given an URL: [" + url + "]" {{for b in test.body_param}}+ "and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: all(
+                status(path) ?= BAD_REQUEST ,
+                contentType(path) ?= Some("{{test.expected_result_type}}"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput({{#parameters?}}input: ({{#parameters}}{{&type}}{{^last}}, {{/last}}{{/parameters}}){{/parameters?}}{{#single_parameter?}}{{&name}}: {{&type}}{{/single_parameter?}}) = {⮐
-            {{#parameters?}}
-                val ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}) = input
-            {{/parameters?}}
-            {{#body?}}
-                val parsed_{{&body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{&expected_result_type}}").writeValueAsString({{&body_parameter_name}})
-            {{/body?}}
-            val url = {{&full_url}}
-            val headers = Seq({{#headers}}"{{&name}}" -> {{&name}}{{/headers}})
-            val path = route(FakeRequest({{verb_name}}, url).withHeaders(headers:_*){{#body?}}.withBody(parsed_{{&body_parameter_name}}){{/body?}}).get
-            ("given an URL: [" + url + "]"{{#body?}}+ " and body [" + parsed_{{&body_parameter_name}} + "]"{{/body?}}) |: (status(path) ?= OK)
+        def testValidInput({{if test.multiple_parameters}}input: ({{for p in test.multiple_parameters}}{{p.type}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}}{{p.name}}: {{p.type}}{{/for}}) = {
+
+            {{if test.multiple_parameters}}
+                val ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
+            {{/if}}
+
+            {{for b in test.body_param}}
+                val parsed_{{b.body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
+            {{/for}}
+
+            val url = {{test.full_url}}
+            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> {{header.name}}{{/for}})
+            val path = route(FakeRequest({{test.verb_name}}, url).withHeaders(headers:_*){{for b in test.body_param}}.withBody(parsed_{{b.body_parameter_name}}){{/for}}).get
+            ("given an URL: [" + url + "]"{{for b in test.body_param}}+ " and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: (status(path) ?= OK)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    {{#parameters?}}{{#parameters}}
-                        {{&name}} <- {{&generator}}
-                    {{/parameters}}{{/parameters?}}
-                    {{#single_parameter?}}{{&name}} <- {{&generator}}{{/single_parameter?}}⮐
-                } yield {{#parameters?}}({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}){{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}}⮐
-            val inputs = genInputs suchThat { {{#parameters?}}case ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}){{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}} =>
-                new {{&validation_name}}({{#parameters?}}{{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}{{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}}).errors.nonEmpty
+                    {{for p in test.multiple_parameters}}
+                        {{p.name}} <- {{p.generator}}
+                    {{/for}}
+                    {{for p in test.single_parameter}}{{p.name}} <- {{p.generator}}{{/for}}
+                } yield{{if test.multiple_parameters}} ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}} {{p.name}}{{/for}}
+            val inputs = genInputs suchThat { {{if test.multiple_parameters}} case ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}} {{p.name}}{{/for}} =>
+                new {{test.validation_name}}({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{for p in test.single_parameter}}{{p.name}}{{/for}}).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                {{#parameters?}}{{#parameters}}
-                    {{&name}} <- {{&generator}}
-                {{/parameters}}{{/parameters?}}
-                {{#single_parameter?}}{{&name}} <- {{&generator}}{{/single_parameter?}}⮐
-            } yield {{#parameters?}}({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}){{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}}⮐
-            val inputs = genInputs suchThat { {{#parameters?}}case ({{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}){{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}} =>
-                new {{&validation_name}}({{#parameters?}}{{#parameters}}{{&name}}{{^last}}, {{/last}}{{/parameters}}{{/parameters?}}{{#single_parameter?}}{{&name}}{{/single_parameter?}}).errors.isEmpty
+                {{for p in test.multiple_parameters}}
+                    {{p.name}} <- {{p.generator}}
+                {{/for}}
+                {{for p in test.single_parameter}}{{p.name}} <- {{p.generator}}{{/for}}
+            } yield{{if test.multiple_parameters}} ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}} {{p.name}}{{/for}}
+            val inputs = genInputs suchThat { {{if test.multiple_parameters}} case ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}} {{p.name}}{{/for}} =>
+                new {{test.validation_name}}({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{for p in test.single_parameter}}{{p.name}}{{/for}}).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)
         }
 
     }
-{{/tests}}
+{{/for}}
 }
