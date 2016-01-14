@@ -9,26 +9,18 @@ import PlayBodyParsing._
 import PlayValidations._
 package heroku.petstore.api.yaml { 
 
-    class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
-    val get = getAction {
-            (limit: PetBirthday) =>
-???
-            
-        } //////// EOF ////////  getAction
-    val put = putAction {
-            (pet: Pet) =>
-???
-            
-        } //////// EOF ////////  putAction
-    val post = postAction {
-            (pet: Pet) =>
-???
-            
-        } //////// EOF ////////  postAction
-    val getbyPetId = getbyPetIdAction {
-            (petId: String) =>
-???
-            
-        } //////// EOF ////////  getbyPetIdAction
-    }
+  class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
+    val get = getAction { (limit: PetBirthday) =>
+      ???
+    } //////// EOF ////////  getAction
+    val put = putAction { (pet: Pet) =>
+      ???
+    } //////// EOF ////////  putAction
+    val post = postAction { (pet: Pet) =>
+      ???
+    } //////// EOF ////////  postAction
+    val getbyPetId = getbyPetIdAction { (petId: String) =>
+      ???
+    } //////// EOF ////////  getbyPetIdAction
+  }
 }

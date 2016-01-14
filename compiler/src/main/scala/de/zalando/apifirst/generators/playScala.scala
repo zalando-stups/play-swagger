@@ -159,10 +159,12 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
       _.trim
     }
     val markerIndexes = markers map { marker =>
-      cleanLines.indexOf(marker._2._1)
+      cleanLines indexWhere { _.startsWith(marker._2._1) }
     }
     val sortedMarkers = markerIndexes.sorted
     val codeParts = markerIndexes map { idx => sortedMarkers.find(_ > idx).getOrElse(lines.length) }
+
+    // println(strictModel.basePath + " - " + markerIndexes.mkString(","))
 
     val parts = markers zip markerIndexes zip codeParts filter {
       case ((((call, (marker, length)), start), end)) => start >= 0
@@ -182,10 +184,10 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
   def generateMarkers(allCalls: Seq[ApiCall], table: DenotationTable) = {
     val markers = allCalls map { call =>
       val controllerDenotations = table(call.asReference)("controller")
-      val signature = controllerDenotations("signature")
+      val signature = controllerDenotations("signature").toString
       val markerSize = // FIXME this will fail if parameter types will change
-        if (controllerDenotations.contains("multiple_parameters")) 2
-        else if (controllerDenotations.contains("single_parameter")) 1
+        if (controllerDenotations("multiple_parameters") != Nil) 2 // FIXME this is very error-prone
+        else if (controllerDenotations("single_parameter") != None) 1  // FIXME this is very error-prone
         else 1
       call -> (signature, markerSize)
     }
