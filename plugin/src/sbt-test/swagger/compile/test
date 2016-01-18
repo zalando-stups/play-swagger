@@ -1,2 +1,5 @@
-# Just make sure everything compiles with no errors
+# Make sure everything compiles with no errors
 > compile
+
+# Tests should fail with 404 because there is no mapping in routes file
+-> test

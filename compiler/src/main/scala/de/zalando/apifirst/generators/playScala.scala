@@ -4,7 +4,6 @@ import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames.DenotationTable
-import de.zalando.beard.renderer._
 
 /**
   * @author slasch
@@ -69,14 +68,6 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   }
 
   private def nonEmptyTemplate(map: Map[String, Any], templateName: String, currentController: String): String = {
-    val loader = new ClasspathTemplateLoader(
-      templatePrefix = "/",
-      templateSuffix = ".mustache"
-    )
-
-    val templateCompiler = new CustomizableTemplateCompiler(loader)
-    val template = templateCompiler.compile(TemplateName(templateName)).get
-    val renderer = new BeardTemplateRenderer(templateCompiler)
 
     val validations         = ReShaper.filterByType("validators", denotationTable)
     val validationsByType   = ReShaper.groupByType(validations.toSeq).toMap
@@ -106,20 +97,21 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
     val allPackages         = enrichWithStructuralInfo(rawAllPackages)
 
-/*
-    val template            = getClass.getClassLoader.getResource(templateName)
-    val templateSource      = TemplateSource.fromURL(template)
-    val output              = engine.layout(templateSource, map ++ allPackages)
-*/
+    renderTemplate(map, templateName, allPackages)
 
+  }
 
-    val output = renderer.render(template,
+  def renderTemplate(map: Map[String, Any], templateName: String, allPackages: Map[String, Any]): String = {
+    import de.zalando.beard.renderer._
+    val loader = new ClasspathTemplateLoader(templatePrefix = "/", templateSuffix = ".mustache")
+    val templateCompiler = new CustomizableTemplateCompiler(loader)
+    val template = templateCompiler.compile(TemplateName(templateName)).get
+    val renderer = new BeardTemplateRenderer(templateCompiler)
+
+    renderer.render(template,
       StringWriterRenderResult(),
       map ++ allPackages,
-      None)
-
-    output.toString.replaceAll("\u2B90", "\n")
-
+      None).toString
   }
 
   def enrichWithStructuralInfo(rawAllPackages: Map[String, Iterable[Any]]): Map[String, Any] = {

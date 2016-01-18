@@ -250,7 +250,6 @@ object strictModel {
    * @param head
    * @param patch
    * @param parameters      The parameters needed to send a valid API call.
-   * @param $ref
    */
   case class PathItem(
     get:                  Operation,
