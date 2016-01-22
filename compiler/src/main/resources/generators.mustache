@@ -1,54 +1,56 @@
-package {{&main_package}}
+package {{main_package}}
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
 import Arbitrary._
-
-{{#imports}}
-import {{&name}}
-{{/imports}}
+{{for import in imports}}
+import {{import.name}}
+{{/for}}
 
 object Generators {
-    {{#test_data_aliases}}
-    def {{& creator_method }} = _generate({{& generator }})⮐
-    {{/test_data_aliases}}
+    {{if test_data_aliases}}
 
-    {{#test_data_aliases}}
-    def {{& generator}} = {{& generator_name }}⮐
-    {{/test_data_aliases}}
+    {{for alias in test_data_aliases}}
+    def {{alias.creator_method}} = _generate({{alias.generator}}){{/for}}{{/if}}
+    {{if test_data_aliases}}
 
-    {{#test_data_classes}}
-    def {{& creator_method }} = _generate({{& generator }})⮐
-    {{/test_data_classes}}
+    {{for alias in test_data_aliases}}
+    def {{alias.generator}} = {{alias.generator_name}}{{/for}}{{/if}}
+    {{if test_data_classes}}
 
-    {{#test_data_classes}}
-    def {{& generator}} = for {
-        {{#fields}}
-             {{& name}} <- {{& generator}}
-        {{/fields}}
-    } yield {{& class_name}}({{#fields}}{{& name}}{{^last}}, {{/last}}{{/fields}})⮐
-    {{/test_data_classes}}
+    {{for class in test_data_classes}}
+    def {{class.creator_method }} = _generate({{class.generator}})
+    {{/for}}{{/if}}
+
+    {{for class in test_data_classes}}
+    def {{class.generator}} = for {
+        {{for field in class.fields}}
+        {{field.name}} <- {{field.generator}}
+        {{/for}}
+    } yield {{class.class_name}}({{for field in class.fields}}{{field.name}}{{if field.isNotLast}}, {{/if}}{{/for}})
+    {{/for}}
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
-    {{#lists?}}
+
+    {{if lists_part}}
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
-    {{/lists?}}
-    {{#maps?}}
-    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {⮐
-        keys <- Gen.containerOf[List,K](keyGen)⮐
-        values <- Gen.containerOfN[List,V](keys.size, valGen)⮐
-    } yield keys.zip(values).toMap⮐
-    {{/maps?}}
-    {{#date?}}
+    {{/if}}
+    {{if maps_part}}
+    def _genMap[K,V](keyGen: Gen[K], valGen: Gen[V]): Gen[Map[K,V]] = for {
+        keys <- Gen.containerOf[List,K](keyGen)
+        values <- Gen.containerOfN[List,V](keys.size, valGen)
+    } yield keys.zip(values).toMap
+    {{/if}}
+    {{if date_part}}
     implicit lazy val arbDateMidnight: Arbitrary[DateMidnight] = Arbitrary(for {
         l <- arbitrary[Long]
     } yield new DateMidnight(System.currentTimeMillis + l))
-    {{/date?}}
-    {{#date_time?}}
+    {{/if}}
+    {{if date_time_part}}
     implicit lazy val arbDateTime: Arbitrary[DateTime] = Arbitrary(for {
         l <- arbitrary[Long]
     } yield new DateTime(System.currentTimeMillis + l))
-    {{/date_time?}}
+    {{/if}}
 }

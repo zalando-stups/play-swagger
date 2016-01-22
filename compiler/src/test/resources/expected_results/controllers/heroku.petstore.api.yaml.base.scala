@@ -61,7 +61,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def putAction = (f: putActionType) => Action (putParser()){ request =>
+    def putAction = (f: putActionType) => Action(putParser()) { request =>
 
         val pet = request.body
         val result = 
@@ -101,7 +101,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    def postAction = (f: postActionType) => Action (postParser()){ request =>
+    def postAction = (f: postActionType) => Action(postParser()) { request =>
 
         val pet = request.body
         val result = 

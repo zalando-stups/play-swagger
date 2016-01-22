@@ -9,10 +9,9 @@ import PlayBodyParsing._
 import PlayValidations._
 package basic.auth.api.yaml { 
 
-    class BasicAuthApiYaml extends BasicAuthApiYamlBase {
+  class BasicAuthApiYaml extends BasicAuthApiYamlBase {
     val get = getAction {
-            ???
-            
-        } //////// EOF ////////  getAction
-    }
+      ???
+    } //////// EOF ////////  getAction
+  }
 }

@@ -1,6 +1,4 @@
-{{#main_package}}
-package {{&main_package}}
-{{/main_package}}
+package {{main_package}}
 
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http.Writeable
@@ -8,77 +6,75 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
-{{#imports}}
-    import {{&name}}
-{{/imports}}
-{{#binding_imports}}
-import {{&name}}
-{{/binding_imports}}
+{{for import in imports}}
+import {{import.name}}
+{{/for}}
+{{for import in binding_imports}}
+import {{import.name}}
+{{/for}}
 
 
-{{#controllers}}
+{{for controller in controllers}}
 
-trait {{&base}} extends Controller with PlayBodyParsing {
-    {{#methods}}
-    private val {{&response_mime_type_name}}    = "{{&response_mime_type_value}}"
-    private val {{&action_success_status_name}} = Status({{&action_success_status_value}})
+trait {{controller.base}} extends Controller with PlayBodyParsing {
+    {{for m in controller.methods}}
+    private val {{m.response_mime_type_name}}    = "{{m.response_mime_type_value}}"
+    private val {{m.action_success_status_name}} = Status({{m.action_success_status_value}})
 
-    private type {{&action_request_type}}       = ({{#validations}}{{#fields}}{{&type_name}}{{^last}}, {{/last}}{{/fields}}{{/validations}}{{^validations}}Unit{{/validations}})
-    private type {{&action_result_type}}        = {{&action_result_type_value}}
-    private type {{&action_type}}              = {{&action_request_type}} => Try[{{&action_result_type}}]
+    private type {{m.action_request_type}}       = ({{for v in m.validations}}{{for f in v.fields}}{{f.type_name}}{{if f.isNotLast}}, {{/if}}{{/for}}{{/for}}{{if m.has_no_validations}}Unit{{/if}})
+    private type {{m.action_result_type}}        = {{m.action_result_type_value}}
+    private type {{m.action_type}}              = {{m.action_request_type}} => Try[{{m.action_result_type}}]
 
-    private val {{&error_to_status}}: PartialFunction[Throwable, Status] = {{^error_mappings}}PartialFunction.empty[Throwable, Status]{{/error_mappings}}⮐
-    {{#error_mappings}} { {{/error_mappings}}{{#error_mappings}}
-        case _: {{&exception_name}} => Status({{&exception_code}})⮐
-    {{/error_mappings}}{{#error_mappings}} } {{/error_mappings}}⮐
+    private val {{m.error_to_status}}: PartialFunction[Throwable, Status] = {{if m.has_no_error_mappings}} PartialFunction.empty[Throwable, Status]{{/if}}
+    {{if m.error_mappings}} { {{/if}}{{for mapping in m.error_mappings}}
+        case _: {{mapping.exception_name}} => Status({{mapping.exception_code}})
+    {{/for}}{{if m.error_mappings}} } {{/if}}
 
-    {{#body_param}}
-        private def {{&parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{&type_name}}]("{{&request_mime_type_value}}", "Invalid {{&type_name}}", maxLength)
-    {{/body_param}}⮐
+    {{for body in m.body_param}}
+        private def {{m.parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{body.type_name}}]("{{m.request_mime_type_value}}", "Invalid {{body.type_name}}", maxLength)
+    {{/for}}
 
-    def {{&action}} = (f: {{&action_type}}) => {{#non_body_params?}}({{/non_body_params?}}{{#non_body_params}}{{&field_name}}: {{&type_name}}{{^last}}, {{/last}}{{/non_body_params}}{{#non_body_params?}}) => {{/non_body_params?}} Action {{#body_param}}({{&parser_name}}()){{/body_param}}{ {{#request_needed?}}request =>{{/request_needed?}}⮐
-        {{#body_param}}
-        val {{&field_name}} = request.body
-        {{/body_param}}
-        {{#header_params}}
-        val {{&field_name}}_either =
-            fromHeaders[{{&type_name}}]("{{&field_name}}", request.headers.toMap)
-        {{/header_params}}
-        {{#header_params?}}
-            ({{#header_params}}{{&field_name}}_either{{^last}}, {{/last}}{{/header_params}}) match {
-                case ({{#header_params}}Right({{&field_name}}){{^last}}, {{/last}}{{/header_params}}) =>
-        {{/header_params?}}
-            {{! this part is wrapped in match statement in the case if there are any header parameters }}
-            val result = {{^validations?}}{{&process_valid_request}}(f)(){{/validations?}}⮐
-                {{#validations?}}
-                {{#validations}}
-                    new {{&validation_name}}({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}).errors match {
-                        case e if e.isEmpty => {{&process_valid_request}}(f)(({{#fields}}{{&field_name}}{{^last}}, {{/last}}{{/fields}}))
+    def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} Action {{if m.body_param}}({{m.parser_name}}()){{/if}} { {{if m.request_needed}} request =>{{/if}}
+        {{for body in m.body_param}}
+        val {{body.field_name}} = request.body
+        {{/for}}
+        {{for header in m.header_params}}
+        val {{header.field_name}}_either =
+            fromHeaders[{{header.type_name}}]("{{header.field_name}}", request.headers.toMap)
+        {{/for}}
+        {{if m.header_params}}
+            ({{for header in m.header_params}}{{header.field_name}}_either{{if header.isNotLast}}, {{/if}}{{/for}}) match {
+                case ({{for header in m.header_params}}Right({{header.field_name}}){{if header.isNotLast}}, {{/if}}{{/for}}) =>
+        {{/if}}
+
+            val result ={{if m.has_no_validations}} {{m.process_valid_request}}(f)(){{/if}}
+                {{for v in m.validations}}
+                    new {{v.validation_name}}({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}).errors match {
+                        case e if e.isEmpty => {{m.process_valid_request}}(f)(({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}))
                         case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{&response_mime_type_name}})
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{m.response_mime_type_name}})
                             BadRequest(l)
-                    }⮐
-                {{/validations}}
-                {{/validations?}}
+                    }
+                {{/for}}
             result
-            {{! EO wraped part }}
-        {{#header_params?}}
-            case ({{#header_params}}_{{^last}}, {{/last}}{{/header_params}}) =>
-                val msg = Seq({{#header_params}}{{&field_name}}_either{{^last}}, {{/last}}{{/header_params}}).filter{_.isLeft}.map(_.left.get).mkString("\n")
+        {{if m.header_params}}
+            case ({{for h in m.header_params}}_{{if h.isNotLast}}, {{/if}}{{/for}}) =>
+                val msg = Seq({{for h in m.header_params}}{{h.field_name}}_either{{if h.isNotLast}}, {{/if}}{{/for}}).filter{_.isLeft}.map(_.left.get).mkString("\n")
                 BadRequest(msg)
             }
-        {{/header_params?}}
+        {{/if}}
+
     }
 
-    private def {{&process_valid_request}}(f: {{&action_type}})(request: {{&action_request_type}}) = {
-        implicit val {{&writable_json}} = anyToWritable[{{&action_result_type}}]({{&response_mime_type_name}})
+    private def {{m.process_valid_request}}(f: {{m.action_type}})(request: {{m.action_request_type}}) = {
+        implicit val {{m.writable_json}} = anyToWritable[{{m.action_result_type}}]({{m.response_mime_type_name}})
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => ({{&error_to_status}} orElse defaultErrorMapping)(error)
-            case Success(result) => {{&action_success_status_name}}(result)
+            case Failure(error) => ({{m.error_to_status}} orElse defaultErrorMapping)(error)
+            case Success(result) => {{m.action_success_status_name}}(result)
         }
         status
     }
-    {{/methods}}
+    {{/for}}
 }
-{{/controllers}}
+{{/for}}

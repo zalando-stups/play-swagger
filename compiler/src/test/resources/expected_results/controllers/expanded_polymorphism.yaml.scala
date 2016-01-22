@@ -9,28 +9,19 @@ import PlayBodyParsing._
 import PlayValidations._
 package expanded_polymorphism.yaml { 
 
-    class Expanded_polymorphismYaml extends Expanded_polymorphismYamlBase {
-    val findPets = findPetsAction {
-            input: (PetsGetTags, PetsGetLimit) =>
-            val (tags, limit) = input
-
-            ???
-            
-        } //////// EOF ////////  findPetsAction
-    val addPet = addPetAction {
-            (pet: NewPet) =>
-???
-            
-        } //////// EOF ////////  addPetAction
-    val findPetById = findPetByIdAction {
-            (id: Long) =>
-???
-            
-        } //////// EOF ////////  findPetByIdAction
-    val deletePet = deletePetAction {
-            (id: Long) =>
-???
-            
-        } //////// EOF ////////  deletePetAction
-    }
+  class Expanded_polymorphismYaml extends Expanded_polymorphismYamlBase {
+    val findPets = findPetsAction { input: (PetsGetTags, PetsGetLimit) =>
+      val (tags, limit) = input
+      ???
+    } //////// EOF ////////  findPetsAction
+    val addPet = addPetAction { (pet: NewPet) =>
+      ???
+    } //////// EOF ////////  addPetAction
+    val findPetById = findPetByIdAction { (id: Long) =>
+      ???
+    } //////// EOF ////////  findPetByIdAction
+    val deletePet = deletePetAction { (id: Long) =>
+      ???
+    } //////// EOF ////////  deletePetAction
+  }
 }

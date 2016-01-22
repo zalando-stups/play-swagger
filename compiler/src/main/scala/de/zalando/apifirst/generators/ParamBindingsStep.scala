@@ -48,8 +48,8 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
       val underlyingType = someTpe.nestedTypes.map { t => typeNameDenotation(table, t.name) }.mkString(", ")
       val bindable = s"""implicit val bindable_$alias$underlyingType$tpe = PlayPathBindables.create$alias${tpe}Bindable[$underlyingType]"""
       val format = someTpe match {
-        case arr: Arr => Some("(\"" + arr.format + "\")")
-        case _ => None
+        case arr: Arr => "(\"" + arr.format + "\")"
+        case _ => ""
       }
       val mainType = Seq(Map(
         "name" -> bindable,

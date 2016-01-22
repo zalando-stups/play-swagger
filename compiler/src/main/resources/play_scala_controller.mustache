@@ -1,30 +1,28 @@
+{{for import in controller_imports}}
+import {{import.name}}
+{{/for}}
+
+{{for import in unmanaged_imports}}
+import {{import.name}}
+{{/for}}
+
+{{for controller in controllers}}
+package {{controller.effective_package}} {
+
+    class {{controller.controller}} extends {{controller.base}} {
+    {{for method in controller.methods}}
+        {{method.signature}}{{for sp in method.single_parameter}} ({{sp.field_name}}: {{sp.type_name}}) =>{{/for}}
+            {{if method.multiple_parameters}} input: ({{for p in method.multiple_parameters}}{{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}) =>
+            val ({{for p in method.multiple_parameters}}{{p.field_name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
+            {{/if}}
 
 
+            {{method.implementation}}
 
+            {{method.dead_code}}
 
-{{#controller_imports}}
-import {{&name}}
-{{/controller_imports}}
-
-{{#unmanaged_imports}}
-import {{&name}}
-{{/unmanaged_imports}}
-
-{{#controllers}}
-package {{&effective_package}} { {{!main_package}}
-
-    class {{&controller}} extends {{&base}} {
-    {{#methods}}
-        {{&signature}}
-            {{#parameters?}}
-            input: ({{#parameters}}{{&type_name}}{{^last}}, {{/last}}{{/parameters}}) =>
-            val ({{#parameters}}{{&field_name}}{{^last}}, {{/last}}{{/parameters}}) = input⮐
-            {{/parameters?}}
-            {{#single_parameter?}}({{&field_name}}: {{&type_name}}) =>⮐{{/single_parameter?}}
-            {{&implementation}}
-            {{&dead_code}}
-        } {{&comment}}
-    {{/methods}}
+        } {{method.comment}}
+    {{/for}}
     }
 }
-{{/controllers}}
+{{/for}}

@@ -9,11 +9,9 @@ import PlayBodyParsing._
 import PlayValidations._
 package security.api.yaml { 
 
-    class SecurityApiYaml extends SecurityApiYamlBase {
-    val getPetsById = getPetsByIdAction {
-            (id: PetsIdGetId) =>
-???
-            
-        } //////// EOF ////////  getPetsByIdAction
-    }
+  class SecurityApiYaml extends SecurityApiYamlBase {
+    val getPetsById = getPetsByIdAction { (id: PetsIdGetId) =>
+      ???
+    } //////// EOF ////////  getPetsByIdAction
+  }
 }

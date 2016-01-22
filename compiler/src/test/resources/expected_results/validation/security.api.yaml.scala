@@ -28,5 +28,6 @@ class PetsIdGetIdValidator(instance: PetsIdGetId) extends RecursiveValidator {
 // ----- call validations -----
 class PetsIdGetValidator(id: PetsIdGetId) extends RecursiveValidator {
     override val validators = Seq(
-        new PetsIdGetIdValidator(id))
+        new PetsIdGetIdValidator(id)
+    )
 }

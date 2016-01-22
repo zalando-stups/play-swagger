@@ -97,5 +97,7 @@ class ExampleNestedArraysOptArrArrArrValidator(instance: ExampleNestedArraysOptA
 // ----- call validations -----
 class GetValidator(activity: Activity, example: GetExample) extends RecursiveValidator {
     override val validators = Seq(
-        new ActivityValidator(activity), new GetExampleValidator(example))
+        new ActivityValidator(activity),
+        new GetExampleValidator(example)
+    )
 }

@@ -174,5 +174,6 @@ class ModelSchemaArticleModelAttributesOptValidator(instance: ModelSchemaArticle
 // ----- call validations -----
 class SchemaModelGetValidator(root: ModelSchemaRoot) extends RecursiveValidator {
     override val validators = Seq(
-        new ModelSchemaRootValidator(root))
+        new ModelSchemaRootValidator(root)
+    )
 }

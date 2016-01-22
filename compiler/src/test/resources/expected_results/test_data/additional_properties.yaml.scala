@@ -6,6 +6,7 @@ import Arbitrary._
 
 import scala.collection.immutable.Map
 import de.zalando.play.controllers.ArrayWrapper
+
 object Generators {
     def createKeyedArraysAdditionalPropertiesGenerator = _generate(KeyedArraysAdditionalPropertiesGenerator)
 

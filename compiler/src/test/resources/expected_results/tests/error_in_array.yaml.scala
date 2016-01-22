@@ -65,7 +65,7 @@ import Generators._
 
                 } yield root
 
-            val inputs = genInputs suchThat { root=>
+            val inputs = genInputs suchThat { root =>
                 new SchemaModelGetValidator(root).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -77,7 +77,7 @@ import Generators._
 
             } yield root
 
-            val inputs = genInputs suchThat { root=>
+            val inputs = genInputs suchThat { root =>
                 new SchemaModelGetValidator(root).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }

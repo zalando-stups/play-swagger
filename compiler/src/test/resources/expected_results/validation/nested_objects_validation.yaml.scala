@@ -72,5 +72,6 @@ class NestedObjectsNestedNested2Nested3BottomValidator(instance: NestedObjectsNe
 // ----- call validations -----
 class GetValidator(nestedObject: NestedObjects) extends RecursiveValidator {
     override val validators = Seq(
-        new NestedObjectsValidator(nestedObject))
+        new NestedObjectsValidator(nestedObject)
+    )
 }

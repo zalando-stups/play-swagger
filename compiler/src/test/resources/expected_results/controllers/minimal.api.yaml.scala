@@ -9,10 +9,9 @@ import PlayBodyParsing._
 import PlayValidations._
 package minimal.api.yaml { 
 
-    class Dashboard extends DashboardBase {
+  class Dashboard extends DashboardBase {
     val index = indexAction {
-            ???
-            
-        } //////// EOF ////////  indexAction
-    }
+      ???
+    } //////// EOF ////////  indexAction
+  }
 }

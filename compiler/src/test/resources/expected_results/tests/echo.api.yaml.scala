@@ -63,7 +63,7 @@ import Generators._
 
                 } yield id
 
-            val inputs = genInputs suchThat { id=>
+            val inputs = genInputs suchThat { id =>
                 new `Test-pathIdGetValidator`(id).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -75,7 +75,7 @@ import Generators._
 
             } yield id
 
-            val inputs = genInputs suchThat { id=>
+            val inputs = genInputs suchThat { id =>
                 new `Test-pathIdGetValidator`(id).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
@@ -118,7 +118,7 @@ import Generators._
 
                 } yield (name, year)
 
-            val inputs = genInputs suchThat { case (name, year)=>
+            val inputs = genInputs suchThat { case (name, year) =>
                 new PostValidator(name, year).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -132,7 +132,7 @@ import Generators._
 
             } yield (name, year)
 
-            val inputs = genInputs suchThat { case (name, year)=>
+            val inputs = genInputs suchThat { case (name, year) =>
                 new PostValidator(name, year).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }

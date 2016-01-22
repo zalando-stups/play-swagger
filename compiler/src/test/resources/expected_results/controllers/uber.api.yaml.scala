@@ -9,38 +9,25 @@ import PlayBodyParsing._
 import PlayValidations._
 package uber.api.yaml { 
 
-    class UberApiYaml extends UberApiYamlBase {
+  class UberApiYaml extends UberApiYamlBase {
     val getme = getmeAction {
-            ???
-            
-        } //////// EOF ////////  getmeAction
-    val getproducts = getproductsAction {
-            input: (Double, Double) =>
-            val (latitude, longitude) = input
-
-            ???
-            
-        } //////// EOF ////////  getproductsAction
-    val getestimatesTime = getestimatesTimeAction {
-            input: (Double, Double, ProfilePicture, ProfilePicture) =>
-            val (start_latitude, start_longitude, customer_uuid, product_id) = input
-
-            ???
-            
-        } //////// EOF ////////  getestimatesTimeAction
-    val getestimatesPrice = getestimatesPriceAction {
-            input: (Double, Double, Double, Double) =>
-            val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-
-            ???
-            
-        } //////// EOF ////////  getestimatesPriceAction
-    val gethistory = gethistoryAction {
-            input: (ErrorCode, ErrorCode) =>
-            val (offset, limit) = input
-
-            ???
-            
-        } //////// EOF ////////  gethistoryAction
-    }
+      ???
+    } //////// EOF ////////  getmeAction
+    val getproducts = getproductsAction { input: (Double, Double) =>
+      val (latitude, longitude) = input
+      ???
+    } //////// EOF ////////  getproductsAction
+    val getestimatesTime = getestimatesTimeAction { input: (Double, Double, ProfilePicture, ProfilePicture) =>
+      val (start_latitude, start_longitude, customer_uuid, product_id) = input
+      ???
+    } //////// EOF ////////  getestimatesTimeAction
+    val getestimatesPrice = getestimatesPriceAction { input: (Double, Double, Double, Double) =>
+      val (start_latitude, start_longitude, end_latitude, end_longitude) = input
+      ???
+    } //////// EOF ////////  getestimatesPriceAction
+    val gethistory = gethistoryAction { input: (ErrorCode, ErrorCode) =>
+      val (offset, limit) = input
+      ???
+    } //////// EOF ////////  gethistoryAction
+  }
 }
