@@ -3,7 +3,7 @@ package de.zalando.play.compiler
 import java.io.File
 
 import de.zalando.apifirst.Application.StrictModel
-import de.zalando.apifirst.{TypeNormaliser, TypeDeduplicator, TypeFlattener, ParameterDereferencer}
+import de.zalando.apifirst.TypeNormaliser
 import de.zalando.apifirst.generators.ScalaGenerator
 import de.zalando.swagger.{ModelConverter, StrictJsonParser, StrictYamlParser}
 import org.apache.commons.io.FileUtils
@@ -20,14 +20,12 @@ object SwaggerCompiler {
   val controllerDir = "app/controllers/"
 
   def compileSpec(task: SwaggerCompilationTask, outputDir: File, routesImport: Seq[String], keyPrefix: String): SwaggerCompilationResult = {
-    outputDir.mkdirs()
     implicit val flatAst          = readFlatAst(task)
     val swaggerFiles              = compileSwagger(task, outputDir)
     SwaggerCompilationResult.fromSwagger(swaggerFiles)
   }
 
   def compileConf(task: SwaggerCompilationTask, outputDir: File, routesImport: Seq[String], keyPrefix: String): SwaggerCompilationResult = {
-    outputDir.mkdirs()
     implicit val flatAst  = readFlatAst(task)
     val routesFiles       = compileRoutes(task, outputDir, routesImport)
     SwaggerCompilationResult.fromRoutes(routesFiles)
@@ -69,13 +67,14 @@ object SwaggerCompiler {
     writeToFile(outputDir)(fileName, content)
   }
 
-  def fullFileName(task: SwaggerCompilationTask, directory: String): String = {
-    val fileName = directory + task.definitionFile.getName + ".scala"
-    fileName
-  }
+  def fullFileName(task: SwaggerCompilationTask, directory: String): String =
+    directory + task.definitionFile.getName + ".scala"
 
   def writeToFile(outputDir: File) = (filename: String, content: String) => {
     val file = new File(outputDir, filename)
+    val parent = file.getParentFile
+    if (parent.exists && parent.isFile) parent.renameTo(new File(parent.getAbsolutePath + ".backup"))
+    if (!parent.exists) parent.mkdirs()
     FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
     file
   }

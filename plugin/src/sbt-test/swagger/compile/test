@@ -1,2 +1,17 @@
-# Just make sure everything compiles with no errors
+# Fails while compiled for the first time, this should be addressed
+-> compile
+
+# Successfully compiles second time
 > compile
+
+$ exists app/controllers/echo.api.yaml.scala
+$ exists test/echo.api.yaml.scala
+$ exists target/scala-2.11/routes/main/controllers_base/echo.api.yaml.scala
+$ exists target/scala-2.11/routes/main/generators/echo.api.yaml.scala
+$ exists target/scala-2.11/routes/main/model/echo.api.yaml.scala
+$ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
+
+# we don't check what is created by the play's routes compiler because it can change
+
+# Tests should fail with 404 because there is no mapping in routes file
+-> test
