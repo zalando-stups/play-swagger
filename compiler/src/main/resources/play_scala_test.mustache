@@ -13,6 +13,8 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
 
+import play.api.test.Helpers.{status => requestStatusCode_}
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
@@ -51,7 +53,7 @@ import Generators._
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
             ("given an URL: [" + url + "]" {{for b in test.body_param}}+ "and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: all(
-                status(path) ?= BAD_REQUEST ,
+                requestStatusCode_(path) ?= BAD_REQUEST ,
                 contentType(path) ?= Some("{{test.expected_result_type}}"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
@@ -70,7 +72,7 @@ import Generators._
             val url = {{test.full_url}}
             val headers = Seq({{for header in test.headers}}"{{header.name}}" -> {{header.name}}{{/for}})
             val path = route(FakeRequest({{test.verb_name}}, url).withHeaders(headers:_*){{for b in test.body_param}}.withBody(parsed_{{b.body_parameter_name}}){{/for}}).get
-            ("given an URL: [" + url + "]"{{for b in test.body_param}}+ " and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: (status(path) ?= OK)
+            ("given an URL: [" + url + "]"{{for b in test.body_param}}+ " and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: (requestStatusCode_(path) ?= OK)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
