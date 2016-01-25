@@ -8,7 +8,7 @@ import de.zalando.play.controllers._
 import PlayBodyParsing._
 
 import PlayValidations._
-
+import scala.util._
 
 
 
@@ -17,11 +17,7 @@ package hackweek.yaml {
 
     class HackweekYaml extends HackweekYamlBase {
         val getschemaModel = getschemaModelAction { (root: ModelSchemaRoot) =>
-
-            ???
-
-            
-
+            Failure(???)
         } //////// EOF ////////  getschemaModelAction
     }
 }

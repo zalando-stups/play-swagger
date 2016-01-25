@@ -7,6 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+import scala.util._
 package simple.petstore.api.yaml { 
 
   class SimplePetstoreApiYaml extends SimplePetstoreApiYamlBase {

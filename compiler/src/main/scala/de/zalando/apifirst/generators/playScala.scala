@@ -166,8 +166,6 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
     val sortedMarkers = markerIndexes.sorted
     val codeParts = markerIndexes map { idx => sortedMarkers.find(_ > idx).getOrElse(lines.length) }
 
-    // println(strictModel.basePath + " - " + markerIndexes.mkString(","))
-
     val parts = markers zip markerIndexes zip codeParts filter {
       case ((((call, (marker, length)), start), end)) => start >= 0
     } map {
@@ -204,7 +202,8 @@ trait PlayScalaControllersGenerator {
     "play.api.data.validation.Constraint",
     "de.zalando.play.controllers._",
     "PlayBodyParsing._",
-    "PlayValidations._"
+    "PlayValidations._",
+    "scala.util._"
   )
 
   case class UnmanagedPart(marker: ApiCall, relevantCode: String, deadCode: String)
@@ -230,7 +229,7 @@ trait PlayScalaControllersGenerator {
       val method = table(call.asReference)("controller")
       val methodWithCode = method + (
         "dead_code"       -> unmanagedParts.get(call).map(_.deadCode).getOrElse(""),
-        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode).getOrElse("???")
+        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode).getOrElse("Failure(???)")
         )
       methodWithCode
     }

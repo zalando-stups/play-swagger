@@ -8,7 +8,7 @@ import de.zalando.play.controllers._
 import PlayBodyParsing._
 
 import PlayValidations._
-
+import scala.util._
 
 
 
@@ -16,9 +16,9 @@ import PlayValidations._
 package nakadi.yaml {
 
     class hack extends hackBase {
-        val get_metrics = get_metricsAction {
+        val get_metrics = get_metricsAction { _ =>
 
-            ???
+            Failure(???)
 
             
 
@@ -27,7 +27,7 @@ package nakadi.yaml {
             val (start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit) = input
             
 
-            ???
+            Failure(???)
 
             
 
@@ -36,14 +36,14 @@ package nakadi.yaml {
             val (topic, partition) = input
             
 
-            ???
+            Failure(???)
 
             
 
         } //////// EOF ////////  get_partitionAction
-        val get_topics = get_topicsAction {
+        val get_topics = get_topicsAction { _ =>
 
-            ???
+            Failure(???)
 
             
 
@@ -52,7 +52,7 @@ package nakadi.yaml {
             val (stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic) = input
             
 
-            ???
+            Failure(???)
 
             
 
@@ -61,14 +61,14 @@ package nakadi.yaml {
             val (topic, event) = input
             
 
-            ???
+            Failure(???)
 
             
 
         } //////// EOF ////////  post_eventAction
         val get_partitions = get_partitionsAction { (topic: String) =>
 
-            ???
+            Failure(???)
 
             
 
@@ -77,7 +77,7 @@ package nakadi.yaml {
             val (topic, event) = input
             
 
-            ???
+            Failure(???)
 
             
 

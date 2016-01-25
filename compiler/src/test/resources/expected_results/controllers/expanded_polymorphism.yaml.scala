@@ -7,6 +7,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+import scala.util._
 package expanded_polymorphism.yaml { 
 
   class Expanded_polymorphismYaml extends Expanded_polymorphismYamlBase {
