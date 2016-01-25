@@ -73,7 +73,17 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val validationsByType   = ReShaper.groupByType(validations.toSeq).toMap
 
     val bindings            = ReShaper.filterByType("bindings", denotationTable)
-    val bindingsByType      = ReShaper.groupByType(bindings.toSeq).toMap
+    val grouppedBindings    = ReShaper.groupByType(bindings.toSeq)
+    val sortedBindings      = grouppedBindings.map { case (x,y: Seq[Map[String, Any] @unchecked]) =>
+      val sorted = y.sortWith { (a, b) => (a.get("dependencies"), b.get("dependencies")) match {
+        case (Some(aa: Int), Some(bb: Int)) => aa < bb
+        case _ => false
+      }
+      }
+      x -> sorted
+    }
+
+    val bindingsByType      = sortedBindings.toMap
 
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)

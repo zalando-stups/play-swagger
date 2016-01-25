@@ -19,9 +19,9 @@ import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class {{spec_name}} extends Specification {
-        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
-        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
-        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = Option(binder.unbind(key, value)).getOrElse("")
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
 
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {

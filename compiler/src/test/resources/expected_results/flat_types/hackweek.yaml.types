@@ -1,0 +1,66 @@
+⌿definitions⌿ModelSchemaRoot -> 
+	TypeDef(⌿definitions⌿ModelSchemaRoot, Seq(
+		Field(⌿definitions⌿ModelSchemaRoot⌿data, TypeRef(⌿definitions⌿ModelSchemaRoot⌿data)), 
+		Field(⌿definitions⌿ModelSchemaRoot⌿meta, TypeRef(⌿definitions⌿ModelSchemaRoot⌿meta)), 
+		Field(⌿definitions⌿ModelSchemaRoot⌿links, TypeRef(⌿definitions⌿ModelSchemaRoot⌿links))))
+⌿definitions⌿Errors -> 
+	TypeDef(⌿definitions⌿Errors, Seq(
+		Field(⌿definitions⌿Errors⌿errors, TypeRef(⌿definitions⌿Errors⌿errors))))
+⌿definitions⌿ErrorSource -> 
+	TypeDef(⌿definitions⌿ErrorSource, Seq(
+		Field(⌿definitions⌿ErrorSource⌿pointer, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿ErrorSource⌿parameter, TypeRef(⌿definitions⌿Meta⌿copyright))))
+⌿definitions⌿Meta -> 
+	TypeDef(⌿definitions⌿Meta, Seq(
+		Field(⌿definitions⌿Meta⌿copyright, TypeRef(⌿definitions⌿Meta⌿copyright))))
+⌿definitions⌿ModelSchema -> 
+	TypeDef(⌿definitions⌿ModelSchema, Seq(
+		Field(⌿definitions⌿ModelSchema⌿name, Str), 
+		Field(⌿definitions⌿ModelSchema⌿sizeRegister, Str), 
+		Field(⌿definitions⌿ModelSchema⌿brand, Str), 
+		Field(⌿definitions⌿ModelSchema⌿partnerArticleModelId, Intgr), 
+		Field(⌿definitions⌿ModelSchema⌿silhouetteId, Str), 
+		Field(⌿definitions⌿ModelSchema⌿description, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿ModelSchema⌿ageGroups, TypeRef(⌿definitions⌿ModelSchema⌿ageGroups)), 
+		Field(⌿definitions⌿ModelSchema⌿keywords, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿ModelSchema⌿lengthRegister, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿ModelSchema⌿specialDescriptions, TypeRef(⌿definitions⌿ModelSchema⌿specialDescriptions)), 
+		Field(⌿definitions⌿ModelSchema⌿articleModelAttributes, TypeRef(⌿definitions⌿ModelSchema⌿articleModelAttributes))))
+⌿definitions⌿Error -> 
+	TypeDef(⌿definitions⌿Error, Seq(
+		Field(⌿definitions⌿Error⌿source, TypeRef(⌿definitions⌿Error⌿source)), 
+		Field(⌿definitions⌿Error⌿code, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿Error⌿status, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿Error⌿detail, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿Error⌿title, TypeRef(⌿definitions⌿Meta⌿copyright))))
+⌿definitions⌿Links -> 
+	TypeDef(⌿definitions⌿Links, Seq(
+		Field(⌿definitions⌿Links⌿self, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿Links⌿related, TypeRef(⌿definitions⌿Meta⌿copyright))))
+⌿definitions⌿Meta⌿copyright -> 
+	Opt(Str)
+⌿definitions⌿ModelSchema⌿specialDescriptions -> 
+	Opt(TypeRef(⌿definitions⌿ModelSchema⌿specialDescriptions⌿Opt))
+⌿definitions⌿ModelSchemaRoot⌿data -> 
+	Opt(TypeRef(⌿definitions⌿ModelSchema))
+⌿definitions⌿Error⌿source -> 
+	Opt(TypeRef(⌿definitions⌿ErrorSource))
+⌿definitions⌿ModelSchemaRoot⌿links -> 
+	Opt(TypeRef(⌿definitions⌿Links))
+⌿definitions⌿ModelSchema⌿articleModelAttributes -> 
+	Opt(TypeRef(⌿definitions⌿ModelSchema⌿articleModelAttributes⌿Opt))
+⌿definitions⌿Errors⌿errors -> 
+	Opt(TypeRef(⌿definitions⌿Errors⌿errors⌿Opt))
+⌿definitions⌿ModelSchema⌿ageGroups -> 
+	Arr(Str)
+⌿definitions⌿ModelSchemaRoot⌿meta -> 
+	Opt(TypeRef(⌿definitions⌿Meta))
+⌿definitions⌿ModelSchema⌿specialDescriptions⌿Opt -> 
+	ArrResult(Str)
+⌿definitions⌿Errors⌿errors⌿Opt -> 
+	Arr(TypeRef(⌿definitions⌿Error))
+⌿definitions⌿ModelSchema⌿articleModelAttributes⌿Opt -> 
+	Arr(Str)
+-- params --
+
+⌿paths⌿/schema/model⌿get⌿root -> Parameter(root,TypeRef(⌿definitions⌿ModelSchemaRoot),None,None,.+,false,body)

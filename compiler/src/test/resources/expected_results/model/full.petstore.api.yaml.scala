@@ -57,6 +57,6 @@ type UsersUsernameGetUsername = String
     
     
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
-    implicit val bindable_OptionPetsFindByStatusGetStatusOptQuery = PlayPathBindables.createOptionQueryBindable[PetsFindByStatusGetStatusOpt]
     implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("multi")
+    implicit val bindable_OptionPetsFindByStatusGetStatusOptQuery = PlayPathBindables.createOptionQueryBindable[PetsFindByStatusGetStatusOpt]
     }

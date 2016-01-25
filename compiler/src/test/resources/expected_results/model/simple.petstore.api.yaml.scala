@@ -30,6 +30,6 @@ type PetsIdDeleteResponses204 = Null
     
     
     implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
-    implicit val bindable_OptionPetsGetTagsOptQuery = PlayPathBindables.createOptionQueryBindable[PetsGetTagsOpt]
     implicit val bindable_ArrayWrapperStringQuery = PlayPathBindables.createArrayWrapperQueryBindable[String]("csv")
+    implicit val bindable_OptionPetsGetTagsOptQuery = PlayPathBindables.createOptionQueryBindable[PetsGetTagsOpt]
     }

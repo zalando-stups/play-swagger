@@ -13,16 +13,16 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
 
+import play.api.test.Helpers.{status => requestStatusCode_}
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class SimplePetstoreApiYamlSpec extends Specification {
-        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
-        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
-        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = Option(binder.unbind(key, value)).getOrElse("")
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
 
-
-      
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
           case Failed(_, labels) => failure(labels.mkString("\\n"))
@@ -32,20 +32,23 @@ import Generators._
             failure(error)
         }
 
-"POST /api/pets" should {
+
+
+    "POST /api/pets" should {
         def testInvalidInput(pet: NewPet) = {
+
 
             val url = s"""/api/pets"""
             val headers = Seq()
-            val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
+                val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
+
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
             val errors = new PetsPostValidator(pet).errors
-
 
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
-                status(path) ?= BAD_REQUEST ,
+                requestStatusCode_(path) ?= BAD_REQUEST ,
                 contentType(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
@@ -53,18 +56,18 @@ import Generators._
         }
         def testValidInput(pet: NewPet) = {
 
-            val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
+
+                val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
+
             val url = s"""/api/pets"""
             val headers = Seq()
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
-            ("given an URL: [" + url + "]"+ " and body [" + parsed_pet + "]") |: (status(path) ?= OK)
+            ("given an URL: [" + url + "]"+ " and body [" + parsed_pet + "]") |: (requestStatusCode_(path) ?= OK)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     pet <- NewPetGenerator
-
                 } yield pet
-
             val inputs = genInputs suchThat { pet =>
                 new PetsPostValidator(pet).errors.nonEmpty
             }
@@ -74,9 +77,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 pet <- NewPetGenerator
-
             } yield pet
-
             val inputs = genInputs suchThat { pet =>
                 new PetsPostValidator(pet).errors.isEmpty
             }
@@ -85,20 +86,24 @@ import Generators._
         }
 
     }
-"GET /api/pets" should {
+
+
+    "GET /api/pets" should {
         def testInvalidInput(input: (PetsGetTags, PetsGetLimit)) = {
 
-            val (tags, limit) = input
+
+                val (tags, limit) = input
+            
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
             val headers = Seq()
+
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetsGetValidator(tags, limit).errors
-
 
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
             ("given an URL: [" + url + "]" ) |: all(
-                status(path) ?= BAD_REQUEST ,
+                requestStatusCode_(path) ?= BAD_REQUEST ,
                 contentType(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
@@ -106,20 +111,21 @@ import Generators._
         }
         def testValidInput(input: (PetsGetTags, PetsGetLimit)) = {
 
-            val (tags, limit) = input
+
+                val (tags, limit) = input
+            
+
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    tags <- PetsGetTagsGenerator
-                    limit <- PetsGetLimitGenerator
+                        tags <- PetsGetTagsGenerator
+                        limit <- PetsGetLimitGenerator
                     
-
                 } yield (tags, limit)
-
             val inputs = genInputs suchThat { case (tags, limit) =>
                 new PetsGetValidator(tags, limit).errors.nonEmpty
             }
@@ -128,12 +134,10 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                tags <- PetsGetTagsGenerator
-                limit <- PetsGetLimitGenerator
+                    tags <- PetsGetTagsGenerator
+                    limit <- PetsGetLimitGenerator
                 
-
             } yield (tags, limit)
-
             val inputs = genInputs suchThat { case (tags, limit) =>
                 new PetsGetValidator(tags, limit).errors.isEmpty
             }
@@ -142,19 +146,22 @@ import Generators._
         }
 
     }
-"GET /api/pets/{id}" should {
+
+
+    "GET /api/pets/{id}" should {
         def testInvalidInput(id: Long) = {
+
 
             val url = s"""/api/pets/${toPath(id)}"""
             val headers = Seq()
+
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetsIdGetValidator(id).errors
-
 
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
             ("given an URL: [" + url + "]" ) |: all(
-                status(path) ?= BAD_REQUEST ,
+                requestStatusCode_(path) ?= BAD_REQUEST ,
                 contentType(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
@@ -162,17 +169,17 @@ import Generators._
         }
         def testValidInput(id: Long) = {
 
+
+
             val url = s"""/api/pets/${toPath(id)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     id <- LongGenerator
-
                 } yield id
-
             val inputs = genInputs suchThat { id =>
                 new PetsIdGetValidator(id).errors.nonEmpty
             }
@@ -182,9 +189,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 id <- LongGenerator
-
             } yield id
-
             val inputs = genInputs suchThat { id =>
                 new PetsIdGetValidator(id).errors.isEmpty
             }
@@ -193,19 +198,22 @@ import Generators._
         }
 
     }
-"DELETE /api/pets/{id}" should {
+
+
+    "DELETE /api/pets/{id}" should {
         def testInvalidInput(id: Long) = {
+
 
             val url = s"""/api/pets/${toPath(id)}"""
             val headers = Seq()
+
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new PetsIdDeleteValidator(id).errors
-
 
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
             ("given an URL: [" + url + "]" ) |: all(
-                status(path) ?= BAD_REQUEST ,
+                requestStatusCode_(path) ?= BAD_REQUEST ,
                 contentType(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
@@ -213,17 +221,17 @@ import Generators._
         }
         def testValidInput(id: Long) = {
 
+
+
             val url = s"""/api/pets/${toPath(id)}"""
             val headers = Seq()
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     id <- LongGenerator
-
                 } yield id
-
             val inputs = genInputs suchThat { id =>
                 new PetsIdDeleteValidator(id).errors.nonEmpty
             }
@@ -233,9 +241,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 id <- LongGenerator
-
             } yield id
-
             val inputs = genInputs suchThat { id =>
                 new PetsIdDeleteValidator(id).errors.isEmpty
             }
@@ -244,4 +250,5 @@ import Generators._
         }
 
     }
+
 }

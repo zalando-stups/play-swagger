@@ -1,4 +1,4 @@
-package error_in_array.yaml
+package hackweek.yaml
 
 import de.zalando.play.controllers.PlayBodyParsing
 import org.scalacheck._
@@ -18,7 +18,7 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
-    class Error_in_arrayYamlSpec extends Specification {
+    class HackweekYamlSpec extends Specification {
         def toPath[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
         def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = Option(binder.unbind(key, value)).getOrElse("")
         def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
@@ -34,11 +34,11 @@ import Generators._
 
 
 
-    "GET /schema/model" should {
+    "GET /boo/schema/model" should {
         def testInvalidInput(root: ModelSchemaRoot) = {
 
 
-            val url = s"""/schema/model"""
+            val url = s"""/boo/schema/model"""
             val headers = Seq()
                 val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
 
@@ -59,7 +59,7 @@ import Generators._
 
                 val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
 
-            val url = s"""/schema/model"""
+            val url = s"""/boo/schema/model"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
             ("given an URL: [" + url + "]"+ " and body [" + parsed_root + "]") |: (requestStatusCode_(path) ?= OK)

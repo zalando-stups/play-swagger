@@ -13,16 +13,16 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
 
+import play.api.test.Helpers.{status => requestStatusCode_}
+
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
     class SecurityApiYamlSpec extends Specification {
-        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
-        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = binder.unbind(key, value)
-        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = binder.unbind("", value)
+        def toPath[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
+        def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = Option(binder.unbind(key, value)).getOrElse("")
+        def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
 
-
-      
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
           case Failed(_, labels) => failure(labels.mkString("\\n"))
@@ -32,19 +32,22 @@ import Generators._
             failure(error)
         }
 
-"GET /v1/pets/{id}" should {
+
+
+    "GET /v1/pets/{id}" should {
         def testInvalidInput(id: PetsIdGetId) = {
+
 
             val url = s"""/v1/pets/${toPath(id)}"""
             val headers = Seq()
+
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetsIdGetValidator(id).errors
-
 
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
             ("given an URL: [" + url + "]" ) |: all(
-                status(path) ?= BAD_REQUEST ,
+                requestStatusCode_(path) ?= BAD_REQUEST ,
                 contentType(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
@@ -52,17 +55,17 @@ import Generators._
         }
         def testValidInput(id: PetsIdGetId) = {
 
+
+
             val url = s"""/v1/pets/${toPath(id)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (status(path) ?= OK)
+            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     id <- PetsIdGetIdGenerator
-
                 } yield id
-
             val inputs = genInputs suchThat { id =>
                 new PetsIdGetValidator(id).errors.nonEmpty
             }
@@ -72,9 +75,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                 id <- PetsIdGetIdGenerator
-
             } yield id
-
             val inputs = genInputs suchThat { id =>
                 new PetsIdGetValidator(id).errors.isEmpty
             }
@@ -83,4 +84,5 @@ import Generators._
         }
 
     }
+
 }

@@ -54,7 +54,8 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
       val mainType = Seq(Map(
         "name" -> bindable,
         "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables"),
-        "format" -> format
+        "format" -> format,
+        "dependencies" -> someTpe.nestedTypes.filterNot(c => providedBindings.contains(c.getClass)).length
       ))
       val nestedTypes = someTpe.nestedTypes.flatMap { nt => forType(tpe, nt.name, nt, table) }
       mainType ++ nestedTypes
