@@ -95,7 +95,7 @@ object naming {
     def pathParam(part: String) = part != null && part.nonEmpty && part.startsWith("{") && part.endsWith("}")
     def strip(part: String) = if (pathParam(part)) part.tail.dropRight(1) else part
     def toString(prefix: String, suffix: String, transform: String => String = identity)(part: String) =
-      if (pathParam(part)) s"$prefix${transform(strip(part))}$suffix" else transform(part)
+      if (pathParam(part)) s"$prefix${ScalaName.escape(transform(strip(part)))}$suffix" else transform(part)
 
   }
 }

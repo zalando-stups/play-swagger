@@ -94,5 +94,5 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     "s\"\"\"" + url + fullQuery + "\"\"\""
   }
 
-  private def singleQueryParam(name: String, typeName: Type): String = "$" + s"""{toQuery("$name", $name)}"""
+  private def singleQueryParam(name: String, typeName: Type): String = "$" + s"""{toQuery("${ScalaName.escape(name)}", $name)}"""
 }
