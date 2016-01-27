@@ -221,8 +221,11 @@ trait PlayScalaControllersGenerator {
       (c.handler.packageName, c.handler.controller)
     } map { case (controller, calls) =>
       val methods = calls map { singleMethod(unmanagedParts, table) }
+      if (packageName != controller._1) {
+        println(s"WARN: Ignoring package part of the handler name '${controller._1}', using $packageName instead. \nWARN: Current plugin version only supports package definition per specification")
+      }
       Map(
-        "effective_package"   -> packageName, // escape(controller._1), // TODO currently, the package name just ignored
+        "effective_package"   -> packageName,
         "controller"          -> escape(controller._2),
         "base"                -> escape(controller._2 + baseControllersSuffix),
         "methods"             -> methods
