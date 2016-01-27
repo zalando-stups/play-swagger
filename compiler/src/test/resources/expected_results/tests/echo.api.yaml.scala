@@ -1,4 +1,4 @@
-package echo.api.yaml
+package echo
 
 import de.zalando.play.controllers.PlayBodyParsing
 import org.scalacheck._

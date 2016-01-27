@@ -15,7 +15,7 @@ import scala.language.implicitConversions
   */
 class ScalaGeneratorsTest extends FunSpec with MustMatchers {
 
-  implicit def types2model(types: TypeLookupTable): StrictModel = StrictModel.apply(Nil, types, Map.empty, Map.empty, "")
+  implicit def types2model(types: TypeLookupTable): StrictModel = StrictModel.apply(Nil, types, Map.empty, Map.empty, "", None)
 
   describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {

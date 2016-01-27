@@ -1,4 +1,4 @@
-package expanded_polymorphism.yaml
+package expanded
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary

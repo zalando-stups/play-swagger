@@ -88,7 +88,7 @@ class ParameterDereferencerTest extends FunSpec with MustMatchers {
     )
 
   def checkExpectations[T](types: TypeLookupTable)(params: ParameterLookupTable = parametersFromTypes(types)): Unit = {
-    val model = StrictModel(Nil, types, params, Map.empty, "")
+    val model = StrictModel(Nil, types, params, Map.empty, "", None)
     val result = ParameterDereferencer(model)
     types.foreach { t => result.typeDefs.contains(t._1) mustBe true }
     result.typeDefs.size mustBe (types.size + params.count(! _._2.typeName.isInstanceOf[TypeRef]))

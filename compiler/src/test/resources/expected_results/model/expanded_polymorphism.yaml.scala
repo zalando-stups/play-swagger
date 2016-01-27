@@ -1,5 +1,4 @@
-package expanded_polymorphism
-package object yaml {
+package object expanded {
 import de.zalando.play.controllers.ArrayWrapper
 import de.zalando.play.controllers.PlayPathBindables
 type PetsIdDeleteResponses204 = Null

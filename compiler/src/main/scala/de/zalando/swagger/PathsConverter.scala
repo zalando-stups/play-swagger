@@ -101,7 +101,7 @@ trait HandlerGenerator extends StringUtil {
       generateHandlerLine(operation, callPath, verb)
 
   private def generateHandlerLine(operation: Operation, path: Reference, verb: String): Option[String] = {
-    /*model.vendorExtensions.get(s"$keyPrefix-package") orElse*/ packageFromFilename map { pkg =>
+    model.vendorExtensions.get(s"$keyPrefix-package") orElse packageFromFilename map { pkg =>
       val controller = definitionFileName map { ScalaName.capitalize("\\.", _) } getOrElse {
         throw new IllegalStateException(s"The definition file name must be defined in order to use '$keyPrefix-package' directive")
       }

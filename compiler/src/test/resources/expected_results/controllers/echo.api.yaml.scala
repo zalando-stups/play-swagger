@@ -4,7 +4,7 @@ import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
 import scala.util._
-package echo.api.yaml { 
+package echo {
   class EchoApiYaml extends EchoApiYamlBase {
     val get = getAction { _ =>
       Failure(???)

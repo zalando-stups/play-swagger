@@ -1,4 +1,4 @@
-package echo.api.yaml
+package echo
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http.Writeable
 import Results.Status

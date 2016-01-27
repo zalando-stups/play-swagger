@@ -1,4 +1,4 @@
-package expanded_polymorphism.yaml
+package expanded
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http.Writeable
 import Results.Status

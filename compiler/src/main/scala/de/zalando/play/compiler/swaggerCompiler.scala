@@ -35,14 +35,15 @@ object SwaggerCompiler {
     val places        = Seq("model/", "generators/", "validators/", "controllers_base/", "../../../../test/", "../../../../" + controllerDir)
     val generator     = new ScalaGenerator(flatAst)
     val currentCtrlr  = readFile(outputDir, fullFileName(task, places.last))
-    val artifacts     = generator.generate(task.definitionFile.getName, task.packageName, currentCtrlr) zip places
+    val packageName   = flatAst.packageName.getOrElse(task.packageName)
+    val artifacts     = generator.generate(task.definitionFile.getName, packageName, currentCtrlr) zip places
     val persister     = persist(task, outputDir) _
     val swaggerFiles  = artifacts map { persister.tupled } map { Seq(_) }
     swaggerFiles
   }
 
   private def compileRoutes(task: SwaggerCompilationTask, outputDir: File, routesImport: Seq[String])(implicit flatAst: StrictModel) = {
-    val namespace     = task.packageName
+    val namespace     = flatAst.packageName.getOrElse(task.packageName)
     val allImports    = ((namespace + "._") +: routesImport).distinct
     val playNameSpace = Some(namespace)
     val playRules     = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList

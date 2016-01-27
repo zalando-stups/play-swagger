@@ -1,4 +1,4 @@
-package echo.api.yaml
+package echo
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary

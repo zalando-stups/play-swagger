@@ -14,7 +14,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   val denotationTable = AstScalaPlayEnricher(strictModel)
 
-  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _) = strictModel
+  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName) = strictModel
 
   val testsTemplateName           = "play_scala_test"
   val validatorsTemplateName      = "play_validation"
@@ -84,8 +84,17 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)
 
+    val pckg = overridenPackageName.getOrElse(packageName)
+
+    val packages = Map(
+      "main_package" -> pckg,
+      "main_package_prefix" -> pckg.split('.').init.mkString("."),
+      "main_package_suffix" -> pckg.split('.').last,
+      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
+    )
+
     val controllersMap = Map(
-      "controllers"         -> controllers(modelCalls, unmanagedParts)(denotationTable),
+      "controllers"         -> controllers(modelCalls, unmanagedParts, pckg)(denotationTable),
       "controller_imports"  -> controllerImports.map(i => Map("name" -> i)),
       "unmanaged_imports"   -> unmanagedImports.map(i => Map("name" -> i))
     )
@@ -103,12 +112,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
     val allPackages         = enrichWithStructuralInfo(rawAllPackages)
 
-    val packages = Map(
-      "main_package" -> packageName,
-      "main_package_prefix" -> packageName.split('.').init.mkString("."),
-      "main_package_suffix" -> packageName.split('.').last,
-      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
-    )
+
     renderTemplate(packages, templateName, allPackages)
 
   }
@@ -212,13 +216,13 @@ trait PlayScalaControllersGenerator {
 
   val baseControllersSuffix = "Base"
 
-  def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart])(table: DenotationTable) = {
+  def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart], packageName: String)(table: DenotationTable) = {
     allCalls groupBy { c =>
       (c.handler.packageName, c.handler.controller)
     } map { case (controller, calls) =>
       val methods = calls map { singleMethod(unmanagedParts, table) }
       Map(
-        "effective_package"   -> escape(controller._1), // TODO currently, the package name just ignored
+        "effective_package"   -> packageName, // escape(controller._1), // TODO currently, the package name just ignored
         "controller"          -> escape(controller._2),
         "base"                -> escape(controller._2 + baseControllersSuffix),
         "methods"             -> methods
