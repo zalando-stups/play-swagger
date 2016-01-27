@@ -19,7 +19,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
   describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {
-      new ScalaGenerator(Map.empty[Reference, Domain.Type]).generateModel("test.scala") mustBe ""
+      new ScalaGenerator(Map.empty[Reference, Domain.Type]).generateModel("test.scala", "test.scala") mustBe ""
     }
 
     it("should generate single type alias for an option") {
@@ -27,9 +27,9 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Opti" -> Opt(Lng(None), None),
         "definitions" / "Stri" -> Opt(Str(None, None), None)
       )
-      val result = new ScalaGenerator(model).generateModel("test.scala")
+      val result = new ScalaGenerator(model).generateModel("test-file.scala", "`test-file`.scala")
       result mustBeAs
-        """package test
+        """package `test-file`
           |package object scala {
           |type Opti = Option[Long]
           |type Stri = Option[String]
@@ -43,7 +43,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Option" -> Opt(Lng(None), None),
         "definitions" / "String" -> Opt(Str(None, None), None)
       )
-      new ScalaGenerator(model).generateModel("overloaded.txt") mustBeAs
+      new ScalaGenerator(model).generateModel("overloaded.txt", "overloaded.txt") mustBeAs
         """package overloaded
           |package object txt {
           |type Option = Option[Long]
@@ -58,7 +58,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "Dbl" -> Arr(Dbl(None), None, "tsv"),
         "definitions" / "Flt" -> Arr(Flt(None), None, "ssv")
       )
-      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala", "test.scala") mustBeAs
         """package test
           |package object scala {
           |import de.zalando.play.controllers.ArrayWrapper
@@ -73,7 +73,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "parameters" / "all" -> CatchAll(Bool(None), None)
       )
-      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala", "test.scala") mustBeAs
         """package test
           |package object scala {
           |import scala.collection.immutable.Map
@@ -86,7 +86,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "paths" / "/" / "get" / "responses" / "200" -> Null(None)
       )
-      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala", "test.scala") mustBeAs
         """"""
     }
 
@@ -98,7 +98,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "User" -> TypeDef("definitions" / "User", fields, None)
       )
-      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala", "test.scala") mustBeAs
         """package test
           |package object scala {
           |case class User(name: String, id: Long)
@@ -111,7 +111,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "OptionalData" -> Opt(TypeRef("definitions" / "Passwords"), None),
         "definitions" / "Passwords" -> Arr(Password(None), None, "csv")
       )
-      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala", "test.scala") mustBeAs
         """package test
           |package object scala {
           |import de.zalando.play.controllers.ArrayWrapper
@@ -158,7 +158,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       )
       val strictModel = StrictModel(Nil, model, Map.empty, discriminators, "")
 
-      val result = new ScalaGenerator(strictModel).generateModel("test.scala")
+      val result = new ScalaGenerator(strictModel).generateModel("test.scala", "test.scala")
 
       result mustBeAs
         """package test
@@ -194,7 +194,7 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
             Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)
       )
-      new ScalaGenerator(model).generateModel("test.scala") mustBeAs
+      new ScalaGenerator(model).generateModel("test.scala", "test.scala") mustBeAs
         """package test
           |package object scala {
           |case class ErrorModel(message: String, code: Int)

@@ -24,50 +24,46 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   val controllerBaseTemplateName  = "play_scala_controller_base"
 
 
-  def generate(fileName: String, currentController: String) = Seq(
-    generateModel(fileName),
-    generateGenerators(fileName),
-    playValidators(fileName),
-    playScalaControllerBases(fileName),
-    playScalaTests(fileName),
-    playScalaControllers(fileName, currentController)
+  def generate(fileName: String, packageName: String, currentController: String) = Seq(
+    generateModel(fileName, packageName),
+    generateGenerators(fileName, packageName),
+    playValidators(fileName, packageName),
+    playScalaControllerBases(fileName, packageName),
+    playScalaTests(fileName, packageName),
+    playScalaControllers(fileName, packageName, currentController)
   )
 
-  def generateModel(fileName: String) =
+  def generateModel(fileName: String, packageName: String) =
     if (modelTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
-    else apply(fileName, modelTemplateName)
+    else apply(fileName, packageName, modelTemplateName)
 
-  def generateGenerators(fileName: String) =
+  def generateGenerators(fileName: String, packageName: String) =
     if (modelTypes.isEmpty) ""
-    else apply(fileName, generatorsTemplateName)
+    else apply(fileName, packageName, generatorsTemplateName)
 
-  def playValidators(fileName: String) =
+  def playValidators(fileName: String, packageName: String) =
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
-    else apply(fileName, validatorsTemplateName)
+    else apply(fileName, packageName, validatorsTemplateName)
 
-  def playScalaTests(fileName: String) =
+  def playScalaTests(fileName: String, packageName: String) =
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
-    else apply(fileName, testsTemplateName)
+    else apply(fileName, packageName, testsTemplateName)
 
-  def playScalaControllers(fileName: String, currentController: String) =
+  def playScalaControllers(fileName: String, packageName: String, currentController: String) =
     if (modelCalls.isEmpty) ""
-    else apply(fileName, controllersTemplateName, currentController)
+    else apply(fileName, packageName, controllersTemplateName, currentController)
 
-  def playScalaControllerBases(fileName: String) =
+  def playScalaControllerBases(fileName: String, packageName: String) =
     if (modelCalls.isEmpty) ""
-    else apply(fileName, controllerBaseTemplateName)
+    else apply(fileName, packageName, controllerBaseTemplateName)
 
-  private def apply(fileName: String, templateName: String, currentController: String = ""): String = {
-    val packages = Map(
-      "main_package" -> fileName.split('.').map(escape).mkString("."),
-      "main_package_prefix" -> fileName.split('.').init.mkString("."),
-      "main_package_suffix" -> fileName.split('.').last,
-      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
-    )
-    nonEmptyTemplate(packages, templateName, currentController)
+  private def apply(fileName: String, packageName: String, templateName: String, currentController: String = ""): String = {
+    nonEmptyTemplate(fileName, packageName, templateName, currentController)
   }
 
-  private def nonEmptyTemplate(map: Map[String, Any], templateName: String, currentController: String): String = {
+  private def nonEmptyTemplate(fileName: String, packageName: String, templateName: String, currentController: String): String = {
+
+    assert(packageName.contains('-') == packageName.contains('`'), packageName)
 
     val validations         = ReShaper.filterByType("validators", denotationTable)
     val validationsByType   = ReShaper.groupByType(validations.toSeq).toMap
@@ -107,7 +103,13 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
     val allPackages         = enrichWithStructuralInfo(rawAllPackages)
 
-    renderTemplate(map, templateName, allPackages)
+    val packages = Map(
+      "main_package" -> packageName,
+      "main_package_prefix" -> packageName.split('.').init.mkString("."),
+      "main_package_suffix" -> packageName.split('.').last,
+      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
+    )
+    renderTemplate(packages, templateName, allPackages)
 
   }
 
