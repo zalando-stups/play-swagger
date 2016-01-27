@@ -15,11 +15,11 @@ import scala.language.implicitConversions
   */
 class ScalaGeneratorsTest extends FunSpec with MustMatchers {
 
-  implicit def types2model(types: TypeLookupTable): StrictModel = StrictModel.apply(Nil, types, Map.empty, Map.empty, "")
+  implicit def types2model(types: TypeLookupTable): StrictModel = StrictModel.apply(Nil, types, Map.empty, Map.empty, "", None)
 
   describe("ScalaGeneratorTest") {
     it("should generate nothing for empty model") {
-      new ScalaGenerator(Map.empty[Reference, Domain.Type]).generateGenerators("test") mustBe ""
+      new ScalaGenerator(Map.empty[Reference, Domain.Type]).generateGenerators("test", "test") mustBe ""
     }
 
     it("should generate single type alias for an option") {
@@ -27,7 +27,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "definitions" / "Opti" -> Opt(Lng(None), None),
         "definitions" / "Stri" -> Opt(Str(None, None), None)
       )
-      val result = new ScalaGenerator(model).generateGenerators("test.yaml")
+      val result = new ScalaGenerator(model).generateGenerators("test.yaml", "test.yaml")
       result mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
@@ -48,7 +48,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "definitions" / "Option" -> Opt(Lng(None), None),
         "definitions" / "String" -> Opt(Str(None, None), None)
       )
-      new ScalaGenerator(model).generateGenerators("overloaded.yaml") mustBeAs
+      new ScalaGenerator(model).generateGenerators("overloaded.yaml", "overloaded.yaml") mustBeAs
         """package overloaded.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary
@@ -68,7 +68,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "definitions" / "Dbl" -> Arr(Dbl(None), None, "tsv"),
         "definitions" / "Flt" -> Arr(Flt(None), None, "ssv")
       )
-      new ScalaGenerator(model).generateGenerators("test.yaml") mustBeAs
+      new ScalaGenerator(model).generateGenerators("test.yaml", "test.yaml") mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary
@@ -92,7 +92,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       val model = Map(
         "parameters" / "all" -> CatchAll(Bool(None), None)
       )
-      new ScalaGenerator(model).generateGenerators("test.yaml") mustBeAs
+      new ScalaGenerator(model).generateGenerators("test.yaml", "test.yaml") mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
           |import org.scalacheck.Arbitrary
@@ -114,7 +114,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "paths" / "/" / "get" / "responses" / "200" -> Null(None),
         "paths" / "/" / "put" / "responses" / "200" -> Null(None)
       )
-      val result = new ScalaGenerator(model).generateGenerators("test.yaml")
+      val result = new ScalaGenerator(model).generateGenerators("test.yaml", "test.yaml")
       result mustBeAs
         """|
           |package test.yaml
@@ -138,7 +138,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "User" -> TypeDef("definitions" / "User", fields, None)
       )
-      val result = new ScalaGenerator(model).generateGenerators("test.yaml")
+      val result = new ScalaGenerator(model).generateGenerators("test.yaml", "test.yaml")
       result mustBeAs
         """package test.yaml
           |import org.scalacheck.Gen
@@ -159,7 +159,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
         "definitions" / "OptionalData" -> Opt(TypeRef("definitions" / "Passwords"), None),
         "definitions" / "Passwords" -> Arr(Password(None), None, "pipes")
       )
-      val result = new ScalaGenerator(model).generateGenerators("test.yaml")
+      val result = new ScalaGenerator(model).generateGenerators("test.yaml", "test.yaml")
 
       result mustBeAs
         """package test.yaml
@@ -214,7 +214,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
       val discriminators: DiscriminatorLookupTable = Map(
         "definitions" / "Pet" -> "definitions" / "Pet" / "petType"
       )
-      val result = new ScalaGenerator(model).generateGenerators("test.yaml")
+      val result = new ScalaGenerator(model).generateGenerators("test.yaml", "test.yaml")
 
       result mustBeAs
         s"""package test.yaml
@@ -271,7 +271,7 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
             Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)
       )
-      val result = new ScalaGenerator(model).generateGenerators("test.yaml")
+      val result = new ScalaGenerator(model).generateGenerators("test.yaml", "test.yaml")
 
       result mustBeAs
         """package test.yaml

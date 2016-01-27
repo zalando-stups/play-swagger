@@ -1,43 +1,42 @@
 package echo
-
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http.Writeable
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
+trait EchoApiYamlBase extends Controller with PlayBodyParsing {
+    private val getResponseMimeType    = "application/json"
+    private val getActionSuccessStatus = Status(200)
+
+    private type getActionRequestType       = (Unit)
+    private type getActionResultType        = Null
+    private type getActionType              = getActionRequestType => Try[getActionResultType]
+
+    private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    
 
 
+    
 
 
-trait HandlerBase extends Controller with PlayBodyParsing {
-    private val methodResponseMimeType    = "application/json"
-    private val methodActionSuccessStatus = Status(200)
+    def getAction = (f: getActionType) => Action { 
 
-    private type methodActionRequestType       = (Unit)
-    private type methodActionResultType        = Null
-    private type methodActionType              = methodActionRequestType => Try[methodActionResultType]
+        val result = processValidgetRequest(f)()
 
-    private val errorToStatusmethod: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
-
-    def methodAction = (f: methodActionType) => Action {        
-            val result = processValidmethodRequest(f)()                
             result
     }
 
-    private def processValidmethodRequest(f: methodActionType)(request: methodActionRequestType) = {
-        implicit val methodWritableJson = anyToWritable[methodActionResultType](methodResponseMimeType)
+    private def processValidgetRequest(f: getActionType)(request: getActionRequestType) = {
+        implicit val getWritableJson = anyToWritable[getActionResultType](getResponseMimeType)
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusmethod orElse defaultErrorMapping)(error)
-            case Success(result) => methodActionSuccessStatus(result)
+            case Failure(error) => (errorToStatusget orElse defaultErrorMapping)(error)
+            case Success(result) => getActionSuccessStatus(result)
         }
         status
     }
-}
-
-
-trait EchoApiYamlBase extends Controller with PlayBodyParsing {
     private val postResponseMimeType    = "application/json"
     private val postActionSuccessStatus = Status(200)
 
@@ -47,15 +46,23 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def postAction = (f: postActionType) => (name: PostName, year: PostName) => Action {        
-            val result =                
-                    new PostValidator(name, year).errors match {
-                        case e if e.isEmpty => processValidpostRequest(f)((name, year))
-                        case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
-                            BadRequest(l)
-                    }
-                
+    
+
+
+    
+
+
+    def postAction = (f: postActionType) => (name: PostName, year: PostName) => Action { 
+
+        val result = 
+
+            new PostValidator(name, year).errors match {
+                    case e if e.isEmpty => processValidpostRequest(f)((name, year))
+                    case l =>
+                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
+                        BadRequest(l)
+                }
+
             result
     }
 
@@ -77,15 +84,23 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgettest_pathById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => Action {        
-            val result =                
-                    new `Test-pathIdGetValidator`(id).errors match {
-                        case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id))
-                        case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettest_pathByIdResponseMimeType)
-                            BadRequest(l)
-                    }
-                
+    
+
+
+    
+
+
+    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => Action { 
+
+        val result = 
+
+            new `Test-pathIdGetValidator`(id).errors match {
+                    case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id))
+                    case l =>
+                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettest_pathByIdResponseMimeType)
+                        BadRequest(l)
+                }
+
             result
     }
 
@@ -98,4 +113,4 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         }
         status
     }
-}
+    }

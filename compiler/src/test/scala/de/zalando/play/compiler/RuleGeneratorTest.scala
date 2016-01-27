@@ -11,7 +11,7 @@ import play.routes.compiler.{DynamicPart, StaticPart}
   */
 class RuleGeneratorTest extends FunSpec with MustMatchers {
 
-  implicit val model = StrictModel(Nil, Map.empty, Map.empty, Map.empty, "/base/")
+  implicit val model = StrictModel(Nil, Map.empty, Map.empty, Map.empty, "/base/", None)
 
   val routes = Map(
     "/"             -> Nil

@@ -15,6 +15,7 @@ x-api-first-package: echo
 paths:
   /:
     get:
+      x-api-first-handler: funnypackage.Handler.method
       responses:
         200:
           description: Echo GET

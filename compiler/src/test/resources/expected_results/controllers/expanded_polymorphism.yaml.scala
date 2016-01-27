@@ -8,7 +8,7 @@ import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
 import scala.util._
-package expanded_polymorphism.yaml { 
+package expanded {
 
   class Expanded_polymorphismYaml extends Expanded_polymorphismYamlBase {
     val findPets = findPetsAction { input: (PetsGetTags, PetsGetLimit) =>

@@ -126,6 +126,9 @@ object ScalaName extends StringUtil {
     else
       name
 
+  def scalaPackageName(fileName: String): String = scalaPackageParts(fileName).mkString(".")
+  def scalaPackageParts(fileName: String): Seq[String] = fileName.split('.').map(escape)
+
 }
 
 trait StringUtil {
@@ -163,5 +166,4 @@ case class ScalaName(ref: Reference) {
 
   def methodName = escape(camelize("/", parts.last))
   def names = (packageName, className, methodName)
-
 }

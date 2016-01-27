@@ -1,7 +1,7 @@
 package de.zalando.play.compiler
 
 import de.zalando.apifirst.Application.{ApiCall, StrictModel}
-import de.zalando.apifirst.ParameterPlace
+import de.zalando.apifirst.{ScalaName, ParameterPlace}
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.naming.{Path, Reference}
 import play.routes.compiler._
@@ -27,7 +27,7 @@ object RuleGenerator {
     Route(verb, path, handlerCall, comments)
   }
 
-  def packageName(call: ApiCall) = call.handler.packageName
+  def packageName(call: ApiCall) = ScalaName.scalaPackageName(call.handler.packageName)
 
   private def parameters2parameters(call: ApiCall)(implicit model: StrictModel): Seq[Parameter] = {
     val params = call.handler.parameters flatMap { param =>

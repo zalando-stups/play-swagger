@@ -1,4 +1,4 @@
-package expanded_polymorphism.yaml
+package expanded
 
 import de.zalando.play.controllers.PlayBodyParsing
 import org.scalacheck._

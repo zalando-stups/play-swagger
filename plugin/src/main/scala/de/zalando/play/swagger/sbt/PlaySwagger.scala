@@ -4,6 +4,7 @@ import _root_.sbt.Keys._
 import _root_.sbt._
 import com.typesafe.sbt.web.incremental._
 import de.zalando.BuildInfo
+import de.zalando.apifirst.ScalaName
 import de.zalando.play.compiler.{SwaggerCompilationTask, SwaggerCompiler}
 import play.routes.compiler.RoutesGenerator
 import play.sbt.routes.RoutesCompiler
@@ -79,7 +80,7 @@ object PlaySwagger extends AutoPlugin {
         BuildInfo.version
       }
 
-      SwaggerCompilationTask(source, source.getName.takeWhile(_ != '.'), playGenerator.value, version)
+      SwaggerCompilationTask(source, ScalaName.scalaPackageName(source.getName), playGenerator.value, version)
     },
 
     // Target directory

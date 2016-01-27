@@ -3,7 +3,7 @@ package de.zalando.apifirst.generators
 import java.io.File
 
 import de.zalando.ExpectedResults
-import de.zalando.apifirst.TypeNormaliser
+import de.zalando.apifirst.{ScalaName, TypeNormaliser}
 import de.zalando.swagger.{ModelConverter, StrictYamlParser}
 import org.scalatest.{FunSpec, MustMatchers}
 
@@ -30,9 +30,10 @@ class ScalaTestDataGeneratorIntegrationTest extends FunSpec with MustMatchers wi
   def testDataGenerator(file: File): Unit = {
     it(s"should parse the yaml swagger file ${file.getName} as specification") {
       val (base, model) = StrictYamlParser.parse(file)
+      val packageName = ScalaName.scalaPackageName(file.getName)
       val ast         = ModelConverter.fromModel(base, model, Option(file))
       val flatAst     = TypeNormaliser.flatten(ast)
-      val scalaModel  = new ScalaGenerator(flatAst).generateGenerators(file.getName)
+      val scalaModel  = new ScalaGenerator(flatAst).generateGenerators(file.getName, packageName)
       val expected    = asInFile(file, "scala")
       if (expected.isEmpty) dump(scalaModel, file, "scala")
       clean(scalaModel) mustBe clean(expected)

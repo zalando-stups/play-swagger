@@ -14,7 +14,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   val denotationTable = AstScalaPlayEnricher(strictModel)
 
-  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _) = strictModel
+  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName) = strictModel
 
   val testsTemplateName           = "play_scala_test"
   val validatorsTemplateName      = "play_validation"
@@ -24,50 +24,46 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   val controllerBaseTemplateName  = "play_scala_controller_base"
 
 
-  def generate(fileName: String, currentController: String) = Seq(
-    generateModel(fileName),
-    generateGenerators(fileName),
-    playValidators(fileName),
-    playScalaControllerBases(fileName),
-    playScalaTests(fileName),
-    playScalaControllers(fileName, currentController)
+  def generate(fileName: String, packageName: String, currentController: String) = Seq(
+    generateModel(fileName, packageName),
+    generateGenerators(fileName, packageName),
+    playValidators(fileName, packageName),
+    playScalaControllerBases(fileName, packageName),
+    playScalaTests(fileName, packageName),
+    playScalaControllers(fileName, packageName, currentController)
   )
 
-  def generateModel(fileName: String) =
+  def generateModel(fileName: String, packageName: String) =
     if (modelTypes.values.forall(_.isInstanceOf[PrimitiveType])) ""
-    else apply(fileName, modelTemplateName)
+    else apply(fileName, packageName, modelTemplateName)
 
-  def generateGenerators(fileName: String) =
+  def generateGenerators(fileName: String, packageName: String) =
     if (modelTypes.isEmpty) ""
-    else apply(fileName, generatorsTemplateName)
+    else apply(fileName, packageName, generatorsTemplateName)
 
-  def playValidators(fileName: String) =
+  def playValidators(fileName: String, packageName: String) =
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
-    else apply(fileName, validatorsTemplateName)
+    else apply(fileName, packageName, validatorsTemplateName)
 
-  def playScalaTests(fileName: String) =
+  def playScalaTests(fileName: String, packageName: String) =
     if (modelCalls.map(_.handler.parameters.size).sum == 0) ""
-    else apply(fileName, testsTemplateName)
+    else apply(fileName, packageName, testsTemplateName)
 
-  def playScalaControllers(fileName: String, currentController: String) =
+  def playScalaControllers(fileName: String, packageName: String, currentController: String) =
     if (modelCalls.isEmpty) ""
-    else apply(fileName, controllersTemplateName, currentController)
+    else apply(fileName, packageName, controllersTemplateName, currentController)
 
-  def playScalaControllerBases(fileName: String) =
+  def playScalaControllerBases(fileName: String, packageName: String) =
     if (modelCalls.isEmpty) ""
-    else apply(fileName, controllerBaseTemplateName)
+    else apply(fileName, packageName, controllerBaseTemplateName)
 
-  private def apply(fileName: String, templateName: String, currentController: String = ""): String = {
-    val packages = Map(
-      "main_package" -> fileName.split('.').map(escape).mkString("."),
-      "main_package_prefix" -> fileName.split('.').init.mkString("."),
-      "main_package_suffix" -> fileName.split('.').last,
-      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
-    )
-    nonEmptyTemplate(packages, templateName, currentController)
+  private def apply(fileName: String, packageName: String, templateName: String, currentController: String = ""): String = {
+    nonEmptyTemplate(fileName, packageName, templateName, currentController)
   }
 
-  private def nonEmptyTemplate(map: Map[String, Any], templateName: String, currentController: String): String = {
+  private def nonEmptyTemplate(fileName: String, packageName: String, templateName: String, currentController: String): String = {
+
+    assert(packageName.contains('-') == packageName.contains('`'), packageName)
 
     val validations         = ReShaper.filterByType("validators", denotationTable)
     val validationsByType   = ReShaper.groupByType(validations.toSeq).toMap
@@ -88,8 +84,17 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)
 
+    val pckg = overridenPackageName.getOrElse(packageName)
+
+    val packages = Map(
+      "main_package" -> pckg,
+      "main_package_prefix" -> pckg.split('.').init.mkString("."),
+      "main_package_suffix" -> pckg.split('.').last,
+      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
+    )
+
     val controllersMap = Map(
-      "controllers"         -> controllers(modelCalls, unmanagedParts)(denotationTable),
+      "controllers"         -> controllers(modelCalls, unmanagedParts, pckg)(denotationTable),
       "controller_imports"  -> controllerImports.map(i => Map("name" -> i)),
       "unmanaged_imports"   -> unmanagedImports.map(i => Map("name" -> i))
     )
@@ -107,7 +112,8 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
     val allPackages         = enrichWithStructuralInfo(rawAllPackages)
 
-    renderTemplate(map, templateName, allPackages)
+
+    renderTemplate(packages, templateName, allPackages)
 
   }
 
@@ -210,13 +216,16 @@ trait PlayScalaControllersGenerator {
 
   val baseControllersSuffix = "Base"
 
-  def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart])(table: DenotationTable) = {
+  def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart], packageName: String)(table: DenotationTable) = {
     allCalls groupBy { c =>
       (c.handler.packageName, c.handler.controller)
     } map { case (controller, calls) =>
       val methods = calls map { singleMethod(unmanagedParts, table) }
+      if (packageName != controller._1) {
+        println(s"WARN: Ignoring package part of the handler name '${controller._1}', using $packageName instead. \nWARN: Current plugin version only supports package definition per specification")
+      }
       Map(
-        "effective_package"   -> escape(controller._1), // TODO currently, the package name just ignored
+        "effective_package"   -> packageName,
         "controller"          -> escape(controller._2),
         "base"                -> escape(controller._2 + baseControllersSuffix),
         "methods"             -> methods

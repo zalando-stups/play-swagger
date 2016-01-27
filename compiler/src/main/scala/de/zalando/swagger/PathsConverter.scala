@@ -93,7 +93,7 @@ trait HandlerGenerator extends StringUtil {
     handlerText <- getOrGenerateHandlerLine(operation, path, verb, url)
     parseResult = HandlerParser.parse(handlerText)
     handler <- if (parseResult.successful) Some(parseResult.get) else None
-  } yield handler.copy(parameters = params, packageName = packageFromFilename.getOrElse(handler.packageName))
+  } yield handler.copy(parameters = params, packageName = handler.packageName)
 
   private def getOrGenerateHandlerLine(operation: Operation, path: PathItem, verb: String, callPath: Reference): Option[String] =
     operation.vendorExtensions.get(s"$keyPrefix-handler") orElse
@@ -101,7 +101,7 @@ trait HandlerGenerator extends StringUtil {
       generateHandlerLine(operation, callPath, verb)
 
   private def generateHandlerLine(operation: Operation, path: Reference, verb: String): Option[String] = {
-    /*model.vendorExtensions.get(s"$keyPrefix-package") orElse*/ packageFromFilename map { pkg =>
+    model.vendorExtensions.get(s"$keyPrefix-package") orElse packageFromFilename map { pkg =>
       val controller = definitionFileName map { ScalaName.capitalize("\\.", _) } getOrElse {
         throw new IllegalStateException(s"The definition file name must be defined in order to use '$keyPrefix-package' directive")
       }
