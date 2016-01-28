@@ -54,7 +54,7 @@
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿start_from ->
 	Str
 ⌿paths⌿/topics/{topic}/events⌿get⌿batch_limit ->
-	Opt(Intgr)
+	Intgr
 ⌿paths⌿/topics/{topic}/partitions⌿get⌿topic ->
 	Str
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿batch_keep_alive_limit ->
@@ -106,7 +106,7 @@
 ⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿partition ->
 	Str
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿batch_limit ->
-	Opt(Intgr)
+	Intgr
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿responses⌿401 ->
 	TypeDef(⌿definitions⌿Problem, Seq(
 		Field(⌿definitions⌿Problem⌿detail, Str)))

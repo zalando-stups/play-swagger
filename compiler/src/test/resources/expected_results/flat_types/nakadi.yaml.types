@@ -44,6 +44,8 @@
 	Str
 ⌿paths⌿/topics/{topic}/events⌿get⌿stream_timeout -> 
 	Opt(Intgr)
+⌿paths⌿/topics/{topic}/events⌿get⌿batch_limit -> 
+	Intgr
 ⌿definitions⌿SimpleStreamEvent⌿events⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Event))
 ⌿definitions⌿EventMetaData⌿scopes⌿Opt -> 
@@ -65,7 +67,7 @@
 ⌿paths⌿/topics/{topic}/events⌿get⌿batch_flush_timeout -> Parameter(batch_flush_timeout,TypeRef(⌿paths⌿/topics/{topic}/events⌿get⌿stream_timeout),None,None,.+,true,query)
 ⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿topic -> Parameter(topic,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/topics/{topic}/events⌿get⌿x_nakadi_cursors -> Parameter(x_nakadi_cursors,Str(None,TypeMeta(None, List())),None,None,.+,false,header)
-⌿paths⌿/topics/{topic}/events⌿get⌿batch_limit -> Parameter(batch_limit,TypeRef(⌿paths⌿/topics/{topic}/events⌿get⌿stream_timeout),None,None,.+,true,query)
+⌿paths⌿/topics/{topic}/events⌿get⌿batch_limit -> Parameter(batch_limit,Intgr(TypeMeta(Some("int32"), List())),None,Some(1),.+,true,query)
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿partition -> Parameter(partition,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿stream_limit -> Parameter(stream_limit,TypeRef(⌿paths⌿/topics/{topic}/events⌿get⌿stream_timeout),None,None,.+,true,query)
 ⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿partition -> Parameter(partition,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
@@ -74,7 +76,7 @@
 ⌿paths⌿/topics/{topic}/events/batch⌿post⌿topic -> Parameter(topic,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/topics/{topic}/events/batch⌿post⌿event -> Parameter(event,TypeRef(⌿paths⌿/topics/{topic}/events/batch⌿post⌿event),None,None,.+,false,body)
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿topic -> Parameter(topic,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿batch_limit -> Parameter(batch_limit,TypeRef(⌿paths⌿/topics/{topic}/events⌿get⌿stream_timeout),None,None,.+,true,query)
+⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿batch_limit -> Parameter(batch_limit,Intgr(TypeMeta(Some("int32"), List())),None,Some(1),.+,true,query)
 ⌿paths⌿/topics/{topic}/events⌿post⌿topic -> Parameter(topic,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿batch_flush_timeout -> Parameter(batch_flush_timeout,TypeRef(⌿paths⌿/topics/{topic}/events⌿get⌿stream_timeout),None,None,.+,true,query)
 ⌿paths⌿/topics/{topic}/events⌿get⌿topic -> Parameter(topic,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

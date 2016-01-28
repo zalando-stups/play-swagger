@@ -83,7 +83,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   }
 
   private def fromBodyParameter[T](name: Reference, param: BodyParameter[T]): NamedTypes =
-    fromSchemaOrFileSchema(name / param.name, param.schema, if (param.required) Some(Seq(param.name)) else Some(Nil))
+    fromSchemaOrFileSchema(name / param.name, param.schema,
+      if (param.required) Some(Seq(param.name)) else Some(Nil))
 
   private def fromSchemaOrReference[T](name: Reference, param: SchemaOrReference[T], required: Option[Seq[String]]): NamedTypes =
     Option(param).toSeq flatMap {
@@ -121,22 +122,22 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
         require(param.items.nonEmpty, s"Items should not be empty for $name")
         val types = fromSchemaOrSchemaArray(name, param.items.get, None)
         val meta = arrayTypeMeta(param.comment.getOrElse(param.format), param)
-        checkRequired(name, required, wrapInArray(types.head, meta, None)) +: types.tail
+        checkRequired(name, required, wrapInArray(types.head, meta, None), param.default) +: types.tail
       case PrimitiveType.OBJECT =>
         val obj = param.allOf map {
           extensionType(name, None) // "None" means that everything defined as a part of the composition is required
         } getOrElse {
           val typeName = typeNameFromInlinedReference(param) getOrElse name
           val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
-          val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required))
+          val normal = fromSchemaProperties(name, param.properties, paramRequired(param.required, param.default))
           val types = fromTypes(name, normal ++ catchAll.toSeq.flatten, typeName)
           Option(param.discriminator) foreach { d => memoizeDiscriminator(name, typeName / d) }
-          checkRequired(name, required, types)
+          checkRequired(name, required, types, param.default)
         }
         Seq(obj)
       case _ =>
         val primitiveType = name -> (p, param.format)(param)
-        Seq(checkRequired(name, required, primitiveType))
+        Seq(checkRequired(name, required, primitiveType, param.default))
     }
   }
 
@@ -176,7 +177,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   }
 
   private def fromReference(name: Reference, ref: JsonReference, required: Option[Seq[String]]): NamedType = {
-    checkRequired(name, required, name -> TypeRef(base / ref))
+    checkRequired(name, required, name -> TypeRef(base / ref), null: Default[String])
   }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {
@@ -205,7 +206,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       } else {
         fullName -> (param.`type`, param.format)(param)
       }
-    if (!param.required) wrapInOption(result) else result
+    if (!param.required && param.default == null) wrapInOption(result) else result
   }
 
   private def fromTypes(name: Reference, types: NamedTypes, typeName: Reference): NamedType = {
@@ -270,17 +271,17 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 
   // ------------------------------------ Helper methods ------------------------------------
 
-  private def paramRequired(required: Seq[String]) = Some(if (required == null) Nil else required)
+  private def paramRequired(required: Seq[String], default: Default[_]) = Some(if (default != null || required == null) Nil else required)
 
-  private def checkRequired(name: Reference, required: Option[Seq[String]], tpe: NamedType): NamedType =
-    if (isRequired(name, required)) tpe else wrapInOption(tpe)
+  private def checkRequired(name: Reference, required: Option[Seq[String]], tpe: NamedType, default: Default[_]): NamedType =
+    if (isRequired(name, required, default)) tpe else wrapInOption(tpe)
 
   // Use required = None if everything is required
   // Use required = Some(listOfFields) to specify what exactly is required
   // Use required = Some(Nil) to define that everything is optional
   // The return type is also required by definition
-  private def isRequired[T](name: Reference, required: Option[Seq[String]]): Boolean =
-    required.isEmpty || required.get.contains(name.simple) || name.parent.isTopResponsePath
+  private def isRequired[T](name: Reference, required: Option[Seq[String]], default: Default[T]): Boolean =
+    default != null || required.isEmpty || required.get.contains(name.simple) || name.parent.isTopResponsePath
 
 }
 

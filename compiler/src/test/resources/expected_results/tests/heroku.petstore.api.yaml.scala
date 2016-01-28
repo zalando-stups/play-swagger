@@ -89,7 +89,7 @@ import Generators._
 
 
     "GET /pet/" should {
-        def testInvalidInput(limit: PetBirthday) = {
+        def testInvalidInput(limit: Int) = {
 
 
             val url = s"""/pet/?${toQuery("limit", limit)}"""
@@ -107,7 +107,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(limit: PetBirthday) = {
+        def testValidInput(limit: Int) = {
 
 
 
@@ -118,7 +118,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    limit <- PetBirthdayGenerator
+                    limit <- IntGenerator
                 } yield limit
             val inputs = genInputs suchThat { limit =>
                 new GetValidator(limit).errors.nonEmpty
@@ -128,7 +128,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                limit <- PetBirthdayGenerator
+                limit <- IntGenerator
             } yield limit
             val inputs = genInputs suchThat { limit =>
                 new GetValidator(limit).errors.isEmpty

@@ -27,6 +27,13 @@ class TopicsTopicPartitionsPartitionEventsGetStart_fromConstraints(override val 
 class TopicsTopicPartitionsPartitionEventsGetStart_fromValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new TopicsTopicPartitionsPartitionEventsGetStart_fromConstraints(instance))
 }
+class TopicsTopicEventsGetBatch_limitConstraints(override val instance: Int) extends ValidationBase[Int] {
+    override def constraints: Seq[Constraint[Int]] =
+        Seq()
+}
+class TopicsTopicEventsGetBatch_limitValidator(instance: Int) extends RecursiveValidator {
+    override val validators = Seq(new TopicsTopicEventsGetBatch_limitConstraints(instance))
+}
 class TopicsTopicPartitionsGetTopicConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
         Seq()
@@ -97,6 +104,13 @@ class TopicsTopicPartitionsPartitionGetPartitionConstraints(override val instanc
 class TopicsTopicPartitionsPartitionGetPartitionValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new TopicsTopicPartitionsPartitionGetPartitionConstraints(instance))
 }
+class TopicsTopicPartitionsPartitionEventsGetBatch_limitConstraints(override val instance: Int) extends ValidationBase[Int] {
+    override def constraints: Seq[Constraint[Int]] =
+        Seq()
+}
+class TopicsTopicPartitionsPartitionEventsGetBatch_limitValidator(instance: Int) extends RecursiveValidator {
+    override val validators = Seq(new TopicsTopicPartitionsPartitionEventsGetBatch_limitConstraints(instance))
+}
 // ----- complex type validators -----
 class EventValidator(instance: Event) extends RecursiveValidator {
     override val validators = Seq(
@@ -146,24 +160,24 @@ class TopicsTopicPartitionsPartitionGetValidator(topic: String, partition: Strin
         new TopicsTopicPartitionsPartitionGetPartitionValidator(partition)    
     )
 }
-class TopicsTopicEventsGetValidator(stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, x_nakadi_cursors: String, batch_limit: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) extends RecursiveValidator {
+class TopicsTopicEventsGetValidator(stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, x_nakadi_cursors: String, batch_limit: Int, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) extends RecursiveValidator {
     override val validators = Seq(
         new TopicsTopicEventsGetStream_timeoutValidator(stream_timeout),     
         new TopicsTopicEventsGetStream_timeoutValidator(stream_limit),     
         new TopicsTopicEventsGetStream_timeoutValidator(batch_flush_timeout),     
         new TopicsTopicEventsGetX_nakadi_cursorsValidator(x_nakadi_cursors),     
-        new TopicsTopicEventsGetStream_timeoutValidator(batch_limit),     
+        new TopicsTopicEventsGetBatch_limitValidator(batch_limit),     
         new TopicsTopicEventsGetStream_timeoutValidator(batch_keep_alive_limit),     
         new TopicsTopicEventsGetTopicValidator(topic)    
     )
 }
-class TopicsTopicPartitionsPartitionEventsGetValidator(start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) extends RecursiveValidator {
+class TopicsTopicPartitionsPartitionEventsGetValidator(start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: Int, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) extends RecursiveValidator {
     override val validators = Seq(
         new TopicsTopicPartitionsPartitionEventsGetStart_fromValidator(start_from),     
         new TopicsTopicPartitionsPartitionEventsGetPartitionValidator(partition),     
         new TopicsTopicEventsGetStream_timeoutValidator(stream_limit),     
         new TopicsTopicPartitionsPartitionEventsGetTopicValidator(topic),     
-        new TopicsTopicEventsGetStream_timeoutValidator(batch_limit),     
+        new TopicsTopicPartitionsPartitionEventsGetBatch_limitValidator(batch_limit),     
         new TopicsTopicEventsGetStream_timeoutValidator(batch_flush_timeout),     
         new TopicsTopicEventsGetStream_timeoutValidator(stream_timeout),     
         new TopicsTopicEventsGetStream_timeoutValidator(batch_keep_alive_limit)    

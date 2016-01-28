@@ -212,7 +212,7 @@
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿max_timestamp -> Parameter(max_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
 ⌿paths⌿/tags/{tag-name}⌿get⌿tag-name -> Parameter(tag-name,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/media/search⌿get⌿DISTANCE -> Parameter(DISTANCE,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
+⌿paths⌿/media/search⌿get⌿DISTANCE -> Parameter(DISTANCE,Intgr(TypeMeta(None, List(max(5000, false)))),None,Some(1000),.+,true,query)
 ⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿tag-name -> Parameter(tag-name,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿min_timestamp -> Parameter(min_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/media/{media-id}/comments⌿post⌿TEXT -> Parameter(TEXT,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,false,body)
