@@ -11,9 +11,9 @@
 ⌿paths⌿/⌿get⌿limit ->
 	Opt(Intgr)
 ⌿paths⌿/⌿put⌿pet ->
-	TypeDef(⌿definitions⌿Pet, Seq(
+	Opt(TypeDef(⌿definitions⌿Pet, Seq(
 		Field(⌿definitions⌿Pet⌿name, Opt(Str)), 
-		Field(⌿definitions⌿Pet⌿birthday, Opt(Intgr))))
+		Field(⌿definitions⌿Pet⌿birthday, Opt(Intgr)))))
 ⌿paths⌿/⌿post⌿responses⌿200 ->
 	Null
 ⌿paths⌿/{petId}⌿get⌿responses⌿200 ->

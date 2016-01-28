@@ -14,7 +14,7 @@ package heroku.petstore.api.yaml {
     val get = getAction { (limit: PetBirthday) =>
       Failure(???)
     } //////// EOF ////////  getAction
-    val put = putAction { (pet: Pet) =>
+    val put = putAction { (pet: PutPet) =>
       Failure(???)
     } //////// EOF ////////  putAction
     val post = postAction { (pet: Pet) =>

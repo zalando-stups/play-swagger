@@ -35,7 +35,7 @@ import Generators._
 
 
     "PUT /pet/" should {
-        def testInvalidInput(pet: Pet) = {
+        def testInvalidInput(pet: PutPet) = {
 
 
             val url = s"""/pet/"""
@@ -54,7 +54,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(pet: Pet) = {
+        def testValidInput(pet: PutPet) = {
 
 
                 val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
@@ -66,7 +66,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    pet <- PetGenerator
+                    pet <- PutPetGenerator
                 } yield pet
             val inputs = genInputs suchThat { pet =>
                 new PutValidator(pet).errors.nonEmpty
@@ -76,7 +76,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                pet <- PetGenerator
+                pet <- PutPetGenerator
             } yield pet
             val inputs = genInputs suchThat { pet =>
                 new PutValidator(pet).errors.isEmpty

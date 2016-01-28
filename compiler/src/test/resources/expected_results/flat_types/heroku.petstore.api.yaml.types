@@ -8,6 +8,8 @@
 	Opt(Intgr)
 ⌿paths⌿/{petId}⌿get⌿petId -> 
 	Str
+⌿paths⌿/⌿put⌿pet -> 
+	Opt(TypeRef(⌿definitions⌿Pet))
 ⌿paths⌿/⌿post⌿responses⌿200 -> 
 	Null
 ⌿paths⌿/⌿get⌿responses⌿200 -> 
@@ -15,6 +17,6 @@
 -- params --
 
 ⌿paths⌿/⌿get⌿limit -> Parameter(limit,TypeRef(⌿definitions⌿Pet⌿birthday),None,None,.+,true,query)
-⌿paths⌿/⌿put⌿pet -> Parameter(pet,TypeRef(⌿definitions⌿Pet),None,None,.+,false,body)
+⌿paths⌿/⌿put⌿pet -> Parameter(pet,TypeRef(⌿paths⌿/⌿put⌿pet),None,None,.+,false,body)
 ⌿paths⌿/⌿post⌿pet -> Parameter(pet,TypeRef(⌿definitions⌿Pet),None,None,.+,false,body)
 ⌿paths⌿/{petId}⌿get⌿petId -> Parameter(petId,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

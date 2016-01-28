@@ -45,12 +45,15 @@ class PetNameValidator(instance: PetName) extends RecursiveValidator {
 class PetBirthdayValidator(instance: PetBirthday) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new PetBirthdayOptValidator(_) }
 }
+class PutPetValidator(instance: PutPet) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new PetValidator(_) }
+}
 // ----- array delegating validators -----
 // ----- catch all simple validators -----
 // ----- call validations -----
-class PutValidator(pet: Pet) extends RecursiveValidator {
+class PutValidator(pet: PutPet) extends RecursiveValidator {
     override val validators = Seq(
-        new PetValidator(pet)
+        new PutPetValidator(pet)
     )
 }
 class GetValidator(limit: PetBirthday) extends RecursiveValidator {
