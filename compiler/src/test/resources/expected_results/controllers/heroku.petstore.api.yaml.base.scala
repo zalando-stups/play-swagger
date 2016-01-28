@@ -57,7 +57,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     
 
 
-    private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[PutPet]("application/json", "Invalid PutPet", maxLength)
+    private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PutPet", maxLength)
     
 
 
