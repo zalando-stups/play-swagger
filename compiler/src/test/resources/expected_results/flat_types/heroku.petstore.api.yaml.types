@@ -8,13 +8,15 @@
 	Opt(Intgr)
 ⌿paths⌿/{petId}⌿get⌿petId -> 
 	Str
+⌿paths⌿/⌿get⌿limit -> 
+	Intgr
 ⌿paths⌿/⌿post⌿responses⌿200 -> 
 	Null
 ⌿paths⌿/⌿get⌿responses⌿200 -> 
 	ArrResult(TypeRef(⌿definitions⌿Pet))
 -- params --
 
-⌿paths⌿/⌿get⌿limit -> Parameter(limit,TypeRef(⌿definitions⌿Pet⌿birthday),None,None,.+,true,query)
+⌿paths⌿/⌿get⌿limit -> Parameter(limit,Intgr(TypeMeta(None, List(max(10000, false), min(11, false)))),None,Some(11),.+,true,query)
 ⌿paths⌿/⌿put⌿pet -> Parameter(pet,TypeRef(⌿definitions⌿Pet),None,None,.+,false,body)
 ⌿paths⌿/⌿post⌿pet -> Parameter(pet,TypeRef(⌿definitions⌿Pet),None,None,.+,false,body)
 ⌿paths⌿/{petId}⌿get⌿petId -> Parameter(petId,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

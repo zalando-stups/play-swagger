@@ -327,7 +327,7 @@ import Generators._
 
 
     "GET /v1/media/search" should {
-        def testInvalidInput(input: (MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)) = {
+        def testInvalidInput(input: (MediaId, Int, LocationLatitude, MediaId, LocationLatitude)) = {
 
 
                 val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
@@ -347,7 +347,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)) = {
+        def testValidInput(input: (MediaId, Int, LocationLatitude, MediaId, LocationLatitude)) = {
 
 
                 val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
@@ -361,7 +361,7 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                         mAX_TIMESTAMP <- MediaIdGenerator
-                        dISTANCE <- MediaIdGenerator
+                        dISTANCE <- IntGenerator
                         lNG <- LocationLatitudeGenerator
                         mIN_TIMESTAMP <- MediaIdGenerator
                         lAT <- LocationLatitudeGenerator
@@ -376,7 +376,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                     mAX_TIMESTAMP <- MediaIdGenerator
-                    dISTANCE <- MediaIdGenerator
+                    dISTANCE <- IntGenerator
                     lNG <- LocationLatitudeGenerator
                     mIN_TIMESTAMP <- MediaIdGenerator
                     lAT <- LocationLatitudeGenerator

@@ -12,6 +12,8 @@ package object yaml {
 
     type TopicsTopicEventsGetStream_timeout = Option[Int]
 
+    type TopicsTopicEventsGetBatch_limit = Int
+
     type EventEvent_type = Option[String]
 
     type SimpleStreamEventEventsOpt = ArrayWrapper[Event]

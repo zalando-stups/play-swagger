@@ -95,7 +95,7 @@ import Generators._
 
 
     "GET /topics/{topic}/events" should {
-        def testInvalidInput(input: (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String)) = {
+        def testInvalidInput(input: (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)) = {
 
 
                 val (stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic) = input
@@ -115,7 +115,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String)) = {
+        def testValidInput(input: (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)) = {
 
 
                 val (stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic) = input
@@ -132,7 +132,7 @@ import Generators._
                         stream_limit <- TopicsTopicEventsGetStream_timeoutGenerator
                         batch_flush_timeout <- TopicsTopicEventsGetStream_timeoutGenerator
                         x_nakadi_cursors <- StringGenerator
-                        batch_limit <- TopicsTopicEventsGetStream_timeoutGenerator
+                        batch_limit <- IntGenerator
                         batch_keep_alive_limit <- TopicsTopicEventsGetStream_timeoutGenerator
                         topic <- StringGenerator
                     
@@ -149,7 +149,7 @@ import Generators._
                     stream_limit <- TopicsTopicEventsGetStream_timeoutGenerator
                     batch_flush_timeout <- TopicsTopicEventsGetStream_timeoutGenerator
                     x_nakadi_cursors <- StringGenerator
-                    batch_limit <- TopicsTopicEventsGetStream_timeoutGenerator
+                    batch_limit <- IntGenerator
                     batch_keep_alive_limit <- TopicsTopicEventsGetStream_timeoutGenerator
                     topic <- StringGenerator
                 
@@ -165,7 +165,7 @@ import Generators._
 
 
     "GET /topics/{topic}/partitions/{partition}/events" should {
-        def testInvalidInput(input: (String, String, TopicsTopicEventsGetStream_timeout, String, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)) = {
+        def testInvalidInput(input: (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)) = {
 
 
                 val (start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit) = input
@@ -185,7 +185,7 @@ import Generators._
                 all(validations:_*)
             )
         }
-        def testValidInput(input: (String, String, TopicsTopicEventsGetStream_timeout, String, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)) = {
+        def testValidInput(input: (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)) = {
 
 
                 val (start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit) = input
@@ -202,7 +202,7 @@ import Generators._
                         partition <- StringGenerator
                         stream_limit <- TopicsTopicEventsGetStream_timeoutGenerator
                         topic <- StringGenerator
-                        batch_limit <- TopicsTopicEventsGetStream_timeoutGenerator
+                        batch_limit <- IntGenerator
                         batch_flush_timeout <- TopicsTopicEventsGetStream_timeoutGenerator
                         stream_timeout <- TopicsTopicEventsGetStream_timeoutGenerator
                         batch_keep_alive_limit <- TopicsTopicEventsGetStream_timeoutGenerator
@@ -220,7 +220,7 @@ import Generators._
                     partition <- StringGenerator
                     stream_limit <- TopicsTopicEventsGetStream_timeoutGenerator
                     topic <- StringGenerator
-                    batch_limit <- TopicsTopicEventsGetStream_timeoutGenerator
+                    batch_limit <- IntGenerator
                     batch_flush_timeout <- TopicsTopicEventsGetStream_timeoutGenerator
                     stream_timeout <- TopicsTopicEventsGetStream_timeoutGenerator
                     batch_keep_alive_limit <- TopicsTopicEventsGetStream_timeoutGenerator

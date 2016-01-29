@@ -15,7 +15,7 @@ class ScalaControllerGeneratorIntegrationTest extends FunSpec with MustMatchers 
 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
-  def toTest: File => Boolean = f => f.getName.endsWith(".yaml")
+  def toTest: File => Boolean = f => f.getName.endsWith(".yaml") && f.getName.startsWith("heroku")
 
   describe("ScalaPlayControllerGenerator should generate controller and base controller files") {
     (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>

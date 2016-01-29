@@ -82,6 +82,13 @@ class `MediaMedia-idCommentsGetMedia-idConstraints`(override val instance: Int) 
 class `MediaMedia-idCommentsGetMedia-idValidator`(instance: Int) extends RecursiveValidator {
     override val validators = Seq(new `MediaMedia-idCommentsGetMedia-idConstraints`(instance))
 }
+class MediaSearchGetDISTANCEConstraints(override val instance: Int) extends ValidationBase[Int] {
+    override def constraints: Seq[Constraint[Int]] =
+        Seq(max(5000, false))
+}
+class MediaSearchGetDISTANCEValidator(instance: Int) extends RecursiveValidator {
+    override val validators = Seq(new MediaSearchGetDISTANCEConstraints(instance))
+}
 class `LocationsLocation-idMediaRecentGetLocation-idConstraints`(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
         Seq()
@@ -205,10 +212,10 @@ class UsersSearchGetValidator(q: String, count: MediaFilter) extends RecursiveVa
         new MediaFilterValidator(count)    
     )
 }
-class MediaSearchGetValidator(mAX_TIMESTAMP: MediaId, dISTANCE: MediaId, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) extends RecursiveValidator {
+class MediaSearchGetValidator(mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) extends RecursiveValidator {
     override val validators = Seq(
         new MediaIdValidator(mAX_TIMESTAMP),     
-        new MediaIdValidator(dISTANCE),     
+        new MediaSearchGetDISTANCEValidator(dISTANCE),     
         new LocationLatitudeValidator(lNG),     
         new MediaIdValidator(mIN_TIMESTAMP),     
         new LocationLatitudeValidator(lAT)    

@@ -10,6 +10,7 @@ object Generators {
     
     def createStringGenerator = _generate(StringGenerator)
     def createTopicsTopicEventsGetStream_timeoutGenerator = _generate(TopicsTopicEventsGetStream_timeoutGenerator)
+    def createIntGenerator = _generate(IntGenerator)
     def createEventEvent_typeGenerator = _generate(EventEvent_typeGenerator)
     def createSimpleStreamEventEventsOptGenerator = _generate(SimpleStreamEventEventsOptGenerator)
     def createEventMetadataGenerator = _generate(EventMetadataGenerator)
@@ -24,6 +25,7 @@ object Generators {
     
     def StringGenerator = arbitrary[String]
     def TopicsTopicEventsGetStream_timeoutGenerator = Gen.option(arbitrary[Int])
+    def IntGenerator = arbitrary[Int]
     def EventEvent_typeGenerator = Gen.option(arbitrary[String])
     def SimpleStreamEventEventsOptGenerator = _genList(EventGenerator, "csv")
     def EventMetadataGenerator = Gen.option(EventMetaDataGenerator)
