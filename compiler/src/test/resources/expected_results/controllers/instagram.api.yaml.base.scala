@@ -135,13 +135,13 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val getmediaSearchResponseMimeType    = "application/json"
     private val getmediaSearchActionSuccessStatus = Status(200)
 
-    private type getmediaSearchActionRequestType       = (MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)
+    private type getmediaSearchActionRequestType       = (MediaId, Int, LocationLatitude, MediaId, LocationLatitude)
     private type getmediaSearchActionResultType        = MediaSearchGetResponses200
     private type getmediaSearchActionType              = getmediaSearchActionRequestType => Try[getmediaSearchActionResultType]
 
     private val errorToStatusgetmediaSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: MediaId, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => Action {        
+    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => Action {        
             val result =                
                     new MediaSearchGetValidator(mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT).errors match {
                         case e if e.isEmpty => processValidgetmediaSearchRequest(f)((mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT))

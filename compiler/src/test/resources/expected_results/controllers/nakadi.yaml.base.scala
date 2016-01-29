@@ -39,13 +39,13 @@ trait hackBase extends Controller with PlayBodyParsing {
     private val get_events_from_single_partitionResponseMimeType    = "application/json"
     private val get_events_from_single_partitionActionSuccessStatus = Status(200)
 
-    private type get_events_from_single_partitionActionRequestType       = (String, String, TopicsTopicEventsGetStream_timeout, String, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)
+    private type get_events_from_single_partitionActionRequestType       = (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)
     private type get_events_from_single_partitionActionResultType        = Problem
     private type get_events_from_single_partitionActionType              = get_events_from_single_partitionActionRequestType => Try[get_events_from_single_partitionActionResultType]
 
     private val errorToStatusget_events_from_single_partition: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def get_events_from_single_partitionAction = (f: get_events_from_single_partitionActionType) => (start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) => Action {        
+    def get_events_from_single_partitionAction = (f: get_events_from_single_partitionActionType) => (start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: Int, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) => Action {        
             val result =                
                     new TopicsTopicPartitionsPartitionEventsGetValidator(start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit).errors match {
                         case e if e.isEmpty => processValidget_events_from_single_partitionRequest(f)((start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit))
@@ -122,13 +122,13 @@ trait hackBase extends Controller with PlayBodyParsing {
     private val get_events_from_multiple_partitionsResponseMimeType    = "application/json"
     private val get_events_from_multiple_partitionsActionSuccessStatus = Status(200)
 
-    private type get_events_from_multiple_partitionsActionRequestType       = (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String)
+    private type get_events_from_multiple_partitionsActionRequestType       = (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)
     private type get_events_from_multiple_partitionsActionResultType        = Problem
     private type get_events_from_multiple_partitionsActionType              = get_events_from_multiple_partitionsActionRequestType => Try[get_events_from_multiple_partitionsActionResultType]
 
     private val errorToStatusget_events_from_multiple_partitions: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def get_events_from_multiple_partitionsAction = (f: get_events_from_multiple_partitionsActionType) => (stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, batch_limit: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) => Action { request =>        
+    def get_events_from_multiple_partitionsAction = (f: get_events_from_multiple_partitionsActionType) => (stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, batch_limit: Int, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) => Action { request =>        
         val x_nakadi_cursors_either =
             fromHeaders[String]("x_nakadi_cursors", request.headers.toMap)
             (x_nakadi_cursors_either) match {

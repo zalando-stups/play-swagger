@@ -48,7 +48,7 @@ class TypeFlattenerIntegrationTest extends FunSpec with MustMatchers with Expect
       val paramsStr = params.toSeq.sortBy(_._1.name.parts.size).map(p => p._1.name.toString + " -> " + p._2).mkString("\n").replace(base.toString, "")
       val expected  = asInFile(file, "types")
       val fullResult = typesStr + "\n-- params --\n\n" + paramsStr
-      // if (expected.isEmpty)
+      if (expected.isEmpty)
         dump(fullResult, file, "types")
       clean(fullResult) mustBe clean(expected)
     }
