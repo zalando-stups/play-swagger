@@ -145,7 +145,7 @@
 ⌿paths⌿/users/self/feed⌿get⌿max_id ->
 	Opt(Intgr)
 ⌿paths⌿/media/search⌿get⌿DISTANCE ->
-	Opt(Intgr)
+	Intgr
 ⌿paths⌿/tags/{tag-name}⌿⌿tag-name ->
 	Str
 ⌿paths⌿/tags/search⌿get⌿q ->

@@ -86,7 +86,7 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
   }
 
   private def fromNonBodyParameter(prefix: Reference, p: NonBodyParameterCommons[_, _]): Application.Parameter = {
-    val default = if (p.required) Option(p.default).map(_.toString) else None
+    val default = if (!p.required) Option(p.default).map(_.toString) else None
     val (_, typeDef) = findType(prefix, p.name)
     val (constraint, encode) = Constraints(p.in)
     val place = ParameterPlace.withName(p.in)
