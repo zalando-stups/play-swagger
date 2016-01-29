@@ -19,7 +19,7 @@ import {{import.name}}
 trait {{controller.base}} extends Controller with PlayBodyParsing {
     {{for m in controller.methods}}
     private type {{m.action_request_type}}       = ({{for v in m.validations}}{{for f in v.fields}}{{f.type_name}}{{if f.isNotLast}}, {{/if}}{{/for}}{{/for}}{{if m.has_no_validations}}Unit{{/if}})
-    private type {{m.action_type}}              = {{m.action_request_type}} => Try[{{m.action_result_type}}]
+    private type {{m.action_type}}              = {{m.action_request_type}} => Try[Any]
 
     private val {{m.error_to_status}}: PartialFunction[Throwable, Status] = {{if m.has_no_error_mappings}} PartialFunction.empty[Throwable, Status]{{/if}}
     {{if m.error_mappings}} { {{/if}}{{for mapping in m.error_mappings}}
@@ -35,7 +35,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
 
         val possibleWriters = Map{{if m.result_types}}(
             {{for result_type in m.result_types}}
-                {{result_type._1}} -> anyToWritable[{{result_type._2}}]{{if result_type.isNotLast}}, {{/if}}
+                {{result_type.code}} -> anyToWritable[{{result_type.type}}]{{if result_type.isNotLast}}, {{/if}}
             {{/for}}
         ){{else}}.empty[Int,String => Writeable[Any]]{{/if}}{{if m.default_result_type}}.withDefaultValue(anyToWritable[{{m.default_result_type}}]){{/if}}
         {{for body in m.body_param}}
@@ -69,14 +69,18 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
 
     }
 
-    private def {{m.process_valid_request}}(f: {{m.action_type}})(request: {{m.action_request_type}}, writers: Map[Int, String => Writeable[_]], mimeType: String) = {
-        implicit val {{m.writable_json}} = anyToWritable[{{m.action_result_type}}]({{m.response_mime_type_name}})
+    private def {{m.process_valid_request}}[T <: Any](f: {{m.action_type}})(request: {{m.action_request_type}}, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => ({{m.error_to_status}} orElse defaultErrorMapping)(error)
-            case Success((code, result)) =>
-                implicit val putWritableJson = writers(code)(mimeType)
-                Status(code)(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val {{m.writable_json}} = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }

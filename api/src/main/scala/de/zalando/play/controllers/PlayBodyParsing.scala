@@ -91,7 +91,7 @@ object PlayBodyParsing extends PlayBodyParsing {
     Writeable(parsingErrors2Bytes(mimeType), Some(mimeType))
 
 
-  def anyToWritable[T]: String => Writeable[T] = mimeType =>
+  def anyToWritable[T <: Any]: String => Writeable[T] = mimeType =>
     Writeable(jacksonMapper(mimeType).writeValueAsBytes, Some(mimeType))
 
   /**
