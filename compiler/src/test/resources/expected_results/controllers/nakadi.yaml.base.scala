@@ -167,7 +167,7 @@ trait hackBase extends Controller with PlayBodyParsing {
     private type post_eventActionType              = post_eventActionRequestType => Try[post_eventActionResultType]
 
     private val errorToStatuspost_event: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
-        private def post_eventParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[TopicsTopicEventsBatchPostEvent]("application/json", "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
+        private def post_eventParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Event]("application/json", "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
 
     def post_eventAction = (f: post_eventActionType) => (topic: String) => Action(post_eventParser()) { request =>        
         val event = request.body
@@ -230,7 +230,7 @@ trait hackBase extends Controller with PlayBodyParsing {
     private type post_eventsActionType              = post_eventsActionRequestType => Try[post_eventsActionResultType]
 
     private val errorToStatuspost_events: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
-        private def post_eventsParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[TopicsTopicEventsBatchPostEvent]("application/json", "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
+        private def post_eventsParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Event]("application/json", "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
 
     def post_eventsAction = (f: post_eventsActionType) => (topic: String) => Action(post_eventsParser()) { request =>        
         val event = request.body

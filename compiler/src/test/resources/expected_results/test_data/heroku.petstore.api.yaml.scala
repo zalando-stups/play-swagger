@@ -13,7 +13,7 @@ object Generators {
 
     def createNullGenerator = _generate(NullGenerator)
 
-    def createIntGenerator = _generate(IntGenerator)
+    def createPutPetGenerator = _generate(PutPetGenerator)
 
     def createGetResponses200Generator = _generate(GetResponses200Generator)
 
@@ -25,7 +25,7 @@ object Generators {
 
     def NullGenerator = arbitrary[Null]
 
-    def IntGenerator = arbitrary[Int]
+    def PutPetGenerator = Gen.option(PetGenerator)
 
     def GetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
 

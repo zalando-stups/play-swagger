@@ -50,9 +50,28 @@ object PlayBodyParsing extends PlayBodyParsing {
   }
 
   /**
-   * Parser factory for any type
+    * Parser factory for optional bodies
     *
     * @param mimeType name of the parser
+    * @param errorMsg error message to return if an input cannot be parsed
+    * @param maxLength the maximal length of the content
+    * @param tag the ClassTag to use at runtime
+    * @tparam T the type of the input the parser should be created for
+    * @return BodyParser for the type Option[T]
+    */
+  def optionParser[T](mimeType: String, errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
+                  (implicit oTag: ClassTag[Option[T]], tag: ClassTag[T]): BodyParser[Option[T]] =
+    tolerantBodyParser[Option[T]](mimeType, maxLength, errorMsg) { (request, bytes) =>
+      if (bytes.nonEmpty)
+        Some(jacksonMapper(mimeType).readValue(bytes, tag.runtimeClass.asInstanceOf[Class[T]]))
+      else
+        None
+    }
+
+  /**
+   * Parser factory for any type
+   *
+   * @param mimeType name of the parser
    * @param errorMsg error message to return if an input cannot be parsed
    * @param maxLength the maximal length of the content
    * @param tag the ClassTag to use at runtime

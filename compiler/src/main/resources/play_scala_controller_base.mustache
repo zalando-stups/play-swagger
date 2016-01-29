@@ -31,7 +31,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
     {{/for}}{{if m.error_mappings}} } {{/if}}
 
     {{for body in m.body_param}}
-        private def {{m.parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[{{body.type_name}}]("{{m.request_mime_type_value}}", "Invalid {{body.type_name}}", maxLength)
+        private def {{m.parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = {{body.body_parser}}[{{body.parser_type}}]("{{m.request_mime_type_value}}", "Invalid {{body.type_name}}", maxLength)
     {{/for}}
 
     def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} Action {{if m.body_param}}({{m.parser_name}}()){{/if}} { {{if m.request_needed}} request =>{{/if}}

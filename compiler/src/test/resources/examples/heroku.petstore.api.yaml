@@ -54,7 +54,7 @@ paths:
           description: The pet JSON you want to post
           schema:
             $ref: '#/definitions/Pet'
-          required: true
+          required: false
       responses:
         200:
           description: Updates the pet

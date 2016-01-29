@@ -20,15 +20,15 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getAction = (f: getActionType) => (limit: Int) => Action {        
-            val result =                
+    def getAction = (f: getActionType) => (limit: Int) => Action {
+            val result =
                     new GetValidator(limit).errors match {
                         case e if e.isEmpty => processValidgetRequest(f)((limit))
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getResponseMimeType)
                             BadRequest(l)
                     }
-                
+
             result
     }
 
@@ -44,24 +44,29 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val putResponseMimeType    = "application/json"
     private val putActionSuccessStatus = Status(200)
 
-    private type putActionRequestType       = (Pet)
+    private type putActionRequestType       = (PutPet)
     private type putActionResultType        = Null
     private type putActionType              = putActionRequestType => Try[putActionResultType]
 
     private val errorToStatusput: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
-        private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[Pet]("application/json", "Invalid Pet", maxLength)
 
-    def putAction = (f: putActionType) => Action(putParser()) { request =>        
+    
+
+
+    private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PutPet", maxLength)
+    
+
+    def putAction = (f: putActionType) => Action(putParser()) { request =>
         val pet = request.body
-        
-            val result =                
+
+            val result =
                     new PutValidator(pet).errors match {
                         case e if e.isEmpty => processValidputRequest(f)((pet))
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(putResponseMimeType)
                             BadRequest(l)
                     }
-                
+
             result
     }
 
@@ -84,17 +89,17 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def postParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[Pet]("application/json", "Invalid Pet", maxLength)
 
-    def postAction = (f: postActionType) => Action(postParser()) { request =>        
+    def postAction = (f: postActionType) => Action(postParser()) { request =>
         val pet = request.body
-        
-            val result =                
+
+            val result =
                     new PostValidator(pet).errors match {
                         case e if e.isEmpty => processValidpostRequest(f)((pet))
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
                             BadRequest(l)
                     }
-                
+
             result
     }
 
@@ -116,15 +121,15 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgetbyPetId: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getbyPetIdAction = (f: getbyPetIdActionType) => (petId: String) => Action {        
-            val result =                
+    def getbyPetIdAction = (f: getbyPetIdActionType) => (petId: String) => Action {
+            val result =
                     new PetIdGetValidator(petId).errors match {
                         case e if e.isEmpty => processValidgetbyPetIdRequest(f)((petId))
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getbyPetIdResponseMimeType)
                             BadRequest(l)
                     }
-                
+
             result
     }
 

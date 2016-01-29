@@ -113,10 +113,24 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
   }
 
   private def parameterMap(table: DenotationTable): ParameterRef => Map[String, String] = param => {
-    val typeName = app.findParameter(param).typeName
+    val parameter = app.findParameter(param)
+    val typeName = parameter.typeName
+    val commonTypeName = typeNameDenotation(table, typeName.name)
+    val (parser, parserType) = typeName match {
+      case TypeRef(ref) =>
+        app.findType(ref) match {
+          case Opt(underlyingType, _) =>
+            val tpeName = typeNameDenotation(table, underlyingType.name)
+            ("optionParser", tpeName)
+          case _ => ("anyParser", commonTypeName)
+        }
+      case _ => ("anyParser", commonTypeName)
+    }
     Map(
       "field_name" -> escape(camelize("\\.", param.simple)), // should be taken from the validation
-      "type_name" -> typeNameDenotation(table, typeName.name)
+      "type_name" -> commonTypeName,
+      "parser_type" -> parserType,
+      "body_parser"  -> parser
     )
   }
 
