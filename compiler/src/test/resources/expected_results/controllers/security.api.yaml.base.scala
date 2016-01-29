@@ -1,4 +1,5 @@
 package security.api.yaml
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http.Writeable
 import Results.Status
@@ -7,43 +8,45 @@ import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 import de.zalando.play.controllers.PlayPathBindables
-trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
-    private val getPetsByIdResponseMimeType    = "application/json"
-    private val getPetsByIdActionSuccessStatus = Status(200)
 
+
+
+
+trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
     private type getPetsByIdActionRequestType       = (PetsIdGetId)
-    private type getPetsByIdActionResultType        = Seq[Pet]
-    private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[getPetsByIdActionResultType]
+    private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[Any]
 
     private val errorToStatusgetPetsById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    
+    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => Action {        val getPetsByIdResponseMimeType    = "application/json"
 
-
-    
-
-
-    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => Action { 
-
-        val result = 
-
-            new PetsIdGetValidator(id).errors match {
-                    case e if e.isEmpty => processValidgetPetsByIdRequest(f)((id))
-                    case l =>
-                        implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetsByIdResponseMimeType)
-                        BadRequest(l)
-                }
-
+        val possibleWriters = Map(
+                200 -> anyToWritable[Seq[Pet]]
+        ).withDefaultValue(anyToWritable[ErrorModel])        
+            val result =                
+                    new PetsIdGetValidator(id).errors match {
+                        case e if e.isEmpty => processValidgetPetsByIdRequest(f)((id), possibleWriters, getPetsByIdResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetsByIdResponseMimeType)
+                            BadRequest(l)
+                    }
+                
             result
     }
 
-    private def processValidgetPetsByIdRequest(f: getPetsByIdActionType)(request: getPetsByIdActionRequestType) = {
-        implicit val getPetsByIdWritableJson = anyToWritable[getPetsByIdActionResultType](getPetsByIdResponseMimeType)
+    private def processValidgetPetsByIdRequest[T <: Any](f: getPetsByIdActionType)(request: getPetsByIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetPetsById orElse defaultErrorMapping)(error)
-            case Success(result) => getPetsByIdActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getPetsByIdWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    }
+}

@@ -1,4 +1,5 @@
 package full.petstore.api.yaml
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http.Writeable
 import Results.Status
@@ -8,755 +9,760 @@ import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
 import de.zalando.play.controllers.PlayPathBindables
+
+
+
+
 trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
-    private val findPetsByTagsResponseMimeType    = "application/json"
-    private val findPetsByTagsActionSuccessStatus = Status(200)
-
     private type findPetsByTagsActionRequestType       = (PetsFindByStatusGetStatus)
-    private type findPetsByTagsActionResultType        = Seq[Pet]
-    private type findPetsByTagsActionType              = findPetsByTagsActionRequestType => Try[findPetsByTagsActionResultType]
+    private type findPetsByTagsActionType              = findPetsByTagsActionRequestType => Try[Any]
 
-    private val errorToStatusfindPetsByTags: PartialFunction[Throwable, Status] = {
+    private val errorToStatusfindPetsByTags: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def findPetsByTagsAction = (f: findPetsByTagsActionType) => (tags: PetsFindByStatusGetStatus) => Action {        val findPetsByTagsResponseMimeType    = "application/json"
 
-    def findPetsByTagsAction = (f: findPetsByTagsActionType) => (tags: PetsFindByStatusGetStatus) => Action { 
-
-        
-            val result = 
-
-                new PetsFindByTagsGetValidator(tags).errors match {
-                        case e if e.isEmpty => processValidfindPetsByTagsRequest(f)((tags))
+        val possibleWriters = Map(
+                400 -> anyToWritable[Null], 
+                200 -> anyToWritable[Seq[Pet]]
+        )        
+            val result =                
+                    new PetsFindByTagsGetValidator(tags).errors match {
+                        case e if e.isEmpty => processValidfindPetsByTagsRequest(f)((tags), possibleWriters, findPetsByTagsResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetsByTagsResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidfindPetsByTagsRequest(f: findPetsByTagsActionType)(request: findPetsByTagsActionRequestType) = {
-        implicit val findPetsByTagsWritableJson = anyToWritable[findPetsByTagsActionResultType](findPetsByTagsResponseMimeType)
+    private def processValidfindPetsByTagsRequest[T <: Any](f: findPetsByTagsActionType)(request: findPetsByTagsActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusfindPetsByTags orElse defaultErrorMapping)(error)
-            case Success(result) => findPetsByTagsActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val findPetsByTagsWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val placeOrderResponseMimeType    = "application/json"
-    private val placeOrderActionSuccessStatus = Status(200)
-
     private type placeOrderActionRequestType       = (StoresOrderPostBody)
-    private type placeOrderActionResultType        = Order
-    private type placeOrderActionType              = placeOrderActionRequestType => Try[placeOrderActionResultType]
+    private type placeOrderActionType              = placeOrderActionRequestType => Try[Any]
 
-    private val errorToStatusplaceOrder: PartialFunction[Throwable, Status] = {
+    private val errorToStatusplaceOrder: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
-    private def placeOrderParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Order]("application/json", "Invalid StoresOrderPostBody", maxLength)
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
+        private def placeOrderParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Order]("application/json", "Invalid StoresOrderPostBody", maxLength)
 
+    def placeOrderAction = (f: placeOrderActionType) => Action(placeOrderParser()) { request =>        val placeOrderResponseMimeType    = "application/json"
 
-    def placeOrderAction = (f: placeOrderActionType) => Action(placeOrderParser()) { request =>
-
+        val possibleWriters = Map(
+                400 -> anyToWritable[Null], 
+                200 -> anyToWritable[Order]
+        )        
         val body = request.body
         
-            val result = 
-
-                new StoresOrderPostValidator(body).errors match {
-                        case e if e.isEmpty => processValidplaceOrderRequest(f)((body))
+            val result =                
+                    new StoresOrderPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidplaceOrderRequest(f)((body), possibleWriters, placeOrderResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(placeOrderResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidplaceOrderRequest(f: placeOrderActionType)(request: placeOrderActionRequestType) = {
-        implicit val placeOrderWritableJson = anyToWritable[placeOrderActionResultType](placeOrderResponseMimeType)
+    private def processValidplaceOrderRequest[T <: Any](f: placeOrderActionType)(request: placeOrderActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusplaceOrder orElse defaultErrorMapping)(error)
-            case Success(result) => placeOrderActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val placeOrderWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val createUserResponseMimeType    = "application/json"
-    private val createUserActionSuccessStatus = Status(200)
-
     private type createUserActionRequestType       = (UsersUsernamePutBody)
-    private type createUserActionResultType        = Null
-    private type createUserActionType              = createUserActionRequestType => Try[createUserActionResultType]
+    private type createUserActionType              = createUserActionRequestType => Try[Any]
 
-    private val errorToStatuscreateUser: PartialFunction[Throwable, Status] = {
+    private val errorToStatuscreateUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
-    private def createUserParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[User]("application/json", "Invalid UsersUsernamePutBody", maxLength)
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
+        private def createUserParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[User]("application/json", "Invalid UsersUsernamePutBody", maxLength)
 
+    def createUserAction = (f: createUserActionType) => Action(createUserParser()) { request =>        val createUserResponseMimeType    = "application/json"
 
-    def createUserAction = (f: createUserActionType) => Action(createUserParser()) { request =>
-
+        val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])        
         val body = request.body
         
-            val result = 
-
-                new UsersPostValidator(body).errors match {
-                        case e if e.isEmpty => processValidcreateUserRequest(f)((body))
+            val result =                
+                    new UsersPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidcreateUserRequest(f)((body), possibleWriters, createUserResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUserResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidcreateUserRequest(f: createUserActionType)(request: createUserActionRequestType) = {
-        implicit val createUserWritableJson = anyToWritable[createUserActionResultType](createUserResponseMimeType)
+    private def processValidcreateUserRequest[T <: Any](f: createUserActionType)(request: createUserActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuscreateUser orElse defaultErrorMapping)(error)
-            case Success(result) => createUserActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val createUserWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val createUsersWithListInputResponseMimeType    = "application/json"
-    private val createUsersWithListInputActionSuccessStatus = Status(200)
-
     private type createUsersWithListInputActionRequestType       = (UsersCreateWithListPostBody)
-    private type createUsersWithListInputActionResultType        = Null
-    private type createUsersWithListInputActionType              = createUsersWithListInputActionRequestType => Try[createUsersWithListInputActionResultType]
+    private type createUsersWithListInputActionType              = createUsersWithListInputActionRequestType => Try[Any]
 
-    private val errorToStatuscreateUsersWithListInput: PartialFunction[Throwable, Status] = {
+    private val errorToStatuscreateUsersWithListInput: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
-    private def createUsersWithListInputParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[UsersCreateWithListPostBodyOpt]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
+        private def createUsersWithListInputParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[UsersCreateWithListPostBodyOpt]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
 
+    def createUsersWithListInputAction = (f: createUsersWithListInputActionType) => Action(createUsersWithListInputParser()) { request =>        val createUsersWithListInputResponseMimeType    = "application/json"
 
-    def createUsersWithListInputAction = (f: createUsersWithListInputActionType) => Action(createUsersWithListInputParser()) { request =>
-
+        val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])        
         val body = request.body
         
-            val result = 
-
-                new UsersCreateWithListPostValidator(body).errors match {
-                        case e if e.isEmpty => processValidcreateUsersWithListInputRequest(f)((body))
+            val result =                
+                    new UsersCreateWithListPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidcreateUsersWithListInputRequest(f)((body), possibleWriters, createUsersWithListInputResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUsersWithListInputResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidcreateUsersWithListInputRequest(f: createUsersWithListInputActionType)(request: createUsersWithListInputActionRequestType) = {
-        implicit val createUsersWithListInputWritableJson = anyToWritable[createUsersWithListInputActionResultType](createUsersWithListInputResponseMimeType)
+    private def processValidcreateUsersWithListInputRequest[T <: Any](f: createUsersWithListInputActionType)(request: createUsersWithListInputActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuscreateUsersWithListInput orElse defaultErrorMapping)(error)
-            case Success(result) => createUsersWithListInputActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val createUsersWithListInputWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val getUserByNameResponseMimeType    = "application/json"
-    private val getUserByNameActionSuccessStatus = Status(200)
-
     private type getUserByNameActionRequestType       = (String)
-    private type getUserByNameActionResultType        = User
-    private type getUserByNameActionType              = getUserByNameActionRequestType => Try[getUserByNameActionResultType]
+    private type getUserByNameActionType              = getUserByNameActionRequestType => Try[Any]
 
-    private val errorToStatusgetUserByName: PartialFunction[Throwable, Status] = {
+    private val errorToStatusgetUserByName: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def getUserByNameAction = (f: getUserByNameActionType) => (username: String) => Action {        val getUserByNameResponseMimeType    = "application/json"
 
-    def getUserByNameAction = (f: getUserByNameActionType) => (username: String) => Action { 
-
-        
-            val result = 
-
-                new UsersUsernameGetValidator(username).errors match {
-                        case e if e.isEmpty => processValidgetUserByNameRequest(f)((username))
+        val possibleWriters = Map(
+                200 -> anyToWritable[User], 
+                404 -> anyToWritable[Null], 
+                400 -> anyToWritable[Null]
+        )        
+            val result =                
+                    new UsersUsernameGetValidator(username).errors match {
+                        case e if e.isEmpty => processValidgetUserByNameRequest(f)((username), possibleWriters, getUserByNameResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getUserByNameResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidgetUserByNameRequest(f: getUserByNameActionType)(request: getUserByNameActionRequestType) = {
-        implicit val getUserByNameWritableJson = anyToWritable[getUserByNameActionResultType](getUserByNameResponseMimeType)
+    private def processValidgetUserByNameRequest[T <: Any](f: getUserByNameActionType)(request: getUserByNameActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetUserByName orElse defaultErrorMapping)(error)
-            case Success(result) => getUserByNameActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getUserByNameWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val updateUserResponseMimeType    = "application/json"
-    private val updateUserActionSuccessStatus = Status(200)
-
     private type updateUserActionRequestType       = (String, UsersUsernamePutBody)
-    private type updateUserActionResultType        = Null
-    private type updateUserActionType              = updateUserActionRequestType => Try[updateUserActionResultType]
+    private type updateUserActionType              = updateUserActionRequestType => Try[Any]
 
-    private val errorToStatusupdateUser: PartialFunction[Throwable, Status] = {
+    private val errorToStatusupdateUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
-    private def updateUserParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[User]("application/json", "Invalid UsersUsernamePutBody", maxLength)
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
+        private def updateUserParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[User]("application/json", "Invalid UsersUsernamePutBody", maxLength)
 
+    def updateUserAction = (f: updateUserActionType) => (username: String) => Action(updateUserParser()) { request =>        val updateUserResponseMimeType    = "application/json"
 
-    def updateUserAction = (f: updateUserActionType) => (username: String) => Action(updateUserParser()) { request =>
-
+        val possibleWriters = Map(
+                404 -> anyToWritable[Null], 
+                400 -> anyToWritable[Null]
+        )        
         val body = request.body
         
-            val result = 
-
-                new UsersUsernamePutValidator(username, body).errors match {
-                        case e if e.isEmpty => processValidupdateUserRequest(f)((username, body))
+            val result =                
+                    new UsersUsernamePutValidator(username, body).errors match {
+                        case e if e.isEmpty => processValidupdateUserRequest(f)((username, body), possibleWriters, updateUserResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updateUserResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidupdateUserRequest(f: updateUserActionType)(request: updateUserActionRequestType) = {
-        implicit val updateUserWritableJson = anyToWritable[updateUserActionResultType](updateUserResponseMimeType)
+    private def processValidupdateUserRequest[T <: Any](f: updateUserActionType)(request: updateUserActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusupdateUser orElse defaultErrorMapping)(error)
-            case Success(result) => updateUserActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val updateUserWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val deleteUserResponseMimeType    = "application/json"
-    private val deleteUserActionSuccessStatus = Status(200)
-
     private type deleteUserActionRequestType       = (String)
-    private type deleteUserActionResultType        = Null
-    private type deleteUserActionType              = deleteUserActionRequestType => Try[deleteUserActionResultType]
+    private type deleteUserActionType              = deleteUserActionRequestType => Try[Any]
 
-    private val errorToStatusdeleteUser: PartialFunction[Throwable, Status] = {
+    private val errorToStatusdeleteUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def deleteUserAction = (f: deleteUserActionType) => (username: String) => Action {        val deleteUserResponseMimeType    = "application/json"
 
-    def deleteUserAction = (f: deleteUserActionType) => (username: String) => Action { 
-
-        
-            val result = 
-
-                new UsersUsernameDeleteValidator(username).errors match {
-                        case e if e.isEmpty => processValiddeleteUserRequest(f)((username))
+        val possibleWriters = Map(
+                404 -> anyToWritable[Null], 
+                400 -> anyToWritable[Null]
+        )        
+            val result =                
+                    new UsersUsernameDeleteValidator(username).errors match {
+                        case e if e.isEmpty => processValiddeleteUserRequest(f)((username), possibleWriters, deleteUserResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deleteUserResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValiddeleteUserRequest(f: deleteUserActionType)(request: deleteUserActionRequestType) = {
-        implicit val deleteUserWritableJson = anyToWritable[deleteUserActionResultType](deleteUserResponseMimeType)
+    private def processValiddeleteUserRequest[T <: Any](f: deleteUserActionType)(request: deleteUserActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeleteUser orElse defaultErrorMapping)(error)
-            case Success(result) => deleteUserActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val deleteUserWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val updatePetResponseMimeType    = "application/json"
-    private val updatePetActionSuccessStatus = Status(200)
-
     private type updatePetActionRequestType       = (PetsPostBody)
-    private type updatePetActionResultType        = Null
-    private type updatePetActionType              = updatePetActionRequestType => Try[updatePetActionResultType]
+    private type updatePetActionType              = updatePetActionRequestType => Try[Any]
 
-    private val errorToStatusupdatePet: PartialFunction[Throwable, Status] = {
+    private val errorToStatusupdatePet: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
-    private def updatePetParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PetsPostBody", maxLength)
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
+        private def updatePetParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PetsPostBody", maxLength)
 
+    def updatePetAction = (f: updatePetActionType) => Action(updatePetParser()) { request =>        val updatePetResponseMimeType    = "application/json"
 
-    def updatePetAction = (f: updatePetActionType) => Action(updatePetParser()) { request =>
-
+        val possibleWriters = Map(
+                405 -> anyToWritable[Null], 
+                404 -> anyToWritable[Null], 
+                400 -> anyToWritable[Null]
+        )        
         val body = request.body
         
-            val result = 
-
-                new PetsPutValidator(body).errors match {
-                        case e if e.isEmpty => processValidupdatePetRequest(f)((body))
+            val result =                
+                    new PetsPutValidator(body).errors match {
+                        case e if e.isEmpty => processValidupdatePetRequest(f)((body), possibleWriters, updatePetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updatePetResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidupdatePetRequest(f: updatePetActionType)(request: updatePetActionRequestType) = {
-        implicit val updatePetWritableJson = anyToWritable[updatePetActionResultType](updatePetResponseMimeType)
+    private def processValidupdatePetRequest[T <: Any](f: updatePetActionType)(request: updatePetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusupdatePet orElse defaultErrorMapping)(error)
-            case Success(result) => updatePetActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val updatePetWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val addPetResponseMimeType    = "application/json"
-    private val addPetActionSuccessStatus = Status(200)
-
     private type addPetActionRequestType       = (PetsPostBody)
-    private type addPetActionResultType        = Null
-    private type addPetActionType              = addPetActionRequestType => Try[addPetActionResultType]
+    private type addPetActionType              = addPetActionRequestType => Try[Any]
 
-    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = {
+    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
-    private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PetsPostBody", maxLength)
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
+        private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PetsPostBody", maxLength)
 
+    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>        val addPetResponseMimeType    = "application/json"
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
-
+        val possibleWriters = Map(
+                405 -> anyToWritable[Null]
+        )        
         val body = request.body
         
-            val result = 
-
-                new PetsPostValidator(body).errors match {
-                        case e if e.isEmpty => processValidaddPetRequest(f)((body))
+            val result =                
+                    new PetsPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidaddPetRequest(f)((body), possibleWriters, addPetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(addPetResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidaddPetRequest(f: addPetActionType)(request: addPetActionRequestType) = {
-        implicit val addPetWritableJson = anyToWritable[addPetActionResultType](addPetResponseMimeType)
+    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
-            case Success(result) => addPetActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val addPetWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val createUsersWithArrayInputResponseMimeType    = "application/json"
-    private val createUsersWithArrayInputActionSuccessStatus = Status(200)
-
     private type createUsersWithArrayInputActionRequestType       = (UsersCreateWithListPostBody)
-    private type createUsersWithArrayInputActionResultType        = Null
-    private type createUsersWithArrayInputActionType              = createUsersWithArrayInputActionRequestType => Try[createUsersWithArrayInputActionResultType]
+    private type createUsersWithArrayInputActionType              = createUsersWithArrayInputActionRequestType => Try[Any]
 
-    private val errorToStatuscreateUsersWithArrayInput: PartialFunction[Throwable, Status] = {
+    private val errorToStatuscreateUsersWithArrayInput: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
-    private def createUsersWithArrayInputParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[UsersCreateWithListPostBodyOpt]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
+        private def createUsersWithArrayInputParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[UsersCreateWithListPostBodyOpt]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
 
+    def createUsersWithArrayInputAction = (f: createUsersWithArrayInputActionType) => Action(createUsersWithArrayInputParser()) { request =>        val createUsersWithArrayInputResponseMimeType    = "application/json"
 
-    def createUsersWithArrayInputAction = (f: createUsersWithArrayInputActionType) => Action(createUsersWithArrayInputParser()) { request =>
-
+        val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])        
         val body = request.body
         
-            val result = 
-
-                new UsersCreateWithArrayPostValidator(body).errors match {
-                        case e if e.isEmpty => processValidcreateUsersWithArrayInputRequest(f)((body))
+            val result =                
+                    new UsersCreateWithArrayPostValidator(body).errors match {
+                        case e if e.isEmpty => processValidcreateUsersWithArrayInputRequest(f)((body), possibleWriters, createUsersWithArrayInputResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(createUsersWithArrayInputResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidcreateUsersWithArrayInputRequest(f: createUsersWithArrayInputActionType)(request: createUsersWithArrayInputActionRequestType) = {
-        implicit val createUsersWithArrayInputWritableJson = anyToWritable[createUsersWithArrayInputActionResultType](createUsersWithArrayInputResponseMimeType)
+    private def processValidcreateUsersWithArrayInputRequest[T <: Any](f: createUsersWithArrayInputActionType)(request: createUsersWithArrayInputActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuscreateUsersWithArrayInput orElse defaultErrorMapping)(error)
-            case Success(result) => createUsersWithArrayInputActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val createUsersWithArrayInputWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val getOrderByIdResponseMimeType    = "application/json"
-    private val getOrderByIdActionSuccessStatus = Status(200)
-
     private type getOrderByIdActionRequestType       = (String)
-    private type getOrderByIdActionResultType        = Order
-    private type getOrderByIdActionType              = getOrderByIdActionRequestType => Try[getOrderByIdActionResultType]
+    private type getOrderByIdActionType              = getOrderByIdActionRequestType => Try[Any]
 
-    private val errorToStatusgetOrderById: PartialFunction[Throwable, Status] = {
+    private val errorToStatusgetOrderById: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def getOrderByIdAction = (f: getOrderByIdActionType) => (orderId: String) => Action {        val getOrderByIdResponseMimeType    = "application/json"
 
-    def getOrderByIdAction = (f: getOrderByIdActionType) => (orderId: String) => Action { 
-
-        
-            val result = 
-
-                new StoresOrderOrderIdGetValidator(orderId).errors match {
-                        case e if e.isEmpty => processValidgetOrderByIdRequest(f)((orderId))
+        val possibleWriters = Map(
+                404 -> anyToWritable[Null], 
+                400 -> anyToWritable[Null], 
+                200 -> anyToWritable[Order]
+        )        
+            val result =                
+                    new StoresOrderOrderIdGetValidator(orderId).errors match {
+                        case e if e.isEmpty => processValidgetOrderByIdRequest(f)((orderId), possibleWriters, getOrderByIdResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getOrderByIdResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidgetOrderByIdRequest(f: getOrderByIdActionType)(request: getOrderByIdActionRequestType) = {
-        implicit val getOrderByIdWritableJson = anyToWritable[getOrderByIdActionResultType](getOrderByIdResponseMimeType)
+    private def processValidgetOrderByIdRequest[T <: Any](f: getOrderByIdActionType)(request: getOrderByIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetOrderById orElse defaultErrorMapping)(error)
-            case Success(result) => getOrderByIdActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getOrderByIdWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val deleteOrderResponseMimeType    = "application/json"
-    private val deleteOrderActionSuccessStatus = Status(200)
-
     private type deleteOrderActionRequestType       = (String)
-    private type deleteOrderActionResultType        = Null
-    private type deleteOrderActionType              = deleteOrderActionRequestType => Try[deleteOrderActionResultType]
+    private type deleteOrderActionType              = deleteOrderActionRequestType => Try[Any]
 
-    private val errorToStatusdeleteOrder: PartialFunction[Throwable, Status] = {
+    private val errorToStatusdeleteOrder: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def deleteOrderAction = (f: deleteOrderActionType) => (orderId: String) => Action {        val deleteOrderResponseMimeType    = "application/json"
 
-    def deleteOrderAction = (f: deleteOrderActionType) => (orderId: String) => Action { 
-
-        
-            val result = 
-
-                new StoresOrderOrderIdDeleteValidator(orderId).errors match {
-                        case e if e.isEmpty => processValiddeleteOrderRequest(f)((orderId))
+        val possibleWriters = Map(
+                404 -> anyToWritable[Null], 
+                400 -> anyToWritable[Null]
+        )        
+            val result =                
+                    new StoresOrderOrderIdDeleteValidator(orderId).errors match {
+                        case e if e.isEmpty => processValiddeleteOrderRequest(f)((orderId), possibleWriters, deleteOrderResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deleteOrderResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValiddeleteOrderRequest(f: deleteOrderActionType)(request: deleteOrderActionRequestType) = {
-        implicit val deleteOrderWritableJson = anyToWritable[deleteOrderActionResultType](deleteOrderResponseMimeType)
+    private def processValiddeleteOrderRequest[T <: Any](f: deleteOrderActionType)(request: deleteOrderActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeleteOrder orElse defaultErrorMapping)(error)
-            case Success(result) => deleteOrderActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val deleteOrderWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val logoutUserResponseMimeType    = "application/json"
-    private val logoutUserActionSuccessStatus = Status(200)
-
     private type logoutUserActionRequestType       = (Unit)
-    private type logoutUserActionResultType        = Null
-    private type logoutUserActionType              = logoutUserActionRequestType => Try[logoutUserActionResultType]
+    private type logoutUserActionType              = logoutUserActionRequestType => Try[Any]
 
-    private val errorToStatuslogoutUser: PartialFunction[Throwable, Status] = {
+    private val errorToStatuslogoutUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
+    
         case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
+
+    def logoutUserAction = (f: logoutUserActionType) => Action {        val logoutUserResponseMimeType    = "application/json"
+
+        val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])        
+            val result = processValidlogoutUserRequest(f)()                
+            result
     }
 
-
-    
-
-
-    def logoutUserAction = (f: logoutUserActionType) => Action { 
-
-        
-            val result = processValidlogoutUserRequest(f)()
-
-                result
-            
-        }
-
-    private def processValidlogoutUserRequest(f: logoutUserActionType)(request: logoutUserActionRequestType) = {
-        implicit val logoutUserWritableJson = anyToWritable[logoutUserActionResultType](logoutUserResponseMimeType)
+    private def processValidlogoutUserRequest[T <: Any](f: logoutUserActionType)(request: logoutUserActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuslogoutUser orElse defaultErrorMapping)(error)
-            case Success(result) => logoutUserActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val logoutUserWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val getPetByIdResponseMimeType    = "application/json"
-    private val getPetByIdActionSuccessStatus = Status(200)
-
     private type getPetByIdActionRequestType       = (Long)
-    private type getPetByIdActionResultType        = Pet
-    private type getPetByIdActionType              = getPetByIdActionRequestType => Try[getPetByIdActionResultType]
+    private type getPetByIdActionType              = getPetByIdActionRequestType => Try[Any]
 
-    private val errorToStatusgetPetById: PartialFunction[Throwable, Status] = {
+    private val errorToStatusgetPetById: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def getPetByIdAction = (f: getPetByIdActionType) => (petId: Long) => Action {        val getPetByIdResponseMimeType    = "application/json"
 
-    def getPetByIdAction = (f: getPetByIdActionType) => (petId: Long) => Action { 
-
-        
-            val result = 
-
-                new PetsPetIdGetValidator(petId).errors match {
-                        case e if e.isEmpty => processValidgetPetByIdRequest(f)((petId))
+        val possibleWriters = Map(
+                404 -> anyToWritable[Null], 
+                400 -> anyToWritable[Null], 
+                200 -> anyToWritable[Pet]
+        )        
+            val result =                
+                    new PetsPetIdGetValidator(petId).errors match {
+                        case e if e.isEmpty => processValidgetPetByIdRequest(f)((petId), possibleWriters, getPetByIdResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetByIdResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidgetPetByIdRequest(f: getPetByIdActionType)(request: getPetByIdActionRequestType) = {
-        implicit val getPetByIdWritableJson = anyToWritable[getPetByIdActionResultType](getPetByIdResponseMimeType)
+    private def processValidgetPetByIdRequest[T <: Any](f: getPetByIdActionType)(request: getPetByIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetPetById orElse defaultErrorMapping)(error)
-            case Success(result) => getPetByIdActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getPetByIdWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val updatePetWithFormResponseMimeType    = "application/json"
-    private val updatePetWithFormActionSuccessStatus = Status(200)
-
     private type updatePetWithFormActionRequestType       = (String, String, String)
-    private type updatePetWithFormActionResultType        = Null
-    private type updatePetWithFormActionType              = updatePetWithFormActionRequestType => Try[updatePetWithFormActionResultType]
+    private type updatePetWithFormActionType              = updatePetWithFormActionRequestType => Try[Any]
 
-    private val errorToStatusupdatePetWithForm: PartialFunction[Throwable, Status] = {
+    private val errorToStatusupdatePetWithForm: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def updatePetWithFormAction = (f: updatePetWithFormActionType) => (petId: String, name: String, status: String) => Action {        val updatePetWithFormResponseMimeType    = "application/json"
 
-    def updatePetWithFormAction = (f: updatePetWithFormActionType) => (petId: String, name: String, status: String) => Action { 
-
-        
-            val result = 
-
-                new PetsPetIdPostValidator(petId, name, status).errors match {
-                        case e if e.isEmpty => processValidupdatePetWithFormRequest(f)((petId, name, status))
+        val possibleWriters = Map(
+                405 -> anyToWritable[Null]
+        )        
+            val result =                
+                    new PetsPetIdPostValidator(petId, name, status).errors match {
+                        case e if e.isEmpty => processValidupdatePetWithFormRequest(f)((petId, name, status), possibleWriters, updatePetWithFormResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(updatePetWithFormResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidupdatePetWithFormRequest(f: updatePetWithFormActionType)(request: updatePetWithFormActionRequestType) = {
-        implicit val updatePetWithFormWritableJson = anyToWritable[updatePetWithFormActionResultType](updatePetWithFormResponseMimeType)
+    private def processValidupdatePetWithFormRequest[T <: Any](f: updatePetWithFormActionType)(request: updatePetWithFormActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusupdatePetWithForm orElse defaultErrorMapping)(error)
-            case Success(result) => updatePetWithFormActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val updatePetWithFormWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val deletePetResponseMimeType    = "application/json"
-    private val deletePetActionSuccessStatus = Status(200)
-
     private type deletePetActionRequestType       = (String, Long)
-    private type deletePetActionResultType        = Null
-    private type deletePetActionType              = deletePetActionRequestType => Try[deletePetActionResultType]
+    private type deletePetActionType              = deletePetActionRequestType => Try[Any]
 
-    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = {
+    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def deletePetAction = (f: deletePetActionType) => (petId: Long) => Action { request =>        val deletePetResponseMimeType    = "application/json"
 
-    def deletePetAction = (f: deletePetActionType) => (petId: Long) => Action { request =>
-
+        val possibleWriters = Map(
+                400 -> anyToWritable[Null]
+        )        
         val api_key_either =
             fromHeaders[String]("api_key", request.headers.toMap)
-        (api_key_either) match {
+            (api_key_either) match {
                 case (Right(api_key)) =>
         
-            val result = 
-
-                new PetsPetIdDeleteValidator(api_key, petId).errors match {
-                        case e if e.isEmpty => processValiddeletePetRequest(f)((api_key, petId))
+            val result =                
+                    new PetsPetIdDeleteValidator(api_key, petId).errors match {
+                        case e if e.isEmpty => processValiddeletePetRequest(f)((api_key, petId), possibleWriters, deletePetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletePetResponseMimeType)
                             BadRequest(l)
                     }
-
-                result
-            
-        case (_) =>
+                
+            result
+            case (_) =>
                 val msg = Seq(api_key_either).filter{_.isLeft}.map(_.left.get).mkString("\n")
                 BadRequest(msg)
             }
-        }
+        
+    }
 
-    private def processValiddeletePetRequest(f: deletePetActionType)(request: deletePetActionRequestType) = {
-        implicit val deletePetWritableJson = anyToWritable[deletePetActionResultType](deletePetResponseMimeType)
+    private def processValiddeletePetRequest[T <: Any](f: deletePetActionType)(request: deletePetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)
-            case Success(result) => deletePetActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val deletePetWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val findPetsByStatusResponseMimeType    = "application/json"
-    private val findPetsByStatusActionSuccessStatus = Status(200)
-
     private type findPetsByStatusActionRequestType       = (PetsFindByStatusGetStatus)
-    private type findPetsByStatusActionResultType        = Seq[Pet]
-    private type findPetsByStatusActionType              = findPetsByStatusActionRequestType => Try[findPetsByStatusActionResultType]
+    private type findPetsByStatusActionType              = findPetsByStatusActionRequestType => Try[Any]
 
-    private val errorToStatusfindPetsByStatus: PartialFunction[Throwable, Status] = {
+    private val errorToStatusfindPetsByStatus: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def findPetsByStatusAction = (f: findPetsByStatusActionType) => (status: PetsFindByStatusGetStatus) => Action {        val findPetsByStatusResponseMimeType    = "application/json"
 
-    def findPetsByStatusAction = (f: findPetsByStatusActionType) => (status: PetsFindByStatusGetStatus) => Action { 
-
-        
-            val result = 
-
-                new PetsFindByStatusGetValidator(status).errors match {
-                        case e if e.isEmpty => processValidfindPetsByStatusRequest(f)((status))
+        val possibleWriters = Map(
+                200 -> anyToWritable[Seq[Pet]], 
+                400 -> anyToWritable[Null]
+        )        
+            val result =                
+                    new PetsFindByStatusGetValidator(status).errors match {
+                        case e if e.isEmpty => processValidfindPetsByStatusRequest(f)((status), possibleWriters, findPetsByStatusResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetsByStatusResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidfindPetsByStatusRequest(f: findPetsByStatusActionType)(request: findPetsByStatusActionRequestType) = {
-        implicit val findPetsByStatusWritableJson = anyToWritable[findPetsByStatusActionResultType](findPetsByStatusResponseMimeType)
+    private def processValidfindPetsByStatusRequest[T <: Any](f: findPetsByStatusActionType)(request: findPetsByStatusActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusfindPetsByStatus orElse defaultErrorMapping)(error)
-            case Success(result) => findPetsByStatusActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val findPetsByStatusWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    private val loginUserResponseMimeType    = "application/json"
-    private val loginUserActionSuccessStatus = Status(200)
-
     private type loginUserActionRequestType       = (OrderStatus, OrderStatus)
-    private type loginUserActionResultType        = Null
-    private type loginUserActionType              = loginUserActionRequestType => Try[loginUserActionResultType]
+    private type loginUserActionType              = loginUserActionRequestType => Try[Any]
 
-    private val errorToStatusloginUser: PartialFunction[Throwable, Status] = {
+    private val errorToStatusloginUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
-        case _: java.lang.IndexOutOfBoundsException => Status(405)
-    }
-
     
+        case _: java.lang.IndexOutOfBoundsException => Status(405)
+     } 
 
+    def loginUserAction = (f: loginUserActionType) => (username: OrderStatus, password: OrderStatus) => Action {        val loginUserResponseMimeType    = "application/json"
 
-    def loginUserAction = (f: loginUserActionType) => (username: OrderStatus, password: OrderStatus) => Action { 
-
-        
-            val result = 
-
-                new UsersLoginGetValidator(username, password).errors match {
-                        case e if e.isEmpty => processValidloginUserRequest(f)((username, password))
+        val possibleWriters = Map(
+                200 -> anyToWritable[String], 
+                400 -> anyToWritable[Null]
+        )        
+            val result =                
+                    new UsersLoginGetValidator(username, password).errors match {
+                        case e if e.isEmpty => processValidloginUserRequest(f)((username, password), possibleWriters, loginUserResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(loginUserResponseMimeType)
                             BadRequest(l)
                     }
+                
+            result
+    }
 
-                result
-            
-        }
-
-    private def processValidloginUserRequest(f: loginUserActionType)(request: loginUserActionRequestType) = {
-        implicit val loginUserWritableJson = anyToWritable[loginUserActionResultType](loginUserResponseMimeType)
+    private def processValidloginUserRequest[T <: Any](f: loginUserActionType)(request: loginUserActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusloginUser orElse defaultErrorMapping)(error)
-            case Success(result) => loginUserActionSuccessStatus(result)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val loginUserWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
         }
         status
     }
-    }
+}

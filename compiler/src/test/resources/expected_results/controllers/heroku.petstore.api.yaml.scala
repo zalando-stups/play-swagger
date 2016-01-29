@@ -11,7 +11,7 @@ import scala.util._
 package heroku.petstore.api.yaml { 
 
   class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
-    val get = getAction { (limit: PetBirthday) =>
+    val get = getAction { (limit: Int) =>
       Failure(???)
     } //////// EOF ////////  getAction
     val put = putAction { (pet: PutPet) =>
