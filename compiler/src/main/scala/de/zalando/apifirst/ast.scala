@@ -241,7 +241,8 @@ object Application {
     mimeIn:           Set[MimeType],  // can be empty for swagger specification
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
-    resultTypes:      Iterable[ParameterRef]
+    resultTypes:      Map[Int, ParameterRef],
+    defaultResult:    Option[ParameterRef]
   ) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
