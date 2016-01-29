@@ -1,6 +1,6 @@
 package heroku.petstore.api
 package object yaml {
-import de.zalando.play.controllers.PlayPathBindables
+
     type PetName = Option[String]
 
     type PetIdGetPetId = String
@@ -9,11 +9,11 @@ import de.zalando.play.controllers.PlayPathBindables
 
     type PostResponses200 = Null
 
+    type GetLimit = Int
+
     type PutPet = Option[Pet]
 
     type GetResponses200 = Seq[Pet]
 
-    case class Pet(name: PetName, birthday: PetBirthday) 
-
-    implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
+    case class Pet(name: PetName, birthday: PetBirthday)
 }

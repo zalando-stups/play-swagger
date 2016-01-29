@@ -1,7 +1,7 @@
 package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef}
-import de.zalando.apifirst.Domain._
+import de.zalando.apifirst.Domain.{Opt, TypeRef}
 import de.zalando.apifirst.ParameterPlace
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
@@ -41,7 +41,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val headerParams        = validationsByType(call, p => p.place == ParameterPlace.HEADER)
     val nonBodyParams       = validationsByType(call, p => p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER)
     val allValidations      = callValidations(ref).asInstanceOf[Seq[_]]
-    val actionResultType    = resultType(call)(table)
+    val allActionResults    = actionResults(call)(table)
     val actionErrorMappings = errorMappings(call)
     val nameParamPair       = singleOrMultipleParameters(call)(table)
 
@@ -53,8 +53,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     Map(
       "response_mime_type_value"      -> call.mimeOut.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
       "request_mime_type_value"       -> call.mimeIn.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
-      "action_result_type_value"      -> actionResultType, // TODO implement content negotiation
-      "action_success_status_value"   -> 200, // FIXME
+      "action_results"                -> allActionResults, // TODO implement content negotiation
       "method"                        -> method,
       "signature"                     -> signature(action, method),
       "comment"                       -> comment(action),
@@ -78,7 +77,11 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
   private def nameWithSuffix(call: ApiCall, suffix: String): String =
     escape(call.handler.method + suffix)
 
-  private def resultType(call: ApiCall)(table: DenotationTable): Option[String] = {
+  private def actionResults(call: ApiCall)(table: DenotationTable): Map[Int, String] = {
+    Map.empty[Int, String] // FIXME
+  }
+
+/*  private def resultType(call: ApiCall)(table: DenotationTable): Option[String] = {
     call.resultTypes.toSeq.sortBy(_.simple).headOption.map { t =>
       val tpe = app.findType(t.name)
       tpe match {
@@ -90,7 +93,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
         case o => o.name.className
       }
     }
-  }
+  }*/
 
   private def errorMappings(call: ApiCall): Iterable[Map[String, String]] =
     call.errorMapping.flatMap { case (k, v) => v.map { ex =>
