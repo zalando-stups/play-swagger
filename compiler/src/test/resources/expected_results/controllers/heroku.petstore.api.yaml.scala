@@ -19,16 +19,32 @@ package heroku.petstore.api.yaml {
 
     class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
         val get = getAction { (limit: Int) =>
+                        
             Failure(???)
+
+            
+
         } //////// EOF ////////  getAction
-        val put = putAction { (pet: Pet) =>
+        val put = putAction { (pet: PutPet) =>
+                        
             Failure(???)
+
+            
+
         } //////// EOF ////////  putAction
         val post = postAction { (pet: Pet) =>
+                        
             Failure(???)
+
+            
+
         } //////// EOF ////////  postAction
         val getbyPetId = getbyPetIdAction { (petId: String) =>
+                        
             Failure(???)
+
+            
+
         } //////// EOF ////////  getbyPetIdAction
     }
 }

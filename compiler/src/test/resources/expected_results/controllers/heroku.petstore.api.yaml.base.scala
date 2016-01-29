@@ -44,12 +44,12 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val putResponseMimeType    = "application/json"
     private val putActionSuccessStatus = Status(200)
 
-    private type putActionRequestType       = (Pet)
+    private type putActionRequestType       = (PutPet)
     private type putActionResultType        = Null
     private type putActionType              = putActionRequestType => Try[putActionResultType]
 
     private val errorToStatusput: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
-        private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[Pet]("application/json", "Invalid Pet", maxLength)
+        private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PutPet", maxLength)
 
     def putAction = (f: putActionType) => Action(putParser()) { request =>        
         val pet = request.body

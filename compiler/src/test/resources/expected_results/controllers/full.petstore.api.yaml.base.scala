@@ -63,7 +63,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
 
 
-    private def placeOrderParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[StoresOrderPostBody]("application/json", "Invalid StoresOrderPostBody", maxLength)
+    private def placeOrderParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Order]("application/json", "Invalid StoresOrderPostBody", maxLength)
     
 
 
@@ -106,7 +106,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
 
 
-    private def createUserParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[UsersUsernamePutBody]("application/json", "Invalid UsersUsernamePutBody", maxLength)
+    private def createUserParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[User]("application/json", "Invalid UsersUsernamePutBody", maxLength)
     
 
 
@@ -149,7 +149,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
 
 
-    private def createUsersWithListInputParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[UsersCreateWithListPostBody]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
+    private def createUsersWithListInputParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[UsersCreateWithListPostBodyOpt]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
     
 
 
@@ -233,7 +233,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
 
 
-    private def updateUserParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[UsersUsernamePutBody]("application/json", "Invalid UsersUsernamePutBody", maxLength)
+    private def updateUserParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[User]("application/json", "Invalid UsersUsernamePutBody", maxLength)
     
 
 
@@ -317,7 +317,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
 
 
-    private def updatePetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[PetsPostBody]("application/json", "Invalid PetsPostBody", maxLength)
+    private def updatePetParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PetsPostBody", maxLength)
     
 
 
@@ -360,7 +360,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
 
 
-    private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[PetsPostBody]("application/json", "Invalid PetsPostBody", maxLength)
+    private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PetsPostBody", maxLength)
     
 
 
@@ -403,7 +403,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
 
 
-    private def createUsersWithArrayInputParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[UsersCreateWithListPostBody]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
+    private def createUsersWithArrayInputParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[UsersCreateWithListPostBodyOpt]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
     
 
 
