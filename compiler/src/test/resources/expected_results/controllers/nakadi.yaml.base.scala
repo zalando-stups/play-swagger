@@ -14,7 +14,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
 trait hackBase extends Controller with PlayBodyParsing {
     private type get_metricsActionRequestType       = (Unit)
-    private type get_metricsActionType              = get_metricsActionRequestType => Try[Any]
+    private type get_metricsActionType              = get_metricsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget_metrics: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -41,11 +41,14 @@ trait hackBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type get_events_from_single_partitionActionRequestType       = (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)
-    private type get_events_from_single_partitionActionType              = get_events_from_single_partitionActionRequestType => Try[Any]
+    private type get_events_from_single_partitionActionType              = get_events_from_single_partitionActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget_events_from_single_partition: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -81,11 +84,14 @@ trait hackBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type get_partitionActionRequestType       = (String, String)
-    private type get_partitionActionType              = get_partitionActionRequestType => Try[Any]
+    private type get_partitionActionType              = get_partitionActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget_partition: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -117,11 +123,14 @@ trait hackBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type get_topicsActionRequestType       = (Unit)
-    private type get_topicsActionType              = get_topicsActionRequestType => Try[Any]
+    private type get_topicsActionType              = get_topicsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget_topics: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -148,11 +157,14 @@ trait hackBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type get_events_from_multiple_partitionsActionRequestType       = (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)
-    private type get_events_from_multiple_partitionsActionType              = get_events_from_multiple_partitionsActionRequestType => Try[Any]
+    private type get_events_from_multiple_partitionsActionType              = get_events_from_multiple_partitionsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget_events_from_multiple_partitions: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -165,9 +177,9 @@ trait hackBase extends Controller with PlayBodyParsing {
                 400 -> anyToWritable[Problem], 
                 200 -> anyToWritable[SimpleStreamEvent]
         )        
-        val x_nakadi_cursors_either =
+        val x_nakadi_cursors =
             fromHeaders[String]("x_nakadi_cursors", request.headers.toMap)
-            (x_nakadi_cursors_either) match {
+            (x_nakadi_cursors) match {
                 case (Right(x_nakadi_cursors)) =>
         
             val result =                
@@ -180,7 +192,7 @@ trait hackBase extends Controller with PlayBodyParsing {
                 
             result
             case (_) =>
-                val msg = Seq(x_nakadi_cursors_either).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                val msg = Seq(x_nakadi_cursors).filter{_.isLeft}.map(_.left.get).mkString("\n")
                 BadRequest(msg)
             }
         
@@ -198,11 +210,14 @@ trait hackBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type post_eventActionRequestType       = (String, TopicsTopicEventsBatchPostEvent)
-    private type post_eventActionType              = post_eventActionRequestType => Try[Any]
+    private type post_eventActionType              = post_eventActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspost_event: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def post_eventParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Event]("application/json", "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
@@ -241,11 +256,14 @@ trait hackBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type get_partitionsActionRequestType       = (String)
-    private type get_partitionsActionType              = get_partitionsActionRequestType => Try[Any]
+    private type get_partitionsActionType              = get_partitionsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget_partitions: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -277,11 +295,14 @@ trait hackBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type post_eventsActionRequestType       = (String, TopicsTopicEventsBatchPostEvent)
-    private type post_eventsActionType              = post_eventsActionRequestType => Try[Any]
+    private type post_eventsActionType              = post_eventsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspost_events: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def post_eventsParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Event]("application/json", "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
@@ -320,6 +341,9 @@ trait hackBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

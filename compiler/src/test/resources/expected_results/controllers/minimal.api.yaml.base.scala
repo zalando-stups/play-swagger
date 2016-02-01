@@ -12,7 +12,7 @@ import scala.util._
 
 trait DashboardBase extends Controller with PlayBodyParsing {
     private type indexActionRequestType       = (Unit)
-    private type indexActionType              = indexActionRequestType => Try[Any]
+    private type indexActionType              = indexActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusindex: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -37,6 +37,9 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

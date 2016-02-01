@@ -28,7 +28,7 @@ class ScalaNameTest extends FunSpec with MustMatchers {
   }
 
   it("must correctly concat names") {
-    ("definitions"/"Example"/"nestedArrays"/"Opt"/"Arr:").names mustBe ("definitions", "Example", "`arr:`")
+    ("definitions"/"Example"/"nestedArrays"/"Opt"/"Arr:").names mustBe ("definitions", "Example", "arr_esc")
   }
 
 }

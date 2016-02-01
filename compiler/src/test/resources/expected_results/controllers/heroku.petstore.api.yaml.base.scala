@@ -12,7 +12,7 @@ import scala.util._
 
 trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type getActionRequestType       = (Int)
-    private type getActionType              = getActionRequestType => Try[Any]
+    private type getActionType              = getActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -44,11 +44,14 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type putActionRequestType       = (PutPet)
-    private type putActionType              = putActionRequestType => Try[Any]
+    private type putActionType              = putActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusput: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PutPet", maxLength)
@@ -83,11 +86,14 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type postActionRequestType       = (Pet)
-    private type postActionType              = postActionRequestType => Try[Any]
+    private type postActionType              = postActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def postParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[Pet]("application/json", "Invalid Pet", maxLength)
@@ -122,11 +128,14 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getbyPetIdActionRequestType       = (String)
-    private type getbyPetIdActionType              = getbyPetIdActionRequestType => Try[Any]
+    private type getbyPetIdActionType              = getbyPetIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetbyPetId: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -158,6 +167,9 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

@@ -14,7 +14,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
 trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type addPetActionRequestType       = (NewPet)
-    private type addPetActionType              = addPetActionRequestType => Try[Any]
+    private type addPetActionType              = addPetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusaddPet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[NewPet]("application/json", "Invalid NewPet", maxLength)
@@ -49,6 +49,9 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
@@ -57,7 +60,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
 trait DashboardBase extends Controller with PlayBodyParsing {
     private type methodLevelActionRequestType       = (PetsGetTags, PetsGetLimit)
-    private type methodLevelActionType              = methodLevelActionRequestType => Try[Any]
+    private type methodLevelActionType              = methodLevelActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusmethodLevel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -89,11 +92,14 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type pathLevelGetActionRequestType       = (Long)
-    private type pathLevelGetActionType              = pathLevelGetActionRequestType => Try[Any]
+    private type pathLevelGetActionType              = pathLevelGetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspathLevelGet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -125,11 +131,14 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type pathLevelDeleteActionRequestType       = (Long)
-    private type pathLevelDeleteActionType              = pathLevelDeleteActionRequestType => Try[Any]
+    private type pathLevelDeleteActionType              = pathLevelDeleteActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspathLevelDelete: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -161,6 +170,9 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

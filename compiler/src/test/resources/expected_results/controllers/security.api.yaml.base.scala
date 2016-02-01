@@ -14,7 +14,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
 trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
     private type getPetsByIdActionRequestType       = (PetsIdGetId)
-    private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[Any]
+    private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetPetsById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -46,6 +46,9 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

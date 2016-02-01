@@ -14,7 +14,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
 trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private type getmeActionRequestType       = (Unit)
-    private type getmeActionType              = getmeActionRequestType => Try[Any]
+    private type getmeActionType              = getmeActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetme: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -39,11 +39,14 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getproductsActionRequestType       = (Double, Double)
-    private type getproductsActionType              = getproductsActionRequestType => Try[Any]
+    private type getproductsActionType              = getproductsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetproducts: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -75,11 +78,14 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getestimatesTimeActionRequestType       = (Double, Double, ProfilePicture, ProfilePicture)
-    private type getestimatesTimeActionType              = getestimatesTimeActionRequestType => Try[Any]
+    private type getestimatesTimeActionType              = getestimatesTimeActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetestimatesTime: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -111,11 +117,14 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getestimatesPriceActionRequestType       = (Double, Double, Double, Double)
-    private type getestimatesPriceActionType              = getestimatesPriceActionRequestType => Try[Any]
+    private type getestimatesPriceActionType              = getestimatesPriceActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetestimatesPrice: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -147,11 +156,14 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type gethistoryActionRequestType       = (ErrorCode, ErrorCode)
-    private type gethistoryActionType              = gethistoryActionRequestType => Try[Any]
+    private type gethistoryActionType              = gethistoryActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgethistory: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -183,6 +195,9 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

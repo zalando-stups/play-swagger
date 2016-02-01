@@ -1,6 +1,6 @@
 package object echo {
-    type `Test-pathIdGetResponses200` = Null
+    type Test_pathIdGetResponses200 = Null
     type PostName = Option[String]
-    type `Test-pathIdGetId` = String
+    type Test_pathIdGetId = String
     case class PostResponses200(name: PostName, year: PostName)
 }

@@ -14,7 +14,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
 trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private type findPetsActionRequestType       = (PetsGetTags, PetsGetLimit)
-    private type findPetsActionType              = findPetsActionRequestType => Try[Any]
+    private type findPetsActionType              = findPetsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusfindPets: PartialFunction[Throwable, Status] = { 
         case _: java.util.NoSuchElementException => Status(404)
@@ -48,11 +48,14 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type addPetActionRequestType       = (NewPet)
-    private type addPetActionType              = addPetActionRequestType => Try[Any]
+    private type addPetActionType              = addPetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusaddPet: PartialFunction[Throwable, Status] = { 
         case _: java.util.NoSuchElementException => Status(404)
@@ -89,11 +92,14 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type findPetByIdActionRequestType       = (Long)
-    private type findPetByIdActionType              = findPetByIdActionRequestType => Try[Any]
+    private type findPetByIdActionType              = findPetByIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusfindPetById: PartialFunction[Throwable, Status] = { 
         case _: java.util.NoSuchElementException => Status(404)
@@ -127,11 +133,14 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type deletePetActionRequestType       = (Long)
-    private type deletePetActionType              = deletePetActionRequestType => Try[Any]
+    private type deletePetActionType              = deletePetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = { 
         case _: java.util.NoSuchElementException => Status(404)
@@ -165,6 +174,9 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

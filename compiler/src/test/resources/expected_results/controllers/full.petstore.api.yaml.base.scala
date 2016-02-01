@@ -15,7 +15,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
 trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type findPetsByTagsActionRequestType       = (PetsFindByStatusGetStatus)
-    private type findPetsByTagsActionType              = findPetsByTagsActionRequestType => Try[Any]
+    private type findPetsByTagsActionType              = findPetsByTagsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusfindPetsByTags: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -52,11 +52,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type placeOrderActionRequestType       = (StoresOrderPostBody)
-    private type placeOrderActionType              = placeOrderActionRequestType => Try[Any]
+    private type placeOrderActionType              = placeOrderActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusplaceOrder: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -96,11 +99,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type createUserActionRequestType       = (UsersUsernamePutBody)
-    private type createUserActionType              = createUserActionRequestType => Try[Any]
+    private type createUserActionType              = createUserActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuscreateUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -137,11 +143,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type createUsersWithListInputActionRequestType       = (UsersCreateWithListPostBody)
-    private type createUsersWithListInputActionType              = createUsersWithListInputActionRequestType => Try[Any]
+    private type createUsersWithListInputActionType              = createUsersWithListInputActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuscreateUsersWithListInput: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -178,11 +187,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getUserByNameActionRequestType       = (String)
-    private type getUserByNameActionType              = getUserByNameActionRequestType => Try[Any]
+    private type getUserByNameActionType              = getUserByNameActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetUserByName: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -220,11 +232,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type updateUserActionRequestType       = (String, UsersUsernamePutBody)
-    private type updateUserActionType              = updateUserActionRequestType => Try[Any]
+    private type updateUserActionType              = updateUserActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusupdateUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -264,11 +279,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type deleteUserActionRequestType       = (String)
-    private type deleteUserActionType              = deleteUserActionRequestType => Try[Any]
+    private type deleteUserActionType              = deleteUserActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusdeleteUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -305,11 +323,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type updatePetActionRequestType       = (PetsPostBody)
-    private type updatePetActionType              = updatePetActionRequestType => Try[Any]
+    private type updatePetActionType              = updatePetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusupdatePet: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -350,11 +371,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type addPetActionRequestType       = (PetsPostBody)
-    private type addPetActionType              = addPetActionRequestType => Try[Any]
+    private type addPetActionType              = addPetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusaddPet: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -393,11 +417,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type createUsersWithArrayInputActionRequestType       = (UsersCreateWithListPostBody)
-    private type createUsersWithArrayInputActionType              = createUsersWithArrayInputActionRequestType => Try[Any]
+    private type createUsersWithArrayInputActionType              = createUsersWithArrayInputActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuscreateUsersWithArrayInput: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -434,11 +461,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getOrderByIdActionRequestType       = (String)
-    private type getOrderByIdActionType              = getOrderByIdActionRequestType => Try[Any]
+    private type getOrderByIdActionType              = getOrderByIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetOrderById: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -476,11 +506,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type deleteOrderActionRequestType       = (String)
-    private type deleteOrderActionType              = deleteOrderActionRequestType => Try[Any]
+    private type deleteOrderActionType              = deleteOrderActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusdeleteOrder: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -517,11 +550,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type logoutUserActionRequestType       = (Unit)
-    private type logoutUserActionType              = logoutUserActionRequestType => Try[Any]
+    private type logoutUserActionType              = logoutUserActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuslogoutUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -548,11 +584,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getPetByIdActionRequestType       = (Long)
-    private type getPetByIdActionType              = getPetByIdActionRequestType => Try[Any]
+    private type getPetByIdActionType              = getPetByIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetPetById: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -590,11 +629,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type updatePetWithFormActionRequestType       = (String, String, String)
-    private type updatePetWithFormActionType              = updatePetWithFormActionRequestType => Try[Any]
+    private type updatePetWithFormActionType              = updatePetWithFormActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusupdatePetWithForm: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -630,11 +672,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type deletePetActionRequestType       = (String, Long)
-    private type deletePetActionType              = deletePetActionRequestType => Try[Any]
+    private type deletePetActionType              = deletePetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -647,9 +692,9 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 400 -> anyToWritable[Null]
         )        
-        val api_key_either =
+        val api_key =
             fromHeaders[String]("api_key", request.headers.toMap)
-            (api_key_either) match {
+            (api_key) match {
                 case (Right(api_key)) =>
         
             val result =                
@@ -662,7 +707,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                 
             result
             case (_) =>
-                val msg = Seq(api_key_either).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                val msg = Seq(api_key).filter{_.isLeft}.map(_.left.get).mkString("\n")
                 BadRequest(msg)
             }
         
@@ -680,11 +725,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type findPetsByStatusActionRequestType       = (PetsFindByStatusGetStatus)
-    private type findPetsByStatusActionType              = findPetsByStatusActionRequestType => Try[Any]
+    private type findPetsByStatusActionType              = findPetsByStatusActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusfindPetsByStatus: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -721,11 +769,14 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type loginUserActionRequestType       = (OrderStatus, OrderStatus)
-    private type loginUserActionType              = loginUserActionRequestType => Try[Any]
+    private type loginUserActionType              = loginUserActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusloginUser: PartialFunction[Throwable, Status] = { 
         case _: java.lang.IllegalArgumentException => Status(405)
@@ -762,6 +813,9 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

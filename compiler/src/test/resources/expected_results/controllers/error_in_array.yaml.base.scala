@@ -13,7 +13,7 @@ import de.zalando.play.controllers.ArrayWrapper
 
 trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
     private type getschemaModelActionRequestType       = (ModelSchemaRoot)
-    private type getschemaModelActionType              = getschemaModelActionRequestType => Try[Any]
+    private type getschemaModelActionType              = getschemaModelActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetschemaModel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def getschemaModelParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[ModelSchemaRoot]("application/json", "Invalid ModelSchemaRoot", maxLength)
@@ -48,6 +48,9 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
