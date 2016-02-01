@@ -19,7 +19,7 @@ import {{import.name}}
 trait {{controller.base}} extends Controller with PlayBodyParsing {
     {{for m in controller.methods}}
     private type {{m.action_request_type}}       = ({{for v in m.validations}}{{for f in v.fields}}{{f.type_name}}{{if f.isNotLast}}, {{/if}}{{/for}}{{/for}}{{if m.has_no_validations}}Unit{{/if}})
-    private type {{m.action_type}}              = {{m.action_request_type}} => Try[Any]
+    private type {{m.action_type}}              = {{m.action_request_type}} => Try[(Int, Any)]
 
     private val {{m.error_to_status}}: PartialFunction[Throwable, Status] = {{if m.has_no_error_mappings}} PartialFunction.empty[Throwable, Status]{{/if}}
     {{if m.error_mappings}} { {{/if}}{{for mapping in m.error_mappings}}
@@ -81,6 +81,9 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
