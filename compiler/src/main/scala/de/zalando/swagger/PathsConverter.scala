@@ -98,7 +98,7 @@ trait HandlerGenerator extends StringUtil {
     handlerText <- getOrGenerateHandlerLine(operation, path, verb, url)
     parseResult = HandlerParser.parse(handlerText)
     handler <- if (parseResult.successful) Some(parseResult.get) else None
-  } yield handler.copy(parameters = params, packageName = handler.packageName)
+  } yield handler.copy(parameters = params)
 
   private def getOrGenerateHandlerLine(operation: Operation, path: PathItem, verb: String, callPath: Reference): Option[String] =
     operation.vendorExtensions.get(s"$keyPrefix-handler") orElse

@@ -15,7 +15,7 @@ import java.net.URLEncoder
 import play.api.http.Writeable
 
 import play.api.test.Helpers.{status => requestStatusCode_}
-import play.api.test.Helpers.{contentAsString => requestСontentAsString_}
+import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
 import Generators._
@@ -68,15 +68,12 @@ import Generators._
             )
         }
         def testValidInput({{if test.multiple_parameters}}input: ({{for p in test.multiple_parameters}}{{p.type}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}}{{p.name}}: {{p.type}}{{/for}}) = {
-
             {{if test.multiple_parameters}}
                 val ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
             {{/if}}
-
             {{for b in test.body_param}}
                 val parsed_{{b.body_parameter_name}} = parserConstructor("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
             {{/for}}
-
             val url = {{test.full_url}}
             val headers = Seq({{for header in test.headers}}"{{header.name}}" -> {{header.name}}{{/for}})
             val path = route(FakeRequest({{test.verb_name}}, url).withHeaders(headers:_*){{for b in test.body_param}}.withBody(parsed_{{b.body_parameter_name}}){{/for}}).get
@@ -87,9 +84,14 @@ import Generators._
             {{/for}}
             ){{else}}.empty[Int,Class[Any]]{{/if}}{{if m.default_result_type}}.withDefaultValue(classOf[{{m.default_result_type}}]){{/if}}
 
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
 
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
             ("given an URL: [" + url + "]" {{for b in test.body_param}}+ "and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: all(
-                parseResponseContent(requestСontentAsString_(path), requestContentType_(path), possibleResponseTypes(requestStatusCode_(path))) ?= true,
+                parsedApiResponse.isSuccess ?= true,
                 requestContentType_(path) ?= Some("{{test.expected_result_type}}"),
                 errors.isEmpty ?= true
             )
