@@ -140,7 +140,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "field_name" -> escape(camelize("\\.", param.simple)), // should be taken from the validation
       "type_name" -> commonTypeName,
       "parser_type" -> parserType,
-      "body_parser"  -> parser
+      "body_parser"  -> parser,
+      "real_name" -> param.simple
     )
   }
 

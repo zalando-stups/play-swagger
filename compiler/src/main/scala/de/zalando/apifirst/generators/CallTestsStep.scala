@@ -60,7 +60,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     call.handler.parameters.filter { p =>
       app.findParameter(p).place == ParameterPlace.HEADER
     }.map { p =>
-      Map("name" -> p.name.simple)
+      Map("name" -> p.name.simple, "parameter_name" -> ScalaName.escape(ScalaName.camelize("\\.", p.simple)))
     }
   }
 

@@ -42,11 +42,11 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
         val {{body.field_name}} = request.body
         {{/for}}
         {{for header in m.header_params}}
-        val {{header.field_name}}_either =
-            fromHeaders[{{header.type_name}}]("{{header.field_name}}", request.headers.toMap)
+        val {{header.field_name}} =
+            fromHeaders[{{header.type_name}}]("{{header.real_name}}", request.headers.toMap)
         {{/for}}
         {{if m.header_params}}
-            ({{for header in m.header_params}}{{header.field_name}}_either{{if header.isNotLast}}, {{/if}}{{/for}}) match {
+            ({{for header in m.header_params}}{{header.field_name}}{{if header.isNotLast}}, {{/if}}{{/for}}) match {
                 case ({{for header in m.header_params}}Right({{header.field_name}}){{if header.isNotLast}}, {{/if}}{{/for}}) =>
         {{/if}}
 
@@ -62,7 +62,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
             result
         {{if m.header_params}}
             case ({{for h in m.header_params}}_{{if h.isNotLast}}, {{/if}}{{/for}}) =>
-                val msg = Seq({{for h in m.header_params}}{{h.field_name}}_either{{if h.isNotLast}}, {{/if}}{{/for}}).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                val msg = Seq({{for h in m.header_params}}{{h.field_name}}{{if h.isNotLast}}, {{/if}}{{/for}}).filter{_.isLeft}.map(_.left.get).mkString("\n")
                 BadRequest(msg)
             }
         {{/if}}
