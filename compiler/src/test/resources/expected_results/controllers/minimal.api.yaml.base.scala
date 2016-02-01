@@ -1,4 +1,4 @@
-package minimal.api.yaml
+package admin
 
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http.Writeable
@@ -21,11 +21,11 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[Null]
         )        
-            val result = processValidindexRequest(f)()                
+            val result = processValidindexRequest(f)()(possibleWriters, indexResponseMimeType)                
             result
     }
 
-    private def processValidindexRequest[T <: Any](f: indexActionType)(request: indexActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidindexRequest[T <: Any](f: indexActionType)(request: indexActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusindex orElse defaultErrorMapping)(error)

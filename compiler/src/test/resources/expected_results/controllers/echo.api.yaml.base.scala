@@ -21,11 +21,11 @@ trait HandlerBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[Null]
         )        
-            val result = processValidmethodRequest(f)()                
+            val result = processValidmethodRequest(f)()(possibleWriters, methodResponseMimeType)                
             result
     }
 
-    private def processValidmethodRequest[T <: Any](f: methodActionType)(request: methodActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidmethodRequest[T <: Any](f: methodActionType)(request: methodActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusmethod orElse defaultErrorMapping)(error)
@@ -59,7 +59,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new PostValidator(name, year).errors match {
-                        case e if e.isEmpty => processValidpostRequest(f)((name, year), possibleWriters, postResponseMimeType)
+                        case e if e.isEmpty => processValidpostRequest(f)((name, year))(possibleWriters, postResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
                             BadRequest(l)
@@ -68,7 +68,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspost orElse defaultErrorMapping)(error)
@@ -98,7 +98,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new Test_pathIdGetValidator(id).errors match {
-                        case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id), possibleWriters, gettest_pathByIdResponseMimeType)
+                        case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id))(possibleWriters, gettest_pathByIdResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettest_pathByIdResponseMimeType)
                             BadRequest(l)
@@ -107,7 +107,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgettest_pathByIdRequest[T <: Any](f: gettest_pathByIdActionType)(request: gettest_pathByIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettest_pathByIdRequest[T <: Any](f: gettest_pathByIdActionType)(request: gettest_pathByIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettest_pathById orElse defaultErrorMapping)(error)

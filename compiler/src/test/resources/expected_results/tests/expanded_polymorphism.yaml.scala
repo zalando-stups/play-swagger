@@ -175,67 +175,6 @@ import Generators._
     }
 
 
-    "GET /api/pets/{id}" should {
-        def testInvalidInput(id: Long) = {
-
-
-            val url = s"""/api/pets/${toPath(id)}"""
-            val headers = Seq()
-
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsIdGetValidator(id).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
-        }
-        def testValidInput(id: Long) = {            
-            val url = s"""/api/pets/${toPath(id)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsIdGetValidator(id).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
-        }
-        "discard invalid data" in new WithApplication {
-            val genInputs = for {
-                    id <- LongGenerator
-                } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdGetValidator(id).errors.nonEmpty
-            }
-            val props = forAll(inputs) { i => testInvalidInput(i) }
-            checkResult(props)
-        }
-        "do something with valid data" in new WithApplication {
-            val genInputs = for {
-                id <- LongGenerator
-            } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdGetValidator(id).errors.isEmpty
-            }
-            val props = forAll(inputs) { i => testValidInput(i) }
-            checkResult(props)
-        }
-
-    }
-
-
     "DELETE /api/pets/{id}" should {
         def testInvalidInput(id: Long) = {
 

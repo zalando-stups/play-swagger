@@ -25,7 +25,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[ErrorModel])        
             val result =                
                     new PetsIdGetValidator(id).errors match {
-                        case e if e.isEmpty => processValidgetPetsByIdRequest(f)((id), possibleWriters, getPetsByIdResponseMimeType)
+                        case e if e.isEmpty => processValidgetPetsByIdRequest(f)((id))(possibleWriters, getPetsByIdResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetsByIdResponseMimeType)
                             BadRequest(l)
@@ -34,7 +34,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetPetsByIdRequest[T <: Any](f: getPetsByIdActionType)(request: getPetsByIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetPetsByIdRequest[T <: Any](f: getPetsByIdActionType)(request: getPetsByIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetPetsById orElse defaultErrorMapping)(error)

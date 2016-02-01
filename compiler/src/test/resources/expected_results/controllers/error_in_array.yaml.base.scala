@@ -27,7 +27,7 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new SchemaModelGetValidator(root).errors match {
-                        case e if e.isEmpty => processValidgetschemaModelRequest(f)((root), possibleWriters, getschemaModelResponseMimeType)
+                        case e if e.isEmpty => processValidgetschemaModelRequest(f)((root))(possibleWriters, getschemaModelResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getschemaModelResponseMimeType)
                             BadRequest(l)
@@ -36,7 +36,7 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetschemaModelRequest[T <: Any](f: getschemaModelActionType)(request: getschemaModelActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetschemaModelRequest[T <: Any](f: getschemaModelActionType)(request: getschemaModelActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetschemaModel orElse defaultErrorMapping)(error)

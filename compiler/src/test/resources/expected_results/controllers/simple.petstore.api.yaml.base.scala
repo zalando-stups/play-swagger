@@ -28,7 +28,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new PetsPostValidator(pet).errors match {
-                        case e if e.isEmpty => processValidaddPetRequest(f)((pet), possibleWriters, addPetResponseMimeType)
+                        case e if e.isEmpty => processValidaddPetRequest(f)((pet))(possibleWriters, addPetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(addPetResponseMimeType)
                             BadRequest(l)
@@ -37,7 +37,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
@@ -71,7 +71,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[ErrorModel])        
             val result =                
                     new PetsGetValidator(tags, limit).errors match {
-                        case e if e.isEmpty => processValidmethodLevelRequest(f)((tags, limit), possibleWriters, methodLevelResponseMimeType)
+                        case e if e.isEmpty => processValidmethodLevelRequest(f)((tags, limit))(possibleWriters, methodLevelResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(methodLevelResponseMimeType)
                             BadRequest(l)
@@ -80,7 +80,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidmethodLevelRequest[T <: Any](f: methodLevelActionType)(request: methodLevelActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidmethodLevelRequest[T <: Any](f: methodLevelActionType)(request: methodLevelActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusmethodLevel orElse defaultErrorMapping)(error)
@@ -110,7 +110,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[ErrorModel])        
             val result =                
                     new PetsIdGetValidator(id).errors match {
-                        case e if e.isEmpty => processValidpathLevelGetRequest(f)((id), possibleWriters, pathLevelGetResponseMimeType)
+                        case e if e.isEmpty => processValidpathLevelGetRequest(f)((id))(possibleWriters, pathLevelGetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(pathLevelGetResponseMimeType)
                             BadRequest(l)
@@ -119,7 +119,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpathLevelGetRequest[T <: Any](f: pathLevelGetActionType)(request: pathLevelGetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpathLevelGetRequest[T <: Any](f: pathLevelGetActionType)(request: pathLevelGetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspathLevelGet orElse defaultErrorMapping)(error)
@@ -149,7 +149,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[ErrorModel])        
             val result =                
                     new PetsIdDeleteValidator(id).errors match {
-                        case e if e.isEmpty => processValidpathLevelDeleteRequest(f)((id), possibleWriters, pathLevelDeleteResponseMimeType)
+                        case e if e.isEmpty => processValidpathLevelDeleteRequest(f)((id))(possibleWriters, pathLevelDeleteResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(pathLevelDeleteResponseMimeType)
                             BadRequest(l)
@@ -158,7 +158,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpathLevelDeleteRequest[T <: Any](f: pathLevelDeleteActionType)(request: pathLevelDeleteActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpathLevelDeleteRequest[T <: Any](f: pathLevelDeleteActionType)(request: pathLevelDeleteActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspathLevelDelete orElse defaultErrorMapping)(error)

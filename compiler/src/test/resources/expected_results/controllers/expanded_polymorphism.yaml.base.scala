@@ -27,7 +27,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[Error])        
             val result =                
                     new PetsGetValidator(tags, limit).errors match {
-                        case e if e.isEmpty => processValidfindPetsRequest(f)((tags, limit), possibleWriters, findPetsResponseMimeType)
+                        case e if e.isEmpty => processValidfindPetsRequest(f)((tags, limit))(possibleWriters, findPetsResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetsResponseMimeType)
                             BadRequest(l)
@@ -36,7 +36,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidfindPetsRequest[T <: Any](f: findPetsActionType)(request: findPetsActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidfindPetsRequest[T <: Any](f: findPetsActionType)(request: findPetsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusfindPets orElse defaultErrorMapping)(error)
@@ -71,7 +71,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new PetsPostValidator(pet).errors match {
-                        case e if e.isEmpty => processValidaddPetRequest(f)((pet), possibleWriters, addPetResponseMimeType)
+                        case e if e.isEmpty => processValidaddPetRequest(f)((pet))(possibleWriters, addPetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(addPetResponseMimeType)
                             BadRequest(l)
@@ -80,54 +80,13 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
                 writers.get(code).map { writer =>
                     implicit val addPetWritableJson = writer(mimeType)
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
-    }
-    private type findPetByIdActionRequestType       = (Long)
-    private type findPetByIdActionType              = findPetByIdActionRequestType => Try[(Int, Any)]
-
-    private val errorToStatusfindPetById: PartialFunction[Throwable, Status] = { 
-        case _: java.util.NoSuchElementException => Status(404)
-     } 
-
-    def findPetByIdAction = (f: findPetByIdActionType) => (id: Long) => Action {        val findPetByIdResponseMimeType    = "application/json"
-
-        val possibleWriters = Map(
-                200 -> anyToWritable[Pet]
-        ).withDefaultValue(anyToWritable[Error])        
-            val result =                
-                    new PetsIdGetValidator(id).errors match {
-                        case e if e.isEmpty => processValidfindPetByIdRequest(f)((id), possibleWriters, findPetByIdResponseMimeType)
-                        case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetByIdResponseMimeType)
-                            BadRequest(l)
-                    }
-                
-            result
-    }
-
-    private def processValidfindPetByIdRequest[T <: Any](f: findPetByIdActionType)(request: findPetByIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusfindPetById orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val findPetByIdWritableJson = writer(mimeType)
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -153,7 +112,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[Error])        
             val result =                
                     new PetsIdDeleteValidator(id).errors match {
-                        case e if e.isEmpty => processValiddeletePetRequest(f)((id), possibleWriters, deletePetResponseMimeType)
+                        case e if e.isEmpty => processValiddeletePetRequest(f)((id))(possibleWriters, deletePetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletePetResponseMimeType)
                             BadRequest(l)
@@ -162,7 +121,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValiddeletePetRequest[T <: Any](f: deletePetActionType)(request: deletePetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeletePetRequest[T <: Any](f: deletePetActionType)(request: deletePetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)

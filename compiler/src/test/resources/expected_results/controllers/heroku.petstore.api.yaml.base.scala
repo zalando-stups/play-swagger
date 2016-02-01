@@ -23,7 +23,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new GetValidator(limit).errors match {
-                        case e if e.isEmpty => processValidgetRequest(f)((limit), possibleWriters, getResponseMimeType)
+                        case e if e.isEmpty => processValidgetRequest(f)((limit))(possibleWriters, getResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getResponseMimeType)
                             BadRequest(l)
@@ -32,7 +32,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusget orElse defaultErrorMapping)(error)
@@ -65,7 +65,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new PutValidator(pet).errors match {
-                        case e if e.isEmpty => processValidputRequest(f)((pet), possibleWriters, putResponseMimeType)
+                        case e if e.isEmpty => processValidputRequest(f)((pet))(possibleWriters, putResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(putResponseMimeType)
                             BadRequest(l)
@@ -74,7 +74,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidputRequest[T <: Any](f: putActionType)(request: putActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidputRequest[T <: Any](f: putActionType)(request: putActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusput orElse defaultErrorMapping)(error)
@@ -107,7 +107,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new PostValidator(pet).errors match {
-                        case e if e.isEmpty => processValidpostRequest(f)((pet), possibleWriters, postResponseMimeType)
+                        case e if e.isEmpty => processValidpostRequest(f)((pet))(possibleWriters, postResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
                             BadRequest(l)
@@ -116,7 +116,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspost orElse defaultErrorMapping)(error)
@@ -146,7 +146,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new PetIdGetValidator(petId).errors match {
-                        case e if e.isEmpty => processValidgetbyPetIdRequest(f)((petId), possibleWriters, getbyPetIdResponseMimeType)
+                        case e if e.isEmpty => processValidgetbyPetIdRequest(f)((petId))(possibleWriters, getbyPetIdResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getbyPetIdResponseMimeType)
                             BadRequest(l)
@@ -155,7 +155,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetbyPetIdRequest[T <: Any](f: getbyPetIdActionType)(request: getbyPetIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetbyPetIdRequest[T <: Any](f: getbyPetIdActionType)(request: getbyPetIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetbyPetId orElse defaultErrorMapping)(error)

@@ -23,11 +23,11 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[Profile]
         ).withDefaultValue(anyToWritable[Error])        
-            val result = processValidgetmeRequest(f)()                
+            val result = processValidgetmeRequest(f)()(possibleWriters, getmeResponseMimeType)                
             result
     }
 
-    private def processValidgetmeRequest[T <: Any](f: getmeActionType)(request: getmeActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmeRequest[T <: Any](f: getmeActionType)(request: getmeActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetme orElse defaultErrorMapping)(error)
@@ -57,7 +57,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[Error])        
             val result =                
                     new ProductsGetValidator(latitude, longitude).errors match {
-                        case e if e.isEmpty => processValidgetproductsRequest(f)((latitude, longitude), possibleWriters, getproductsResponseMimeType)
+                        case e if e.isEmpty => processValidgetproductsRequest(f)((latitude, longitude))(possibleWriters, getproductsResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getproductsResponseMimeType)
                             BadRequest(l)
@@ -66,7 +66,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetproductsRequest[T <: Any](f: getproductsActionType)(request: getproductsActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetproductsRequest[T <: Any](f: getproductsActionType)(request: getproductsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetproducts orElse defaultErrorMapping)(error)
@@ -96,7 +96,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[Error])        
             val result =                
                     new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors match {
-                        case e if e.isEmpty => processValidgetestimatesTimeRequest(f)((start_latitude, start_longitude, customer_uuid, product_id), possibleWriters, getestimatesTimeResponseMimeType)
+                        case e if e.isEmpty => processValidgetestimatesTimeRequest(f)((start_latitude, start_longitude, customer_uuid, product_id))(possibleWriters, getestimatesTimeResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getestimatesTimeResponseMimeType)
                             BadRequest(l)
@@ -105,7 +105,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetestimatesTimeRequest[T <: Any](f: getestimatesTimeActionType)(request: getestimatesTimeActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetestimatesTimeRequest[T <: Any](f: getestimatesTimeActionType)(request: getestimatesTimeActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetestimatesTime orElse defaultErrorMapping)(error)
@@ -135,7 +135,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[Error])        
             val result =                
                     new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors match {
-                        case e if e.isEmpty => processValidgetestimatesPriceRequest(f)((start_latitude, start_longitude, end_latitude, end_longitude), possibleWriters, getestimatesPriceResponseMimeType)
+                        case e if e.isEmpty => processValidgetestimatesPriceRequest(f)((start_latitude, start_longitude, end_latitude, end_longitude))(possibleWriters, getestimatesPriceResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getestimatesPriceResponseMimeType)
                             BadRequest(l)
@@ -144,7 +144,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetestimatesPriceRequest[T <: Any](f: getestimatesPriceActionType)(request: getestimatesPriceActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetestimatesPriceRequest[T <: Any](f: getestimatesPriceActionType)(request: getestimatesPriceActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetestimatesPrice orElse defaultErrorMapping)(error)
@@ -174,7 +174,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[Error])        
             val result =                
                     new HistoryGetValidator(offset, limit).errors match {
-                        case e if e.isEmpty => processValidgethistoryRequest(f)((offset, limit), possibleWriters, gethistoryResponseMimeType)
+                        case e if e.isEmpty => processValidgethistoryRequest(f)((offset, limit))(possibleWriters, gethistoryResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gethistoryResponseMimeType)
                             BadRequest(l)
@@ -183,7 +183,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgethistoryRequest[T <: Any](f: gethistoryActionType)(request: gethistoryActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgethistoryRequest[T <: Any](f: gethistoryActionType)(request: gethistoryActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgethistory orElse defaultErrorMapping)(error)

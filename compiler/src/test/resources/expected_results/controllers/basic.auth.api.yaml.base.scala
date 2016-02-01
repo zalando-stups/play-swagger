@@ -21,11 +21,11 @@ trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[Null]
         )        
-            val result = processValidgetRequest(f)()                
+            val result = processValidgetRequest(f)()(possibleWriters, getResponseMimeType)                
             result
     }
 
-    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusget orElse defaultErrorMapping)(error)

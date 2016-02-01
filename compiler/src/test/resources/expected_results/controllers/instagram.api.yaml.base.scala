@@ -24,7 +24,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaMedia_idLikesGetValidator(media_id).errors match {
-                        case e if e.isEmpty => processValidgetmediaByMedia_idLikesRequest(f)((media_id), possibleWriters, getmediaByMedia_idLikesResponseMimeType)
+                        case e if e.isEmpty => processValidgetmediaByMedia_idLikesRequest(f)((media_id))(possibleWriters, getmediaByMedia_idLikesResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaByMedia_idLikesResponseMimeType)
                             BadRequest(l)
@@ -33,7 +33,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetmediaByMedia_idLikesRequest[T <: Any](f: getmediaByMedia_idLikesActionType)(request: getmediaByMedia_idLikesActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByMedia_idLikesRequest[T <: Any](f: getmediaByMedia_idLikesActionType)(request: getmediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByMedia_idLikes orElse defaultErrorMapping)(error)
@@ -63,7 +63,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaMedia_idLikesPostValidator(media_id).errors match {
-                        case e if e.isEmpty => processValidpostmediaByMedia_idLikesRequest(f)((media_id), possibleWriters, postmediaByMedia_idLikesResponseMimeType)
+                        case e if e.isEmpty => processValidpostmediaByMedia_idLikesRequest(f)((media_id))(possibleWriters, postmediaByMedia_idLikesResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postmediaByMedia_idLikesResponseMimeType)
                             BadRequest(l)
@@ -72,7 +72,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpostmediaByMedia_idLikesRequest[T <: Any](f: postmediaByMedia_idLikesActionType)(request: postmediaByMedia_idLikesActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostmediaByMedia_idLikesRequest[T <: Any](f: postmediaByMedia_idLikesActionType)(request: postmediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspostmediaByMedia_idLikes orElse defaultErrorMapping)(error)
@@ -102,7 +102,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaMedia_idLikesDeleteValidator(media_id).errors match {
-                        case e if e.isEmpty => processValiddeletemediaByMedia_idLikesRequest(f)((media_id), possibleWriters, deletemediaByMedia_idLikesResponseMimeType)
+                        case e if e.isEmpty => processValiddeletemediaByMedia_idLikesRequest(f)((media_id))(possibleWriters, deletemediaByMedia_idLikesResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletemediaByMedia_idLikesResponseMimeType)
                             BadRequest(l)
@@ -111,7 +111,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValiddeletemediaByMedia_idLikesRequest[T <: Any](f: deletemediaByMedia_idLikesActionType)(request: deletemediaByMedia_idLikesActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeletemediaByMedia_idLikesRequest[T <: Any](f: deletemediaByMedia_idLikesActionType)(request: deletemediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeletemediaByMedia_idLikes orElse defaultErrorMapping)(error)
@@ -141,7 +141,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersUser_idFollowsGetValidator(user_id).errors match {
-                        case e if e.isEmpty => processValidgetusersByUser_idFollowsRequest(f)((user_id), possibleWriters, getusersByUser_idFollowsResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersByUser_idFollowsRequest(f)((user_id))(possibleWriters, getusersByUser_idFollowsResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersByUser_idFollowsResponseMimeType)
                             BadRequest(l)
@@ -150,7 +150,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersByUser_idFollowsRequest[T <: Any](f: getusersByUser_idFollowsActionType)(request: getusersByUser_idFollowsActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersByUser_idFollowsRequest[T <: Any](f: getusersByUser_idFollowsActionType)(request: getusersByUser_idFollowsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersByUser_idFollows orElse defaultErrorMapping)(error)
@@ -180,7 +180,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new LocationsLocation_idGetValidator(location_id).errors match {
-                        case e if e.isEmpty => processValidgetlocationsByLocation_idRequest(f)((location_id), possibleWriters, getlocationsByLocation_idResponseMimeType)
+                        case e if e.isEmpty => processValidgetlocationsByLocation_idRequest(f)((location_id))(possibleWriters, getlocationsByLocation_idResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getlocationsByLocation_idResponseMimeType)
                             BadRequest(l)
@@ -189,7 +189,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetlocationsByLocation_idRequest[T <: Any](f: getlocationsByLocation_idActionType)(request: getlocationsByLocation_idActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetlocationsByLocation_idRequest[T <: Any](f: getlocationsByLocation_idActionType)(request: getlocationsByLocation_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetlocationsByLocation_id orElse defaultErrorMapping)(error)
@@ -219,7 +219,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersSearchGetValidator(q, count).errors match {
-                        case e if e.isEmpty => processValidgetusersSearchRequest(f)((q, count), possibleWriters, getusersSearchResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersSearchRequest(f)((q, count))(possibleWriters, getusersSearchResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersSearchResponseMimeType)
                             BadRequest(l)
@@ -228,7 +228,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersSearchRequest[T <: Any](f: getusersSearchActionType)(request: getusersSearchActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSearchRequest[T <: Any](f: getusersSearchActionType)(request: getusersSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSearch orElse defaultErrorMapping)(error)
@@ -258,7 +258,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersSelfMediaLikedGetValidator(count, max_like_id).errors match {
-                        case e if e.isEmpty => processValidgetusersSelfMediaLikedRequest(f)((count, max_like_id), possibleWriters, getusersSelfMediaLikedResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersSelfMediaLikedRequest(f)((count, max_like_id))(possibleWriters, getusersSelfMediaLikedResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersSelfMediaLikedResponseMimeType)
                             BadRequest(l)
@@ -267,7 +267,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersSelfMediaLikedRequest[T <: Any](f: getusersSelfMediaLikedActionType)(request: getusersSelfMediaLikedActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfMediaLikedRequest[T <: Any](f: getusersSelfMediaLikedActionType)(request: getusersSelfMediaLikedActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfMediaLiked orElse defaultErrorMapping)(error)
@@ -297,7 +297,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new TagsTag_nameGetValidator(tag_name).errors match {
-                        case e if e.isEmpty => processValidgettagsByTag_nameRequest(f)((tag_name), possibleWriters, gettagsByTag_nameResponseMimeType)
+                        case e if e.isEmpty => processValidgettagsByTag_nameRequest(f)((tag_name))(possibleWriters, gettagsByTag_nameResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettagsByTag_nameResponseMimeType)
                             BadRequest(l)
@@ -306,7 +306,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgettagsByTag_nameRequest[T <: Any](f: gettagsByTag_nameActionType)(request: gettagsByTag_nameActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettagsByTag_nameRequest[T <: Any](f: gettagsByTag_nameActionType)(request: gettagsByTag_nameActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettagsByTag_name orElse defaultErrorMapping)(error)
@@ -336,7 +336,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new TagsSearchGetValidator(q).errors match {
-                        case e if e.isEmpty => processValidgettagsSearchRequest(f)((q), possibleWriters, gettagsSearchResponseMimeType)
+                        case e if e.isEmpty => processValidgettagsSearchRequest(f)((q))(possibleWriters, gettagsSearchResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettagsSearchResponseMimeType)
                             BadRequest(l)
@@ -345,7 +345,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgettagsSearchRequest[T <: Any](f: gettagsSearchActionType)(request: gettagsSearchActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettagsSearchRequest[T <: Any](f: gettagsSearchActionType)(request: gettagsSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettagsSearch orElse defaultErrorMapping)(error)
@@ -375,7 +375,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersUser_idFollowed_byGetValidator(user_id).errors match {
-                        case e if e.isEmpty => processValidgetusersByUser_idFollowed_byRequest(f)((user_id), possibleWriters, getusersByUser_idFollowed_byResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersByUser_idFollowed_byRequest(f)((user_id))(possibleWriters, getusersByUser_idFollowed_byResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersByUser_idFollowed_byResponseMimeType)
                             BadRequest(l)
@@ -384,7 +384,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersByUser_idFollowed_byRequest[T <: Any](f: getusersByUser_idFollowed_byActionType)(request: getusersByUser_idFollowed_byActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersByUser_idFollowed_byRequest[T <: Any](f: getusersByUser_idFollowed_byActionType)(request: getusersByUser_idFollowed_byActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersByUser_idFollowed_by orElse defaultErrorMapping)(error)
@@ -414,7 +414,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaMedia_idCommentsGetValidator(media_id).errors match {
-                        case e if e.isEmpty => processValidgetmediaByMedia_idCommentsRequest(f)((media_id), possibleWriters, getmediaByMedia_idCommentsResponseMimeType)
+                        case e if e.isEmpty => processValidgetmediaByMedia_idCommentsRequest(f)((media_id))(possibleWriters, getmediaByMedia_idCommentsResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaByMedia_idCommentsResponseMimeType)
                             BadRequest(l)
@@ -423,7 +423,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetmediaByMedia_idCommentsRequest[T <: Any](f: getmediaByMedia_idCommentsActionType)(request: getmediaByMedia_idCommentsActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByMedia_idCommentsRequest[T <: Any](f: getmediaByMedia_idCommentsActionType)(request: getmediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByMedia_idComments orElse defaultErrorMapping)(error)
@@ -456,7 +456,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new MediaMedia_idCommentsPostValidator(media_id, tEXT).errors match {
-                        case e if e.isEmpty => processValidpostmediaByMedia_idCommentsRequest(f)((media_id, tEXT), possibleWriters, postmediaByMedia_idCommentsResponseMimeType)
+                        case e if e.isEmpty => processValidpostmediaByMedia_idCommentsRequest(f)((media_id, tEXT))(possibleWriters, postmediaByMedia_idCommentsResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postmediaByMedia_idCommentsResponseMimeType)
                             BadRequest(l)
@@ -465,7 +465,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpostmediaByMedia_idCommentsRequest[T <: Any](f: postmediaByMedia_idCommentsActionType)(request: postmediaByMedia_idCommentsActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostmediaByMedia_idCommentsRequest[T <: Any](f: postmediaByMedia_idCommentsActionType)(request: postmediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspostmediaByMedia_idComments orElse defaultErrorMapping)(error)
@@ -495,7 +495,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaMedia_idCommentsDeleteValidator(media_id).errors match {
-                        case e if e.isEmpty => processValiddeletemediaByMedia_idCommentsRequest(f)((media_id), possibleWriters, deletemediaByMedia_idCommentsResponseMimeType)
+                        case e if e.isEmpty => processValiddeletemediaByMedia_idCommentsRequest(f)((media_id))(possibleWriters, deletemediaByMedia_idCommentsResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletemediaByMedia_idCommentsResponseMimeType)
                             BadRequest(l)
@@ -504,7 +504,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValiddeletemediaByMedia_idCommentsRequest[T <: Any](f: deletemediaByMedia_idCommentsActionType)(request: deletemediaByMedia_idCommentsActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeletemediaByMedia_idCommentsRequest[T <: Any](f: deletemediaByMedia_idCommentsActionType)(request: deletemediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeletemediaByMedia_idComments orElse defaultErrorMapping)(error)
@@ -534,7 +534,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new TagsTag_nameMediaRecentGetValidator(tag_name).errors match {
-                        case e if e.isEmpty => processValidgettagsByTag_nameMediaRecentRequest(f)((tag_name), possibleWriters, gettagsByTag_nameMediaRecentResponseMimeType)
+                        case e if e.isEmpty => processValidgettagsByTag_nameMediaRecentRequest(f)((tag_name))(possibleWriters, gettagsByTag_nameMediaRecentResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettagsByTag_nameMediaRecentResponseMimeType)
                             BadRequest(l)
@@ -543,7 +543,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgettagsByTag_nameMediaRecentRequest[T <: Any](f: gettagsByTag_nameMediaRecentActionType)(request: gettagsByTag_nameMediaRecentActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettagsByTag_nameMediaRecentRequest[T <: Any](f: gettagsByTag_nameMediaRecentActionType)(request: gettagsByTag_nameMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettagsByTag_nameMediaRecent orElse defaultErrorMapping)(error)
@@ -576,7 +576,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new UsersUser_idRelationshipPostValidator(user_id, action).errors match {
-                        case e if e.isEmpty => processValidpostusersByUser_idRelationshipRequest(f)((user_id, action), possibleWriters, postusersByUser_idRelationshipResponseMimeType)
+                        case e if e.isEmpty => processValidpostusersByUser_idRelationshipRequest(f)((user_id, action))(possibleWriters, postusersByUser_idRelationshipResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postusersByUser_idRelationshipResponseMimeType)
                             BadRequest(l)
@@ -585,7 +585,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpostusersByUser_idRelationshipRequest[T <: Any](f: postusersByUser_idRelationshipActionType)(request: postusersByUser_idRelationshipActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostusersByUser_idRelationshipRequest[T <: Any](f: postusersByUser_idRelationshipActionType)(request: postusersByUser_idRelationshipActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspostusersByUser_idRelationship orElse defaultErrorMapping)(error)
@@ -615,7 +615,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersSelfFeedGetValidator(count, max_id, min_id).errors match {
-                        case e if e.isEmpty => processValidgetusersSelfFeedRequest(f)((count, max_id, min_id), possibleWriters, getusersSelfFeedResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersSelfFeedRequest(f)((count, max_id, min_id))(possibleWriters, getusersSelfFeedResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersSelfFeedResponseMimeType)
                             BadRequest(l)
@@ -624,7 +624,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersSelfFeedRequest[T <: Any](f: getusersSelfFeedActionType)(request: getusersSelfFeedActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfFeedRequest[T <: Any](f: getusersSelfFeedActionType)(request: getusersSelfFeedActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfFeed orElse defaultErrorMapping)(error)
@@ -654,7 +654,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersUser_idGetValidator(user_id).errors match {
-                        case e if e.isEmpty => processValidgetusersByUser_idRequest(f)((user_id), possibleWriters, getusersByUser_idResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersByUser_idRequest(f)((user_id))(possibleWriters, getusersByUser_idResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersByUser_idResponseMimeType)
                             BadRequest(l)
@@ -663,7 +663,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersByUser_idRequest[T <: Any](f: getusersByUser_idActionType)(request: getusersByUser_idActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersByUser_idRequest[T <: Any](f: getusersByUser_idActionType)(request: getusersByUser_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersByUser_id orElse defaultErrorMapping)(error)
@@ -693,7 +693,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaSearchGetValidator(mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT).errors match {
-                        case e if e.isEmpty => processValidgetmediaSearchRequest(f)((mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT), possibleWriters, getmediaSearchResponseMimeType)
+                        case e if e.isEmpty => processValidgetmediaSearchRequest(f)((mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT))(possibleWriters, getmediaSearchResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaSearchResponseMimeType)
                             BadRequest(l)
@@ -702,7 +702,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetmediaSearchRequest[T <: Any](f: getmediaSearchActionType)(request: getmediaSearchActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaSearchRequest[T <: Any](f: getmediaSearchActionType)(request: getmediaSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaSearch orElse defaultErrorMapping)(error)
@@ -732,7 +732,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new GeographiesGeo_idMediaRecentGetValidator(geo_id, count, min_id).errors match {
-                        case e if e.isEmpty => processValidgetgeographiesByGeo_idMediaRecentRequest(f)((geo_id, count, min_id), possibleWriters, getgeographiesByGeo_idMediaRecentResponseMimeType)
+                        case e if e.isEmpty => processValidgetgeographiesByGeo_idMediaRecentRequest(f)((geo_id, count, min_id))(possibleWriters, getgeographiesByGeo_idMediaRecentResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getgeographiesByGeo_idMediaRecentResponseMimeType)
                             BadRequest(l)
@@ -741,7 +741,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetgeographiesByGeo_idMediaRecentRequest[T <: Any](f: getgeographiesByGeo_idMediaRecentActionType)(request: getgeographiesByGeo_idMediaRecentActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetgeographiesByGeo_idMediaRecentRequest[T <: Any](f: getgeographiesByGeo_idMediaRecentActionType)(request: getgeographiesByGeo_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetgeographiesByGeo_idMediaRecent orElse defaultErrorMapping)(error)
@@ -771,7 +771,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaShortcodeGetValidator(shortcode).errors match {
-                        case e if e.isEmpty => processValidgetmediaByShortcodeRequest(f)((shortcode), possibleWriters, getmediaByShortcodeResponseMimeType)
+                        case e if e.isEmpty => processValidgetmediaByShortcodeRequest(f)((shortcode))(possibleWriters, getmediaByShortcodeResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaByShortcodeResponseMimeType)
                             BadRequest(l)
@@ -780,7 +780,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetmediaByShortcodeRequest[T <: Any](f: getmediaByShortcodeActionType)(request: getmediaByShortcodeActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByShortcodeRequest[T <: Any](f: getmediaByShortcodeActionType)(request: getmediaByShortcodeActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByShortcode orElse defaultErrorMapping)(error)
@@ -810,7 +810,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new LocationsSearchGetValidator(foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng).errors match {
-                        case e if e.isEmpty => processValidgetlocationsSearchRequest(f)((foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng), possibleWriters, getlocationsSearchResponseMimeType)
+                        case e if e.isEmpty => processValidgetlocationsSearchRequest(f)((foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng))(possibleWriters, getlocationsSearchResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getlocationsSearchResponseMimeType)
                             BadRequest(l)
@@ -819,7 +819,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetlocationsSearchRequest[T <: Any](f: getlocationsSearchActionType)(request: getlocationsSearchActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetlocationsSearchRequest[T <: Any](f: getlocationsSearchActionType)(request: getlocationsSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetlocationsSearch orElse defaultErrorMapping)(error)
@@ -847,11 +847,11 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[UsersSelfRequested_byGetResponses200]
         )        
-            val result = processValidgetusersSelfRequested_byRequest(f)()                
+            val result = processValidgetusersSelfRequested_byRequest(f)()(possibleWriters, getusersSelfRequested_byResponseMimeType)                
             result
     }
 
-    private def processValidgetusersSelfRequested_byRequest[T <: Any](f: getusersSelfRequested_byActionType)(request: getusersSelfRequested_byActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfRequested_byRequest[T <: Any](f: getusersSelfRequested_byActionType)(request: getusersSelfRequested_byActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfRequested_by orElse defaultErrorMapping)(error)
@@ -881,7 +881,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaMedia_idGetValidator(media_id).errors match {
-                        case e if e.isEmpty => processValidgetmediaByMedia_idRequest(f)((media_id), possibleWriters, getmediaByMedia_idResponseMimeType)
+                        case e if e.isEmpty => processValidgetmediaByMedia_idRequest(f)((media_id))(possibleWriters, getmediaByMedia_idResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaByMedia_idResponseMimeType)
                             BadRequest(l)
@@ -890,7 +890,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetmediaByMedia_idRequest[T <: Any](f: getmediaByMedia_idActionType)(request: getmediaByMedia_idActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByMedia_idRequest[T <: Any](f: getmediaByMedia_idActionType)(request: getmediaByMedia_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByMedia_id orElse defaultErrorMapping)(error)
@@ -920,7 +920,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new LocationsLocation_idMediaRecentGetValidator(location_id, max_timestamp, min_timestamp, min_id, max_id).errors match {
-                        case e if e.isEmpty => processValidgetlocationsByLocation_idMediaRecentRequest(f)((location_id, max_timestamp, min_timestamp, min_id, max_id), possibleWriters, getlocationsByLocation_idMediaRecentResponseMimeType)
+                        case e if e.isEmpty => processValidgetlocationsByLocation_idMediaRecentRequest(f)((location_id, max_timestamp, min_timestamp, min_id, max_id))(possibleWriters, getlocationsByLocation_idMediaRecentResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getlocationsByLocation_idMediaRecentResponseMimeType)
                             BadRequest(l)
@@ -929,7 +929,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetlocationsByLocation_idMediaRecentRequest[T <: Any](f: getlocationsByLocation_idMediaRecentActionType)(request: getlocationsByLocation_idMediaRecentActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetlocationsByLocation_idMediaRecentRequest[T <: Any](f: getlocationsByLocation_idMediaRecentActionType)(request: getlocationsByLocation_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetlocationsByLocation_idMediaRecent orElse defaultErrorMapping)(error)
@@ -959,7 +959,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersUser_idMediaRecentGetValidator(user_id, max_timestamp, min_id, min_timestamp, max_id, count).errors match {
-                        case e if e.isEmpty => processValidgetusersByUser_idMediaRecentRequest(f)((user_id, max_timestamp, min_id, min_timestamp, max_id, count), possibleWriters, getusersByUser_idMediaRecentResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersByUser_idMediaRecentRequest(f)((user_id, max_timestamp, min_id, min_timestamp, max_id, count))(possibleWriters, getusersByUser_idMediaRecentResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersByUser_idMediaRecentResponseMimeType)
                             BadRequest(l)
@@ -968,7 +968,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersByUser_idMediaRecentRequest[T <: Any](f: getusersByUser_idMediaRecentActionType)(request: getusersByUser_idMediaRecentActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersByUser_idMediaRecentRequest[T <: Any](f: getusersByUser_idMediaRecentActionType)(request: getusersByUser_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersByUser_idMediaRecent orElse defaultErrorMapping)(error)
@@ -996,11 +996,11 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[UsersSelfFeedGetResponses200]
         )        
-            val result = processValidgetmediaPopularRequest(f)()                
+            val result = processValidgetmediaPopularRequest(f)()(possibleWriters, getmediaPopularResponseMimeType)                
             result
     }
 
-    private def processValidgetmediaPopularRequest[T <: Any](f: getmediaPopularActionType)(request: getmediaPopularActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaPopularRequest[T <: Any](f: getmediaPopularActionType)(request: getmediaPopularActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaPopular orElse defaultErrorMapping)(error)
