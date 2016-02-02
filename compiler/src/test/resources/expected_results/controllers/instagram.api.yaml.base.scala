@@ -12,19 +12,214 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
+    private type getmediaByMedia_idLikesActionRequestType       = (Int)
+    private type getmediaByMedia_idLikesActionType              = getmediaByMedia_idLikesActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getmediaByMedia_idLikesAction = (f: getmediaByMedia_idLikesActionType) => (media_id: Int) => Action {        val getmediaByMedia_idLikesResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[MediaMedia_idLikesGetResponses200]
+        )        
+            val result =                
+                    new MediaMedia_idLikesGetValidator(media_id).errors match {
+                        case e if e.isEmpty => processValidgetmediaByMedia_idLikesRequest(f)((media_id))(possibleWriters, getmediaByMedia_idLikesResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaByMedia_idLikesResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetmediaByMedia_idLikesRequest[T <: Any](f: getmediaByMedia_idLikesActionType)(request: getmediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetmediaByMedia_idLikes orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getmediaByMedia_idLikesWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type postmediaByMedia_idLikesActionRequestType       = (Int)
+    private type postmediaByMedia_idLikesActionType              = postmediaByMedia_idLikesActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatuspostmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def postmediaByMedia_idLikesAction = (f: postmediaByMedia_idLikesActionType) => (media_id: Int) => Action {        val postmediaByMedia_idLikesResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
+        )        
+            val result =                
+                    new MediaMedia_idLikesPostValidator(media_id).errors match {
+                        case e if e.isEmpty => processValidpostmediaByMedia_idLikesRequest(f)((media_id))(possibleWriters, postmediaByMedia_idLikesResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postmediaByMedia_idLikesResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidpostmediaByMedia_idLikesRequest[T <: Any](f: postmediaByMedia_idLikesActionType)(request: postmediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatuspostmediaByMedia_idLikes orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val postmediaByMedia_idLikesWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type deletemediaByMedia_idLikesActionRequestType       = (Int)
+    private type deletemediaByMedia_idLikesActionType              = deletemediaByMedia_idLikesActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusdeletemediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def deletemediaByMedia_idLikesAction = (f: deletemediaByMedia_idLikesActionType) => (media_id: Int) => Action {        val deletemediaByMedia_idLikesResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
+        )        
+            val result =                
+                    new MediaMedia_idLikesDeleteValidator(media_id).errors match {
+                        case e if e.isEmpty => processValiddeletemediaByMedia_idLikesRequest(f)((media_id))(possibleWriters, deletemediaByMedia_idLikesResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletemediaByMedia_idLikesResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValiddeletemediaByMedia_idLikesRequest[T <: Any](f: deletemediaByMedia_idLikesActionType)(request: deletemediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusdeletemediaByMedia_idLikes orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val deletemediaByMedia_idLikesWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getusersByUser_idFollowsActionRequestType       = (Double)
+    private type getusersByUser_idFollowsActionType              = getusersByUser_idFollowsActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetusersByUser_idFollows: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getusersByUser_idFollowsAction = (f: getusersByUser_idFollowsActionType) => (user_id: Double) => Action {        val getusersByUser_idFollowsResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
+        )        
+            val result =                
+                    new UsersUser_idFollowsGetValidator(user_id).errors match {
+                        case e if e.isEmpty => processValidgetusersByUser_idFollowsRequest(f)((user_id))(possibleWriters, getusersByUser_idFollowsResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersByUser_idFollowsResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetusersByUser_idFollowsRequest[T <: Any](f: getusersByUser_idFollowsActionType)(request: getusersByUser_idFollowsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetusersByUser_idFollows orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getusersByUser_idFollowsWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getlocationsByLocation_idActionRequestType       = (Int)
+    private type getlocationsByLocation_idActionType              = getlocationsByLocation_idActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetlocationsByLocation_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getlocationsByLocation_idAction = (f: getlocationsByLocation_idActionType) => (location_id: Int) => Action {        val getlocationsByLocation_idResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[LocationsLocation_idGetResponses200]
+        )        
+            val result =                
+                    new LocationsLocation_idGetValidator(location_id).errors match {
+                        case e if e.isEmpty => processValidgetlocationsByLocation_idRequest(f)((location_id))(possibleWriters, getlocationsByLocation_idResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getlocationsByLocation_idResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetlocationsByLocation_idRequest[T <: Any](f: getlocationsByLocation_idActionType)(request: getlocationsByLocation_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetlocationsByLocation_id orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getlocationsByLocation_idWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
     private type getusersSearchActionRequestType       = (String, MediaFilter)
-    private type getusersSearchActionType              = getusersSearchActionRequestType => Try[Any]
+    private type getusersSearchActionType              = getusersSearchActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusersSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
     def getusersSearchAction = (f: getusersSearchActionType) => (q: String, count: MediaFilter) => Action {        val getusersSearchResponseMimeType    = "application/json"
 
         val possibleWriters = Map(
-                200 -> anyToWritable[`UsersUser-idFollowsGetResponses200`]
+                200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
         )        
             val result =                
                     new UsersSearchGetValidator(q, count).errors match {
-                        case e if e.isEmpty => processValidgetusersSearchRequest(f)((q, count), possibleWriters, getusersSearchResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersSearchRequest(f)((q, count))(possibleWriters, getusersSearchResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersSearchResponseMimeType)
                             BadRequest(l)
@@ -33,7 +228,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersSearchRequest[T <: Any](f: getusersSearchActionType)(request: getusersSearchActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSearchRequest[T <: Any](f: getusersSearchActionType)(request: getusersSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSearch orElse defaultErrorMapping)(error)
@@ -45,11 +240,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getusersSelfMediaLikedActionRequestType       = (MediaId, MediaId)
-    private type getusersSelfMediaLikedActionType              = getusersSelfMediaLikedActionRequestType => Try[Any]
+    private type getusersSelfMediaLikedActionType              = getusersSelfMediaLikedActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusersSelfMediaLiked: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -60,7 +258,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersSelfMediaLikedGetValidator(count, max_like_id).errors match {
-                        case e if e.isEmpty => processValidgetusersSelfMediaLikedRequest(f)((count, max_like_id), possibleWriters, getusersSelfMediaLikedResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersSelfMediaLikedRequest(f)((count, max_like_id))(possibleWriters, getusersSelfMediaLikedResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersSelfMediaLikedResponseMimeType)
                             BadRequest(l)
@@ -69,7 +267,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersSelfMediaLikedRequest[T <: Any](f: getusersSelfMediaLikedActionType)(request: getusersSelfMediaLikedActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfMediaLikedRequest[T <: Any](f: getusersSelfMediaLikedActionType)(request: getusersSelfMediaLikedActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfMediaLiked orElse defaultErrorMapping)(error)
@@ -81,11 +279,53 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type gettagsByTag_nameActionRequestType       = (String)
+    private type gettagsByTag_nameActionType              = gettagsByTag_nameActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgettagsByTag_name: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def gettagsByTag_nameAction = (f: gettagsByTag_nameActionType) => (tag_name: String) => Action {        val gettagsByTag_nameResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[Tag]
+        )        
+            val result =                
+                    new TagsTag_nameGetValidator(tag_name).errors match {
+                        case e if e.isEmpty => processValidgettagsByTag_nameRequest(f)((tag_name))(possibleWriters, gettagsByTag_nameResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettagsByTag_nameResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgettagsByTag_nameRequest[T <: Any](f: gettagsByTag_nameActionType)(request: gettagsByTag_nameActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgettagsByTag_name orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val gettagsByTag_nameWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type gettagsSearchActionRequestType       = (MediaFilter)
-    private type gettagsSearchActionType              = gettagsSearchActionRequestType => Try[Any]
+    private type gettagsSearchActionType              = gettagsSearchActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgettagsSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -96,7 +336,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new TagsSearchGetValidator(q).errors match {
-                        case e if e.isEmpty => processValidgettagsSearchRequest(f)((q), possibleWriters, gettagsSearchResponseMimeType)
+                        case e if e.isEmpty => processValidgettagsSearchRequest(f)((q))(possibleWriters, gettagsSearchResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettagsSearchResponseMimeType)
                             BadRequest(l)
@@ -105,7 +345,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgettagsSearchRequest[T <: Any](f: gettagsSearchActionType)(request: gettagsSearchActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettagsSearchRequest[T <: Any](f: gettagsSearchActionType)(request: gettagsSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettagsSearch orElse defaultErrorMapping)(error)
@@ -117,11 +357,254 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getusersByUser_idFollowed_byActionRequestType       = (Double)
+    private type getusersByUser_idFollowed_byActionType              = getusersByUser_idFollowed_byActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetusersByUser_idFollowed_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getusersByUser_idFollowed_byAction = (f: getusersByUser_idFollowed_byActionType) => (user_id: Double) => Action {        val getusersByUser_idFollowed_byResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
+        )        
+            val result =                
+                    new UsersUser_idFollowed_byGetValidator(user_id).errors match {
+                        case e if e.isEmpty => processValidgetusersByUser_idFollowed_byRequest(f)((user_id))(possibleWriters, getusersByUser_idFollowed_byResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersByUser_idFollowed_byResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetusersByUser_idFollowed_byRequest[T <: Any](f: getusersByUser_idFollowed_byActionType)(request: getusersByUser_idFollowed_byActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetusersByUser_idFollowed_by orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getusersByUser_idFollowed_byWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getmediaByMedia_idCommentsActionRequestType       = (Int)
+    private type getmediaByMedia_idCommentsActionType              = getmediaByMedia_idCommentsActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getmediaByMedia_idCommentsAction = (f: getmediaByMedia_idCommentsActionType) => (media_id: Int) => Action {        val getmediaByMedia_idCommentsResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[MediaMedia_idCommentsGetResponses200]
+        )        
+            val result =                
+                    new MediaMedia_idCommentsGetValidator(media_id).errors match {
+                        case e if e.isEmpty => processValidgetmediaByMedia_idCommentsRequest(f)((media_id))(possibleWriters, getmediaByMedia_idCommentsResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaByMedia_idCommentsResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetmediaByMedia_idCommentsRequest[T <: Any](f: getmediaByMedia_idCommentsActionType)(request: getmediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetmediaByMedia_idComments orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getmediaByMedia_idCommentsWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type postmediaByMedia_idCommentsActionRequestType       = (Int, LocationLatitude)
+    private type postmediaByMedia_idCommentsActionType              = postmediaByMedia_idCommentsActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatuspostmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+        private def postmediaByMedia_idCommentsParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Double]("application/json", "Invalid LocationLatitude", maxLength)
+
+    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => Action(postmediaByMedia_idCommentsParser()) { request =>        val postmediaByMedia_idCommentsResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
+        )        
+        val tEXT = request.body
+        
+            val result =                
+                    new MediaMedia_idCommentsPostValidator(media_id, tEXT).errors match {
+                        case e if e.isEmpty => processValidpostmediaByMedia_idCommentsRequest(f)((media_id, tEXT))(possibleWriters, postmediaByMedia_idCommentsResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postmediaByMedia_idCommentsResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidpostmediaByMedia_idCommentsRequest[T <: Any](f: postmediaByMedia_idCommentsActionType)(request: postmediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatuspostmediaByMedia_idComments orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val postmediaByMedia_idCommentsWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type deletemediaByMedia_idCommentsActionRequestType       = (Int)
+    private type deletemediaByMedia_idCommentsActionType              = deletemediaByMedia_idCommentsActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusdeletemediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def deletemediaByMedia_idCommentsAction = (f: deletemediaByMedia_idCommentsActionType) => (media_id: Int) => Action {        val deletemediaByMedia_idCommentsResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
+        )        
+            val result =                
+                    new MediaMedia_idCommentsDeleteValidator(media_id).errors match {
+                        case e if e.isEmpty => processValiddeletemediaByMedia_idCommentsRequest(f)((media_id))(possibleWriters, deletemediaByMedia_idCommentsResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletemediaByMedia_idCommentsResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValiddeletemediaByMedia_idCommentsRequest[T <: Any](f: deletemediaByMedia_idCommentsActionType)(request: deletemediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusdeletemediaByMedia_idComments orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val deletemediaByMedia_idCommentsWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type gettagsByTag_nameMediaRecentActionRequestType       = (String)
+    private type gettagsByTag_nameMediaRecentActionType              = gettagsByTag_nameMediaRecentActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgettagsByTag_nameMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def gettagsByTag_nameMediaRecentAction = (f: gettagsByTag_nameMediaRecentActionType) => (tag_name: String) => Action {        val gettagsByTag_nameMediaRecentResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[TagsTag_nameMediaRecentGetResponses200]
+        )        
+            val result =                
+                    new TagsTag_nameMediaRecentGetValidator(tag_name).errors match {
+                        case e if e.isEmpty => processValidgettagsByTag_nameMediaRecentRequest(f)((tag_name))(possibleWriters, gettagsByTag_nameMediaRecentResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettagsByTag_nameMediaRecentResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgettagsByTag_nameMediaRecentRequest[T <: Any](f: gettagsByTag_nameMediaRecentActionType)(request: gettagsByTag_nameMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgettagsByTag_nameMediaRecent orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val gettagsByTag_nameMediaRecentWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type postusersByUser_idRelationshipActionRequestType       = (Double, MediaFilter)
+    private type postusersByUser_idRelationshipActionType              = postusersByUser_idRelationshipActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatuspostusersByUser_idRelationship: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+        private def postusersByUser_idRelationshipParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[String]("application/json", "Invalid MediaFilter", maxLength)
+
+    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => Action(postusersByUser_idRelationshipParser()) { request =>        val postusersByUser_idRelationshipResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
+        )        
+        val action = request.body
+        
+            val result =                
+                    new UsersUser_idRelationshipPostValidator(user_id, action).errors match {
+                        case e if e.isEmpty => processValidpostusersByUser_idRelationshipRequest(f)((user_id, action))(possibleWriters, postusersByUser_idRelationshipResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postusersByUser_idRelationshipResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidpostusersByUser_idRelationshipRequest[T <: Any](f: postusersByUser_idRelationshipActionType)(request: postusersByUser_idRelationshipActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatuspostusersByUser_idRelationship orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val postusersByUser_idRelationshipWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getusersSelfFeedActionRequestType       = (MediaId, MediaId, MediaId)
-    private type getusersSelfFeedActionType              = getusersSelfFeedActionRequestType => Try[Any]
+    private type getusersSelfFeedActionType              = getusersSelfFeedActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusersSelfFeed: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -132,7 +615,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new UsersSelfFeedGetValidator(count, max_id, min_id).errors match {
-                        case e if e.isEmpty => processValidgetusersSelfFeedRequest(f)((count, max_id, min_id), possibleWriters, getusersSelfFeedResponseMimeType)
+                        case e if e.isEmpty => processValidgetusersSelfFeedRequest(f)((count, max_id, min_id))(possibleWriters, getusersSelfFeedResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersSelfFeedResponseMimeType)
                             BadRequest(l)
@@ -141,7 +624,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetusersSelfFeedRequest[T <: Any](f: getusersSelfFeedActionType)(request: getusersSelfFeedActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfFeedRequest[T <: Any](f: getusersSelfFeedActionType)(request: getusersSelfFeedActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfFeed orElse defaultErrorMapping)(error)
@@ -153,11 +636,53 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getusersByUser_idActionRequestType       = (Double)
+    private type getusersByUser_idActionType              = getusersByUser_idActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetusersByUser_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getusersByUser_idAction = (f: getusersByUser_idActionType) => (user_id: Double) => Action {        val getusersByUser_idResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[UsersUser_idGetResponses200]
+        )        
+            val result =                
+                    new UsersUser_idGetValidator(user_id).errors match {
+                        case e if e.isEmpty => processValidgetusersByUser_idRequest(f)((user_id))(possibleWriters, getusersByUser_idResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersByUser_idResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetusersByUser_idRequest[T <: Any](f: getusersByUser_idActionType)(request: getusersByUser_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetusersByUser_id orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getusersByUser_idWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getmediaSearchActionRequestType       = (MediaId, Int, LocationLatitude, MediaId, LocationLatitude)
-    private type getmediaSearchActionType              = getmediaSearchActionRequestType => Try[Any]
+    private type getmediaSearchActionType              = getmediaSearchActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetmediaSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -168,7 +693,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaSearchGetValidator(mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT).errors match {
-                        case e if e.isEmpty => processValidgetmediaSearchRequest(f)((mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT), possibleWriters, getmediaSearchResponseMimeType)
+                        case e if e.isEmpty => processValidgetmediaSearchRequest(f)((mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT))(possibleWriters, getmediaSearchResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaSearchResponseMimeType)
                             BadRequest(l)
@@ -177,7 +702,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetmediaSearchRequest[T <: Any](f: getmediaSearchActionType)(request: getmediaSearchActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaSearchRequest[T <: Any](f: getmediaSearchActionType)(request: getmediaSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaSearch orElse defaultErrorMapping)(error)
@@ -189,11 +714,53 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getgeographiesByGeo_idMediaRecentActionRequestType       = (Int, MediaId, MediaId)
+    private type getgeographiesByGeo_idMediaRecentActionType              = getgeographiesByGeo_idMediaRecentActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetgeographiesByGeo_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (geo_id: Int, count: MediaId, min_id: MediaId) => Action {        val getgeographiesByGeo_idMediaRecentResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[Null]
+        )        
+            val result =                
+                    new GeographiesGeo_idMediaRecentGetValidator(geo_id, count, min_id).errors match {
+                        case e if e.isEmpty => processValidgetgeographiesByGeo_idMediaRecentRequest(f)((geo_id, count, min_id))(possibleWriters, getgeographiesByGeo_idMediaRecentResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getgeographiesByGeo_idMediaRecentResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetgeographiesByGeo_idMediaRecentRequest[T <: Any](f: getgeographiesByGeo_idMediaRecentActionType)(request: getgeographiesByGeo_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetgeographiesByGeo_idMediaRecent orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getgeographiesByGeo_idMediaRecentWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getmediaByShortcodeActionRequestType       = (String)
-    private type getmediaByShortcodeActionType              = getmediaByShortcodeActionRequestType => Try[Any]
+    private type getmediaByShortcodeActionType              = getmediaByShortcodeActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetmediaByShortcode: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -204,7 +771,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new MediaShortcodeGetValidator(shortcode).errors match {
-                        case e if e.isEmpty => processValidgetmediaByShortcodeRequest(f)((shortcode), possibleWriters, getmediaByShortcodeResponseMimeType)
+                        case e if e.isEmpty => processValidgetmediaByShortcodeRequest(f)((shortcode))(possibleWriters, getmediaByShortcodeResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaByShortcodeResponseMimeType)
                             BadRequest(l)
@@ -213,7 +780,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetmediaByShortcodeRequest[T <: Any](f: getmediaByShortcodeActionType)(request: getmediaByShortcodeActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByShortcodeRequest[T <: Any](f: getmediaByShortcodeActionType)(request: getmediaByShortcodeActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByShortcode orElse defaultErrorMapping)(error)
@@ -225,11 +792,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getlocationsSearchActionRequestType       = (MediaId, MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)
-    private type getlocationsSearchActionType              = getlocationsSearchActionRequestType => Try[Any]
+    private type getlocationsSearchActionType              = getlocationsSearchActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetlocationsSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -240,7 +810,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new LocationsSearchGetValidator(foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng).errors match {
-                        case e if e.isEmpty => processValidgetlocationsSearchRequest(f)((foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng), possibleWriters, getlocationsSearchResponseMimeType)
+                        case e if e.isEmpty => processValidgetlocationsSearchRequest(f)((foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng))(possibleWriters, getlocationsSearchResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getlocationsSearchResponseMimeType)
                             BadRequest(l)
@@ -249,7 +819,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetlocationsSearchRequest[T <: Any](f: getlocationsSearchActionType)(request: getlocationsSearchActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetlocationsSearchRequest[T <: Any](f: getlocationsSearchActionType)(request: getlocationsSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetlocationsSearch orElse defaultErrorMapping)(error)
@@ -261,24 +831,27 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getusersSelfRequested_byActionRequestType       = (Unit)
-    private type getusersSelfRequested_byActionType              = getusersSelfRequested_byActionRequestType => Try[Any]
+    private type getusersSelfRequested_byActionType              = getusersSelfRequested_byActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusersSelfRequested_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
     def getusersSelfRequested_byAction = (f: getusersSelfRequested_byActionType) => Action {        val getusersSelfRequested_byResponseMimeType    = "application/json"
 
         val possibleWriters = Map(
-                200 -> anyToWritable[`UsersSelfRequested-byGetResponses200`]
+                200 -> anyToWritable[UsersSelfRequested_byGetResponses200]
         )        
-            val result = processValidgetusersSelfRequested_byRequest(f)()                
+            val result = processValidgetusersSelfRequested_byRequest(f)()(possibleWriters, getusersSelfRequested_byResponseMimeType)                
             result
     }
 
-    private def processValidgetusersSelfRequested_byRequest[T <: Any](f: getusersSelfRequested_byActionType)(request: getusersSelfRequested_byActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfRequested_byRequest[T <: Any](f: getusersSelfRequested_byActionType)(request: getusersSelfRequested_byActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfRequested_by orElse defaultErrorMapping)(error)
@@ -290,11 +863,131 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getmediaByMedia_idActionRequestType       = (Int)
+    private type getmediaByMedia_idActionType              = getmediaByMedia_idActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetmediaByMedia_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getmediaByMedia_idAction = (f: getmediaByMedia_idActionType) => (media_id: Int) => Action {        val getmediaByMedia_idResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[Media]
+        )        
+            val result =                
+                    new MediaMedia_idGetValidator(media_id).errors match {
+                        case e if e.isEmpty => processValidgetmediaByMedia_idRequest(f)((media_id))(possibleWriters, getmediaByMedia_idResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getmediaByMedia_idResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetmediaByMedia_idRequest[T <: Any](f: getmediaByMedia_idActionType)(request: getmediaByMedia_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetmediaByMedia_id orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getmediaByMedia_idWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getlocationsByLocation_idMediaRecentActionRequestType       = (Int, MediaId, MediaId, MediaFilter, MediaFilter)
+    private type getlocationsByLocation_idMediaRecentActionType              = getlocationsByLocation_idMediaRecentActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetlocationsByLocation_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (location_id: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => Action {        val getlocationsByLocation_idMediaRecentResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[UsersSelfFeedGetResponses200]
+        )        
+            val result =                
+                    new LocationsLocation_idMediaRecentGetValidator(location_id, max_timestamp, min_timestamp, min_id, max_id).errors match {
+                        case e if e.isEmpty => processValidgetlocationsByLocation_idMediaRecentRequest(f)((location_id, max_timestamp, min_timestamp, min_id, max_id))(possibleWriters, getlocationsByLocation_idMediaRecentResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getlocationsByLocation_idMediaRecentResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetlocationsByLocation_idMediaRecentRequest[T <: Any](f: getlocationsByLocation_idMediaRecentActionType)(request: getlocationsByLocation_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetlocationsByLocation_idMediaRecent orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getlocationsByLocation_idMediaRecentWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
+        }
+        status
+    }
+    private type getusersByUser_idMediaRecentActionRequestType       = (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)
+    private type getusersByUser_idMediaRecentActionType              = getusersByUser_idMediaRecentActionRequestType => Try[(Int, Any)]
+
+    private val errorToStatusgetusersByUser_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+
+    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (user_id: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => Action {        val getusersByUser_idMediaRecentResponseMimeType    = "application/json"
+
+        val possibleWriters = Map(
+                200 -> anyToWritable[UsersSelfFeedGetResponses200]
+        )        
+            val result =                
+                    new UsersUser_idMediaRecentGetValidator(user_id, max_timestamp, min_id, min_timestamp, max_id, count).errors match {
+                        case e if e.isEmpty => processValidgetusersByUser_idMediaRecentRequest(f)((user_id, max_timestamp, min_id, min_timestamp, max_id, count))(possibleWriters, getusersByUser_idMediaRecentResponseMimeType)
+                        case l =>
+                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getusersByUser_idMediaRecentResponseMimeType)
+                            BadRequest(l)
+                    }
+                
+            result
+    }
+
+    private def processValidgetusersByUser_idMediaRecentRequest[T <: Any](f: getusersByUser_idMediaRecentActionType)(request: getusersByUser_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+        val callerResult = f(request)
+        val status = callerResult match {
+            case Failure(error) => (errorToStatusgetusersByUser_idMediaRecent orElse defaultErrorMapping)(error)
+            case Success((code: Int, result: T @ unchecked)) =>
+                writers.get(code).map { writer =>
+                    implicit val getusersByUser_idMediaRecentWritableJson = writer(mimeType)
+                    Status(code)(result)
+                }.getOrElse {
+                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
+                }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getmediaPopularActionRequestType       = (Unit)
-    private type getmediaPopularActionType              = getmediaPopularActionRequestType => Try[Any]
+    private type getmediaPopularActionType              = getmediaPopularActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetmediaPopular: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -303,11 +996,11 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[UsersSelfFeedGetResponses200]
         )        
-            val result = processValidgetmediaPopularRequest(f)()                
+            val result = processValidgetmediaPopularRequest(f)()(possibleWriters, getmediaPopularResponseMimeType)                
             result
     }
 
-    private def processValidgetmediaPopularRequest[T <: Any](f: getmediaPopularActionType)(request: getmediaPopularActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaPopularRequest[T <: Any](f: getmediaPopularActionType)(request: getmediaPopularActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaPopular orElse defaultErrorMapping)(error)
@@ -319,6 +1012,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

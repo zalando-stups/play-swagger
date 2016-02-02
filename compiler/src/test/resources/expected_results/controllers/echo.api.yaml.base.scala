@@ -12,7 +12,7 @@ import scala.util._
 
 trait HandlerBase extends Controller with PlayBodyParsing {
     private type methodActionRequestType       = (Unit)
-    private type methodActionType              = methodActionRequestType => Try[Any]
+    private type methodActionType              = methodActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusmethod: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -21,11 +21,11 @@ trait HandlerBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[Null]
         )        
-            val result = processValidmethodRequest(f)()                
+            val result = processValidmethodRequest(f)()(possibleWriters, methodResponseMimeType)                
             result
     }
 
-    private def processValidmethodRequest[T <: Any](f: methodActionType)(request: methodActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidmethodRequest[T <: Any](f: methodActionType)(request: methodActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusmethod orElse defaultErrorMapping)(error)
@@ -37,6 +37,9 @@ trait HandlerBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
@@ -45,7 +48,7 @@ trait HandlerBase extends Controller with PlayBodyParsing {
 
 trait EchoApiYamlBase extends Controller with PlayBodyParsing {
     private type postActionRequestType       = (PostName, PostName)
-    private type postActionType              = postActionRequestType => Try[Any]
+    private type postActionType              = postActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -56,7 +59,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new PostValidator(name, year).errors match {
-                        case e if e.isEmpty => processValidpostRequest(f)((name, year), possibleWriters, postResponseMimeType)
+                        case e if e.isEmpty => processValidpostRequest(f)((name, year))(possibleWriters, postResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
                             BadRequest(l)
@@ -65,7 +68,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspost orElse defaultErrorMapping)(error)
@@ -77,11 +80,14 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type gettest_pathByIdActionRequestType       = (String)
-    private type gettest_pathByIdActionType              = gettest_pathByIdActionRequestType => Try[Any]
+    private type gettest_pathByIdActionType              = gettest_pathByIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgettest_pathById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -91,8 +97,8 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                 200 -> anyToWritable[Null]
         )        
             val result =                
-                    new `Test-pathIdGetValidator`(id).errors match {
-                        case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id), possibleWriters, gettest_pathByIdResponseMimeType)
+                    new Test_pathIdGetValidator(id).errors match {
+                        case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id))(possibleWriters, gettest_pathByIdResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettest_pathByIdResponseMimeType)
                             BadRequest(l)
@@ -101,7 +107,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgettest_pathByIdRequest[T <: Any](f: gettest_pathByIdActionType)(request: gettest_pathByIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettest_pathByIdRequest[T <: Any](f: gettest_pathByIdActionType)(request: gettest_pathByIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettest_pathById orElse defaultErrorMapping)(error)
@@ -113,6 +119,9 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

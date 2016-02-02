@@ -13,7 +13,7 @@ import de.zalando.play.controllers.ArrayWrapper
 
 trait HackweekYamlBase extends Controller with PlayBodyParsing {
     private type getschemaModelActionRequestType       = (ModelSchemaRoot)
-    private type getschemaModelActionType              = getschemaModelActionRequestType => Try[Any]
+    private type getschemaModelActionType              = getschemaModelActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetschemaModel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def getschemaModelParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[ModelSchemaRoot]("application/json", "Invalid ModelSchemaRoot", maxLength)
@@ -27,7 +27,7 @@ trait HackweekYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new SchemaModelGetValidator(root).errors match {
-                        case e if e.isEmpty => processValidgetschemaModelRequest(f)((root), possibleWriters, getschemaModelResponseMimeType)
+                        case e if e.isEmpty => processValidgetschemaModelRequest(f)((root))(possibleWriters, getschemaModelResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getschemaModelResponseMimeType)
                             BadRequest(l)
@@ -36,7 +36,7 @@ trait HackweekYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetschemaModelRequest[T <: Any](f: getschemaModelActionType)(request: getschemaModelActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetschemaModelRequest[T <: Any](f: getschemaModelActionType)(request: getschemaModelActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetschemaModel orElse defaultErrorMapping)(error)
@@ -48,6 +48,9 @@ trait HackweekYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

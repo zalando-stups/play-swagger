@@ -12,7 +12,7 @@ import scala.util._
 
 trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
     private type getActionRequestType       = (Unit)
-    private type getActionType              = getActionRequestType => Try[Any]
+    private type getActionType              = getActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -21,11 +21,11 @@ trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
         val possibleWriters = Map(
                 200 -> anyToWritable[Null]
         )        
-            val result = processValidgetRequest(f)()                
+            val result = processValidgetRequest(f)()(possibleWriters, getResponseMimeType)                
             result
     }
 
-    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusget orElse defaultErrorMapping)(error)
@@ -37,6 +37,9 @@ trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

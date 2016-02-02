@@ -28,10 +28,10 @@ import Generators._
 
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
-          case Failed(_, labels) => failure(labels.mkString("\\n"))
+          case Failed(_, labels) => failure(labels.mkString("\n"))
           case Proved(_) | Exhausted | Passed => success
           case PropException(_, e, labels) =>
-            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\\n")
+            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\n")
             failure(error)
         }
 
@@ -50,7 +50,7 @@ import Generators._
             {{/if}}
 
             val url = {{test.full_url}}
-            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> toHeader({{header.name}}){{/for}})
+            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> toHeader({{header.parameter_name}}){{if header.isNotLast}}, {{/if}}{{/for}})
             {{for b in test.body_param}}
                 val parsed_{{b.body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
             {{/for}}
@@ -75,7 +75,7 @@ import Generators._
                 val parsed_{{b.body_parameter_name}} = parserConstructor("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
             {{/for}}
             val url = {{test.full_url}}
-            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> {{header.name}}{{/for}})
+            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> toHeader({{header.parameter_name}}){{if header.isNotLast}}, {{/if}}{{/for}})
             val path = route(FakeRequest({{test.verb_name}}, url).withHeaders(headers:_*){{for b in test.body_param}}.withBody(parsed_{{b.body_parameter_name}}){{/for}}).get
             val errors = new {{test.validation_name}}({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{for p in test.single_parameter}}{{p.name}}{{/for}}).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map{{if m.result_types}}(

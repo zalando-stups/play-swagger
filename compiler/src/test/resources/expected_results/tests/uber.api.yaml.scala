@@ -12,8 +12,11 @@ import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+import play.api.http.Writeable
 
 import play.api.test.Helpers.{status => requestStatusCode_}
+import play.api.test.Helpers.{contentAsString => requestContentAsString_}
+import play.api.test.Helpers.{contentType => requestContentType_}
 
 import Generators._
 
@@ -25,12 +28,17 @@ import Generators._
 
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
-          case Failed(_, labels) => failure(labels.mkString("\\n"))
+          case Failed(_, labels) => failure(labels.mkString("\n"))
           case Proved(_) | Exhausted | Passed => success
           case PropException(_, e, labels) =>
-            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\\n")
+            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\n")
             failure(error)
         }
+
+      private def parserConstructor(mimeType: String) = PlayBodyParsing.jacksonMapper(mimeType)
+
+      def parseResponseContent[T](content: String, mimeType: Option[String], expectedType: Class[T]) =
+        parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
 
 
 
@@ -50,21 +58,30 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (ErrorCode, ErrorCode)) = {
-
-
                 val (offset, limit) = input
-            
-
+                        
             val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new HistoryGetValidator(offset, limit).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" ) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -110,21 +127,30 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
-
-
                 val (start_latitude, start_longitude, customer_uuid, product_id) = input
-            
-
+                        
             val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" ) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -174,21 +200,30 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (Double, Double)) = {
-
-
                 val (latitude, longitude) = input
-            
-
+                        
             val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new ProductsGetValidator(latitude, longitude).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" ) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -234,21 +269,30 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (Double, Double, Double, Double)) = {
-
-
                 val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-            
-
+                        
             val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" ) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {

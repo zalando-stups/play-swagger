@@ -12,8 +12,11 @@ import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+import play.api.http.Writeable
 
 import play.api.test.Helpers.{status => requestStatusCode_}
+import play.api.test.Helpers.{contentAsString => requestContentAsString_}
+import play.api.test.Helpers.{contentType => requestContentType_}
 
 import Generators._
 
@@ -25,12 +28,17 @@ import Generators._
 
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
-          case Failed(_, labels) => failure(labels.mkString("\\n"))
+          case Failed(_, labels) => failure(labels.mkString("\n"))
           case Proved(_) | Exhausted | Passed => success
           case PropException(_, e, labels) =>
-            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\\n")
+            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\n")
             failure(error)
         }
+
+      private def parserConstructor(mimeType: String) = PlayBodyParsing.jacksonMapper(mimeType)
+
+      def parseResponseContent[T](content: String, mimeType: Option[String], expectedType: Class[T]) =
+        parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
 
 
 
@@ -49,20 +57,30 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(pet: NewPet) = {
-
-
-                val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
-
+        def testValidInput(pet: NewPet) = {            
+                val parsed_pet = parserConstructor("application/json").writeValueAsString(pet)
+            
             val url = s"""/api/pets"""
             val headers = Seq()
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
-            ("given an URL: [" + url + "]"+ " and body [" + parsed_pet + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new PetsPostValidator(pet).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -104,21 +122,30 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (PetsGetTags, PetsGetLimit)) = {
-
-
                 val (tags, limit) = input
-            
-
+                        
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new PetsGetValidator(tags, limit).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" ) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -148,58 +175,6 @@ import Generators._
     }
 
 
-    "GET /api/pets/{id}" should {
-        def testInvalidInput(id: Long) = {
-
-
-            val url = s"""/api/pets/${toPath(id)}"""
-            val headers = Seq()
-
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsIdGetValidator(id).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
-        }
-        def testValidInput(id: Long) = {
-
-
-
-            val url = s"""/api/pets/${toPath(id)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
-        }
-        "discard invalid data" in new WithApplication {
-            val genInputs = for {
-                    id <- LongGenerator
-                } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdGetValidator(id).errors.nonEmpty
-            }
-            val props = forAll(inputs) { i => testInvalidInput(i) }
-            checkResult(props)
-        }
-        "do something with valid data" in new WithApplication {
-            val genInputs = for {
-                id <- LongGenerator
-            } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdGetValidator(id).errors.isEmpty
-            }
-            val props = forAll(inputs) { i => testValidInput(i) }
-            checkResult(props)
-        }
-
-    }
-
-
     "DELETE /api/pets/{id}" should {
         def testInvalidInput(id: Long) = {
 
@@ -214,19 +189,28 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(id: Long) = {
-
-
-
+        def testValidInput(id: Long) = {            
             val url = s"""/api/pets/${toPath(id)}"""
             val headers = Seq()
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new PetsIdDeleteValidator(id).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" ) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {

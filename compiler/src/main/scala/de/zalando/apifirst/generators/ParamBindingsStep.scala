@@ -28,16 +28,24 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
 
   private def singleParameter(paramPair: (Reference, Parameter), table: DenotationTable): Map[String, Any] =
     paramPair._2.place match {
-      case ParameterPlace.BODY    =>
+      case ParameterPlace.BODY =>
         // body parameters do not need bindables
         Map.empty
-      case ParameterPlace.FORM    =>
+      case ParameterPlace.FORM =>
         // FIXME not supported yet
         Map.empty
+      case ParameterPlace.HEADER =>
+        // headers are handled in the same way path parameters are
+        val place = "Path"
+        bindingForPlace(paramPair, table, place)
       case other    =>
-        val tpe = other.toString.capitalize
-        Map("binding" -> forType(tpe: String, paramPair._1, paramPair._2.typeName, table))
+        val place = other.toString.capitalize
+        bindingForPlace(paramPair, table, place)
     }
+
+  def bindingForPlace(paramPair: (Reference, Parameter), table: DenotationTable, place: String): Map[String, Seq[Map[String, Any]]] = {
+    Map("binding" -> forType(place, paramPair._1, paramPair._2.typeName, table))
+  }
 
   val providedBindings = Seq(classOf[Flt], classOf[Intgr], classOf[Lng], classOf[Dbl], classOf[Bool], classOf[Str])
 

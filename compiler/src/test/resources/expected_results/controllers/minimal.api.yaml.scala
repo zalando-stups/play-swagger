@@ -8,7 +8,7 @@ import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
 import scala.util._
-package minimal.api.yaml { 
+package admin {
 
   class Dashboard extends DashboardBase {
     val index = indexAction { _ =>

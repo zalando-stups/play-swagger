@@ -12,7 +12,7 @@ import scala.util._
 
 trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type getActionRequestType       = (Int)
-    private type getActionType              = getActionRequestType => Try[Any]
+    private type getActionType              = getActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -23,7 +23,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new GetValidator(limit).errors match {
-                        case e if e.isEmpty => processValidgetRequest(f)((limit), possibleWriters, getResponseMimeType)
+                        case e if e.isEmpty => processValidgetRequest(f)((limit))(possibleWriters, getResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getResponseMimeType)
                             BadRequest(l)
@@ -32,7 +32,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusget orElse defaultErrorMapping)(error)
@@ -44,11 +44,14 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type putActionRequestType       = (PutPet)
-    private type putActionType              = putActionRequestType => Try[Any]
+    private type putActionType              = putActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusput: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PutPet", maxLength)
@@ -62,7 +65,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new PutValidator(pet).errors match {
-                        case e if e.isEmpty => processValidputRequest(f)((pet), possibleWriters, putResponseMimeType)
+                        case e if e.isEmpty => processValidputRequest(f)((pet))(possibleWriters, putResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(putResponseMimeType)
                             BadRequest(l)
@@ -71,7 +74,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidputRequest[T <: Any](f: putActionType)(request: putActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidputRequest[T <: Any](f: putActionType)(request: putActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusput orElse defaultErrorMapping)(error)
@@ -83,11 +86,14 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type postActionRequestType       = (Pet)
-    private type postActionType              = postActionRequestType => Try[Any]
+    private type postActionType              = postActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def postParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[Pet]("application/json", "Invalid Pet", maxLength)
@@ -101,7 +107,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new PostValidator(pet).errors match {
-                        case e if e.isEmpty => processValidpostRequest(f)((pet), possibleWriters, postResponseMimeType)
+                        case e if e.isEmpty => processValidpostRequest(f)((pet))(possibleWriters, postResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
                             BadRequest(l)
@@ -110,7 +116,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspost orElse defaultErrorMapping)(error)
@@ -122,11 +128,14 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type getbyPetIdActionRequestType       = (String)
-    private type getbyPetIdActionType              = getbyPetIdActionRequestType => Try[Any]
+    private type getbyPetIdActionType              = getbyPetIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetbyPetId: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -137,7 +146,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         )        
             val result =                
                     new PetIdGetValidator(petId).errors match {
-                        case e if e.isEmpty => processValidgetbyPetIdRequest(f)((petId), possibleWriters, getbyPetIdResponseMimeType)
+                        case e if e.isEmpty => processValidgetbyPetIdRequest(f)((petId))(possibleWriters, getbyPetIdResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getbyPetIdResponseMimeType)
                             BadRequest(l)
@@ -146,7 +155,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetbyPetIdRequest[T <: Any](f: getbyPetIdActionType)(request: getbyPetIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetbyPetIdRequest[T <: Any](f: getbyPetIdActionType)(request: getbyPetIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetbyPetId orElse defaultErrorMapping)(error)
@@ -158,6 +167,9 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

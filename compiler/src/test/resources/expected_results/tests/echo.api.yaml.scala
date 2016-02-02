@@ -12,8 +12,11 @@ import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+import play.api.http.Writeable
 
 import play.api.test.Helpers.{status => requestStatusCode_}
+import play.api.test.Helpers.{contentAsString => requestContentAsString_}
+import play.api.test.Helpers.{contentType => requestContentType_}
 
 import Generators._
 
@@ -25,12 +28,17 @@ import Generators._
 
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
-          case Failed(_, labels) => failure(labels.mkString("\\n"))
+          case Failed(_, labels) => failure(labels.mkString("\n"))
           case Proved(_) | Exhausted | Passed => success
           case PropException(_, e, labels) =>
-            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\\n")
+            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\n")
             failure(error)
         }
+
+      private def parserConstructor(mimeType: String) = PlayBodyParsing.jacksonMapper(mimeType)
+
+      def parseResponseContent[T](content: String, mimeType: Option[String], expectedType: Class[T]) =
+        parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
 
 
 
@@ -42,32 +50,41 @@ import Generators._
             val headers = Seq()
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new `Test-pathIdGetValidator`(id).errors
+            val errors = new Test_pathIdGetValidator(id).errors
 
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(id: String) = {
-
-
-
+        def testValidInput(id: String) = {            
             val url = s"""/echo/test-path/${toPath(id)}"""
             val headers = Seq()
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new Test_pathIdGetValidator(id).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" ) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                     id <- StringGenerator
                 } yield id
             val inputs = genInputs suchThat { id =>
-                new `Test-pathIdGetValidator`(id).errors.nonEmpty
+                new Test_pathIdGetValidator(id).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
@@ -77,7 +94,7 @@ import Generators._
                 id <- StringGenerator
             } yield id
             val inputs = genInputs suchThat { id =>
-                new `Test-pathIdGetValidator`(id).errors.isEmpty
+                new Test_pathIdGetValidator(id).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)
@@ -102,21 +119,30 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (PostName, PostName)) = {
-
-
                 val (name, year) = input
-            
-
+                        
             val url = s"""/echo/"""
             val headers = Seq()
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
-            ("given an URL: [" + url + "]") |: (requestStatusCode_(path) ?= OK)
+            val errors = new PostValidator(name, year).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" ) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("application/json"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {

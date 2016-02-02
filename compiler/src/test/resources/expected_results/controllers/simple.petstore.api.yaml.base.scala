@@ -14,7 +14,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
 trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private type addPetActionRequestType       = (NewPet)
-    private type addPetActionType              = addPetActionRequestType => Try[Any]
+    private type addPetActionType              = addPetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusaddPet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[NewPet]("application/json", "Invalid NewPet", maxLength)
@@ -28,7 +28,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
         
             val result =                
                     new PetsPostValidator(pet).errors match {
-                        case e if e.isEmpty => processValidaddPetRequest(f)((pet), possibleWriters, addPetResponseMimeType)
+                        case e if e.isEmpty => processValidaddPetRequest(f)((pet))(possibleWriters, addPetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(addPetResponseMimeType)
                             BadRequest(l)
@@ -37,7 +37,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
@@ -49,6 +49,9 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
@@ -57,7 +60,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
 trait DashboardBase extends Controller with PlayBodyParsing {
     private type methodLevelActionRequestType       = (PetsGetTags, PetsGetLimit)
-    private type methodLevelActionType              = methodLevelActionRequestType => Try[Any]
+    private type methodLevelActionType              = methodLevelActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusmethodLevel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -68,7 +71,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[ErrorModel])        
             val result =                
                     new PetsGetValidator(tags, limit).errors match {
-                        case e if e.isEmpty => processValidmethodLevelRequest(f)((tags, limit), possibleWriters, methodLevelResponseMimeType)
+                        case e if e.isEmpty => processValidmethodLevelRequest(f)((tags, limit))(possibleWriters, methodLevelResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(methodLevelResponseMimeType)
                             BadRequest(l)
@@ -77,7 +80,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidmethodLevelRequest[T <: Any](f: methodLevelActionType)(request: methodLevelActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidmethodLevelRequest[T <: Any](f: methodLevelActionType)(request: methodLevelActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusmethodLevel orElse defaultErrorMapping)(error)
@@ -89,11 +92,14 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type pathLevelGetActionRequestType       = (Long)
-    private type pathLevelGetActionType              = pathLevelGetActionRequestType => Try[Any]
+    private type pathLevelGetActionType              = pathLevelGetActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspathLevelGet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -104,7 +110,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[ErrorModel])        
             val result =                
                     new PetsIdGetValidator(id).errors match {
-                        case e if e.isEmpty => processValidpathLevelGetRequest(f)((id), possibleWriters, pathLevelGetResponseMimeType)
+                        case e if e.isEmpty => processValidpathLevelGetRequest(f)((id))(possibleWriters, pathLevelGetResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(pathLevelGetResponseMimeType)
                             BadRequest(l)
@@ -113,7 +119,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpathLevelGetRequest[T <: Any](f: pathLevelGetActionType)(request: pathLevelGetActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpathLevelGetRequest[T <: Any](f: pathLevelGetActionType)(request: pathLevelGetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspathLevelGet orElse defaultErrorMapping)(error)
@@ -125,11 +131,14 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }
     private type pathLevelDeleteActionRequestType       = (Long)
-    private type pathLevelDeleteActionType              = pathLevelDeleteActionRequestType => Try[Any]
+    private type pathLevelDeleteActionType              = pathLevelDeleteActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspathLevelDelete: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -140,7 +149,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[ErrorModel])        
             val result =                
                     new PetsIdDeleteValidator(id).errors match {
-                        case e if e.isEmpty => processValidpathLevelDeleteRequest(f)((id), possibleWriters, pathLevelDeleteResponseMimeType)
+                        case e if e.isEmpty => processValidpathLevelDeleteRequest(f)((id))(possibleWriters, pathLevelDeleteResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(pathLevelDeleteResponseMimeType)
                             BadRequest(l)
@@ -149,7 +158,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidpathLevelDeleteRequest[T <: Any](f: pathLevelDeleteActionType)(request: pathLevelDeleteActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpathLevelDeleteRequest[T <: Any](f: pathLevelDeleteActionType)(request: pathLevelDeleteActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspathLevelDelete orElse defaultErrorMapping)(error)
@@ -161,6 +170,9 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

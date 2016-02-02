@@ -14,7 +14,7 @@ import de.zalando.play.controllers.PlayPathBindables
 
 trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
     private type getPetsByIdActionRequestType       = (PetsIdGetId)
-    private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[Any]
+    private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetPetsById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
@@ -25,7 +25,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
         ).withDefaultValue(anyToWritable[ErrorModel])        
             val result =                
                     new PetsIdGetValidator(id).errors match {
-                        case e if e.isEmpty => processValidgetPetsByIdRequest(f)((id), possibleWriters, getPetsByIdResponseMimeType)
+                        case e if e.isEmpty => processValidgetPetsByIdRequest(f)((id))(possibleWriters, getPetsByIdResponseMimeType)
                         case l =>
                             implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetsByIdResponseMimeType)
                             BadRequest(l)
@@ -34,7 +34,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
             result
     }
 
-    private def processValidgetPetsByIdRequest[T <: Any](f: getPetsByIdActionType)(request: getPetsByIdActionRequestType, writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetPetsByIdRequest[T <: Any](f: getPetsByIdActionType)(request: getPetsByIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetPetsById orElse defaultErrorMapping)(error)
@@ -46,6 +46,9 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
                 }
+        case Success(other) =>
+            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
+            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
         }
         status
     }

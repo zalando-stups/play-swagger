@@ -110,7 +110,7 @@ trait HandlerGenerator extends StringUtil {
       val controller = definitionFileName map { ScalaName.capitalize("\\.", _) } getOrElse {
         throw new IllegalStateException(s"The definition file name must be defined in order to use '$keyPrefix-package' directive")
       }
-      val method = Option(operation.operationId).map(ScalaName.camelize(" ", _)) getOrElse {
+      val method = Option(operation.operationId).map(ScalaName.camelize("\\.", _)).map(ScalaName.escape) getOrElse {
         verb.toLowerCase + Path(path).asMethod
       }
       s"$pkg.$controller.$method"
