@@ -12,8 +12,11 @@ import play.api.mvc.{QueryStringBindable, PathBindable}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
+import play.api.http.Writeable
 
 import play.api.test.Helpers.{status => requestStatusCode_}
+import play.api.test.Helpers.{contentAsString => requestContentAsString_}
+import play.api.test.Helpers.{contentType => requestContentType_}
 
 import Generators._
 
@@ -25,12 +28,17 @@ import Generators._
 
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
-          case Failed(_, labels) => failure(labels.mkString("\\n"))
+          case Failed(_, labels) => failure(labels.mkString("\n"))
           case Proved(_) | Exhausted | Passed => success
           case PropException(_, e, labels) =>
-            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\\n")
+            val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\n")
             failure(error)
         }
+
+      private def parserConstructor(mimeType: String) = PlayBodyParsing.jacksonMapper(mimeType)
+
+      def parseResponseContent[T](content: String, mimeType: Option[String], expectedType: Class[T]) =
+        parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
 
 {{for test in tests}}
 
@@ -42,7 +50,7 @@ import Generators._
             {{/if}}
 
             val url = {{test.full_url}}
-            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> toHeader({{header.name}}){{/for}})
+            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> toHeader({{header.parameter_name}}){{if header.isNotLast}}, {{/if}}{{/for}})
             {{for b in test.body_param}}
                 val parsed_{{b.body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
             {{/for}}
@@ -54,25 +62,39 @@ import Generators._
 
             ("given an URL: [" + url + "]" {{for b in test.body_param}}+ "and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                contentType(path) ?= Some("{{test.expected_result_type}}"),
+                requestContentType_(path) ?= Some("{{test.expected_result_type}}"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput({{if test.multiple_parameters}}input: ({{for p in test.multiple_parameters}}{{p.type}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}}{{p.name}}: {{p.type}}{{/for}}) = {
-
             {{if test.multiple_parameters}}
                 val ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
             {{/if}}
-
             {{for b in test.body_param}}
-                val parsed_{{b.body_parameter_name}} = PlayBodyParsing.jacksonMapper("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
+                val parsed_{{b.body_parameter_name}} = parserConstructor("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
             {{/for}}
-
             val url = {{test.full_url}}
-            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> {{header.name}}{{/for}})
+            val headers = Seq({{for header in test.headers}}"{{header.name}}" -> toHeader({{header.parameter_name}}){{if header.isNotLast}}, {{/if}}{{/for}})
             val path = route(FakeRequest({{test.verb_name}}, url).withHeaders(headers:_*){{for b in test.body_param}}.withBody(parsed_{{b.body_parameter_name}}){{/for}}).get
-            ("given an URL: [" + url + "]"{{for b in test.body_param}}+ " and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: (requestStatusCode_(path) ?= OK)
+            val errors = new {{test.validation_name}}({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{for p in test.single_parameter}}{{p.name}}{{/for}}).errors
+            val possibleResponseTypes: Map[Int,Class[Any]] = Map{{if m.result_types}}(
+                {{for result_type in m.result_types}}
+                {{result_type.code}} -> classOf[{{result_type.type}}]{{if result_type.isNotLast}}, {{/if}}
+            {{/for}}
+            ){{else}}.empty[Int,Class[Any]]{{/if}}{{if m.default_result_type}}.withDefaultValue(classOf[{{m.default_result_type}}]){{/if}}
+
+            val expectedCode = requestStatusCode_(path)
+            val expectedResponseType = possibleResponseTypes(expectedCode)
+
+            val parsedApiResponse = scala.util.Try {
+                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+            }
+            ("given an URL: [" + url + "]" {{for b in test.body_param}}+ "and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: all(
+                parsedApiResponse.isSuccess ?= true,
+                requestContentType_(path) ?= Some("{{test.expected_result_type}}"),
+                errors.isEmpty ?= true
+            )
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {

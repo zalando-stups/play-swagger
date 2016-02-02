@@ -27,7 +27,10 @@ object ModelConverter extends ParameterNaming {
     val inlineParameters = new ParametersConverter(base, model, keyPrefix, typeDefs, autoConvert).parameters
     val apiCalls = new PathsConverter(base, model, keyPrefix, inlineParameters, file.map(_.getName)).convert
     val packageName = model.vendorExtensions.get(s"$keyPrefix-package")
-    StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators, model.basePath, packageName)
+    val inheritedPackageName = apiCalls.headOption collect {
+      case h if apiCalls.seq.forall { _.handler.packageName == h.handler.packageName } => h.handler.packageName
+    }
+    StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators, model.basePath, packageName orElse inheritedPackageName)
   }
 
 }

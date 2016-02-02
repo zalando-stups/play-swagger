@@ -55,7 +55,7 @@ class PutPetValidator(instance: PutPet) extends RecursiveValidator {
 // ----- call validations -----
 class PutValidator(pet: PutPet) extends RecursiveValidator {
     override val validators = Seq(
-        new PutPetValidator(pet)
+        new PutPetValidator(pet)    
     )
 }
 class GetValidator(limit: Int) extends RecursiveValidator {

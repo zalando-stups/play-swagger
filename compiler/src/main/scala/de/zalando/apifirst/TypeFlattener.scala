@@ -37,12 +37,15 @@ object TypeDeduplicator extends TypeAnalyzer {
   }
 
   private def replaceReferenceInCall(duplicateRefs: Seq[Reference], target: Reference): ApiCall => ApiCall = call => {
-    val (resultTypesToReplace, resultTypesToHold) = call.resultTypes.partition { t => duplicateRefs.contains(t.name) }
-    val resultTypesReplacement = resultTypesToReplace map { tr =>
-      ParameterRef(target)
+    val (resultTypesToReplace, resultTypesToHold) = call.resultTypes.partition { case (code, ref) => duplicateRefs.contains(ref.name) }
+    val resultTypesReplacement = resultTypesToReplace map { case (code, ref) =>
+      code -> ParameterRef(target)
     }
     val resultTypes = resultTypesToHold ++ resultTypesReplacement
-    call.copy(resultTypes = resultTypes)
+    val default = call.defaultResult map { d =>
+      if (duplicateRefs.contains(d.name)) ParameterRef(target) else d
+    }
+    call.copy(resultTypes = resultTypes, defaultResult = default)
   }
 
   private def replaceReferencesInTypes(duplicateRefs: Seq[Reference], target: Reference):

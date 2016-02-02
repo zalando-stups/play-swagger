@@ -41,7 +41,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val headerParams        = validationsByType(call, p => p.place == ParameterPlace.HEADER)
     val nonBodyParams       = validationsByType(call, p => p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER)
     val allValidations      = callValidations(ref).asInstanceOf[Seq[_]]
-    val actionResultType    = resultType(call)(table)
+
     val actionErrorMappings = errorMappings(call)
     val nameParamPair       = singleOrMultipleParameters(call)(table)
 
@@ -50,11 +50,13 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val method              = nameMappings("method")
     val action              = nameMappings("action")
 
+    val (allActionResults, defaultResultType) = actionResults(call)(table)
+
     Map(
       "response_mime_type_value"      -> call.mimeOut.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
       "request_mime_type_value"       -> call.mimeIn.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
-      "action_result_type_value"      -> actionResultType, // TODO implement content negotiation
-      "action_success_status_value"   -> 200, // FIXME
+      "result_types"                  -> allActionResults,
+      "default_result_type"           -> defaultResultType,
       "method"                        -> method,
       "signature"                     -> signature(action, method),
       "comment"                       -> comment(action),
@@ -78,17 +80,25 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
   private def nameWithSuffix(call: ApiCall, suffix: String): String =
     escape(call.handler.method + suffix)
 
-  private def resultType(call: ApiCall)(table: DenotationTable): Option[String] = {
-    call.resultTypes.toSeq.sortBy(_.simple).headOption.map { t =>
-      val tpe = app.findType(t.name)
-      tpe match {
-        case c: Container =>
-          // TODO this should be readable from model
-          c.name.simple + c.nestedTypes.map{ t => typeNameDenotation(table, t.name)}.mkString("[", ", ", "]")
-        case p: ProvidedType => typeNameDenotation(table, p.name)
-        case p: TypeDef => typeNameDenotation(table, p.name)
-        case o => o.name.className
-      }
+  private def actionResults(call: ApiCall)(table: DenotationTable): (Seq[Map[String, Any]], Option[String]) = {
+    val resultTypes = call.resultTypes.toSeq map { case(code, ref) =>
+        Map("code" -> code, "type" -> singleResultType(table)(ref))
+    }
+    val default = call.defaultResult.map(singleResultType(table))
+    if (default.isEmpty && resultTypes.isEmpty)
+      println("Could not found any response code definition. It's not possible to define any marshallers. This will lead to the error at runtime.")
+    (resultTypes, default)
+  }
+
+  private def singleResultType(table: DenotationTable)(ref: ParameterRef): String = {
+    val tpe = app.findType(ref.name)
+    tpe match {
+      case c: Container =>
+        // TODO this should be readable from model
+        c.name.simple + c.nestedTypes.map{ t => typeNameDenotation(table, t.name)}.mkString("[", ", ", "]")
+      case p: ProvidedType => typeNameDenotation(table, p.name)
+      case p: TypeDef => typeNameDenotation(table, p.name)
+      case o => o.name.className
     }
   }
 
@@ -130,7 +140,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "field_name" -> escape(camelize("\\.", param.simple)), // should be taken from the validation
       "type_name" -> commonTypeName,
       "parser_type" -> parserType,
-      "body_parser"  -> parser
+      "body_parser"  -> parser,
+      "real_name" -> param.simple
     )
   }
 

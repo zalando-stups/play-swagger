@@ -11,15 +11,13 @@ class PostNameOptConstraints(override val instance: String) extends ValidationBa
 }
 class PostNameOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new PostNameOptConstraints(instance))
-
 }
-class `Test-pathIdGetIdConstraints`(override val instance: String) extends ValidationBase[String] {
+class Test_pathIdGetIdConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
         Seq()
 }
-class `Test-pathIdGetIdValidator`(instance: String) extends RecursiveValidator {
-    override val validators = Seq(new `Test-pathIdGetIdConstraints`(instance))
-
+class Test_pathIdGetIdValidator(instance: String) extends RecursiveValidator {
+    override val validators = Seq(new Test_pathIdGetIdConstraints(instance))
 }
 // ----- complex type validators -----
 // ----- option delegating validators -----
@@ -29,14 +27,14 @@ class PostNameValidator(instance: PostName) extends RecursiveValidator {
 // ----- array delegating validators -----
 // ----- catch all simple validators -----
 // ----- call validations -----
-class `Test-pathIdGetValidator`(id: String) extends RecursiveValidator {
+class Test_pathIdGetValidator(id: String) extends RecursiveValidator {
     override val validators = Seq(
-        new `Test-pathIdGetIdValidator`(id)
+        new Test_pathIdGetIdValidator(id)    
     )
 }
 class PostValidator(name: PostName, year: PostName) extends RecursiveValidator {
     override val validators = Seq(
-        new PostNameValidator(name),
-        new PostNameValidator(year)
+        new PostNameValidator(name),     
+        new PostNameValidator(year)    
     )
 }

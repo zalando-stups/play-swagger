@@ -1,4 +1,4 @@
-package minimal.api.yaml
+package admin
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary

@@ -23,30 +23,35 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
   private def fromPath(basePath: BasePath)(pathDef: (String, PathItem)) = {
     implicit val (url, path) = pathDef
     for {
-      operationName     <- path.operationNames
-      verb              <- verbFromOperationName(operationName)
-      operation         = path.operation(operationName)
-      namePrefix        = base / "paths" / url / operationName
-      astPath           = uriFragmentToReference(url)
-      params            = parameters(path, operation, namePrefix)
-      handlerCall       <- handler(operation, path, params, operationName, astPath).toSeq
-      results           = resultTypes(namePrefix, operation)
-      (mimeIn, mimeOut) = mimeTypes(operation)
-      errMappings       = errorMappings(path, operation)
-    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, results)
+      operationName       <- path.operationNames
+      verb                <- verbFromOperationName(operationName)
+      operation           = path.operation(operationName)
+      namePrefix          = base / "paths" / url / operationName
+      astPath             = uriFragmentToReference(url)
+      params              = parameters(path, operation, namePrefix)
+      handlerCall         <- handler(operation, path, params, operationName, astPath).toSeq
+      (results, default)  = resultTypes(namePrefix, operation)
+      (mimeIn, mimeOut)   = mimeTypes(operation)
+      errMappings         = errorMappings(path, operation)
+    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, results, default)
   }
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
-  private def resultTypes(prefix: Reference, operation: Operation): Iterable[ParameterRef] = {
-    operation.responses map {
-      case (code, definition) if code.forall(_.isDigit) =>
-        ParameterRef(prefix / Reference.responses / code)
+  private def resultTypes(prefix: Reference, operation: Operation): (Map[Int,ParameterRef], Option[ParameterRef]) = {
+    val default = operation.responses collectFirst {
       case ("default", definition)  =>
         ParameterRef(prefix / Reference.responses / "default")
-      case (other, _) =>
-        throw new IllegalArgumentException(s"Expected numeric error code or 'default', but was $other")
     }
+    val responses = operation.responses collect {
+      case (code, definition) if code.forall(_.isDigit) =>
+        Some(code.toInt -> ParameterRef(prefix / Reference.responses / code))
+      case ("default", definition)  => None
+      case (other, _) =>
+        println(s"Expected numeric error code or 'default' for response, but was $other")
+        None
+    }
+    (responses.flatten.toMap, default)
   }
 
   private def parameters(path: PathItem, operation: Operation, namePrefix: Reference) = {
@@ -93,7 +98,7 @@ trait HandlerGenerator extends StringUtil {
     handlerText <- getOrGenerateHandlerLine(operation, path, verb, url)
     parseResult = HandlerParser.parse(handlerText)
     handler <- if (parseResult.successful) Some(parseResult.get) else None
-  } yield handler.copy(parameters = params, packageName = handler.packageName)
+  } yield handler.copy(parameters = params)
 
   private def getOrGenerateHandlerLine(operation: Operation, path: PathItem, verb: String, callPath: Reference): Option[String] =
     operation.vendorExtensions.get(s"$keyPrefix-handler") orElse
@@ -105,7 +110,7 @@ trait HandlerGenerator extends StringUtil {
       val controller = definitionFileName map { ScalaName.capitalize("\\.", _) } getOrElse {
         throw new IllegalStateException(s"The definition file name must be defined in order to use '$keyPrefix-package' directive")
       }
-      val method = Option(operation.operationId).map(ScalaName.camelize(" ", _)) getOrElse {
+      val method = Option(operation.operationId).map(ScalaName.camelize("\\.", _)).map(ScalaName.escape) getOrElse {
         verb.toLowerCase + Path(path).asMethod
       }
       s"$pkg.$controller.$method"

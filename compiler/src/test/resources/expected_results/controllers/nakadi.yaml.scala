@@ -17,68 +17,36 @@ import scala.util._
 
 package nakadi.yaml {
 
-    class hack extends hackBase {
-        val get_metrics = get_metricsAction { _ =>
-                        
+    class NakadiYaml extends NakadiYamlBase {
+        val nakadiHackGet_metrics = nakadiHackGet_metricsAction { _ =>
             Failure(???)
-
-            
-
-        } //////// EOF ////////  get_metricsAction
-        val get_events_from_single_partition = get_events_from_single_partitionAction { input: (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout) =>
+        } //////// EOF ////////  nakadiHackGet_metricsAction
+        val nakadiHackGet_events_from_single_partition = nakadiHackGet_events_from_single_partitionAction { input: (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout) =>
             val (start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit) = input
-            
             Failure(???)
-
-            
-
-        } //////// EOF ////////  get_events_from_single_partitionAction
-        val get_partition = get_partitionAction { input: (String, String) =>
+        } //////// EOF ////////  nakadiHackGet_events_from_single_partitionAction
+        val nakadiHackGet_partition = nakadiHackGet_partitionAction { input: (String, String) =>
             val (topic, partition) = input
-            
             Failure(???)
-
-            
-
-        } //////// EOF ////////  get_partitionAction
-        val get_topics = get_topicsAction { _ =>
-                        
+        } //////// EOF ////////  nakadiHackGet_partitionAction
+        val nakadiHackGet_topics = nakadiHackGet_topicsAction { _ =>
             Failure(???)
-
-            
-
-        } //////// EOF ////////  get_topicsAction
-        val get_events_from_multiple_partitions = get_events_from_multiple_partitionsAction { input: (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String) =>
+        } //////// EOF ////////  nakadiHackGet_topicsAction
+        val nakadiHackGet_events_from_multiple_partitions = nakadiHackGet_events_from_multiple_partitionsAction { input: (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String) =>
             val (stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic) = input
-            
             Failure(???)
-
-            
-
-        } //////// EOF ////////  get_events_from_multiple_partitionsAction
-        val post_event = post_eventAction { input: (String, TopicsTopicEventsBatchPostEvent) =>
+        } //////// EOF ////////  nakadiHackGet_events_from_multiple_partitionsAction
+        val nakadiHackPost_event = nakadiHackPost_eventAction { input: (String, TopicsTopicEventsBatchPostEvent) =>
             val (topic, event) = input
-            
             Failure(???)
-
-            
-
-        } //////// EOF ////////  post_eventAction
-        val get_partitions = get_partitionsAction { (topic: String) =>
-                        
+        } //////// EOF ////////  nakadiHackPost_eventAction
+        val nakadiHackGet_partitions = nakadiHackGet_partitionsAction { (topic: String) =>
             Failure(???)
-
-            
-
-        } //////// EOF ////////  get_partitionsAction
-        val post_events = post_eventsAction { input: (String, TopicsTopicEventsBatchPostEvent) =>
+        } //////// EOF ////////  nakadiHackGet_partitionsAction
+        val nakadiHackPost_events = nakadiHackPost_eventsAction { input: (String, TopicsTopicEventsBatchPostEvent) =>
             val (topic, event) = input
-            
             Failure(???)
-
-            
-
-        } //////// EOF ////////  post_eventsAction
+        } //////// EOF ////////  nakadiHackPost_eventsAction
     }
 }
 

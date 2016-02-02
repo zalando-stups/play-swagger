@@ -5,6 +5,7 @@ import java.net.URI
 import de.zalando.apifirst.naming.Reference
 import de.zalando.apifirst.naming.dsl.NameDsl
 
+import scala.annotation.tailrec
 import scala.language.{implicitConversions, postfixOps}
 
 /**
@@ -120,9 +121,14 @@ object ScalaName extends StringUtil {
 
   private val scalaPartNames = Seq(",", ";", ":", "=", "=>", "<-", "<:", "<%", ">:", "#", "@", "⇒", "←","+","-","[", ")", "]", "}")
 
-  def escape(name: String) =
-    if (scalaNames.contains(name) || scalaPartNames.exists(name.contains))
-      "`" + name + "`"
+  @tailrec
+  def escape(name: String): String =
+    if (scalaPartNames.exists(name.contains))
+      escape(scalaPartNames.foldLeft(name)((acc, c) => acc.replaceAllLiterally(c, "_")))
+    else if (name.endsWith("_"))
+      escape(name + "esc")
+    else if (scalaNames.contains(name))
+      escape("`" + name + "`")
     else
       name
 
@@ -145,7 +151,6 @@ trait StringUtil {
 
 case class ScalaName(ref: Reference) {
   import ScalaName._
-  private val partsSeparator = "" // FIXME "_"
   val parts = ref.parts.flatMap(_.split("/").filter(_.nonEmpty)) match {
     case Nil =>
       throw new IllegalArgumentException(s"At least one part required to construct a name, but got $ref")
@@ -161,7 +166,7 @@ case class ScalaName(ref: Reference) {
     val withSuffix = if (suffix.trim.isEmpty) parts.tail else parts.tail.:+(suffix)
     val (withPrefix, caseTransformer) =
       if (prefix.trim.isEmpty) (withSuffix, capitalize _) else (prefix :: withSuffix, camelize _)
-    escape(caseTransformer("/", withPrefix.mkString("/"+partsSeparator)))
+    escape(caseTransformer("/", withPrefix.mkString("/")))
   }
 
   def methodName = escape(camelize("/", parts.last))
