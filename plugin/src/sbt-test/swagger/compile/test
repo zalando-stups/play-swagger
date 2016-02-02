@@ -1,17 +1,33 @@
-# Fails while compiled for the first time, this should be addressed
+# Fails while compiled for the first time because of missing controllers
 -> compile
 
-# Successfully compiles second time
+- $ exists app/controllers/echo.api.yaml.scala
+$ exists target/scala-2.11/routes/main/controllers_base/echo.api.yaml.scala
+$ exists target/scala-2.11/routes/main/model/echo.api.yaml.scala
+$ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
+
+# The controller generation must be triggered explicitly
+> swaggerCompileControllers
+
+$ exists app/controllers/echo.api.yaml.scala
+
+# Successfully compiles after controllers have being generated
 > compile
 
 $ exists app/controllers/echo.api.yaml.scala
-$ exists test/echo.api.yaml.scala
 $ exists target/scala-2.11/routes/main/controllers_base/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/generators/echo.api.yaml.scala
 $ exists target/scala-2.11/routes/main/model/echo.api.yaml.scala
 $ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
+
+# no test data exists yet
+- $ exists target/scala-2.11/routes/test/tests/echo.api.yaml.scala
+- $ exists target/scala-2.11/routes/test/generators/echo.api.yaml.scala
 
 # we don't check what is created by the play's routes compiler because it can change
 
 # Tests should fail with 404 because there is no mapping in routes file
 -> test
+
+# but test data must be generated
+$ exists target/scala-2.11/routes/test/tests/echo.api.yaml.scala
+$ exists target/scala-2.11/routes/test/generators/echo.api.yaml.scala
