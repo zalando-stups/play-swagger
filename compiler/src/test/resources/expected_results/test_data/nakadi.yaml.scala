@@ -28,7 +28,7 @@ object Generators {
     def IntGenerator = arbitrary[Int]
     def EventEvent_typeGenerator = Gen.option(arbitrary[String])
     def SimpleStreamEventEventsOptGenerator = _genList(EventGenerator, "csv")
-    def EventMetadataGenerator = Gen.option(EventMetaDataGenerator)
+    def EventMetadataGenerator = Gen.option(EventMetaDataNameClashGenerator)
     def NullGenerator = arbitrary[Null]
     def EventMetaDataScopesOptGenerator = _genList(arbitrary[String], "csv")
     def TopicsTopicPartitionsGetResponses200Generator = Gen.containerOf[List,TopicPartition](TopicPartitionGenerator)
@@ -38,7 +38,7 @@ object Generators {
     def TopicsGetResponses200Generator = Gen.containerOf[List,Topic](TopicGenerator)
 
     
-    def createEventMetaDataGenerator = _generate(EventMetaDataGenerator)
+    def createEventMetaDataNameClashGenerator = _generate(EventMetaDataNameClashGenerator)
     
     def createTopicGenerator = _generate(TopicGenerator)
     
@@ -54,13 +54,13 @@ object Generators {
     
     def createSimpleStreamEventGenerator = _generate(SimpleStreamEventGenerator)
     
-    def EventMetaDataGenerator = for {
+    def EventMetaDataNameClashGenerator = for {
         root_id <- EventEvent_typeGenerator
         parent_id <- EventEvent_typeGenerator
         scopes <- EventMetaDataScopesGenerator
         id <- EventEvent_typeGenerator
         created <- EventEvent_typeGenerator
-    } yield EventMetaData(root_id, parent_id, scopes, id, created)
+    } yield EventMetaDataNameClash(root_id, parent_id, scopes, id, created)
     def TopicGenerator = for {
         name <- arbitrary[String]
     } yield Topic(name)

@@ -119,7 +119,7 @@ class EventValidator(instance: Event) extends RecursiveValidator {
         new EventMetadataValidator(instance.metadata)
     )
 }
-class EventMetaDataValidator(instance: EventMetaData) extends RecursiveValidator {
+class EventMetaDataValidator(instance: EventMetaDataNameClash) extends RecursiveValidator {
     override val validators = Seq(
         new EventEvent_typeValidator(instance.root_id), 
         new EventEvent_typeValidator(instance.parent_id), 

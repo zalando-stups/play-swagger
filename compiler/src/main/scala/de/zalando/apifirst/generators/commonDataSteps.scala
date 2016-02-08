@@ -57,7 +57,7 @@ trait CommonDataStep extends EnrichmentStep[Type] with CommonData {
 
   private def avoidClashes(table: DenotationTable, name: String)
                           (names: Iterable[String] = table.values.map(_ (COMMON)(TYPE_NAME).toString)): String =
-    if (names.exists(_ == name)) avoidClashes(table, name + "NameClash")(names) else name
+    if (names.exists(_.equalsIgnoreCase(name))) avoidClashes(table, name + "NameClash")(names) else name
 
   /**
     * Puts type information into the denotation table
