@@ -21,3 +21,12 @@ before_install:
 
 after_success:
   - codecov
+
+# TODO scripted tests break on travis, needs investigation
+#
+# scala:
+#   - 2.10.5
+#   - 2.11.7
+#
+# script:
+#   - sbt compile test:compile test +publishLocal scripted

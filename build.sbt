@@ -64,11 +64,14 @@ lazy val plugin = (project in file("plugin"))
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "de.zalando",
 
-    scriptedLaunchOpts := { scriptedLaunchOpts.value ++
-      Seq("-Dproject.version=" + version.value)
+    scriptedLaunchOpts := {
+      scriptedLaunchOpts.value ++
+      Seq(
+        "-Dproject.version=" + version.value,
+        "-Dscala.version=" + scalaVersion.value
+      )
     },
     scriptedDependencies := {
-      // Ensure everything is published before scripted runs
       val a = (publishLocal in api).value
       val b = (publishLocal in compiler).value
       val c = publishLocal.value
@@ -87,7 +90,7 @@ lazy val root = (project in file("."))
 
 def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   organization := "de.zalando",
-  version      := "0.1.4",
+  version      := "0.1.6",
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(

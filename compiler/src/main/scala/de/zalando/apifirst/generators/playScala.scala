@@ -24,12 +24,18 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   val controllerBaseTemplateName  = "play_scala_controller_base"
 
 
-  def generate(fileName: String, packageName: String, currentController: String) = Seq(
+  def generateBase: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateModel(fileName, packageName),
-    generateGenerators(fileName, packageName),
     playValidators(fileName, packageName),
-    playScalaControllerBases(fileName, packageName),
-    playScalaTests(fileName, packageName),
+    playScalaControllerBases(fileName, packageName)
+  )
+
+  def generateTest: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
+    generateGenerators(fileName, packageName),
+    playScalaTests(fileName, packageName)
+  )
+
+  def generateControllers: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     playScalaControllers(fileName, packageName, currentController)
   )
 

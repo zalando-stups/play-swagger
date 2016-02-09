@@ -18,7 +18,7 @@ package object yaml {
 
     type SimpleStreamEventEventsOpt = ArrayWrapper[Event]
 
-    type EventMetadata = Option[EventMetaData]
+    type EventMetadata = Option[EventMetaDataNameClash]
 
     type TopicsTopicEventsPostResponses201 = Null
 
@@ -38,7 +38,7 @@ package object yaml {
 
 
 
-    case class EventMetaData(root_id: EventEvent_type, parent_id: EventEvent_type, scopes: EventMetaDataScopes, id: EventEvent_type, created: EventEvent_type) 
+    case class EventMetaDataNameClash(root_id: EventEvent_type, parent_id: EventEvent_type, scopes: EventMetaDataScopes, id: EventEvent_type, created: EventEvent_type)
 
     case class Topic(name: String) 
 
