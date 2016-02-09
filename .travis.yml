@@ -25,6 +25,3 @@ after_success:
 
 script:
   - sbt compile test:compile test +publishLocal scripted
-
-  # Trick to avoid unnecessary cache updates
-  - find $HOME/.sbt -name "*.lock" | xargs rm
