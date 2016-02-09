@@ -1,19 +1,20 @@
 # Project is clean, nothing is here
 
-- $ exists app/controllers/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/main/controllers_base/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/main/model/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/test/tests/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/test/generators/echo.api.yaml.scala
+$ absent app/controllers/echo.api.yaml.scala
+$ absent target/routes/main/controllers_base/echo.api.yaml.scala
+$ absent target/routes/main/model/echo.api.yaml.scala
+$ absent target/routes/main/validators/echo.api.yaml.scala
+$ absent target/routes/test/tests/echo.api.yaml.scala
+$ absent target/routes/test/generators/echo.api.yaml.scala
 
 # Fails while compiled for the first time because of missing controllers
+> clean
 -> compile
 
-- $ exists app/controllers/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/controllers_base/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/model/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
+$ absent app/controllers/echo.api.yaml.scala
+$ exists target/routes/main/controllers_base/echo.api.yaml.scala
+$ exists target/routes/main/model/echo.api.yaml.scala
+$ exists target/routes/main/validators/echo.api.yaml.scala
 
 # The controller generation must be triggered explicitly
 > swaggerCompileControllers
@@ -21,11 +22,11 @@ $ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
 # only single controller was generated
 
 $ exists app/controllers/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/controllers_base/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/model/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/test/tests/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/test/generators/echo.api.yaml.scala
+$ exists target/routes/main/controllers_base/echo.api.yaml.scala
+$ exists target/routes/main/model/echo.api.yaml.scala
+$ exists target/routes/main/validators/echo.api.yaml.scala
+$ absent target/routes/test/tests/echo.api.yaml.scala
+$ absent target/routes/test/generators/echo.api.yaml.scala
 
 # Successfully compiles after controllers have being generated
 > clean
@@ -34,22 +35,22 @@ $ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
 
 # no test data exists yet
 $ exists app/controllers/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/model/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/controllers_base/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/test/tests/echo.api.yaml.scala
-- $ exists target/scala-2.11/routes/test/generators/echo.api.yaml.scala
+$ exists target/routes/main/model/echo.api.yaml.scala
+$ exists target/routes/main/validators/echo.api.yaml.scala
+$ exists target/routes/main/controllers_base/echo.api.yaml.scala
+$ absent target/routes/test/tests/echo.api.yaml.scala
+$ absent target/routes/test/generators/echo.api.yaml.scala
 
 # Tests should fail with 404 because there is no mapping in routes file
 -> test
 
 # now everything must be present
-$ exists target/scala-2.11/routes/test/tests/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/test/generators/echo.api.yaml.scala
+$ exists target/routes/test/tests/echo.api.yaml.scala
+$ exists target/routes/test/generators/echo.api.yaml.scala
 $ exists app/controllers/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/controllers_base/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/model/echo.api.yaml.scala
-$ exists target/scala-2.11/routes/main/validators/echo.api.yaml.scala
+$ exists target/routes/main/controllers_base/echo.api.yaml.scala
+$ exists target/routes/main/model/echo.api.yaml.scala
+$ exists target/routes/main/validators/echo.api.yaml.scala
 
 # we don't check what is created by the play's routes compiler because its outside of our control
 
