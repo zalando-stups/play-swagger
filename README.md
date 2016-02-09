@@ -537,7 +537,7 @@ post:
 
 As we just changed the parameter type, refreshing Swagger UI will, next to generating validations for that parameter type, force a regeneration of the model, consistent with the validation. That's nice, but note that it still breaks the current implementation of the controller class, as the implementation of the `postAction` expects `year` to be of type `String`.
 
-<img src="tutorial/validations-01.png" width="800">
+![Validation screenshot](/docs/validations-01.png)
 
 Let's change the implementation. The second parameter `year` is now not longer (normalised as a type from the `name` parameter) type `PostName` but of type `PostYear` which is not optional any longer. We change the type in the input, and wrap it in a `Some` when responding as the parameter still is optional in its response.
 
