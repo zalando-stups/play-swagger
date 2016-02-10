@@ -159,9 +159,13 @@ Swagger version 2.0 allows for primitive data types based on the types defined b
 | password    | string       | password       | scala.String   |
 | file        | file         |                | java.io.File   |
 
-## Complex Types - Objects
+## Complex Types
 
-Complex types are defined in Swagger model definitions as either objects or arrays.
+Complex types are made up of primitive object, or nested objects.
+
+### Objects
+
+Complex object types are defined in Swagger model definitions as either objects or arrays.
 
 Objects are, again, based on the [JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8) specification and defined as Swagger [Schema Objects](https://github.com/Swagger-api/Swagger-spec/blob/master/versions/2.0.md#schema-object) for parameter definitions of `type: "object"`.  For example, given a Swagger api definition file `api.yaml` containing a model that defines a `person` as an object with the properties `name` and `age` of the primitive types `string` and `integer` subsequently, this object will be mapped on a scala case class, generated in a scala object (namespace) with the same name as the root Swagger property in which it occurs.  I.e. `definitions` and in a package with the same name as the Swagger definition file in which the model is defined, that is, `api`
 
@@ -187,10 +191,7 @@ package api.yaml
 object definitions {
     case class Person(name: String, age: Int)
 }
-
-## Complex Types
-
-Complex types are made up of primitive object, or nested objects.
+```
 
 ### Nested Objects
 
