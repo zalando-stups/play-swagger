@@ -42,6 +42,7 @@ $ absent target/routes/test/tests/echo.api.yaml.scala
 $ absent target/routes/test/generators/echo.api.yaml.scala
 
 # Successfully compiles after controllers have being generated
+> clean
 > compile
 
 # no test data exists yet
