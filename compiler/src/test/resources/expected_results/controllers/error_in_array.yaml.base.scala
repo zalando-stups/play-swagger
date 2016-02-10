@@ -8,9 +8,6 @@ import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 
-
-
-
 trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
     private type getschemaModelActionRequestType       = (ModelSchemaRoot)
     private type getschemaModelActionType              = getschemaModelActionRequestType => Try[(Int, Any)]
@@ -18,22 +15,21 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetschemaModel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
         private def getschemaModelParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[ModelSchemaRoot]("application/json", "Invalid ModelSchemaRoot", maxLength)
 
-    def getschemaModelAction = (f: getschemaModelActionType) => Action(getschemaModelParser()) { request =>        val getschemaModelResponseMimeType    = "application/json"
-
+    def getschemaModelAction = (f: getschemaModelActionType) => Action(getschemaModelParser()) { request =>
+        val getschemaModelResponseMimeType    = "application/json"
         val possibleWriters = Map(
-                200 -> anyToWritable[ModelSchemaRoot]
+            200 -> anyToWritable[ModelSchemaRoot]
         )        
         val root = request.body
-        
-            val result =                
-                    new SchemaModelGetValidator(root).errors match {
-                        case e if e.isEmpty => processValidgetschemaModelRequest(f)((root))(possibleWriters, getschemaModelResponseMimeType)
-                        case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getschemaModelResponseMimeType)
-                            BadRequest(l)
-                    }
-                
-            result
+        val result =
+            new SchemaModelGetValidator(root).errors match {
+                case e if e.isEmpty => processValidgetschemaModelRequest(f)((root))(possibleWriters, getschemaModelResponseMimeType)
+                case l =>
+                    implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getschemaModelResponseMimeType)
+                    BadRequest(l)
+            }
+
+        result
     }
 
     private def processValidgetschemaModelRequest[T <: Any](f: getschemaModelActionType)(request: getschemaModelActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {

@@ -46,7 +46,7 @@ import Generators._
         def testInvalidInput({{if test.multiple_parameters}}input: ({{for p in test.multiple_parameters}}{{p.type}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}}{{p.name}}: {{p.type}}{{/for}}) = {
 
             {{if test.multiple_parameters}}
-                val ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
+            val ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
             {{/if}}
 
             val url = {{test.full_url}}
@@ -69,10 +69,10 @@ import Generators._
         }
         def testValidInput({{if test.multiple_parameters}}input: ({{for p in test.multiple_parameters}}{{p.type}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}}{{p.name}}: {{p.type}}{{/for}}) = {
             {{if test.multiple_parameters}}
-                val ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
+            val ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
             {{/if}}
             {{for b in test.body_param}}
-                val parsed_{{b.body_parameter_name}} = parserConstructor("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
+            val parsed_{{b.body_parameter_name}} = parserConstructor("{{b.expected_result_type}}").writeValueAsString({{b.body_parameter_name}})
             {{/for}}
             val url = {{test.full_url}}
             val headers = Seq({{for header in test.headers}}"{{header.name}}" -> toHeader({{header.parameter_name}}){{if header.isNotLast}}, {{/if}}{{/for}})
@@ -103,7 +103,7 @@ import Generators._
                     {{/for}}
                     {{for p in test.single_parameter}}{{p.name}} <- {{p.generator}}{{/for}}
                 } yield{{if test.multiple_parameters}} ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}} {{p.name}}{{/for}}
-            val inputs = genInputs suchThat { {{if test.multiple_parameters}} case ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}} {{p.name}}{{/for}} =>
+            val inputs = genInputs suchThat { {{if test.multiple_parameters}}case ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}}{{p.name}}{{/for}} =>
                 new {{test.validation_name}}({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{for p in test.single_parameter}}{{p.name}}{{/for}}).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
@@ -116,7 +116,7 @@ import Generators._
                 {{/for}}
                 {{for p in test.single_parameter}}{{p.name}} <- {{p.generator}}{{/for}}
             } yield{{if test.multiple_parameters}} ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}} {{p.name}}{{/for}}
-            val inputs = genInputs suchThat { {{if test.multiple_parameters}} case ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}} {{p.name}}{{/for}} =>
+            val inputs = genInputs suchThat { {{if test.multiple_parameters}}case ({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}){{/if}}{{for p in test.single_parameter}}{{p.name}}{{/for}} =>
                 new {{test.validation_name}}({{for p in test.multiple_parameters}}{{p.name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{for p in test.single_parameter}}{{p.name}}{{/for}}).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }

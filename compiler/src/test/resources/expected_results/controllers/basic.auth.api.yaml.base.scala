@@ -16,13 +16,13 @@ trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getAction = (f: getActionType) => Action {        val getResponseMimeType    = "application/json"
-
+    def getAction = (f: getActionType) => Action {
+        val getResponseMimeType    = "application/json"
         val possibleWriters = Map(
-                200 -> anyToWritable[Null]
+            200 -> anyToWritable[Null]
         )        
-            val result = processValidgetRequest(f)()(possibleWriters, getResponseMimeType)                
-            result
+        val result = processValidgetRequest(f)()(possibleWriters, getResponseMimeType)
+        result
     }
 
     private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {

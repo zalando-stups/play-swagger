@@ -21,8 +21,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
     private type {{m.action_request_type}}       = ({{for v in m.validations}}{{for f in v.fields}}{{f.type_name}}{{if f.isNotLast}}, {{/if}}{{/for}}{{/for}}{{if m.has_no_validations}}Unit{{/if}})
     private type {{m.action_type}}              = {{m.action_request_type}} => Try[(Int, Any)]
 
-    private val {{m.error_to_status}}: PartialFunction[Throwable, Status] = {{if m.has_no_error_mappings}} PartialFunction.empty[Throwable, Status]{{/if}}
-    {{if m.error_mappings}} { {{/if}}{{for mapping in m.error_mappings}}
+    private val {{m.error_to_status}}: PartialFunction[Throwable, Status] = {{if m.has_no_error_mappings}}PartialFunction.empty[Throwable, Status]{{/if}}{{if m.error_mappings}}{ {{/if}}{{for mapping in m.error_mappings}}
         case _: {{mapping.exception_name}} => Status({{mapping.exception_code}})
     {{/for}}{{if m.error_mappings}} } {{/if}}
 
@@ -30,7 +29,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
         private def {{m.parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = {{body.body_parser}}[{{body.parser_type}}]("{{m.request_mime_type_value}}", "Invalid {{body.type_name}}", maxLength)
     {{/for}}
 
-    def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} Action {{if m.body_param}}({{m.parser_name}}()){{/if}} { {{if m.request_needed}} request =>{{/if}}
+    def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} Action{{if m.body_param}}({{m.parser_name}}()){{/if}} { {{if m.request_needed}}request =>{{/if}}
         val {{m.response_mime_type_name}}    = "{{m.response_mime_type_value}}"
 
         val possibleWriters = Map{{if m.result_types}}(

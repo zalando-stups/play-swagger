@@ -16,13 +16,13 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusindex: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def indexAction = (f: indexActionType) => Action {        val indexResponseMimeType    = "application/json"
-
+    def indexAction = (f: indexActionType) => Action {
+        val indexResponseMimeType    = "application/json"
         val possibleWriters = Map(
-                200 -> anyToWritable[Null]
+            200 -> anyToWritable[Null]
         )        
-            val result = processValidindexRequest(f)()(possibleWriters, indexResponseMimeType)                
-            result
+        val result = processValidindexRequest(f)()(possibleWriters, indexResponseMimeType)
+        result
     }
 
     private def processValidindexRequest[T <: Any](f: indexActionType)(request: indexActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
