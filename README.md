@@ -6,7 +6,7 @@
 
 ## Status
 
-This plugin should be used from the [play-swagger-service](http://www.typesafe.com/activator/template/play-swagger-service) activator template as the version in this repository is under active development.  The status of this software is beta, an end-to-end functional release intented to demonstrate the possibility to generate from a swagger specification:
+This plugin should be enabled using the [play-swagger-service](http://www.typesafe.com/activator/template/play-swagger-service) activator template as the version in this repository is under active development.  The status of this software is beta, an end-to-end functional release intented to demonstrate the possibility to generate from a swagger specification:
 
 - Play route files
 - Generators of random test data
