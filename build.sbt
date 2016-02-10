@@ -45,7 +45,7 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalacheck" %% "scalacheck" % "1.12.5",
       "me.andrz.jackson" % "jackson-json-reference" % "0.1.2",
-      "de.zalando" %% "beard" % "0.0.3"
+      "de.zalando" %% "beard" % "0.0.6"
     )
   )
 

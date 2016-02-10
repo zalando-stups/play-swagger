@@ -16,14 +16,14 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private type findPetsActionRequestType       = (PetsGetTags, PetsGetLimit)
     private type findPetsActionType              = findPetsActionRequestType => Try[(Int, Any)]
 
-    private val errorToStatusfindPets: PartialFunction[Throwable, Status] = { 
+    private val errorToStatusfindPets: PartialFunction[Throwable, Status] = {
         case _: java.util.NoSuchElementException => Status(404)
      } 
 
-    def findPetsAction = (f: findPetsActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action {        val findPetsResponseMimeType    = "application/json"
-
+    def findPetsAction = (f: findPetsActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action {
+        val findPetsResponseMimeType    = "application/json"
         val possibleWriters = Map(
-                200 -> anyToWritable[Seq[Pet]]
+            200 -> anyToWritable[Seq[Pet]]
         ).withDefaultValue(anyToWritable[Error])        
             val result =                
                     new PetsGetValidator(tags, limit).errors match {
@@ -57,15 +57,15 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private type addPetActionRequestType       = (NewPet)
     private type addPetActionType              = addPetActionRequestType => Try[(Int, Any)]
 
-    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = { 
+    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = {
         case _: java.util.NoSuchElementException => Status(404)
      } 
         private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[NewPet]("application/json", "Invalid NewPet", maxLength)
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>        val addPetResponseMimeType    = "application/json"
-
+    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
+        val addPetResponseMimeType    = "application/json"
         val possibleWriters = Map(
-                200 -> anyToWritable[Pet]
+            200 -> anyToWritable[Pet]
         ).withDefaultValue(anyToWritable[Error])        
         val pet = request.body
         
@@ -101,14 +101,14 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     private type deletePetActionRequestType       = (Long)
     private type deletePetActionType              = deletePetActionRequestType => Try[(Int, Any)]
 
-    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = { 
+    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = {
         case _: java.util.NoSuchElementException => Status(404)
      } 
 
-    def deletePetAction = (f: deletePetActionType) => (id: Long) => Action {        val deletePetResponseMimeType    = "application/json"
-
+    def deletePetAction = (f: deletePetActionType) => (id: Long) => Action {
+        val deletePetResponseMimeType    = "application/json"
         val possibleWriters = Map(
-                204 -> anyToWritable[Null]
+            204 -> anyToWritable[Null]
         ).withDefaultValue(anyToWritable[Error])        
             val result =                
                     new PetsIdDeleteValidator(id).errors match {

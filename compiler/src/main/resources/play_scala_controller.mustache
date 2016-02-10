@@ -11,11 +11,9 @@ package {{controller.effective_package}} {
 
     class {{controller.controller}} extends {{controller.base}} {
     {{for method in controller.methods}}
-        {{method.signature}}{{for sp in method.single_parameter}} ({{sp.field_name}}: {{sp.type_name}}) =>{{/for}}
-            {{if method.multiple_parameters}} input: ({{for p in method.multiple_parameters}}{{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}) =>
+        {{method.signature}}{{for sp in method.single_parameter}} ({{sp.field_name}}: {{sp.type_name}}) =>{{/for}}{{if method.multiple_parameters}} input: ({{for p in method.multiple_parameters}}{{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}) =>
             val ({{for p in method.multiple_parameters}}{{p.field_name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
-            {{else}}
-            {{if method.single_parameter}}
+            {{else}}{{if method.single_parameter}}
             {{else}} _ =>
             {{/if}}
             {{/if}}

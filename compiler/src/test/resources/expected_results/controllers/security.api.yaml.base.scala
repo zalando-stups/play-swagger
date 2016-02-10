@@ -18,20 +18,19 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgetPetsById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => Action {        val getPetsByIdResponseMimeType    = "application/json"
-
+    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => Action {
+        val getPetsByIdResponseMimeType    = "application/json"
         val possibleWriters = Map(
-                200 -> anyToWritable[Seq[Pet]]
+            200 -> anyToWritable[Seq[Pet]]
         ).withDefaultValue(anyToWritable[ErrorModel])        
-            val result =                
-                    new PetsIdGetValidator(id).errors match {
-                        case e if e.isEmpty => processValidgetPetsByIdRequest(f)((id))(possibleWriters, getPetsByIdResponseMimeType)
-                        case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetsByIdResponseMimeType)
-                            BadRequest(l)
-                    }
-                
-            result
+        val result =
+            new PetsIdGetValidator(id).errors match {
+                case e if e.isEmpty => processValidgetPetsByIdRequest(f)((id))(possibleWriters, getPetsByIdResponseMimeType)
+                case l =>
+                    implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getPetsByIdResponseMimeType)
+                    BadRequest(l)
+            }
+        result
     }
 
     private def processValidgetPetsByIdRequest[T <: Any](f: getPetsByIdActionType)(request: getPetsByIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
