@@ -318,7 +318,7 @@ object definitions {
 
 Polymorphic object definitions are possible through employment of the Swagger `discriminator` property.  In the example definition below an abstract `Pet` defines that what concrete `Cat` and `Dog`s have in common.  As Swagger object models are defining data, a discriminator property is required to distinguish concrete cat and dog instances as they are serialised to and from the api.  The discriminator property works in that sense the same way as a discriminator column works in ORM frameworks when mapping a class hierarchy onto a single table.  It simply contains a value that maps onto one of the concrete types, for example `petType: "Cat"` or `petType: "Dog"`.
 
-```
+```yaml
 definitions:
   Pet:
     discriminator: petType
