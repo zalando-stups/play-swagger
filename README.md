@@ -6,7 +6,7 @@
 
 ## Status
 
-The status of this software is beta software, an end-to-end functional release intented to demonstrate the possibility to generate from a swagger specification:
+The status of this software is beta, an end-to-end functional release intented to demonstrate the possibility to generate from a swagger specification:
 
 - Play route files
 - Generators of random test data
@@ -18,9 +18,15 @@ We benefit from community feedback, all comments are welcome!
 
 # Play-Swagger Tutorial
 
+This tutorial is using the [play-swagger-service](http://www.typesafe.com/activator/template/play-swagger-service) activator template.
+
+```bash
+$ activator new playground play-swagger-service
+```
+
 ## Welcome to Play-Swagger
 
-Congratulations, you just created a new Play-Swagger application!_
+Congratulations, you just created a new Play-Swagger application!
 
 The [Play Framework](http://www.playframework.com/) with the [Play-Swagger](https://github.com/zalando/play-Swagger/) plugin make it easy to build restful web services from a Swagger API specification as the single source of truth. Play is based on a lightweight, stateless, web-friendly architecture. Built on [Akka](http://akka.io), Play provides predictable and minimal resource consumption for highly-scalable applications.  The Play-Swagger plugin takes Swagger API definitions and treats them as the single source of truth of your rest services.
 
@@ -87,7 +93,6 @@ paths:
 # Play Routes Integration
 
 As a Play application developer you are used to define your end-points in the `conf/routes` file. Not so with the Play-Swagger plugin! Swagger API specifications already define endpoints as `path` definitions as seen in the example above, so why do the work twice, right? Instead the Play-Swagger plugin requires you to link your API definition in the routes file ones, bringing all Swagger API defined end-points available as children of one single path context location, generating Play route definitions from them as shown below.
-[conf/routes]
 
 ```
 ->          /echo/          echo.yaml.Routes
@@ -215,6 +220,7 @@ object definitions {
   case class Parent(child: Child)
   case class Child(name: String)
 }
+```
 
 ### Optionality
 
@@ -308,6 +314,7 @@ object definitions {
 ```
 
 ### Polymorphism
+
 Polymorphic object definitions are possible through employment of the Swagger `discriminator` property.  In the example definition below an abstract `Pet` defines that what concrete `Cat` and `Dog`s have in common.  As Swagger object models are defining data, a discriminator property is required to distinguish concrete cat and dog instances as they are serialised to and from the api.  The discriminator property works in that sense the same way as a discriminator column works in ORM frameworks when mapping a class hierarchy onto a single table.  It simply contains a value that maps onto one of the concrete types, for example `petType: "Cat"` or `petType: "Dog"`.
 
 ```
@@ -504,6 +511,7 @@ object definitions {
         nested: ExampleNested
   )
 }
+```
 
 ## Swagger Validations
 
