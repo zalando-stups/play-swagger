@@ -37,7 +37,7 @@ object SwaggerCompiler {
 
   def compileControllers(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String]): SwaggerCompilationResult = {
     implicit val flatAst  = readFlatAst(task)
-    val places            = Seq("/controllers/")
+    val places            = Seq("/generated_controllers/")
     val generator         = new ScalaGenerator(flatAst).generateControllers
     val swaggerFiles      = compileSwagger(task, outputDir, places, generator)
     SwaggerControllerCompilationResult(swaggerFiles.flatten)
@@ -65,7 +65,7 @@ object SwaggerCompiler {
     val playNameSpace = Some(namespace)
     val playRules     = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList
     val playTask      = RoutesCompilerTask(task.definitionFile, allImports, forwardsRouter = true, reverseRouter = true, namespaceReverseRouter = false)
-    val generated     = task.generator.generate(playTask, playNameSpace, playRules)
+    val generated     = task.generator.generate(playTask, playNameSpace, playRules).filter(_._1.endsWith(".scala"))
     val persister     = persist(None, outputDir) _
     val routesFiles   = generated map persister.tupled
     Seq(routesFiles.flatten)

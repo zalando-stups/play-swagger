@@ -25,27 +25,26 @@ object PlaySwagger extends AutoPlugin {
     // taskKey is actually a macro, it will ensure that the name of the task is the same as the name of the field,
     // ie, the name will be "swagger" because the field is "swagger".  This is sbt convention, and means that the
     // same name will be used in .sbt files as will be used on the command line.
-    val swagger                   = taskKey[Seq[File]]("Compile swagger definitions")
+    lazy val swagger                   = taskKey[Seq[File]]("Compile swagger definitions")
 
     // Options for swagger compilation
-    val swaggerPlayGenerator      = settingKey[RoutesGenerator]("Play's generator to be used for play routes generation")
-    val swaggerKeyPrefix          = settingKey[String]("The key prefix is a name for swagger vendor extension")
-    val swaggerTarget             = settingKey[File]("Target folder to save generated files")
+    lazy val swaggerPlayGenerator      = settingKey[RoutesGenerator]("Play's generator to be used for play routes generation")
+    lazy val swaggerKeyPrefix          = settingKey[String]("The key prefix is a name for swagger vendor extension")
+    lazy val swaggerTarget             = settingKey[File]("Target folder to save generated files")
 
-    val swaggerDefinitions        = taskKey[Seq[File]]("The swagger definition files")
+    lazy val swaggerAutogenerateControllers = settingKey[Boolean]("Auto - generate swagger controllers")
 
-    val swaggerCompileAll         = taskKey[Seq[File]]("Combines swaggerCompile, swaggerCompileTests and swaggerCompileRoutes")
+    lazy val swaggerDefinitions        = taskKey[Seq[File]]("The swagger definition files")
 
-    val swaggerCompileBase        = taskKey[Seq[File]]("Compile model, validators and controller bases from swagger definitions")
-    val swaggerCompileTests       = taskKey[Seq[File]]("Compile test data generators and tests from swagger definitions")
-    val swaggerCompileRoutes      = taskKey[Seq[File]]("Compile play routes from swagger definitions")
-    val swaggerCompileControllers = taskKey[Seq[File]]("Compile controllers from swagger definitions")
-
+    lazy val swaggerBase               = taskKey[Seq[File]]("Generate model, validators and controller bases from swagger definitions")
+    lazy val swaggerRoutes             = taskKey[Seq[File]]("Generate play routes from swagger definitions")
+    lazy val swaggerTests              = taskKey[Seq[File]]("Generate test data generators and tests from swagger definitions")
+    lazy val swaggerControllers        = taskKey[Seq[File]]("Generate controllers from swagger definitions")
 
     // By default, end users won't define this themselves, they'll just use the options above for one single
     // swagger definition, however, if they want more control over settings, or what to compile multiple files,
     // they can ignore the above options, and just define this directly.
-    val swaggerCompilationTasks = taskKey[Seq[SwaggerCompilationTask]]("The compilation tasks")
+    lazy val swaggerCompilationTasks = taskKey[Seq[SwaggerCompilationTask]]("The compilation tasks")
 
   }
 
@@ -64,20 +63,29 @@ object PlaySwagger extends AutoPlugin {
       "org.scalacheck" %% "scalacheck" % "1.12.4" % Test,
       "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Test
     )
-  ) ++ unscopedSwaggerSettings ++
-    baseSwaggerSettings ++
-    controllerSwaggerSettings ++
-    routesSwaggerSettings ++
-    testsSwaggerSettings
-
+  ) ++ inConfig(Compile)(rawSwaggerSettings) ++
+    inConfig(Test)(rawSwaggerSettings) ++
+    inConfig(Compile)(swaggerBaseSettings) ++
+    inConfig(Compile)(swaggerControllerSettings) ++
+    inConfig(Compile)(swaggerRoutesSettings) ++
+    inConfig(Test)(swaggerTestSettings)
 
   /**
    * We define these unscoped, and then scope later using inConfig, this means we could define different definitions
    * to be compiled in compile and test, for example.
    */
-  def unscopedSwaggerSettings: Seq[Setting[_]] = Seq(
-    swaggerDefinitions := ((resourceDirectory in Compile).value * "*.yaml").get,
-    sources in swagger := swaggerDefinitions.value,
+  def rawSwaggerSettings: Seq[Setting[_]] = Seq(
+
+    swaggerAutogenerateControllers := true,
+
+    swaggerPlayGenerator  :=  RoutesCompiler.autoImport.routesGenerator.value,
+
+    swaggerKeyPrefix      :=  "x-api-first",
+
+    swaggerDefinitions    := ((resourceDirectory in Compile).value * "*.yaml").get,
+
+    sources in swagger    := swaggerDefinitions.value,
+
     swaggerCompilationTasks := (sources in swagger).value.map { source =>
       val version = if (BuildInfo.version.endsWith("-SNAPSHOT")) {
         // This essentially disables incremental compilation if we're using a SNAPSHOT version of the swagger plugin.
@@ -91,52 +99,47 @@ object PlaySwagger extends AutoPlugin {
       SwaggerCompilationTask(source, ScalaName.scalaPackageName(source.getName), swaggerPlayGenerator.value, version)
     },
 
-    swaggerKeyPrefix :=  "x-api-first",
-
-    swagger := swaggerGenerateAll.value,
-
     watchSources in Defaults.ConfigGlobal <++= sources in swagger,
 
-    swaggerTarget in Compile := crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
-
-    swaggerTarget in Test := crossTarget.value / "routes" / Defaults.nameForSrc(Test.name),
-
-    managedSourceDirectories in Compile += (swaggerTarget in Compile).value,
-
-    managedSourceDirectories in Test += (swaggerTarget in Test).value,
-
-    swaggerPlayGenerator :=  RoutesCompiler.autoImport.routesGenerator.value
+    swagger := swaggerRoutes.value
   )
 
-  def baseSwaggerSettings: Seq[Setting[_]] = Seq(
-    target in swaggerCompileBase := (swaggerTarget in Compile).value,
-    swaggerCompileBase := swaggerGenerateBase.value,
-    managedSources in Compile ++= swaggerCompileBase.value
+  def swaggerBaseSettings: Seq[Setting[_]] = Seq(
+    target in swaggerBase := crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
+    swaggerBase  := swaggerGenerateBase.value,
+    managedSources ++= swaggerBase.value
   )
-  def testsSwaggerSettings: Seq[Setting[_]] = Seq(
-    target in swaggerCompileTests := (swaggerTarget in Test).value,
-    swaggerCompileTests := swaggerGenerateTests.value,
-    managedSources in Test ++= swaggerCompileTests.value
+  def swaggerTestSettings: Seq[Setting[_]] = Seq(
+    target in swaggerTests := crossTarget.value / "routes" / Defaults.nameForSrc(Test.name),
+    swaggerTests := {
+      val rout = swaggerRoutes.value
+      swaggerGenerateTests.value
+    },
+    managedSources ++= swaggerTests.value
   )
-  def routesSwaggerSettings: Seq[Setting[_]] = Seq(
-    target in swaggerCompileRoutes := (swaggerTarget in Compile).value,
-    swaggerCompileRoutes := swaggerGenerateRoutes.value,
-    managedSources in Compile ++= swaggerCompileRoutes.value
+  def swaggerControllerSettings: Seq[Setting[_]] = Seq(
+    target in swaggerControllers := scalaSource.value,
+    swaggerControllers := {
+      val comp = swaggerBase.value
+      swaggerGenerateControllers.value
+    }
+    // managedSources in Compile in swaggerControllers ++= swaggerControllers.value
+  )
+  def swaggerRoutesSettings: Seq[Setting[_]] = Seq(
+    target in swaggerRoutes := crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
+    swaggerRoutes := {
+      if (swaggerAutogenerateControllers.value) {
+        val cont = swaggerControllers.value
+      }
+      swaggerGenerateRoutes.value
+    },
+    managedSources ++= swaggerRoutes.value
   )
 
-  def controllerSwaggerSettings: Seq[Setting[_]] = Seq(
-    target in swaggerCompileControllers := (scalaSource in Compile).value,
-    swaggerCompileControllers := swaggerGenerateControllers.value
-  )
-
-  def swaggerGenerateBase        = commonSwaggerCompile(SwaggerCompiler.compileBase,         swaggerCompileBase)
-  def swaggerGenerateTests       = commonSwaggerCompile(SwaggerCompiler.compileTests,        swaggerCompileTests)
-  def swaggerGenerateRoutes      = commonSwaggerCompile(SwaggerCompiler.compileRoutes,       swaggerCompileRoutes)
-  def swaggerGenerateControllers = commonSwaggerCompile(SwaggerCompiler.compileControllers,  swaggerCompileControllers)
-
-  def swaggerGenerateAll = Def.task {
-    swaggerGenerateBase.value ++ swaggerGenerateTests.value ++ swaggerGenerateControllers.value ++ swaggerGenerateRoutes.value
-  }
+  val swaggerGenerateBase         = commonSwaggerCompile(SwaggerCompiler.compileBase, swaggerBase)
+  val swaggerGenerateRoutes       = commonSwaggerCompile(SwaggerCompiler.compileRoutes, swaggerRoutes)
+  val swaggerGenerateTests        = commonSwaggerCompile(SwaggerCompiler.compileTests, swaggerTests)
+  val swaggerGenerateControllers  = commonSwaggerCompile(SwaggerCompiler.compileControllers, swaggerControllers)
 
   private def commonSwaggerCompile: ((SwaggerCompilationTask, File, String, Seq[String]) => SwaggerCompilationResult, TaskKey[scala.Seq[sbt.File]]) =>
     Def.Initialize[Task[Seq[File]]] =
@@ -146,11 +149,18 @@ object PlaySwagger extends AutoPlugin {
       val tasks             = swaggerCompilationTasks.value
       val outputDirectory   = (target in config).value
 
+      streams.value.log.verbose("Tasks in : " + config.key.label + tasks.seq.map(_.definitionFile.name))
+
       // Read the detailed scaladoc for syncIncremental to see how it works
       val (products, errors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
-        val results = tasksToRun.map { task =>
-          task -> Try { compiler(task, outputDirectory, swaggerKeyPrefix.value, routesImport) }
+
+        streams.value.log.verbose("SyncInc in " + config.key.label + tasksToRun.map(_.definitionFile.name).mkString(", "))
+
+        val results = tasksToRun map { task =>
+            task -> Try { compiler(task, outputDirectory, swaggerKeyPrefix.value, routesImport) }
         }
+
+        streams.value.log.verbose("RS in " + config.key.label + results.map(_._2).mkString(", "))
 
         // Collect the results into a map of task to OpResult for syncIncremental
         val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
@@ -167,6 +177,8 @@ object PlaySwagger extends AutoPlugin {
       }
 
       if (errors.nonEmpty) throw errors.head
+
+      streams.value.log.verbose("Result in " + config.key.label + products.to[Seq].mkString(", "))
 
       // Return all the files that were or have in the past been compiled
       products.to[Seq]

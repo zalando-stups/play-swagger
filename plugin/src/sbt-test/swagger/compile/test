@@ -1,6 +1,6 @@
 # Project is clean, nothing is here
 
-$ absent app/controllers/echo.api.yaml.scala
+$ absent app/generated_controllers/echo.api.yaml.scala
 $ absent target/routes/main/controllers_base/echo.api.yaml.scala
 $ absent target/routes/main/model/echo.api.yaml.scala
 $ absent target/routes/main/validators/echo.api.yaml.scala
@@ -9,29 +9,29 @@ $ absent target/routes/test/generators/echo.api.yaml.scala
 
 # Fails while compiled for the first time because of missing controllers
 > clean
--> compile
+> swagger
 
-$ absent app/controllers/echo.api.yaml.scala
+# $ absent app/generated_controllers/echo.api.yaml.scala
 $ exists target/routes/main/controllers_base/echo.api.yaml.scala
 $ exists target/routes/main/model/echo.api.yaml.scala
 $ exists target/routes/main/validators/echo.api.yaml.scala
 
 # The controller generation must be triggered explicitly
-> swaggerCompileControllers
+# > swaggerControllers
 
 # all controllers were generated
 
-$ exists app/controllers/echo.api.yaml.scala
-$ exists app/controllers/basic.auth.api.yaml.scala
-$ exists app/controllers/error_in_array.yaml.scala
-$ exists app/controllers/full.petstore.api.yaml.scala
-$ exists app/controllers/hackweek.yaml.scala
-$ exists app/controllers/heroku.petstore.api.yaml.scala
-$ exists app/controllers/minimal.api.yaml.scala
-$ exists app/controllers/nakadi.yaml.scala
-$ exists app/controllers/security.api.yaml.scala
-$ exists app/controllers/simple.petstore.api.yaml.scala
-$ exists app/controllers/uber.api.yaml.scala
+$ exists app/generated_controllers/echo.api.yaml.scala
+$ exists app/generated_controllers/basic.auth.api.yaml.scala
+$ exists app/generated_controllers/error_in_array.yaml.scala
+$ exists app/generated_controllers/full.petstore.api.yaml.scala
+$ exists app/generated_controllers/hackweek.yaml.scala
+$ exists app/generated_controllers/heroku.petstore.api.yaml.scala
+$ exists app/generated_controllers/minimal.api.yaml.scala
+$ exists app/generated_controllers/nakadi.yaml.scala
+$ exists app/generated_controllers/security.api.yaml.scala
+$ exists app/generated_controllers/simple.petstore.api.yaml.scala
+$ exists app/generated_controllers/uber.api.yaml.scala
 
 # other artifacts weren't deleted
 
@@ -43,21 +43,22 @@ $ absent target/routes/test/generators/echo.api.yaml.scala
 
 # Successfully compiles after controllers have being generated
 > clean
+> swagger
 > compile
 
 # no test data exists yet
 
-$ exists app/controllers/echo.api.yaml.scala
-$ exists app/controllers/basic.auth.api.yaml.scala
-$ exists app/controllers/error_in_array.yaml.scala
-$ exists app/controllers/full.petstore.api.yaml.scala
-$ exists app/controllers/hackweek.yaml.scala
-$ exists app/controllers/heroku.petstore.api.yaml.scala
-$ exists app/controllers/minimal.api.yaml.scala
-$ exists app/controllers/nakadi.yaml.scala
-$ exists app/controllers/security.api.yaml.scala
-$ exists app/controllers/simple.petstore.api.yaml.scala
-$ exists app/controllers/uber.api.yaml.scala
+$ exists app/generated_controllers/echo.api.yaml.scala
+$ exists app/generated_controllers/basic.auth.api.yaml.scala
+$ exists app/generated_controllers/error_in_array.yaml.scala
+$ exists app/generated_controllers/full.petstore.api.yaml.scala
+$ exists app/generated_controllers/hackweek.yaml.scala
+$ exists app/generated_controllers/heroku.petstore.api.yaml.scala
+$ exists app/generated_controllers/minimal.api.yaml.scala
+$ exists app/generated_controllers/nakadi.yaml.scala
+$ exists app/generated_controllers/security.api.yaml.scala
+$ exists app/generated_controllers/simple.petstore.api.yaml.scala
+$ exists app/generated_controllers/uber.api.yaml.scala
 
 $ exists target/routes/main/model/echo.api.yaml.scala
 $ exists target/routes/main/validators/echo.api.yaml.scala
@@ -76,17 +77,17 @@ $ exists target/routes/main/controllers_base/echo.api.yaml.scala
 $ exists target/routes/main/model/echo.api.yaml.scala
 $ exists target/routes/main/validators/echo.api.yaml.scala
 
-$ exists app/controllers/echo.api.yaml.scala
-$ exists app/controllers/basic.auth.api.yaml.scala
-$ exists app/controllers/error_in_array.yaml.scala
-$ exists app/controllers/full.petstore.api.yaml.scala
-$ exists app/controllers/hackweek.yaml.scala
-$ exists app/controllers/heroku.petstore.api.yaml.scala
-$ exists app/controllers/minimal.api.yaml.scala
-$ exists app/controllers/nakadi.yaml.scala
-$ exists app/controllers/security.api.yaml.scala
-$ exists app/controllers/simple.petstore.api.yaml.scala
-$ exists app/controllers/uber.api.yaml.scala
+$ exists app/generated_controllers/echo.api.yaml.scala
+$ exists app/generated_controllers/basic.auth.api.yaml.scala
+$ exists app/generated_controllers/error_in_array.yaml.scala
+$ exists app/generated_controllers/full.petstore.api.yaml.scala
+$ exists app/generated_controllers/hackweek.yaml.scala
+$ exists app/generated_controllers/heroku.petstore.api.yaml.scala
+$ exists app/generated_controllers/minimal.api.yaml.scala
+$ exists app/generated_controllers/nakadi.yaml.scala
+$ exists app/generated_controllers/security.api.yaml.scala
+$ exists app/generated_controllers/simple.petstore.api.yaml.scala
+$ exists app/generated_controllers/uber.api.yaml.scala
 
 # we don't check what is created by the play's routes compiler because its outside of our control
 
