@@ -149,18 +149,15 @@ object PlaySwagger extends AutoPlugin {
       val tasks             = swaggerCompilationTasks.value
       val outputDirectory   = (target in config).value
 
-      streams.value.log.verbose("Tasks in : " + config.key.label + tasks.seq.map(_.definitionFile.name))
-
       // Read the detailed scaladoc for syncIncremental to see how it works
       val (products, errors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
 
-        streams.value.log.verbose("SyncInc in " + config.key.label + tasksToRun.map(_.definitionFile.name).mkString(", "))
+        // TODO sometimes tasksToRun are empty here, even if tasks are not
+        // streams.value.log.verbose("SyncInc in " + config.key.label + tasksToRun.map(_.definitionFile.name).mkString(", "))
 
         val results = tasksToRun map { task =>
             task -> Try { compiler(task, outputDirectory, swaggerKeyPrefix.value, routesImport) }
         }
-
-        streams.value.log.verbose("RS in " + config.key.label + results.map(_._2).mkString(", "))
 
         // Collect the results into a map of task to OpResult for syncIncremental
         val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
@@ -177,8 +174,6 @@ object PlaySwagger extends AutoPlugin {
       }
 
       if (errors.nonEmpty) throw errors.head
-
-      streams.value.log.verbose("Result in " + config.key.label + products.to[Seq].mkString(", "))
 
       // Return all the files that were or have in the past been compiled
       products.to[Seq]
