@@ -15,6 +15,7 @@
     <logger name="play" level="INFO" />
     <logger name="application" level="DEBUG" />
     <logger name="me.andrz.jackson" level="ERROR" />
+    <logger name="de.zalando.beard" level="ERROR" />
 
     <root level="ERROR">
         <appender-ref ref="STDOUT" />
