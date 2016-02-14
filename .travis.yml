@@ -24,5 +24,4 @@ after_success:
   - codecov
 
 script:
-  - sbt compile test:compile test
-  # +publishLocal scripted
+  - sbt compile test:compile test +publishLocal scripted
