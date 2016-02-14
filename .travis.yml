@@ -2,8 +2,7 @@
 language: scala
 
 scala:
-#  TODO Disabled because it fails in travis. Needs to addressed
-#  - 2.10.5
+  - 2.10.5
   - 2.11.7
 
 branches:
@@ -25,4 +24,6 @@ after_success:
   - codecov
 
 script:
-  - sbt compile test:compile test +publishLocal scripted
+  - sbt compile test:compile test
+  #  TODO Disabled because it fails _sometimes_ in travis.
+  # +publishLocal scripted
