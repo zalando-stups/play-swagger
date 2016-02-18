@@ -98,8 +98,8 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
     "zalando-maven" at "https://dl.bintray.com/zalando/maven"
   ),
   licenses                       += ("MIT", url("http://opensource.org/licenses/MIT")),
-  publishMavenStyle              := false,
-  repository in bintray          := "sbt-plugins",
+  publishMavenStyle              := true,
+  repository in bintray          := "maven",
   bintrayOrganization in bintray := Some("zalando")
 )
 
