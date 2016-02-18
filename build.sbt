@@ -1,5 +1,3 @@
-import bintray.Keys._
-
 val PlayVersion  = "2.4.3"
 val ScalaVersion = "2.11.7"
 
@@ -88,7 +86,7 @@ lazy val root = (project in file("."))
   )
   .aggregate(api, compiler, plugin)
 
-def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
+def common: Seq[Setting[_]] = Seq(
   organization := "de.zalando",
   version      := "0.1.5",
   fork in ( Test, run ) := true,
@@ -97,10 +95,10 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
     "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
     "zalando-maven" at "https://dl.bintray.com/zalando/maven"
   ),
-  licenses                       += ("MIT", url("http://opensource.org/licenses/MIT")),
-  publishMavenStyle              := false,
-  repository in bintray          := "sbt-plugins",
-  bintrayOrganization in bintray := Some("zalando")
+  resolvers           += Resolver.bintrayRepo("zalando", "sbt-plugins"),
+  licenses            += ("MIT", url("http://opensource.org/licenses/MIT")),
+  publishMavenStyle   := false,
+  bintrayOrganization := Some("zalando")
 )
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60
