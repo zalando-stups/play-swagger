@@ -44,7 +44,7 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-library" % scalaVersion.value,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalacheck" %% "scalacheck" % "1.12.5",
-      "me.andrz.jackson" % "jackson-json-reference" % "0.1.2",
+      "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
       "de.zalando" %% "beard" % "0.0.6"
     )
   )
@@ -95,12 +95,11 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   autoScalaLibrary := true,
   resolvers ++= Seq(
     "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
-    "jackson-json-reference" at "https://dl.bintray.com/slavaschmidt/maven",
     "zalando-maven" at "https://dl.bintray.com/zalando/maven"
   ),
   licenses                       += ("MIT", url("http://opensource.org/licenses/MIT")),
-  publishMavenStyle              := false,
-  repository in bintray          := "sbt-plugins",
+  publishMavenStyle              := true,
+  repository in bintray          := "maven",
   bintrayOrganization in bintray := Some("zalando")
 )
 

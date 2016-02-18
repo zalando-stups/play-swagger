@@ -6,7 +6,7 @@ package de.zalando.swagger
  */
 
 import java.io.File
-import java.net.URI
+import java.net.{URL, URI}
 
 import com.fasterxml.jackson.databind.{JsonMappingException, DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -30,15 +30,15 @@ trait StrictParser {
   * @param contents
   * @param factory
   */
-class TransientJsonContext(file: File, contents: String, factory: ObjectMapperFactory) extends JsonContext(file) {
+class TransientJsonContext(file: File, contents: String, factory: ObjectMapperFactory) extends JsonContext(file, 0) {
   setUrl(file.toURI.toURL)
-  private val rootNode = factory.create().readTree(contents)
+  private val rootNode = factory.create(getUrl).readTree(contents)
   setNode(rootNode)
   this.setFactory(factory)
 }
 
 class JsonObjectMapperFactory extends ObjectMapperFactory {
-  override def create: ObjectMapper = {
+  override def create(url: URL): ObjectMapper = {
     val mapper = new ObjectMapper()
     configure(mapper)
   }
@@ -50,7 +50,7 @@ class JsonObjectMapperFactory extends ObjectMapperFactory {
 }
 
 class YamlObjectMapperFactory extends JsonObjectMapperFactory {
-  override def create: ObjectMapper = {
+  override def create(url: URL): ObjectMapper = {
     val mapper = new ObjectMapper(new YAMLFactory())
     configure(mapper)
   }
@@ -63,11 +63,11 @@ private[swagger] abstract class StrictSwaggerParser extends StrictParser {
   def parse(file: File): (URI, SwaggerModel) = {
     val input = prepareFile(file)
     val node = processor.process(new TransientJsonContext(file, input, mapperFactory))
-    (file.toURI, mapper.treeToValue(node, classOf[SwaggerModel]))
+    (file.toURI, mapper(file.toURI.toURL).treeToValue(node, classOf[SwaggerModel]))
   }
 
-  def mapper: ObjectMapper = {
-    val mapper = mapperFactory.create
+  def mapper(url: URL): ObjectMapper = {
+    val mapper = mapperFactory.create(url)
 
     mapper.registerModule(DefaultScalaModule)
     mapper.registerModule(deserializers.securityModule)
@@ -103,7 +103,7 @@ object StrictYamlParser extends StrictSwaggerParser {
     val input = super.prepareFile(file)
     val yaml = new Yaml
     val normalized = yaml.load(input)
-    mapper.writeValueAsString(normalized)
+    mapper(file.toURI.toURL).writeValueAsString(normalized)
   }
 }
 
