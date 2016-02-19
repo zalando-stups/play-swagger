@@ -17,13 +17,16 @@ notifications:
 jdk:
   - oraclejdk8
 
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
 before_install:
-  - pip install --user codecov
+#  - pip install --user codecov
 
 after_success:
-  - codecov
+#  - codecov
 
 script:
-  - sbt compile test:compile test
-  #  TODO Disabled because it fails _sometimes_ in travis.
-  # +publishLocal scripted
+  - sbt compile test:compile test +publishLocal scripted
