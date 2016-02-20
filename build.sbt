@@ -73,7 +73,8 @@ lazy val plugin = (project in file("plugin"))
       val a = (publishLocal in api).value
       val b = (publishLocal in compiler).value
       val c = publishLocal.value
-    }
+    },
+    scriptedBufferLog := false
   )
   .dependsOn(compiler)
 

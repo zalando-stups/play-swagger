@@ -49,12 +49,14 @@ object naming {
     val tokens = parts
     val pointer = this
     lazy val isResponsePath = parts.contains(responses)
+    lazy val isDefinition = parts.headOption.exists(_ == definitions)
     lazy val isTopResponsePath = parts.last == responses
   }
 
 
   object Reference {
     val responses = "responses"
+    val definitions = "definitions"
     val delimiter = "⌿"
     val root: Reference = Reference(List.empty)
     def apply(base: String, s: Reference): Reference = s

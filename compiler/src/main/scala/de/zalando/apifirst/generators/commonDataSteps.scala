@@ -55,6 +55,7 @@ trait CommonDataStep extends EnrichmentStep[Type] with CommonData {
 
   override def steps = types +: super.steps
 
+  @tailrec
   private def avoidClashes(table: DenotationTable, name: String)
                           (names: Iterable[String] = table.values.map(_ (COMMON)(TYPE_NAME).toString)): String =
     if (names.exists(_.equalsIgnoreCase(name))) avoidClashes(table, name + "NameClash")(names) else name
@@ -83,6 +84,8 @@ trait CommonData {
         case _ => useType(ref, suffix, "")
       }
     case p: PrimitiveType => useType(t.name, suffix, "")
+    case TypeDef(name, _, _) if name.isDefinition  && ! r.isDefinition =>
+      useType(name, suffix, "")
     case _ => useType(r, suffix, "")
   }
 
