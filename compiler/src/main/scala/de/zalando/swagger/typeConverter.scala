@@ -227,7 +227,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (ParameterType.NUMBER, Some("double")) => Domain.Dbl
       case (ParameterType.NUMBER, _) => Domain.Dbl
       case (ParameterType.BOOLEAN, _) => Domain.Bool
-      case (ParameterType.STRING, Some("byte")) => Domain.Byt
+      case (ParameterType.STRING, Some("binary")) => Domain.BinaryString
+      case (ParameterType.STRING, Some("byte")) => Domain.Base64String
       case (ParameterType.STRING, Some("date")) => Domain.Date
       case (ParameterType.STRING, Some("date-time")) => Domain.DateTime
       case (ParameterType.STRING, Some("password")) => Domain.Password
@@ -245,7 +246,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (PrimitiveType.NUMBER, Some("double")) => Domain.Dbl
       case (PrimitiveType.NUMBER, _) => Domain.Dbl
       case (PrimitiveType.BOOLEAN, _) => Domain.Bool
-      case (PrimitiveType.STRING, Some("byte")) => Domain.Byt
+      case (PrimitiveType.STRING, Some("binary")) => Domain.BinaryString
+      case (PrimitiveType.STRING, Some("byte")) => Domain.Base64String
       case (PrimitiveType.STRING, Some("date")) => Domain.Date
       case (PrimitiveType.STRING, Some("date-time")) => Domain.DateTime
       case (PrimitiveType.STRING, Some("password")) => Domain.Password

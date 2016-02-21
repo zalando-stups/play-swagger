@@ -1,11 +1,11 @@
 package de.zalando.play.controllers
 
-import com.fasterxml.jackson.databind.{JavaType, ObjectWriter, ObjectReader, MappingIterator}
-import com.fasterxml.jackson.dataformat.csv.{CsvSchema, CsvMapper, CsvParser}
+import java.util.Base64
+
+import com.fasterxml.jackson.databind.{MappingIterator, ObjectReader, ObjectWriter}
+import com.fasterxml.jackson.dataformat.csv.{CsvMapper, CsvParser, CsvSchema}
 import org.joda.time.{DateMidnight, DateTime}
 import play.api.mvc.{PathBindable, QueryStringBindable}
-
-import scala.reflect.ClassTag
 
 /**
   * @author slasch 
@@ -57,6 +57,19 @@ object PlayPathBindables {
     (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
   )
 
+  implicit object pathBindableBase64String extends PathBindable.Parsing[Base64String](
+    s => Base64String.string2base64string(s),
+    s => Base64String.base64string2string(s),
+    (key: String, e: Exception) => "Cannot parse parameter %s as DateTime: %s".format(key, e.getMessage)
+  )
+
+  implicit object queryBindableBase64String extends QueryStringBindable.Parsing[Base64String](
+    s => Base64String.string2base64string(s),
+    s => Base64String.base64string2string(s),
+    (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
+  )
+
+
   /**
     * Factory to create PathBindable for optional values of any type
     *
@@ -67,7 +80,8 @@ object PlayPathBindables {
   def createOptionPathBindable[T](implicit tBinder: PathBindable[T]) = new PathBindable[Option[T]] {
     override def bind(key: String, value: String): Either[String, Option[T]] = {
       val wrap = Option(value).map(tBinder.bind(key, _))
-      wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
+      val result = wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
+      result
     }
 
     override def unbind(key: String, value: Option[T]): String = value match {
@@ -85,7 +99,8 @@ object PlayPathBindables {
   def createOptionQueryBindable[T](implicit tBinder: QueryStringBindable[T]) = new QueryStringBindable[Option[T]] {
     override def bind(key: String, values: Map[String, Seq[String]]): Option[Either[String, Option[T]]] = {
       val wrap = values.get(key).flatMap(_ => tBinder.bind(key, values))
-      wrap.map(_.right.map(Option.apply))
+      val result = wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
+      Some(result)
     }
 
     override def unbind(key: String, value: Option[T]): String = value match {
