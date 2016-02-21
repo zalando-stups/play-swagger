@@ -53,4 +53,14 @@ object Generators {
         l <- arbitrary[Long]
     } yield new DateTime(System.currentTimeMillis + l))
     {{/if}}
+    {{if binary_string_part}}
+    implicit lazy val arbBinaryString: Arbitrary[BinaryString] = Arbitrary(for {
+        s <- arbitrary[String]
+    } yield BinaryString.fromString(s))
+    {{/if}}
+    {{if base64_string_part}}
+    implicit lazy val arbBase64String: Arbitrary[Base64String] = Arbitrary(for {
+        s <- arbitrary[String]
+    } yield Base64String.string2base64string(s))
+    {{/if}}
 }

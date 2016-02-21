@@ -1,11 +1,11 @@
 package de.zalando.play.controllers
 
-import com.fasterxml.jackson.databind.{JavaType, ObjectWriter, ObjectReader, MappingIterator}
-import com.fasterxml.jackson.dataformat.csv.{CsvSchema, CsvMapper, CsvParser}
+import java.util.Base64
+
+import com.fasterxml.jackson.databind.{MappingIterator, ObjectReader, ObjectWriter}
+import com.fasterxml.jackson.dataformat.csv.{CsvMapper, CsvParser, CsvSchema}
 import org.joda.time.{DateMidnight, DateTime}
 import play.api.mvc.{PathBindable, QueryStringBindable}
-
-import scala.reflect.ClassTag
 
 /**
   * @author slasch 
@@ -56,6 +56,19 @@ object PlayPathBindables {
     Rfc3339Util.writeDate,
     (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
   )
+
+  implicit object pathBindableBase64String extends PathBindable.Parsing[Base64String](
+    s => Base64String.string2base64string(s),
+    s => Base64String.base64string2string(s),
+    (key: String, e: Exception) => "Cannot parse parameter %s as DateTime: %s".format(key, e.getMessage)
+  )
+
+  implicit object queryBindableBase64String extends QueryStringBindable.Parsing[Base64String](
+    s => Base64String.string2base64string(s),
+    s => Base64String.base64string2string(s),
+    (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
+  )
+
 
   /**
     * Factory to create PathBindable for optional values of any type

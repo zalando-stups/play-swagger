@@ -1,6 +1,6 @@
 package hackweek.yaml
 
-import de.zalando.play.controllers.PlayBodyParsing
+import de.zalando.play.controllers._
 import org.scalacheck._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Prop._

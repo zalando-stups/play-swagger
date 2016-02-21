@@ -87,8 +87,6 @@ object Domain {
 
   case class Dbl(override val meta: TypeMeta) extends Nmbr("Double", meta)
 
-  case class Byt(override val meta: TypeMeta) extends Nmbr("Byte", meta)
-
   case class Str(format: Option[String] = None, override val meta: TypeMeta) extends ProvidedType("String", meta) with PrimitiveType
 
   case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta) with PrimitiveType
@@ -97,12 +95,20 @@ object Domain {
     override val imports = Set("org.joda.time.DateMidnight")
   }
 
+  case class DateTime(override val meta: TypeMeta) extends ProvidedType("DateTime", meta)  with PrimitiveType {
+    override val imports = Set("org.joda.time.DateTime")
+  }
+
   case class File(override val meta: TypeMeta) extends ProvidedType("File", meta)  with PrimitiveType {
     override val imports = Set("java.io.File")
   }
 
-  case class DateTime(override val meta: TypeMeta) extends ProvidedType("DateTime", meta)  with PrimitiveType {
-    override val imports = Set("org.joda.time.DateTime")
+  case class BinaryString(override val meta: TypeMeta) extends ProvidedType("BinaryString", meta) with PrimitiveType {
+    override val imports = Set("de.zalando.play.controllers.BinaryString", "BinaryString._")
+  }
+
+  case class Base64String(override val meta: TypeMeta) extends ProvidedType("Base64String", meta)  with PrimitiveType {
+    override val imports = Set("de.zalando.play.controllers.Base64String", "Base64String._")
   }
 
   case class Password(override val meta: TypeMeta) extends ProvidedType("String", meta) with PrimitiveType

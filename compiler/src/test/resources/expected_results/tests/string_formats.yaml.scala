@@ -1,4 +1,4 @@
-package security.api.yaml
+package string_formats.yaml
 
 import de.zalando.play.controllers._
 import org.scalacheck._
@@ -21,7 +21,7 @@ import play.api.test.Helpers.{contentType => requestContentType_}
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
-    class SecurityApiYamlSpec extends Specification {
+    class String_formatsYamlSpec extends Specification {
         def toPath[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
         def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = Option(binder.unbind(key, value)).getOrElse("")
         def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
@@ -41,39 +41,45 @@ import Generators._
         parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
 
 
+    "GET /" should {
+        def testInvalidInput(input: (BinaryString, GetBase64, GetDate, GetDate_time)) = {
 
-    "GET /v1/pets/{id}" should {
-        def testInvalidInput(id: PetsIdGetId) = {
+            val (petId, base64, date, date_time) = input
 
-
-            val url = s"""/v1/pets/${toPath(id)}"""
+            val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
             val headers = Seq()
+                val parsed_petId = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(petId)
 
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsIdGetValidator(id).errors
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)).get
+            val errors = new GetValidator(petId, base64, date, date_time).errors
 
             lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-            ("given an URL: [" + url + "]" ) |: all(
+            ("given an URL: [" + url + "]" + "and body [" + parsed_petId + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
                 requestContentType_(path) ?= Some("application/json"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(id: PetsIdGetId) = {            
-            val url = s"""/v1/pets/${toPath(id)}"""
+        def testValidInput(input: (BinaryString, GetBase64, GetDate, GetDate_time)) = {
+            val (petId, base64, date, date_time) = input
+            
+            val parsed_petId = parserConstructor("application/json").writeValueAsString(petId)
+            
+            val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
             val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsIdGetValidator(id).errors
+            val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)).get
+            val errors = new GetValidator(petId, base64, date, date_time).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
             val parsedApiResponse = scala.util.Try {
                 parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
             }
-            ("given an URL: [" + url + "]" ) |: all(
+            ("given an URL: [" + url + "]" + "and body [" + parsed_petId + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
                 requestContentType_(path) ?= Some("application/json"),
                 errors.isEmpty ?= true
@@ -81,25 +87,32 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    id <- PetsIdGetIdGenerator
-                } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdGetValidator(id).errors.nonEmpty
+                        petId <- BinaryStringGenerator
+                        base64 <- GetBase64Generator
+                        date <- GetDateGenerator
+                        date_time <- GetDate_timeGenerator
+                    
+                } yield (petId, base64, date, date_time)
+            val inputs = genInputs suchThat { case (petId, base64, date, date_time) =>
+                new GetValidator(petId, base64, date, date_time).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                id <- PetsIdGetIdGenerator
-            } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdGetValidator(id).errors.isEmpty
+                    petId <- BinaryStringGenerator
+                    base64 <- GetBase64Generator
+                    date <- GetDateGenerator
+                    date_time <- GetDate_timeGenerator
+                
+            } yield (petId, base64, date, date_time)
+            val inputs = genInputs suchThat { case (petId, base64, date, date_time) =>
+                new GetValidator(petId, base64, date, date_time).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)
         }
 
     }
-
 }

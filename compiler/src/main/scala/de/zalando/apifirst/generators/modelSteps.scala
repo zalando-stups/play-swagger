@@ -94,6 +94,7 @@ trait AliasesStep extends EnrichmentStep[Type] {
     Map(
       "name" -> memberNameDenotation(table, k),
       "alias" -> typeNameDenotation(table, v.name),
+      "imports" -> v.imports,
       "underlying_type" -> ""
     )
   }

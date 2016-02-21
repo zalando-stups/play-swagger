@@ -70,6 +70,7 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
     case TypeRef(ref) => forType(tpe, ref, app.findType(ref), table)
     case d: Date =>
       Seq(Map(
+        "name" -> "", "format" -> "",
         "binding_imports" -> Set(
           "de.zalando.play.controllers.PlayPathBindables",
           s"PlayPathBindables.${tpe.toLowerCase}BindableDateMidnight"
@@ -77,11 +78,22 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
       ))
     case d: DateTime =>
       Seq(Map(
+        "name" -> "", "format" -> "",
         "binding_imports" -> Set(
           "de.zalando.play.controllers.PlayPathBindables",
           s"PlayPathBindables.${tpe.toLowerCase}BindableDateTime"
         )
       ))
+    case d: Base64String =>
+      Seq(Map(
+        "name" -> "", "format" -> "",
+        "binding_imports" -> Set(
+          "de.zalando.play.controllers.PlayPathBindables",
+          s"PlayPathBindables.${tpe.toLowerCase}BindableBase64String"
+        )
+      ))
+    case d: BinaryString =>
+      throw new IllegalArgumentException("'type: string, format: binary' can only be used with body parameters")
   }
 
 }
