@@ -80,7 +80,8 @@ object PlayPathBindables {
   def createOptionPathBindable[T](implicit tBinder: PathBindable[T]) = new PathBindable[Option[T]] {
     override def bind(key: String, value: String): Either[String, Option[T]] = {
       val wrap = Option(value).map(tBinder.bind(key, _))
-      wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
+      val result = wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
+      result
     }
 
     override def unbind(key: String, value: Option[T]): String = value match {
@@ -98,7 +99,8 @@ object PlayPathBindables {
   def createOptionQueryBindable[T](implicit tBinder: QueryStringBindable[T]) = new QueryStringBindable[Option[T]] {
     override def bind(key: String, values: Map[String, Seq[String]]): Option[Either[String, Option[T]]] = {
       val wrap = values.get(key).flatMap(_ => tBinder.bind(key, values))
-      wrap.map(_.right.map(Option.apply))
+      val result = wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
+      Some(result)
     }
 
     override def unbind(key: String, value: Option[T]): String = value match {
