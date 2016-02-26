@@ -16,13 +16,18 @@ trait HandlerBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusmethod: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def methodAction = (f: methodActionType) => Action {
-        val methodResponseMimeType    = "application/json"
-        val possibleWriters = Map(
-            200 -> anyToWritable[Null]
-        )        
-        val result = processValidmethodRequest(f)()(possibleWriters, methodResponseMimeType)
-        result
+
+    def methodAction = (f: methodActionType) => Action { request =>
+        val providedTypes = Seq[String]()
+        negotiateContent(request.acceptedTypes, providedTypes).map { methodResponseMimeType =>
+            val possibleWriters = Map(
+                    200 -> anyToWritable[Null]
+            )
+            
+
+                val result = processValidmethodRequest(f)()(possibleWriters, methodResponseMimeType)
+                result
+        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidmethodRequest[T <: Any](f: methodActionType)(request: methodActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
@@ -45,26 +50,30 @@ trait HandlerBase extends Controller with PlayBodyParsing {
     }
 }
 
-
 trait EchoApiYamlBase extends Controller with PlayBodyParsing {
     private type postActionRequestType       = (PostName, PostName)
     private type postActionType              = postActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def postAction = (f: postActionType) => (name: PostName, year: PostName) => Action {
-        val postResponseMimeType    = "application/json"
-        val possibleWriters = Map(
-            200 -> anyToWritable[PostResponses200]
-        )        
-        val result =
-            new PostValidator(name, year).errors match {
-                case e if e.isEmpty => processValidpostRequest(f)((name, year))(possibleWriters, postResponseMimeType)
-                case l =>
-                    implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
-                    BadRequest(l)
-            }
-        result
+
+    def postAction = (f: postActionType) => (name: PostName, year: PostName) => Action { request =>
+        val providedTypes = Seq[String]()
+        negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
+            val possibleWriters = Map(
+                    200 -> anyToWritable[PostResponses200]
+            )
+            
+
+                val result =
+                        new PostValidator(name, year).errors match {
+                            case e if e.isEmpty => processValidpostRequest(f)((name, year))(possibleWriters, postResponseMimeType)
+                            case l =>
+                                implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
+                                BadRequest(l)
+                        }
+                result
+        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
@@ -90,19 +99,24 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgettest_pathById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => Action {
-        val gettest_pathByIdResponseMimeType    = "application/json"
-        val possibleWriters = Map(
-            200 -> anyToWritable[Null]
-        )        
-        val result =
-            new Test_pathIdGetValidator(id).errors match {
-                case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id))(possibleWriters, gettest_pathByIdResponseMimeType)
-                case l =>
-                    implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettest_pathByIdResponseMimeType)
-                    BadRequest(l)
-            }
-        result
+
+    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => Action { request =>
+        val providedTypes = Seq[String]()
+        negotiateContent(request.acceptedTypes, providedTypes).map { gettest_pathByIdResponseMimeType =>
+            val possibleWriters = Map(
+                    200 -> anyToWritable[Null]
+            )
+            
+
+                val result =
+                        new Test_pathIdGetValidator(id).errors match {
+                            case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id))(possibleWriters, gettest_pathByIdResponseMimeType)
+                            case l =>
+                                implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettest_pathByIdResponseMimeType)
+                                BadRequest(l)
+                        }
+                result
+        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgettest_pathByIdRequest[T <: Any](f: gettest_pathByIdActionType)(request: gettest_pathByIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {

@@ -13,21 +13,35 @@ import scala.util._
 
 
 
-
-
 package expanded {
 
     class Expanded_polymorphismYaml extends Expanded_polymorphismYamlBase {
         val findPets = findPetsAction { input: (PetsGetTags, PetsGetLimit) =>
             val (tags, limit) = input
+            
+
             Failure(???)
+
+            
+
         } //////// EOF ////////  findPetsAction
         val addPet = addPetAction { (pet: NewPet) =>
+            
+            
+
             Failure(???)
+
+            
+
         } //////// EOF ////////  addPetAction
         val deletePet = deletePetAction { (id: Long) =>
+            
+            
+
             Failure(???)
+
+            
+
         } //////// EOF ////////  deletePetAction
     }
 }
-

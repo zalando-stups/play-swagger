@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import play.api.Logger
 import play.api.http.Status._
-import play.api.http.{Writeable, LazyHttpErrorHandler}
+import play.api.http.{MimeTypes, MediaRange, Writeable, LazyHttpErrorHandler}
 import play.api.libs.iteratee._
 import play.api.mvc.Results.Status
 import play.api.mvc._
@@ -116,6 +116,11 @@ object PlayBodyParsing extends PlayBodyParsing {
 
 trait PlayBodyParsing extends BodyParsers {
   val logger = Logger.logger
+
+  def negotiateContent(acceptedTypes: Seq[MediaRange], providedTypes: Seq[String]): Option[String] =
+    acceptedTypes.sorted collectFirst {
+      case mr: MediaRange if providedTypes.exists(mr.accepts) => providedTypes.find(mr.accepts).get
+    }
 
   def defaultErrorMapping: PartialFunction[Throwable, Status] = {
     case _: IllegalArgumentException => Status(BAD_REQUEST)

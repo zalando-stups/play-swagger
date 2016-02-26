@@ -53,7 +53,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val (allActionResults, defaultResultType) = actionResults(call)(table)
 
     Map(
-      "response_mime_type_value"      -> call.mimeOut.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
       "request_mime_type_value"       -> call.mimeIn.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
       "result_types"                  -> allActionResults,
       "default_result_type"           -> defaultResultType,
@@ -70,7 +69,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "non_body_params"               -> nonBodyParams,
       "header_params"                 -> headerParams,
 
-      "request_needed"                -> (bodyParam.nonEmpty || headerParams.nonEmpty),
+      "produces"                      -> call.mimeOut.map(_.name).map("\"" + _ + "\"").mkString("Seq[String](",", ",")"),
 
       "has_no_validations"            -> allValidations.isEmpty,
       "has_no_error_mappings"         -> actionErrorMappings.isEmpty

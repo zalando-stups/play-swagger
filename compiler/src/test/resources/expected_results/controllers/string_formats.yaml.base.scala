@@ -33,23 +33,23 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
         private def getParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[BinaryString]("application/json", "Invalid BinaryString", maxLength)
 
     def getAction = (f: getActionType) => (base64: GetBase64, date: GetDate, date_time: GetDate_time) => Action(getParser()) { request =>
-        val getResponseMimeType    = "application/json"
+        val providedTypes = Seq[String]("application/json", "application/yaml")
+        negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
+            val possibleWriters = Map(
+                    200 -> anyToWritable[Null]
+            )
+            val petId = request.body
+            
 
-        val possibleWriters = Map(
-                200 -> anyToWritable[Null]
-        )
-        val petId = request.body
-        
-
-            val result =
-                    new GetValidator(petId, base64, date, date_time).errors match {
-                        case e if e.isEmpty => processValidgetRequest(f)((petId, base64, date, date_time))(possibleWriters, getResponseMimeType)
-                        case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getResponseMimeType)
-                            BadRequest(l)
-                    }
-            result
-
+                val result =
+                        new GetValidator(petId, base64, date, date_time).errors match {
+                            case e if e.isEmpty => processValidgetRequest(f)((petId, base64, date, date_time))(possibleWriters, getResponseMimeType)
+                            case l =>
+                                implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getResponseMimeType)
+                                BadRequest(l)
+                        }
+                result
+        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
