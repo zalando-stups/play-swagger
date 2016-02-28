@@ -23,8 +23,9 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Pet]
             ).withDefaultValue(anyToWritable[ErrorModel])
             val pet = request.body
@@ -38,16 +39,19 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val addPetWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -70,8 +74,9 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
     def methodLevelAction = (f: methodLevelActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml", "text/xml", "text/html")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { methodLevelResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Pet]]
             ).withDefaultValue(anyToWritable[ErrorModel])
             
@@ -84,16 +89,19 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidmethodLevelRequest[T <: Any](f: methodLevelActionType)(request: methodLevelActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidmethodLevelRequest[T <: Any](f: methodLevelActionType)(request: methodLevelActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusmethodLevel orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val methodLevelWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -113,8 +121,9 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
     def pathLevelGetAction = (f: pathLevelGetActionType) => (id: Long) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml", "text/xml", "text/html")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { pathLevelGetResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Pet]
             ).withDefaultValue(anyToWritable[ErrorModel])
             
@@ -127,16 +136,19 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpathLevelGetRequest[T <: Any](f: pathLevelGetActionType)(request: pathLevelGetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpathLevelGetRequest[T <: Any](f: pathLevelGetActionType)(request: pathLevelGetActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspathLevelGet orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val pathLevelGetWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -156,8 +168,9 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
     def pathLevelDeleteAction = (f: pathLevelDeleteActionType) => (id: Long) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { pathLevelDeleteResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     204 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[ErrorModel])
             
@@ -170,16 +183,19 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpathLevelDeleteRequest[T <: Any](f: pathLevelDeleteActionType)(request: pathLevelDeleteActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpathLevelDeleteRequest[T <: Any](f: pathLevelDeleteActionType)(request: pathLevelDeleteActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspathLevelDelete orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val pathLevelDeleteWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)

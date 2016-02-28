@@ -19,24 +19,28 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
     def indexAction = (f: indexActionType) => Action { request =>
         val providedTypes = Seq[String]()
+
         negotiateContent(request.acceptedTypes, providedTypes).map { indexResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Null]
             )
             
 
                 val result = processValidindexRequest(f)()(possibleWriters, indexResponseMimeType)
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidindexRequest[T <: Any](f: indexActionType)(request: indexActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidindexRequest[T <: Any](f: indexActionType)(request: indexActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusindex orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val indexWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)

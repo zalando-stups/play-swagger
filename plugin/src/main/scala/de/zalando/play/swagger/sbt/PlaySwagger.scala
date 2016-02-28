@@ -40,6 +40,7 @@ object PlaySwagger extends AutoPlugin {
     lazy val swaggerRoutes             = taskKey[Seq[File]]("Generate play routes from swagger definitions")
     lazy val swaggerTests              = taskKey[Seq[File]]("Generate test data generators and tests from swagger definitions")
     lazy val swaggerControllers        = taskKey[Seq[File]]("Generate controllers from swagger definitions")
+    lazy val swaggerMarshallers        = taskKey[Seq[File]]("Generate marshallers from swagger definitions")
 
     // By default, end users won't define this themselves, they'll just use the options above for one single
     // swagger definition, however, if they want more control over settings, or what to compile multiple files,
@@ -66,6 +67,7 @@ object PlaySwagger extends AutoPlugin {
   ) ++ inConfig(Compile)(rawSwaggerSettings) ++
     inConfig(Test)(rawSwaggerSettings) ++
     inConfig(Compile)(swaggerBaseSettings) ++
+    inConfig(Compile)(swaggerMarshallerSettings) ++
     inConfig(Compile)(swaggerControllerSettings) ++
     inConfig(Compile)(swaggerRoutesSettings) ++
     inConfig(Test)(swaggerTestSettings)
@@ -125,6 +127,13 @@ object PlaySwagger extends AutoPlugin {
     }
     // managedSources in Compile in swaggerControllers ++= swaggerControllers.value
   )
+  def swaggerMarshallerSettings: Seq[Setting[_]] = Seq(
+    target in swaggerMarshallers := scalaSource.value,
+    swaggerMarshallers := {
+      val comp = swaggerBase.value
+      swaggerGenerateMarshallers.value
+    }
+  )
   def swaggerRoutesSettings: Seq[Setting[_]] = Seq(
     target in swaggerRoutes := crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
     swaggerRoutes := {
@@ -140,6 +149,7 @@ object PlaySwagger extends AutoPlugin {
   val swaggerGenerateRoutes       = commonSwaggerCompile(SwaggerCompiler.compileRoutes, swaggerRoutes)
   val swaggerGenerateTests        = commonSwaggerCompile(SwaggerCompiler.compileTests, swaggerTests)
   val swaggerGenerateControllers  = commonSwaggerCompile(SwaggerCompiler.compileControllers, swaggerControllers)
+  val swaggerGenerateMarshallers  = commonSwaggerCompile(SwaggerCompiler.compileMarshallers, swaggerMarshallers)
 
   private def commonSwaggerCompile: ((SwaggerCompilationTask, File, String, Seq[String]) => SwaggerCompilationResult, TaskKey[scala.Seq[sbt.File]]) =>
     Def.Initialize[Task[Seq[File]]] =

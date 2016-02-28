@@ -21,8 +21,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getmediaByMedia_idLikesAction = (f: getmediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idLikesResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idLikesGetResponses200]
             )
             
@@ -35,16 +36,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetmediaByMedia_idLikesRequest[T <: Any](f: getmediaByMedia_idLikesActionType)(request: getmediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByMedia_idLikesRequest[T <: Any](f: getmediaByMedia_idLikesActionType)(request: getmediaByMedia_idLikesActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByMedia_idLikes orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getmediaByMedia_idLikesWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -64,8 +68,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def postmediaByMedia_idLikesAction = (f: postmediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idLikesResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
             
@@ -78,16 +83,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpostmediaByMedia_idLikesRequest[T <: Any](f: postmediaByMedia_idLikesActionType)(request: postmediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostmediaByMedia_idLikesRequest[T <: Any](f: postmediaByMedia_idLikesActionType)(request: postmediaByMedia_idLikesActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspostmediaByMedia_idLikes orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val postmediaByMedia_idLikesWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -107,8 +115,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def deletemediaByMedia_idLikesAction = (f: deletemediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { deletemediaByMedia_idLikesResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
             
@@ -121,16 +130,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValiddeletemediaByMedia_idLikesRequest[T <: Any](f: deletemediaByMedia_idLikesActionType)(request: deletemediaByMedia_idLikesActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeletemediaByMedia_idLikesRequest[T <: Any](f: deletemediaByMedia_idLikesActionType)(request: deletemediaByMedia_idLikesActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeletemediaByMedia_idLikes orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val deletemediaByMedia_idLikesWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -150,8 +162,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getusersByUser_idFollowsAction = (f: getusersByUser_idFollowsActionType) => (user_id: Double) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idFollowsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
             
@@ -164,16 +177,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetusersByUser_idFollowsRequest[T <: Any](f: getusersByUser_idFollowsActionType)(request: getusersByUser_idFollowsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersByUser_idFollowsRequest[T <: Any](f: getusersByUser_idFollowsActionType)(request: getusersByUser_idFollowsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersByUser_idFollows orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getusersByUser_idFollowsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -193,8 +209,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getlocationsByLocation_idAction = (f: getlocationsByLocation_idActionType) => (location_id: Int) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsByLocation_idResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[LocationsLocation_idGetResponses200]
             )
             
@@ -207,16 +224,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetlocationsByLocation_idRequest[T <: Any](f: getlocationsByLocation_idActionType)(request: getlocationsByLocation_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetlocationsByLocation_idRequest[T <: Any](f: getlocationsByLocation_idActionType)(request: getlocationsByLocation_idActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetlocationsByLocation_id orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getlocationsByLocation_idWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -236,8 +256,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getusersSearchAction = (f: getusersSearchActionType) => (q: String, count: MediaFilter) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSearchResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
             
@@ -250,16 +271,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetusersSearchRequest[T <: Any](f: getusersSearchActionType)(request: getusersSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSearchRequest[T <: Any](f: getusersSearchActionType)(request: getusersSearchActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSearch orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getusersSearchWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -279,8 +303,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getusersSelfMediaLikedAction = (f: getusersSelfMediaLikedActionType) => (count: MediaId, max_like_id: MediaId) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfMediaLikedResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
@@ -293,16 +318,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetusersSelfMediaLikedRequest[T <: Any](f: getusersSelfMediaLikedActionType)(request: getusersSelfMediaLikedActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfMediaLikedRequest[T <: Any](f: getusersSelfMediaLikedActionType)(request: getusersSelfMediaLikedActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfMediaLiked orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getusersSelfMediaLikedWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -322,8 +350,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def gettagsByTag_nameAction = (f: gettagsByTag_nameActionType) => (tag_name: String) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsByTag_nameResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Tag]
             )
             
@@ -336,16 +365,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgettagsByTag_nameRequest[T <: Any](f: gettagsByTag_nameActionType)(request: gettagsByTag_nameActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettagsByTag_nameRequest[T <: Any](f: gettagsByTag_nameActionType)(request: gettagsByTag_nameActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettagsByTag_name orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val gettagsByTag_nameWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -365,8 +397,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def gettagsSearchAction = (f: gettagsSearchActionType) => (q: MediaFilter) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsSearchResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[TagsSearchGetResponses200]
             )
             
@@ -379,16 +412,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgettagsSearchRequest[T <: Any](f: gettagsSearchActionType)(request: gettagsSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettagsSearchRequest[T <: Any](f: gettagsSearchActionType)(request: gettagsSearchActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettagsSearch orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val gettagsSearchWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -408,8 +444,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getusersByUser_idFollowed_byAction = (f: getusersByUser_idFollowed_byActionType) => (user_id: Double) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idFollowed_byResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
             
@@ -422,16 +459,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetusersByUser_idFollowed_byRequest[T <: Any](f: getusersByUser_idFollowed_byActionType)(request: getusersByUser_idFollowed_byActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersByUser_idFollowed_byRequest[T <: Any](f: getusersByUser_idFollowed_byActionType)(request: getusersByUser_idFollowed_byActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersByUser_idFollowed_by orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getusersByUser_idFollowed_byWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -451,8 +491,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getmediaByMedia_idCommentsAction = (f: getmediaByMedia_idCommentsActionType) => (media_id: Int) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idCommentsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsGetResponses200]
             )
             
@@ -465,16 +506,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetmediaByMedia_idCommentsRequest[T <: Any](f: getmediaByMedia_idCommentsActionType)(request: getmediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByMedia_idCommentsRequest[T <: Any](f: getmediaByMedia_idCommentsActionType)(request: getmediaByMedia_idCommentsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByMedia_idComments orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getmediaByMedia_idCommentsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -495,8 +539,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => Action(postmediaByMedia_idCommentsParser()) { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idCommentsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
             val tEXT = request.body
@@ -510,16 +555,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpostmediaByMedia_idCommentsRequest[T <: Any](f: postmediaByMedia_idCommentsActionType)(request: postmediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostmediaByMedia_idCommentsRequest[T <: Any](f: postmediaByMedia_idCommentsActionType)(request: postmediaByMedia_idCommentsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspostmediaByMedia_idComments orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val postmediaByMedia_idCommentsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -539,8 +587,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def deletemediaByMedia_idCommentsAction = (f: deletemediaByMedia_idCommentsActionType) => (media_id: Int) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { deletemediaByMedia_idCommentsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
             
@@ -553,16 +602,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValiddeletemediaByMedia_idCommentsRequest[T <: Any](f: deletemediaByMedia_idCommentsActionType)(request: deletemediaByMedia_idCommentsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeletemediaByMedia_idCommentsRequest[T <: Any](f: deletemediaByMedia_idCommentsActionType)(request: deletemediaByMedia_idCommentsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeletemediaByMedia_idComments orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val deletemediaByMedia_idCommentsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -582,8 +634,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def gettagsByTag_nameMediaRecentAction = (f: gettagsByTag_nameMediaRecentActionType) => (tag_name: String) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsByTag_nameMediaRecentResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[TagsTag_nameMediaRecentGetResponses200]
             )
             
@@ -596,16 +649,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgettagsByTag_nameMediaRecentRequest[T <: Any](f: gettagsByTag_nameMediaRecentActionType)(request: gettagsByTag_nameMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgettagsByTag_nameMediaRecentRequest[T <: Any](f: gettagsByTag_nameMediaRecentActionType)(request: gettagsByTag_nameMediaRecentActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgettagsByTag_nameMediaRecent orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val gettagsByTag_nameMediaRecentWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -626,8 +682,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => Action(postusersByUser_idRelationshipParser()) { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { postusersByUser_idRelationshipResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
             val action = request.body
@@ -641,16 +698,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpostusersByUser_idRelationshipRequest[T <: Any](f: postusersByUser_idRelationshipActionType)(request: postusersByUser_idRelationshipActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidpostusersByUser_idRelationshipRequest[T <: Any](f: postusersByUser_idRelationshipActionType)(request: postusersByUser_idRelationshipActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuspostusersByUser_idRelationship orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val postusersByUser_idRelationshipWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -670,8 +730,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getusersSelfFeedAction = (f: getusersSelfFeedActionType) => (count: MediaId, max_id: MediaId, min_id: MediaId) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfFeedResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
@@ -684,16 +745,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetusersSelfFeedRequest[T <: Any](f: getusersSelfFeedActionType)(request: getusersSelfFeedActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfFeedRequest[T <: Any](f: getusersSelfFeedActionType)(request: getusersSelfFeedActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfFeed orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getusersSelfFeedWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -713,8 +777,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getusersByUser_idAction = (f: getusersByUser_idActionType) => (user_id: Double) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idGetResponses200]
             )
             
@@ -727,16 +792,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetusersByUser_idRequest[T <: Any](f: getusersByUser_idActionType)(request: getusersByUser_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersByUser_idRequest[T <: Any](f: getusersByUser_idActionType)(request: getusersByUser_idActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersByUser_id orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getusersByUser_idWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -756,8 +824,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaSearchResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[MediaSearchGetResponses200]
             )
             
@@ -770,16 +839,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetmediaSearchRequest[T <: Any](f: getmediaSearchActionType)(request: getmediaSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaSearchRequest[T <: Any](f: getmediaSearchActionType)(request: getmediaSearchActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaSearch orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getmediaSearchWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -799,8 +871,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (geo_id: Int, count: MediaId, min_id: MediaId) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getgeographiesByGeo_idMediaRecentResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Null]
             )
             
@@ -813,16 +886,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetgeographiesByGeo_idMediaRecentRequest[T <: Any](f: getgeographiesByGeo_idMediaRecentActionType)(request: getgeographiesByGeo_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetgeographiesByGeo_idMediaRecentRequest[T <: Any](f: getgeographiesByGeo_idMediaRecentActionType)(request: getgeographiesByGeo_idMediaRecentActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetgeographiesByGeo_idMediaRecent orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getgeographiesByGeo_idMediaRecentWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -842,8 +918,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getmediaByShortcodeAction = (f: getmediaByShortcodeActionType) => (shortcode: String) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByShortcodeResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Media]
             )
             
@@ -856,16 +933,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetmediaByShortcodeRequest[T <: Any](f: getmediaByShortcodeActionType)(request: getmediaByShortcodeActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByShortcodeRequest[T <: Any](f: getmediaByShortcodeActionType)(request: getmediaByShortcodeActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByShortcode orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getmediaByShortcodeWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -885,8 +965,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getlocationsSearchAction = (f: getlocationsSearchActionType) => (foursquare_v2_id: MediaId, facebook_places_id: MediaId, distance: MediaId, lat: LocationLatitude, foursquare_id: MediaId, lng: LocationLatitude) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsSearchResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[LocationsSearchGetResponses200]
             )
             
@@ -899,16 +980,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetlocationsSearchRequest[T <: Any](f: getlocationsSearchActionType)(request: getlocationsSearchActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetlocationsSearchRequest[T <: Any](f: getlocationsSearchActionType)(request: getlocationsSearchActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetlocationsSearch orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getlocationsSearchWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -928,24 +1012,28 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getusersSelfRequested_byAction = (f: getusersSelfRequested_byActionType) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfRequested_byResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfRequested_byGetResponses200]
             )
             
 
                 val result = processValidgetusersSelfRequested_byRequest(f)()(possibleWriters, getusersSelfRequested_byResponseMimeType)
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetusersSelfRequested_byRequest[T <: Any](f: getusersSelfRequested_byActionType)(request: getusersSelfRequested_byActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersSelfRequested_byRequest[T <: Any](f: getusersSelfRequested_byActionType)(request: getusersSelfRequested_byActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersSelfRequested_by orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getusersSelfRequested_byWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -965,8 +1053,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getmediaByMedia_idAction = (f: getmediaByMedia_idActionType) => (media_id: Int) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Media]
             )
             
@@ -979,16 +1068,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetmediaByMedia_idRequest[T <: Any](f: getmediaByMedia_idActionType)(request: getmediaByMedia_idActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaByMedia_idRequest[T <: Any](f: getmediaByMedia_idActionType)(request: getmediaByMedia_idActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaByMedia_id orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getmediaByMedia_idWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -1008,8 +1100,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (location_id: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsByLocation_idMediaRecentResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
@@ -1022,16 +1115,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetlocationsByLocation_idMediaRecentRequest[T <: Any](f: getlocationsByLocation_idMediaRecentActionType)(request: getlocationsByLocation_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetlocationsByLocation_idMediaRecentRequest[T <: Any](f: getlocationsByLocation_idMediaRecentActionType)(request: getlocationsByLocation_idMediaRecentActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetlocationsByLocation_idMediaRecent orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getlocationsByLocation_idMediaRecentWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -1051,8 +1147,9 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (user_id: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idMediaRecentResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
@@ -1065,16 +1162,19 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetusersByUser_idMediaRecentRequest[T <: Any](f: getusersByUser_idMediaRecentActionType)(request: getusersByUser_idMediaRecentActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetusersByUser_idMediaRecentRequest[T <: Any](f: getusersByUser_idMediaRecentActionType)(request: getusersByUser_idMediaRecentActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetusersByUser_idMediaRecent orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getusersByUser_idMediaRecentWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -1094,24 +1194,28 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     def getmediaPopularAction = (f: getmediaPopularActionType) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaPopularResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
 
                 val result = processValidgetmediaPopularRequest(f)()(possibleWriters, getmediaPopularResponseMimeType)
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetmediaPopularRequest[T <: Any](f: getmediaPopularActionType)(request: getmediaPopularActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmediaPopularRequest[T <: Any](f: getmediaPopularActionType)(request: getmediaPopularActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetmediaPopular orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getmediaPopularWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)

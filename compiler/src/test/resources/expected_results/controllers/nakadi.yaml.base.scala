@@ -22,8 +22,9 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     def nakadiHackGet_metricsAction = (f: nakadiHackGet_metricsActionType) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_metricsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     401 -> anyToWritable[Problem], 
                     503 -> anyToWritable[Problem], 
                     200 -> anyToWritable[Metrics]
@@ -32,16 +33,19 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
                 val result = processValidnakadiHackGet_metricsRequest(f)()(possibleWriters, nakadiHackGet_metricsResponseMimeType)
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_metricsRequest[T <: Any](f: nakadiHackGet_metricsActionType)(request: nakadiHackGet_metricsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidnakadiHackGet_metricsRequest[T <: Any](f: nakadiHackGet_metricsActionType)(request: nakadiHackGet_metricsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusnakadiHackGet_metrics orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val nakadiHackGet_metricsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -61,8 +65,9 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     def nakadiHackGet_events_from_single_partitionAction = (f: nakadiHackGet_events_from_single_partitionActionType) => (start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: Int, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_events_from_single_partitionResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     500 -> anyToWritable[Problem], 
                     404 -> anyToWritable[Problem], 
                     401 -> anyToWritable[Problem], 
@@ -79,16 +84,19 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_events_from_single_partitionRequest[T <: Any](f: nakadiHackGet_events_from_single_partitionActionType)(request: nakadiHackGet_events_from_single_partitionActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidnakadiHackGet_events_from_single_partitionRequest[T <: Any](f: nakadiHackGet_events_from_single_partitionActionType)(request: nakadiHackGet_events_from_single_partitionActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusnakadiHackGet_events_from_single_partition orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val nakadiHackGet_events_from_single_partitionWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -108,8 +116,9 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     def nakadiHackGet_partitionAction = (f: nakadiHackGet_partitionActionType) => (topic: String, partition: String) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_partitionResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[TopicPartition]
             )
             
@@ -122,16 +131,19 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_partitionRequest[T <: Any](f: nakadiHackGet_partitionActionType)(request: nakadiHackGet_partitionActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidnakadiHackGet_partitionRequest[T <: Any](f: nakadiHackGet_partitionActionType)(request: nakadiHackGet_partitionActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusnakadiHackGet_partition orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val nakadiHackGet_partitionWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -151,8 +163,9 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     def nakadiHackGet_topicsAction = (f: nakadiHackGet_topicsActionType) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_topicsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Topic]], 
                     401 -> anyToWritable[Problem], 
                     503 -> anyToWritable[Problem]
@@ -161,16 +174,19 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
                 val result = processValidnakadiHackGet_topicsRequest(f)()(possibleWriters, nakadiHackGet_topicsResponseMimeType)
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_topicsRequest[T <: Any](f: nakadiHackGet_topicsActionType)(request: nakadiHackGet_topicsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidnakadiHackGet_topicsRequest[T <: Any](f: nakadiHackGet_topicsActionType)(request: nakadiHackGet_topicsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusnakadiHackGet_topics orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val nakadiHackGet_topicsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -190,8 +206,9 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     def nakadiHackGet_events_from_multiple_partitionsAction = (f: nakadiHackGet_events_from_multiple_partitionsActionType) => (stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, batch_limit: Int, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_events_from_multiple_partitionsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     500 -> anyToWritable[Problem], 
                     404 -> anyToWritable[Problem], 
                     401 -> anyToWritable[Problem], 
@@ -217,16 +234,19 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     val msg = Seq(x_nakadi_cursors).filter{_.isLeft}.map(_.left.get).mkString("\n")
                     BadRequest(msg)
                 }
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_events_from_multiple_partitionsRequest[T <: Any](f: nakadiHackGet_events_from_multiple_partitionsActionType)(request: nakadiHackGet_events_from_multiple_partitionsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidnakadiHackGet_events_from_multiple_partitionsRequest[T <: Any](f: nakadiHackGet_events_from_multiple_partitionsActionType)(request: nakadiHackGet_events_from_multiple_partitionsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusnakadiHackGet_events_from_multiple_partitions orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val nakadiHackGet_events_from_multiple_partitionsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -247,8 +267,9 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     def nakadiHackPost_eventAction = (f: nakadiHackPost_eventActionType) => (topic: String) => Action(nakadiHackPost_eventParser()) { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackPost_eventResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     201 -> anyToWritable[Null], 
                     403 -> anyToWritable[Problem], 
                     503 -> anyToWritable[Problem], 
@@ -266,16 +287,19 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackPost_eventRequest[T <: Any](f: nakadiHackPost_eventActionType)(request: nakadiHackPost_eventActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidnakadiHackPost_eventRequest[T <: Any](f: nakadiHackPost_eventActionType)(request: nakadiHackPost_eventActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusnakadiHackPost_event orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val nakadiHackPost_eventWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -295,8 +319,9 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     def nakadiHackGet_partitionsAction = (f: nakadiHackGet_partitionsActionType) => (topic: String) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_partitionsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Seq[TopicPartition]]
             )
             
@@ -309,16 +334,19 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_partitionsRequest[T <: Any](f: nakadiHackGet_partitionsActionType)(request: nakadiHackGet_partitionsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidnakadiHackGet_partitionsRequest[T <: Any](f: nakadiHackGet_partitionsActionType)(request: nakadiHackGet_partitionsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusnakadiHackGet_partitions orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val nakadiHackGet_partitionsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -339,8 +367,9 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     def nakadiHackPost_eventsAction = (f: nakadiHackPost_eventsActionType) => (topic: String) => Action(nakadiHackPost_eventsParser()) { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackPost_eventsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     201 -> anyToWritable[Null], 
                     403 -> anyToWritable[Problem], 
                     503 -> anyToWritable[Problem], 
@@ -358,16 +387,19 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackPost_eventsRequest[T <: Any](f: nakadiHackPost_eventsActionType)(request: nakadiHackPost_eventsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidnakadiHackPost_eventsRequest[T <: Any](f: nakadiHackPost_eventsActionType)(request: nakadiHackPost_eventsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusnakadiHackPost_events orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val nakadiHackPost_eventsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)

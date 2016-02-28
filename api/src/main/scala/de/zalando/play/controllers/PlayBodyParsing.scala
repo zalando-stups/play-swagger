@@ -20,20 +20,21 @@ import scala.util.control.NonFatal
 /**
  * @since 02.09.2015
  */
-object PlayBodyParsing extends PlayBodyParsing {
-
-  import play.api.libs.iteratee.Execution.Implicits.trampoline
-
+object WriterFactories {
   private val jsonFactory = new JsonFactory()
 
   /**
-   * Contains proper Jackson Factories for different mime types
-   * JsonFactory is a default
-   */
-  lazy val factories = Map(
+    * Contains proper Jackson Factories for different mime types
+    * JsonFactory is a default
+    */
+  val factories = Map(
     "application/json" -> jsonFactory,
     "text/x-yaml" -> new YAMLFactory() // TODO implement workaround for bug in yaml parser
-  ).withDefaultValue(jsonFactory)
+  )
+}
+object PlayBodyParsing extends PlayBodyParsing {
+
+  import play.api.libs.iteratee.Execution.Implicits.trampoline
 
   /**
    * Returns proper jackson mapper for given mime type
@@ -43,7 +44,7 @@ object PlayBodyParsing extends PlayBodyParsing {
    */
   def jacksonMapper(mimeType: String) = {
     assert(mimeType != null)
-    val factory = factories(mimeType)
+    val factory = WriterFactories.factories(mimeType)
     val mapper = new ObjectMapper(factory)
     mapper.registerModule(DefaultScalaModule)
     mapper
@@ -116,6 +117,18 @@ object PlayBodyParsing extends PlayBodyParsing {
 
 trait PlayBodyParsing extends BodyParsers {
   val logger = Logger.logger
+
+  type ContentMap = Map[Int, PartialFunction[String, Writeable[Any]]]
+
+  def merge(m1: ContentMap, m2: ContentMap): ContentMap = {
+    val onlyFirst = m1.filterKeys(!m2.keySet.contains(_))
+    val onlySecond = m2.filterKeys(!m1.keySet.contains(_))
+    val both = m1.filterKeys(m2.keySet.contains)
+    val merged = both map { case (code, f) =>
+        code -> f.orElse(m2(code))
+    }
+    onlyFirst ++ onlySecond ++ merged
+  }
 
   def negotiateContent(acceptedTypes: Seq[MediaRange], providedTypes: Seq[String]): Option[String] =
     acceptedTypes.sorted collectFirst {

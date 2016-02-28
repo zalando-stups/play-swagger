@@ -6,8 +6,6 @@ import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
 
-import scala.annotation.tailrec
-
 /**
   * @author  slasch 
   * @since   21.12.2015.
@@ -20,7 +18,8 @@ object AstScalaPlayEnricher {
     val transformations = Seq(
       new ScalaPlayTypeEnricher(app),
       new ScalaPlayParameterEnricher(app),
-      new ScalaPlayCallEnricher(app)
+      new ScalaPlayCallEnricher(app),
+      new ScalaPlaySpecEnricher(app)
     )
     val denotationTable = (emptyTable /: transformations) { (table, transformation) =>
       transformation enrich table
@@ -64,6 +63,14 @@ class ScalaPlayTypeEnricher(val app: StrictModel) extends Transformation[Type] w
 
 }
 
+/**
+  * Enriches AST with information related to the specification as whole
+  */
+class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictModel] with MarshallersStep {
+
+  override def data = Seq(Reference.root -> app)
+
+}
 /**
   * Enriches AST with information related to ApiCalls
   */

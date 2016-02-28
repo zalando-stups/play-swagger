@@ -27,8 +27,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def findPetsByTagsAction = (f: findPetsByTagsActionType) => (tags: PetsFindByStatusGetStatus) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsByTagsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     400 -> anyToWritable[Null], 
                     200 -> anyToWritable[Seq[Pet]]
             )
@@ -42,16 +43,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidfindPetsByTagsRequest[T <: Any](f: findPetsByTagsActionType)(request: findPetsByTagsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidfindPetsByTagsRequest[T <: Any](f: findPetsByTagsActionType)(request: findPetsByTagsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusfindPetsByTags orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val findPetsByTagsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -76,8 +80,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def placeOrderAction = (f: placeOrderActionType) => Action(placeOrderParser()) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { placeOrderResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     400 -> anyToWritable[Null], 
                     200 -> anyToWritable[Order]
             )
@@ -92,16 +97,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidplaceOrderRequest[T <: Any](f: placeOrderActionType)(request: placeOrderActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidplaceOrderRequest[T <: Any](f: placeOrderActionType)(request: placeOrderActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusplaceOrder orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val placeOrderWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -126,8 +134,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def createUserAction = (f: createUserActionType) => Action(createUserParser()) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { createUserResponseMimeType =>
-            val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
+                val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
             val body = request.body
             
 
@@ -139,16 +148,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidcreateUserRequest[T <: Any](f: createUserActionType)(request: createUserActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidcreateUserRequest[T <: Any](f: createUserActionType)(request: createUserActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuscreateUser orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val createUserWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -173,8 +185,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def createUsersWithListInputAction = (f: createUsersWithListInputActionType) => Action(createUsersWithListInputParser()) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { createUsersWithListInputResponseMimeType =>
-            val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
+                val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
             val body = request.body
             
 
@@ -186,16 +199,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidcreateUsersWithListInputRequest[T <: Any](f: createUsersWithListInputActionType)(request: createUsersWithListInputActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidcreateUsersWithListInputRequest[T <: Any](f: createUsersWithListInputActionType)(request: createUsersWithListInputActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuscreateUsersWithListInput orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val createUsersWithListInputWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -219,8 +235,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def getUserByNameAction = (f: getUserByNameActionType) => (username: String) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getUserByNameResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     404 -> anyToWritable[Null], 
                     400 -> anyToWritable[Null], 
                     200 -> anyToWritable[User]
@@ -235,16 +252,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetUserByNameRequest[T <: Any](f: getUserByNameActionType)(request: getUserByNameActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetUserByNameRequest[T <: Any](f: getUserByNameActionType)(request: getUserByNameActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetUserByName orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getUserByNameWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -269,8 +289,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def updateUserAction = (f: updateUserActionType) => (username: String) => Action(updateUserParser()) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { updateUserResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     404 -> anyToWritable[Null], 
                     400 -> anyToWritable[Null]
             )
@@ -285,16 +306,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidupdateUserRequest[T <: Any](f: updateUserActionType)(request: updateUserActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidupdateUserRequest[T <: Any](f: updateUserActionType)(request: updateUserActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusupdateUser orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val updateUserWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -318,8 +342,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def deleteUserAction = (f: deleteUserActionType) => (username: String) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteUserResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     404 -> anyToWritable[Null], 
                     400 -> anyToWritable[Null]
             )
@@ -333,16 +358,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValiddeleteUserRequest[T <: Any](f: deleteUserActionType)(request: deleteUserActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeleteUserRequest[T <: Any](f: deleteUserActionType)(request: deleteUserActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeleteUser orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val deleteUserWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -367,8 +395,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def updatePetAction = (f: updatePetActionType) => Action(updatePetParser()) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { updatePetResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     405 -> anyToWritable[Null], 
                     404 -> anyToWritable[Null], 
                     400 -> anyToWritable[Null]
@@ -384,16 +413,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidupdatePetRequest[T <: Any](f: updatePetActionType)(request: updatePetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidupdatePetRequest[T <: Any](f: updatePetActionType)(request: updatePetActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusupdatePet orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val updatePetWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -418,8 +450,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     405 -> anyToWritable[Null]
             )
             val body = request.body
@@ -433,16 +466,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val addPetWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -467,8 +503,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def createUsersWithArrayInputAction = (f: createUsersWithArrayInputActionType) => Action(createUsersWithArrayInputParser()) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { createUsersWithArrayInputResponseMimeType =>
-            val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
+                val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
             val body = request.body
             
 
@@ -480,16 +517,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidcreateUsersWithArrayInputRequest[T <: Any](f: createUsersWithArrayInputActionType)(request: createUsersWithArrayInputActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidcreateUsersWithArrayInputRequest[T <: Any](f: createUsersWithArrayInputActionType)(request: createUsersWithArrayInputActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuscreateUsersWithArrayInput orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val createUsersWithArrayInputWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -513,8 +553,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def getOrderByIdAction = (f: getOrderByIdActionType) => (orderId: String) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getOrderByIdResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     404 -> anyToWritable[Null], 
                     400 -> anyToWritable[Null], 
                     200 -> anyToWritable[Order]
@@ -529,16 +570,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetOrderByIdRequest[T <: Any](f: getOrderByIdActionType)(request: getOrderByIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetOrderByIdRequest[T <: Any](f: getOrderByIdActionType)(request: getOrderByIdActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetOrderById orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getOrderByIdWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -562,8 +606,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def deleteOrderAction = (f: deleteOrderActionType) => (orderId: String) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteOrderResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     404 -> anyToWritable[Null], 
                     400 -> anyToWritable[Null]
             )
@@ -577,16 +622,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValiddeleteOrderRequest[T <: Any](f: deleteOrderActionType)(request: deleteOrderActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeleteOrderRequest[T <: Any](f: deleteOrderActionType)(request: deleteOrderActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeleteOrder orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val deleteOrderWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -610,22 +658,26 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def logoutUserAction = (f: logoutUserActionType) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { logoutUserResponseMimeType =>
-            val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
+                val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
             
 
                 val result = processValidlogoutUserRequest(f)()(possibleWriters, logoutUserResponseMimeType)
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidlogoutUserRequest[T <: Any](f: logoutUserActionType)(request: logoutUserActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidlogoutUserRequest[T <: Any](f: logoutUserActionType)(request: logoutUserActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatuslogoutUser orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val logoutUserWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -649,8 +701,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def getPetByIdAction = (f: getPetByIdActionType) => (petId: Long) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getPetByIdResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     404 -> anyToWritable[Null], 
                     400 -> anyToWritable[Null], 
                     200 -> anyToWritable[Pet]
@@ -665,16 +718,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetPetByIdRequest[T <: Any](f: getPetByIdActionType)(request: getPetByIdActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetPetByIdRequest[T <: Any](f: getPetByIdActionType)(request: getPetByIdActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetPetById orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getPetByIdWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -698,8 +754,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def updatePetWithFormAction = (f: updatePetWithFormActionType) => (petId: String, name: String, status: String) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { updatePetWithFormResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     405 -> anyToWritable[Null]
             )
             
@@ -712,16 +769,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidupdatePetWithFormRequest[T <: Any](f: updatePetWithFormActionType)(request: updatePetWithFormActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidupdatePetWithFormRequest[T <: Any](f: updatePetWithFormActionType)(request: updatePetWithFormActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusupdatePetWithForm orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val updatePetWithFormWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -745,8 +805,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def deletePetAction = (f: deletePetActionType) => (petId: Long) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     400 -> anyToWritable[Null]
             )
             
@@ -768,16 +829,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     val msg = Seq(api_key).filter{_.isLeft}.map(_.left.get).mkString("\n")
                     BadRequest(msg)
                 }
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValiddeletePetRequest[T <: Any](f: deletePetActionType)(request: deletePetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeletePetRequest[T <: Any](f: deletePetActionType)(request: deletePetActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val deletePetWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -801,8 +865,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def findPetsByStatusAction = (f: findPetsByStatusActionType) => (status: PetsFindByStatusGetStatus) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsByStatusResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Pet]], 
                     400 -> anyToWritable[Null]
             )
@@ -816,16 +881,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidfindPetsByStatusRequest[T <: Any](f: findPetsByStatusActionType)(request: findPetsByStatusActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidfindPetsByStatusRequest[T <: Any](f: findPetsByStatusActionType)(request: findPetsByStatusActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusfindPetsByStatus orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val findPetsByStatusWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -849,8 +917,9 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     def loginUserAction = (f: loginUserActionType) => (username: OrderStatus, password: OrderStatus) => Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { loginUserResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[String], 
                     400 -> anyToWritable[Null]
             )
@@ -864,16 +933,19 @@ trait SplitPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidloginUserRequest[T <: Any](f: loginUserActionType)(request: loginUserActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidloginUserRequest[T <: Any](f: loginUserActionType)(request: loginUserActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusloginUser orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val loginUserWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)

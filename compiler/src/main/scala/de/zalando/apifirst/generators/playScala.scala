@@ -22,7 +22,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   val modelTemplateName           = "model"
   val controllersTemplateName     = "play_scala_controller"
   val controllerBaseTemplateName  = "play_scala_controller_base"
-
+  val marschallersTemplateName    = "play_scala_response_writers"
 
   def generateBase: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateModel(fileName, packageName),
@@ -33,6 +33,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   def generateTest: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateGenerators(fileName, packageName),
     playScalaTests(fileName, packageName)
+  )
+
+  def generateMarshallers: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
+    playScalaMarshallers(fileName, packageName)
   )
 
   def generateControllers: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
@@ -63,6 +67,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     if (modelCalls.isEmpty) ""
     else apply(fileName, packageName, controllerBaseTemplateName)
 
+  def playScalaMarshallers(fileName: String, packageName: String) =
+    if (modelCalls.isEmpty) ""
+    else apply(fileName, packageName, marschallersTemplateName)
+
   private def apply(fileName: String, packageName: String, templateName: String, currentController: String = ""): String = {
     nonEmptyTemplate(fileName, packageName, templateName, currentController)
   }
@@ -87,6 +95,9 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
     val bindingsByType      = sortedBindings.toMap
 
+    val marshallers         = ReShaper.filterByType("marshallers", denotationTable)
+    val grouppedMarshallers = ReShaper.groupByType(marshallers.toSeq).toMap
+
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)
 
@@ -99,11 +110,14 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
     )
 
+    val controllersList = controllers(modelCalls, unmanagedParts, pckg)(denotationTable)
+
     val controllersMap = Map(
-      "controllers"         -> controllers(modelCalls, unmanagedParts, pckg)(denotationTable),
+      "controllers"         -> controllersList,
       "controller_imports"  -> controllerImports.map(i => Map("name" -> i)),
       "unmanaged_imports"   -> unmanagedImports.map(i => Map("name" -> i))
     )
+
 
     val singlePackage = Map(
       "classes"             -> ReShaper.filterByType("classes", denotationTable),
@@ -112,6 +126,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "test_data_classes"   -> ReShaper.filterByType("test_data_classes", denotationTable),
       "test_data_aliases"   -> ReShaper.filterByType("test_data_aliases", denotationTable),
       "tests"               -> ReShaper.filterByType("tests", denotationTable),
+      "marshallers"         -> grouppedMarshallers,
       "bindings"            -> bindingsByType
     )
 

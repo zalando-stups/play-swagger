@@ -21,8 +21,9 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
 
     def getschemaModelAction = (f: getschemaModelActionType) => Action(getschemaModelParser()) { request =>
         val providedTypes = Seq[String]()
+
         negotiateContent(request.acceptedTypes, providedTypes).map { getschemaModelResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[ModelSchemaRoot]
             )
             val root = request.body
@@ -36,16 +37,19 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetschemaModelRequest[T <: Any](f: getschemaModelActionType)(request: getschemaModelActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetschemaModelRequest[T <: Any](f: getschemaModelActionType)(request: getschemaModelActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetschemaModel orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getschemaModelWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)

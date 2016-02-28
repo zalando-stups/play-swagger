@@ -6,6 +6,7 @@ import de.zalando.apifirst.ParameterPlace
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
+import de.zalando.play.controllers.WriterFactories
 
 /**
   * @author  slasch
@@ -18,7 +19,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
   val nameMapping = Map(
     "action"                      -> controllersSuffix,
     "parser_name"                 -> "Parser",
-    "writable_json"               -> "WritableJson",
     "action_type"                 -> "ActionType",
     "action_result_type"          -> "ActionResultType",
     "action_success_status_name"  -> "ActionSuccessStatus",
@@ -45,6 +45,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val actionErrorMappings = errorMappings(call)
     val nameParamPair       = singleOrMultipleParameters(call)(table)
 
+    val customWriters       = call.mimeOut.map(_.name).diff(WriterFactories.factories.keySet).nonEmpty
+
     val nameMappings        = nameMapping map { case (k, v) => k -> nameWithSuffix(call, v) }
 
     val method              = nameMappings("method")
@@ -70,7 +72,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "header_params"                 -> headerParams,
 
       "produces"                      -> call.mimeOut.map(_.name).map("\"" + _ + "\"").mkString("Seq[String](",", ",")"),
-
+      "needs_custom_writers"          -> customWriters,
       "has_no_validations"            -> allValidations.isEmpty,
       "has_no_error_mappings"         -> actionErrorMappings.isEmpty
     ) ++ nameMappings ++ nameParamPair

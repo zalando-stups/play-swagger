@@ -24,8 +24,9 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
 
     def findPetsAction = (f: findPetsActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Pet]]
             ).withDefaultValue(anyToWritable[Error])
             
@@ -38,16 +39,19 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidfindPetsRequest[T <: Any](f: findPetsActionType)(request: findPetsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidfindPetsRequest[T <: Any](f: findPetsActionType)(request: findPetsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusfindPets orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val findPetsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -70,8 +74,9 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
 
     def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     200 -> anyToWritable[Pet]
             ).withDefaultValue(anyToWritable[Error])
             val pet = request.body
@@ -85,16 +90,19 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val addPetWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -116,8 +124,9 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
 
     def deletePetAction = (f: deletePetActionType) => (id: Long) => Action { request =>
         val providedTypes = Seq[String]("application/json")
+
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>
-            val possibleWriters = Map(
+                val possibleWriters = Map(
                     204 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
@@ -130,16 +139,19 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
-        }.getOrElse(BadRequest("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValiddeletePetRequest[T <: Any](f: deletePetActionType)(request: deletePetActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValiddeletePetRequest[T <: Any](f: deletePetActionType)(request: deletePetActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val deletePetWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
