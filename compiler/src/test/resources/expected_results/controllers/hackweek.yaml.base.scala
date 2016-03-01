@@ -1,7 +1,7 @@
 package hackweek.yaml
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
@@ -17,9 +17,22 @@ trait HackweekYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgetschemaModel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-        private def getschemaModelParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[ModelSchemaRoot]("application/json", "Invalid ModelSchemaRoot", maxLength)
+        private def getschemaModelParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.anyParser[ModelSchemaRoot]
+            anyParser[ModelSchemaRoot](bodyMimeType, customParsers, "Invalid ModelSchemaRoot", maxLength)
+        }
 
-    def getschemaModelAction = (f: getschemaModelActionType) => Action(getschemaModelParser()) { request =>
+    def getschemaModelAction = (f: getschemaModelActionType) => Action(getschemaModelParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getschemaModelResponseMimeType =>

@@ -98,6 +98,9 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val marshallers         = ReShaper.filterByType("marshallers", denotationTable)
     val grouppedMarshallers = ReShaper.groupByType(marshallers.toSeq).toMap
 
+    val unmarshallers         = ReShaper.filterByType("unmarshallers", denotationTable)
+    val grouppedunMarshallers = ReShaper.groupByType(unmarshallers.toSeq).toMap
+
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)
 
@@ -127,6 +130,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "test_data_aliases"   -> ReShaper.filterByType("test_data_aliases", denotationTable),
       "tests"               -> ReShaper.filterByType("tests", denotationTable),
       "marshallers"         -> grouppedMarshallers,
+      "unmarshallers"       -> grouppedunMarshallers,
       "bindings"            -> bindingsByType
     )
 

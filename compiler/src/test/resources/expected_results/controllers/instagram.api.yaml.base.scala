@@ -1,7 +1,7 @@
 package instagram.api.yaml
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
@@ -535,9 +535,22 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatuspostmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-        private def postmediaByMedia_idCommentsParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Double]("application/json", "Invalid LocationLatitude", maxLength)
+        private def postmediaByMedia_idCommentsParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[Double]
+            optionParser[Double](bodyMimeType, customParsers, "Invalid LocationLatitude", maxLength)
+        }
 
-    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => Action(postmediaByMedia_idCommentsParser()) { request =>
+    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => Action(postmediaByMedia_idCommentsParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idCommentsResponseMimeType =>
@@ -678,9 +691,22 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatuspostusersByUser_idRelationship: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-        private def postusersByUser_idRelationshipParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[String]("application/json", "Invalid MediaFilter", maxLength)
+        private def postusersByUser_idRelationshipParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[String]
+            optionParser[String](bodyMimeType, customParsers, "Invalid MediaFilter", maxLength)
+        }
 
-    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => Action(postusersByUser_idRelationshipParser()) { request =>
+    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => Action(postusersByUser_idRelationshipParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postusersByUser_idRelationshipResponseMimeType =>

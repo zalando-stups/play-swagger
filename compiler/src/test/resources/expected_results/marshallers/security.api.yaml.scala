@@ -2,14 +2,17 @@
 package security.api.yaml
 
 import play.api.http.Writeable
-import de.zalando.play.controllers.{ResponseWritersBase, WriteableWrapper}
-import WriteableWrapper.writeable2wrapper
 import play.api.libs.iteratee.Execution.Implicits.trampoline
+import play.api.mvc.RequestHeader
+import de.zalando.play.controllers.{WrappedBodyParsersBase, ResponseWritersBase, WriteableWrapper}
+import WriteableWrapper.writeable2wrapper
+
+
 
 /**
 * This is a place to define definitions of custom serializers for results.
 * Serializers are just instances of {@Writeable}s
-* They must be places into the {@custom} field of the ResponseWriters object
+* They must be placed into the {@custom} field of the ResponseWriters object
 *
 */
 object ResponseWriters extends ResponseWritersBase {
@@ -35,3 +38,4 @@ object ResponseWriters extends ResponseWritersBase {
         writable_text_html_ErrorModel_esc
     )
 }
+

@@ -1,7 +1,7 @@
 package full.petstore.api.yaml
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
@@ -76,9 +76,22 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         case _: java.lang.IndexOutOfBoundsException => Status(405)
      } 
 
-        private def placeOrderParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Order]("application/json", "Invalid StoresOrderPostBody", maxLength)
+        private def placeOrderParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[Order]
+            optionParser[Order](bodyMimeType, customParsers, "Invalid StoresOrderPostBody", maxLength)
+        }
 
-    def placeOrderAction = (f: placeOrderActionType) => Action(placeOrderParser()) { request =>
+    def placeOrderAction = (f: placeOrderActionType) => Action(placeOrderParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { placeOrderResponseMimeType =>
@@ -130,9 +143,22 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         case _: java.lang.IndexOutOfBoundsException => Status(405)
      } 
 
-        private def createUserParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[User]("application/json", "Invalid UsersUsernamePutBody", maxLength)
+        private def createUserParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[User]
+            optionParser[User](bodyMimeType, customParsers, "Invalid UsersUsernamePutBody", maxLength)
+        }
 
-    def createUserAction = (f: createUserActionType) => Action(createUserParser()) { request =>
+    def createUserAction = (f: createUserActionType) => Action(createUserParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { createUserResponseMimeType =>
@@ -181,9 +207,22 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         case _: java.lang.IndexOutOfBoundsException => Status(405)
      } 
 
-        private def createUsersWithListInputParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[UsersCreateWithListPostBodyOpt]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
+        private def createUsersWithListInputParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[UsersCreateWithListPostBodyOpt]
+            optionParser[UsersCreateWithListPostBodyOpt](bodyMimeType, customParsers, "Invalid UsersCreateWithListPostBody", maxLength)
+        }
 
-    def createUsersWithListInputAction = (f: createUsersWithListInputActionType) => Action(createUsersWithListInputParser()) { request =>
+    def createUsersWithListInputAction = (f: createUsersWithListInputActionType) => Action(createUsersWithListInputParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { createUsersWithListInputResponseMimeType =>
@@ -285,9 +324,22 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         case _: java.lang.IndexOutOfBoundsException => Status(405)
      } 
 
-        private def updateUserParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[User]("application/json", "Invalid UsersUsernamePutBody", maxLength)
+        private def updateUserParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[User]
+            optionParser[User](bodyMimeType, customParsers, "Invalid UsersUsernamePutBody", maxLength)
+        }
 
-    def updateUserAction = (f: updateUserActionType) => (username: String) => Action(updateUserParser()) { request =>
+    def updateUserAction = (f: updateUserActionType) => (username: String) => Action(updateUserParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { updateUserResponseMimeType =>
@@ -391,9 +443,21 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         case _: java.lang.IndexOutOfBoundsException => Status(405)
      } 
 
-        private def updatePetParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PetsPostBody", maxLength)
+        private def updatePetParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            
+            val customParsers = WrappedBodyParsers.optionParser[Pet]
+            optionParser[Pet](bodyMimeType, customParsers, "Invalid PetsPostBody", maxLength)
+        }
 
-    def updatePetAction = (f: updatePetActionType) => Action(updatePetParser()) { request =>
+    def updatePetAction = (f: updatePetActionType) => Action(updatePetParser(Seq[String]("application/json", "application/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { updatePetResponseMimeType =>
@@ -446,9 +510,21 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         case _: java.lang.IndexOutOfBoundsException => Status(405)
      } 
 
-        private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PetsPostBody", maxLength)
+        private def addPetParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            
+            val customParsers = WrappedBodyParsers.optionParser[Pet]
+            optionParser[Pet](bodyMimeType, customParsers, "Invalid PetsPostBody", maxLength)
+        }
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
+    def addPetAction = (f: addPetActionType) => Action(addPetParser(Seq[String]("application/json", "application/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
@@ -499,9 +575,22 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         case _: java.lang.IndexOutOfBoundsException => Status(405)
      } 
 
-        private def createUsersWithArrayInputParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[UsersCreateWithListPostBodyOpt]("application/json", "Invalid UsersCreateWithListPostBody", maxLength)
+        private def createUsersWithArrayInputParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[UsersCreateWithListPostBodyOpt]
+            optionParser[UsersCreateWithListPostBodyOpt](bodyMimeType, customParsers, "Invalid UsersCreateWithListPostBody", maxLength)
+        }
 
-    def createUsersWithArrayInputAction = (f: createUsersWithArrayInputActionType) => Action(createUsersWithArrayInputParser()) { request =>
+    def createUsersWithArrayInputAction = (f: createUsersWithArrayInputActionType) => Action(createUsersWithArrayInputParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { createUsersWithArrayInputResponseMimeType =>

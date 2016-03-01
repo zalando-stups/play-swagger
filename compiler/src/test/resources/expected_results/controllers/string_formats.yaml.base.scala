@@ -1,7 +1,7 @@
 package string_formats.yaml
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
@@ -30,9 +30,22 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-        private def getParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[BinaryString]("application/json", "Invalid BinaryString", maxLength)
+        private def getParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.anyParser[BinaryString]
+            anyParser[BinaryString](bodyMimeType, customParsers, "Invalid BinaryString", maxLength)
+        }
 
-    def getAction = (f: getActionType) => (base64: GetBase64, date: GetDate, date_time: GetDate_time) => Action(getParser()) { request =>
+    def getAction = (f: getActionType) => (base64: GetBase64, date: GetDate, date_time: GetDate_time) => Action(getParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/yaml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>

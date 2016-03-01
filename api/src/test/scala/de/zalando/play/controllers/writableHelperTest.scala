@@ -3,6 +3,7 @@ package de.zalando.play.controllers
 import de.zalando.play.controllers.ResponseWriters.choose
 import org.specs2.mutable.Specification
 import play.api.http.Writeable
+import play.api.mvc.RequestHeader
 import scala.concurrent.ExecutionContext.Implicits
 
 /**
@@ -13,7 +14,7 @@ class ResponseWritersTest extends Specification {
 
   import TestEnvironment._
 
-  "ResponseWriters$Test" should {
+  "ResponseWriters" should {
     "find something" in {
       choose("text/plain")[Any](reg) must_== Some(seqText.w)
     }
@@ -33,6 +34,51 @@ class ResponseWritersTest extends Specification {
       choose("text/plain")[Any]() must_== None
     }
 
+  }
+}
+
+class WrappedBodyParsersTest extends Specification {
+
+  import TestEnvironment._
+
+  val binaryString = new WrappedBodyParsersBase {
+    val binaryString: Parser[BinaryString] =
+      (requestHeader: RequestHeader, byteArray: Array[Byte]) => BinaryString(byteArray)
+    /**
+      * This collection contains all {@Writeable}s which could be used in
+      * as a marshaller for different mime types and types of response
+      */
+    override val custom: Seq[(String, ParserWrapper[_])] = Seq(
+      "text/plain" -> binaryString
+    )
+  }
+
+  val catchAll = new WrappedBodyParsersBase {
+    val any: Parser[Any] =
+      (requestHeader: RequestHeader, byteArray: Array[Byte]) => BinaryString(byteArray)
+    /**
+      * This collection contains all {@Writeable}s which could be used in
+      * as a marshaller for different mime types and types of response
+      */
+    override val custom: Seq[(String, ParserWrapper[_])] = Seq(
+      "text/plain" -> any
+    )
+  }
+
+  "WrappedBodyParsers" should {
+    "find something" in {
+      WrappedBodyParsers.anyParser[Any] must_== Nil
+    }
+    "not find anything for wrong type" in {
+      binaryString.anyParser[String] must_== Nil
+    }
+    "find something for correct type" in {
+      binaryString.anyParser[BinaryString].size must_== 1
+    }
+    "find something for every type if target is 'Any'" in {
+      catchAll.anyParser[String].size must_== 1
+      catchAll.anyParser[BinaryString].size must_== 1
+    }
   }
 }
 

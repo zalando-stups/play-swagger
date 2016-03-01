@@ -1,7 +1,7 @@
 package nakadi.yaml
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
@@ -263,9 +263,22 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusnakadiHackPost_event: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-        private def nakadiHackPost_eventParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Event]("application/json", "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
+        private def nakadiHackPost_eventParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[Event]
+            optionParser[Event](bodyMimeType, customParsers, "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
+        }
 
-    def nakadiHackPost_eventAction = (f: nakadiHackPost_eventActionType) => (topic: String) => Action(nakadiHackPost_eventParser()) { request =>
+    def nakadiHackPost_eventAction = (f: nakadiHackPost_eventActionType) => (topic: String) => Action(nakadiHackPost_eventParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackPost_eventResponseMimeType =>
@@ -363,9 +376,22 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusnakadiHackPost_events: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-        private def nakadiHackPost_eventsParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Event]("application/json", "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
+        private def nakadiHackPost_eventsParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.optionParser[Event]
+            optionParser[Event](bodyMimeType, customParsers, "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
+        }
 
-    def nakadiHackPost_eventsAction = (f: nakadiHackPost_eventsActionType) => (topic: String) => Action(nakadiHackPost_eventsParser()) { request =>
+    def nakadiHackPost_eventsAction = (f: nakadiHackPost_eventsActionType) => (topic: String) => Action(nakadiHackPost_eventsParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackPost_eventsResponseMimeType =>

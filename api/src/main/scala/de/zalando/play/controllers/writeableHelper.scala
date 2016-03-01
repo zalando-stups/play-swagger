@@ -1,6 +1,7 @@
 package de.zalando.play.controllers
 
 import play.api.http.Writeable
+import play.api.mvc.RequestHeader
 
 case class WriteableWrapper[T](w: Writeable[T], m: Manifest[T])
 
@@ -31,4 +32,17 @@ trait ResponseWritersBase {
       } map(_.w)
   }
 
+}
+
+object WrappedBodyParsers extends WrappedBodyParsersBase
+
+trait WrappedBodyParsersBase {
+  implicit def parser2parserWrapper[T](p: Parser[T])(implicit m: Manifest[T]): ParserWrapper[T] = ParserWrapper(p, m)
+  type Parser[T] = (RequestHeader, Array[Byte]) => T
+  case class ParserWrapper[T](p: Parser[T], m: Manifest[T])
+  val custom: Seq[(String, ParserWrapper[_])] = Seq.empty
+  def anyParser[T](implicit manifest: Manifest[T]): Seq[(String, Parser[T])] =
+    custom.filter(_._2.m.runtimeClass.isAssignableFrom(manifest.runtimeClass)).map { e =>
+      e.copy(_2 = e._2.asInstanceOf[ParserWrapper[T]].p) }
+  def optionParser[T](implicit manifest: Manifest[T]) = anyParser[Option[T]]
 }

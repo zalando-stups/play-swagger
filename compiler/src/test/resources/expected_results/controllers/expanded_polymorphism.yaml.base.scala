@@ -1,7 +1,7 @@
 package expanded
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
@@ -70,9 +70,22 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         case _: java.util.NoSuchElementException => Status(404)
      } 
 
-        private def addPetParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[NewPet]("application/json", "Invalid NewPet", maxLength)
+        private def addPetParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            import de.zalando.play.controllers.WrappedBodyParsers
+            
+            val customParsers = WrappedBodyParsers.anyParser[NewPet]
+            anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength)
+        }
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser()) { request =>
+    def addPetAction = (f: addPetActionType) => Action(addPetParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>

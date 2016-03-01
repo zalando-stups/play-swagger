@@ -1,7 +1,7 @@
 package heroku.petstore.api.yaml
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
@@ -63,9 +63,21 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusput: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-        private def putParser(maxLength: Int = parse.DefaultMaxTextLength) = optionParser[Pet]("application/json", "Invalid PutPet", maxLength)
+        private def putParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            
+            val customParsers = WrappedBodyParsers.optionParser[Pet]
+            optionParser[Pet](bodyMimeType, customParsers, "Invalid PutPet", maxLength)
+        }
 
-    def putAction = (f: putActionType) => Action(putParser()) { request =>
+    def putAction = (f: putActionType) => Action(putParser(Seq[String]("application/json", "text/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putResponseMimeType =>
@@ -112,9 +124,21 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-        private def postParser(maxLength: Int = parse.DefaultMaxTextLength) = anyParser[Pet]("application/json", "Invalid Pet", maxLength)
+        private def postParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            
+            
+            val customParsers = WrappedBodyParsers.anyParser[Pet]
+            anyParser[Pet](bodyMimeType, customParsers, "Invalid Pet", maxLength)
+        }
 
-    def postAction = (f: postActionType) => Action(postParser()) { request =>
+    def postAction = (f: postActionType) => Action(postParser(Seq[String]("application/json", "text/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
