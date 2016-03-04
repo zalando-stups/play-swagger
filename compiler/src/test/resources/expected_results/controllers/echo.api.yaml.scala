@@ -11,25 +11,42 @@ import PlayValidations._
 
 import scala.util._
 
+
+
 package echo {
 
     class Handler extends HandlerBase {
         val method = methodAction { _ =>
+            
+            
+
             Failure(???)
+
+            
+
         } //////// EOF ////////  methodAction
     }
 }
-
 package echo {
 
     class EchoApiYaml extends EchoApiYamlBase {
         val post = postAction { input: (PostName, PostName) =>
             val (name, year) = input
+            
+
             Failure(???)
+
+            
+
         } //////// EOF ////////  postAction
         val gettest_pathById = gettest_pathByIdAction { (id: String) =>
+            
+            
+
             Failure(???)
+
+            
+
         } //////// EOF ////////  gettest_pathByIdAction
     }
 }
-

@@ -43,18 +43,26 @@ object SwaggerCompiler {
     SwaggerControllerCompilationResult(swaggerFiles.flatten)
   }
 
+  def compileMarshallers(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String]): SwaggerCompilationResult = {
+    implicit val flatAst  = readFlatAst(task)
+    val places            = Seq("/marshallers/")
+    val generator         = new ScalaGenerator(flatAst).generateMarshallers
+    val swaggerFiles      = compileSwagger(task, outputDir, places, generator, overwrite = false)
+    SwaggerControllerCompilationResult(swaggerFiles.flatten)
+  }
+
   def compileRoutes(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String]): SwaggerCompilationResult = {
     implicit val flatAst  = readFlatAst(task)
     val routesFiles       = compileRoutes(task, outputDir, routesImport)
     SwaggerCompilationResult(routesFiles)
   }
 
-  private def compileSwagger(task: SwaggerCompilationTask, outputDir: File, places: Seq[String], generator: generatorF)
+  private def compileSwagger(task: SwaggerCompilationTask, outputDir: File, places: Seq[String], generator: generatorF, overwrite: Boolean = true)
                             (implicit flatAst: StrictModel) = {
     val currentCtrlr  = readFile(outputDir, fullFileName(Some(task), places.last))
     val packageName   = flatAst.packageName.getOrElse(task.packageName)
     val artifacts     = places zip generator(task.definitionFile.getName, packageName, currentCtrlr)
-    val persister     = persist(Some(task), outputDir) _
+    val persister     = persist(Some(task), outputDir, overwrite) _
     val swaggerFiles  = artifacts map persister.tupled
     swaggerFiles
   }
@@ -66,7 +74,7 @@ object SwaggerCompiler {
     val playRules     = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList
     val playTask      = RoutesCompilerTask(task.definitionFile, allImports, forwardsRouter = true, reverseRouter = true, namespaceReverseRouter = false)
     val generated     = task.generator.generate(playTask, playNameSpace, playRules).filter(_._1.endsWith(".scala"))
-    val persister     = persist(None, outputDir) _
+    val persister     = persist(None, outputDir, overwrite = true) _
     val routesFiles   = generated map persister.tupled
     Seq(routesFiles.flatten)
   }
@@ -79,10 +87,12 @@ object SwaggerCompiler {
     flatAst
   }
 
-  def persist(task: Option[SwaggerCompilationTask], outputDir: File)
+  def persist(task: Option[SwaggerCompilationTask], outputDir: File, overwrite: Boolean)
               (directory: String, content: String)(implicit ast: StrictModel): Seq[File] = {
     val fileName: String = fullFileName(task, directory)
-    if (readFile(outputDir, fileName) != content)
+    val fileContents = readFile(outputDir, fileName)
+    val canWrite = overwrite || fileContents.isEmpty
+    if (fileContents != content && canWrite)
       Seq(writeToFile(outputDir)(fileName, content))
     else
       Seq.empty[File]
@@ -102,7 +112,7 @@ object SwaggerCompiler {
 
   def readFile(outputDir: File, fileName: String) = {
     val file = new File(outputDir, fileName)
-    if (file.exists() && file.canRead)
+    if (file.exists && file.canRead)
       FileUtils.readFileToString(file)
     else
       ""

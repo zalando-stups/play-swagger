@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import de.zalando.play.controllers.WrappedBodyParsers.Parser
 import play.api.Logger
 import play.api.http.Status._
-import play.api.http.{Writeable, LazyHttpErrorHandler}
+import play.api.http._
 import play.api.libs.iteratee._
 import play.api.mvc.Results.Status
 import play.api.mvc._
@@ -20,20 +21,21 @@ import scala.util.control.NonFatal
 /**
  * @since 02.09.2015
  */
-object PlayBodyParsing extends PlayBodyParsing {
-
-  import play.api.libs.iteratee.Execution.Implicits.trampoline
-
+object WriterFactories {
   private val jsonFactory = new JsonFactory()
 
   /**
-   * Contains proper Jackson Factories for different mime types
-   * JsonFactory is a default
-   */
-  lazy val factories = Map(
+    * Contains proper Jackson Factories for different mime types
+    * JsonFactory is a default
+    */
+  val factories = Map(
     "application/json" -> jsonFactory,
     "text/x-yaml" -> new YAMLFactory() // TODO implement workaround for bug in yaml parser
-  ).withDefaultValue(jsonFactory)
+  )
+}
+object PlayBodyParsing extends PlayBodyParsing {
+
+  import play.api.libs.iteratee.Execution.Implicits.trampoline
 
   /**
    * Returns proper jackson mapper for given mime type
@@ -41,9 +43,9 @@ object PlayBodyParsing extends PlayBodyParsing {
     * @param mimeType  the mimeType of the required mapper
    * @return
    */
-  def jacksonMapper(mimeType: String) = {
+  def jacksonMapper(mimeType: String): ObjectMapper = {
     assert(mimeType != null)
-    val factory = factories(mimeType)
+    val factory = WriterFactories.factories(mimeType)
     val mapper = new ObjectMapper(factory)
     mapper.registerModule(DefaultScalaModule)
     mapper
@@ -59,12 +61,14 @@ object PlayBodyParsing extends PlayBodyParsing {
     * @tparam T the type of the input the parser should be created for
     * @return BodyParser for the type Option[T]
     */
-  def optionParser[T](mimeType: String, errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
+  def optionParser[T](mimeType: Option[MediaType] => String,
+                      customParsers: Seq[(String, Parser[Option[T]])],
+                      errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
                   (implicit oTag: ClassTag[Option[T]], tag: ClassTag[T]): BodyParser[Option[T]] =
-    tolerantBodyParser[Option[T]](mimeType, maxLength, errorMsg) { (request, bytes) =>
-      if (bytes.nonEmpty)
-        Some(jacksonMapper(mimeType).readValue(bytes, tag.runtimeClass.asInstanceOf[Class[T]]))
-      else
+    tolerantBodyParser[Option[T]](maxLength, errorMsg) { (requestHeader, bytes) =>
+      if (bytes.nonEmpty) {
+        parserCore(mimeType, customParsers, requestHeader, bytes)
+      } else
         None
     }
 
@@ -78,11 +82,27 @@ object PlayBodyParsing extends PlayBodyParsing {
    * @tparam T the type of the input the parser should be created for
    * @return BodyParser for the type T
    */
-  def anyParser[T](mimeType: String, errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
+  def anyParser[T](mimeType: Option[MediaType] => String,
+                   customParsers: Seq[(String, Parser[T])],
+                   errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
                   (implicit tag: ClassTag[T]): BodyParser[T] =
-    tolerantBodyParser[T](mimeType, maxLength, errorMsg) { (request, bytes) =>
-      jacksonMapper(mimeType).readValue(bytes, tag.runtimeClass.asInstanceOf[Class[T]])
+    tolerantBodyParser[T](maxLength, errorMsg) { (requestHeader, bytes) =>
+      parserCore(mimeType, customParsers, requestHeader, bytes)
     }
+
+  private def parserCore[T](mimeType: (Option[MediaType]) => String,
+                            customParsers: Seq[(String, Parser[T])],
+                            requestHeader: RequestHeader,
+                            bytes: Array[Byte])(implicit tag: ClassTag[T]): T = {
+    val mimeTypeName = mimeType(requestHeader.mediaType)
+    val jacksonParser: (RequestHeader, Array[Byte]) => T =
+      (_, bytes) => jacksonMapper(mimeTypeName).readValue(bytes, tag.runtimeClass.asInstanceOf[Class[T]])
+    // TODO default play parsers could be used here as well
+    val parser = customParsers.find(_._1 == mimeTypeName).map(_._2).getOrElse {
+      jacksonParser
+    }
+    parser(requestHeader, bytes)
+  }
 
   /**
    * Converts parsing errors to Writeable
@@ -117,6 +137,23 @@ object PlayBodyParsing extends PlayBodyParsing {
 trait PlayBodyParsing extends BodyParsers {
   val logger = Logger.logger
 
+  type ContentMap = Map[Int, PartialFunction[String, Writeable[Any]]]
+
+  def merge(m1: ContentMap, m2: ContentMap): ContentMap = {
+    val onlyFirst = m1.filterKeys(!m2.keySet.contains(_))
+    val onlySecond = m2.filterKeys(!m1.keySet.contains(_))
+    val both = m1.filterKeys(m2.keySet.contains)
+    val merged = both map { case (code, f) =>
+        code -> f.orElse(m2(code))
+    }
+    onlyFirst ++ onlySecond ++ merged
+  }
+
+  def negotiateContent(acceptedTypes: Seq[MediaRange], providedTypes: Seq[String]): Option[String] =
+    acceptedTypes.sorted collectFirst {
+      case mr: MediaRange if providedTypes.exists(mr.accepts) => providedTypes.find(mr.accepts).get
+    }
+
   def defaultErrorMapping: PartialFunction[Throwable, Status] = {
     case _: IllegalArgumentException => Status(BAD_REQUEST)
     case _: IndexOutOfBoundsException => Status(NOT_FOUND)
@@ -134,8 +171,8 @@ trait PlayBodyParsing extends BodyParsers {
   /**
    * This is private in play codebase. Copy-pasted it.
    */
-  def tolerantBodyParser[A](name: String, maxLength: Long, errorMessage: String)(parser: (RequestHeader, Array[Byte]) => A): BodyParser[A] =
-    BodyParser(name + ", maxLength=" + maxLength) { request =>
+  def tolerantBodyParser[A](maxLength: Long, errorMessage: String)(parser: (RequestHeader, Array[Byte]) => A): BodyParser[A] =
+    BodyParser(errorMessage + ", maxLength=" + maxLength) { request =>
       import play.api.libs.iteratee.Execution.Implicits.trampoline
 
       import scala.util.control.Exception._

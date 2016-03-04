@@ -1,12 +1,13 @@
 package uber.api.yaml
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
+
 import de.zalando.play.controllers.PlayPathBindables
 
 
@@ -18,22 +19,31 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgetme: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getmeAction = (f: getmeActionType) => Action {
-        val getmeResponseMimeType    = "application/json"
-        val possibleWriters = Map(
-            200 -> anyToWritable[Profile]
-        ).withDefaultValue(anyToWritable[Error])        
-        val result = processValidgetmeRequest(f)()(possibleWriters, getmeResponseMimeType)
-        result
+
+    def getmeAction = (f: getmeActionType) => Action { request =>
+        val providedTypes = Seq[String]("application/json")
+
+        negotiateContent(request.acceptedTypes, providedTypes).map { getmeResponseMimeType =>
+                val possibleWriters = Map(
+                    200 -> anyToWritable[Profile]
+            ).withDefaultValue(anyToWritable[Error])
+            
+
+                val result = processValidgetmeRequest(f)()(possibleWriters, getmeResponseMimeType)
+                result
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetmeRequest[T <: Any](f: getmeActionType)(request: getmeActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetmeRequest[T <: Any](f: getmeActionType)(request: getmeActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetme orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getmeWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -50,28 +60,37 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgetproducts: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getproductsAction = (f: getproductsActionType) => (latitude: Double, longitude: Double) => Action {
-        val getproductsResponseMimeType    = "application/json"
-        val possibleWriters = Map(
-            200 -> anyToWritable[Seq[Product]]
-        ).withDefaultValue(anyToWritable[Error])        
-        val result =
-            new ProductsGetValidator(latitude, longitude).errors match {
-                case e if e.isEmpty => processValidgetproductsRequest(f)((latitude, longitude))(possibleWriters, getproductsResponseMimeType)
-                case l =>
-                    implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getproductsResponseMimeType)
-                    BadRequest(l)
-            }
-        result
+
+    def getproductsAction = (f: getproductsActionType) => (latitude: Double, longitude: Double) => Action { request =>
+        val providedTypes = Seq[String]("application/json")
+
+        negotiateContent(request.acceptedTypes, providedTypes).map { getproductsResponseMimeType =>
+                val possibleWriters = Map(
+                    200 -> anyToWritable[Seq[Product]]
+            ).withDefaultValue(anyToWritable[Error])
+            
+
+                val result =
+                        new ProductsGetValidator(latitude, longitude).errors match {
+                            case e if e.isEmpty => processValidgetproductsRequest(f)((latitude, longitude))(possibleWriters, getproductsResponseMimeType)
+                            case l =>
+                                implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getproductsResponseMimeType)
+                                BadRequest(l)
+                        }
+                result
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetproductsRequest[T <: Any](f: getproductsActionType)(request: getproductsActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetproductsRequest[T <: Any](f: getproductsActionType)(request: getproductsActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetproducts orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getproductsWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -88,28 +107,37 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgetestimatesTime: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getestimatesTimeAction = (f: getestimatesTimeActionType) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) => Action {
-        val getestimatesTimeResponseMimeType    = "application/json"
-        val possibleWriters = Map(
-            200 -> anyToWritable[Seq[Product]]
-        ).withDefaultValue(anyToWritable[Error])        
-        val result =
-            new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors match {
-                case e if e.isEmpty => processValidgetestimatesTimeRequest(f)((start_latitude, start_longitude, customer_uuid, product_id))(possibleWriters, getestimatesTimeResponseMimeType)
-                case l =>
-                    implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getestimatesTimeResponseMimeType)
-                    BadRequest(l)
-            }
-        result
+
+    def getestimatesTimeAction = (f: getestimatesTimeActionType) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) => Action { request =>
+        val providedTypes = Seq[String]("application/json")
+
+        negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesTimeResponseMimeType =>
+                val possibleWriters = Map(
+                    200 -> anyToWritable[Seq[Product]]
+            ).withDefaultValue(anyToWritable[Error])
+            
+
+                val result =
+                        new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors match {
+                            case e if e.isEmpty => processValidgetestimatesTimeRequest(f)((start_latitude, start_longitude, customer_uuid, product_id))(possibleWriters, getestimatesTimeResponseMimeType)
+                            case l =>
+                                implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getestimatesTimeResponseMimeType)
+                                BadRequest(l)
+                        }
+                result
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetestimatesTimeRequest[T <: Any](f: getestimatesTimeActionType)(request: getestimatesTimeActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetestimatesTimeRequest[T <: Any](f: getestimatesTimeActionType)(request: getestimatesTimeActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetestimatesTime orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getestimatesTimeWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -126,28 +154,37 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgetestimatesPrice: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def getestimatesPriceAction = (f: getestimatesPriceActionType) => (start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) => Action {
-        val getestimatesPriceResponseMimeType    = "application/json"
-        val possibleWriters = Map(
-            200 -> anyToWritable[Seq[PriceEstimate]]
-        ).withDefaultValue(anyToWritable[Error])        
-        val result =
-            new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors match {
-                case e if e.isEmpty => processValidgetestimatesPriceRequest(f)((start_latitude, start_longitude, end_latitude, end_longitude))(possibleWriters, getestimatesPriceResponseMimeType)
-                case l =>
-                    implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getestimatesPriceResponseMimeType)
-                    BadRequest(l)
-            }
-        result
+
+    def getestimatesPriceAction = (f: getestimatesPriceActionType) => (start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) => Action { request =>
+        val providedTypes = Seq[String]("application/json")
+
+        negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesPriceResponseMimeType =>
+                val possibleWriters = Map(
+                    200 -> anyToWritable[Seq[PriceEstimate]]
+            ).withDefaultValue(anyToWritable[Error])
+            
+
+                val result =
+                        new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors match {
+                            case e if e.isEmpty => processValidgetestimatesPriceRequest(f)((start_latitude, start_longitude, end_latitude, end_longitude))(possibleWriters, getestimatesPriceResponseMimeType)
+                            case l =>
+                                implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getestimatesPriceResponseMimeType)
+                                BadRequest(l)
+                        }
+                result
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetestimatesPriceRequest[T <: Any](f: getestimatesPriceActionType)(request: getestimatesPriceActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgetestimatesPriceRequest[T <: Any](f: getestimatesPriceActionType)(request: getestimatesPriceActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgetestimatesPrice orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val getestimatesPriceWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
@@ -164,28 +201,37 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
     private val errorToStatusgethistory: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
-    def gethistoryAction = (f: gethistoryActionType) => (offset: ErrorCode, limit: ErrorCode) => Action {
-        val gethistoryResponseMimeType    = "application/json"
-        val possibleWriters = Map(
-            200 -> anyToWritable[Activities]
-        ).withDefaultValue(anyToWritable[Error])        
-        val result =
-            new HistoryGetValidator(offset, limit).errors match {
-                case e if e.isEmpty => processValidgethistoryRequest(f)((offset, limit))(possibleWriters, gethistoryResponseMimeType)
-                case l =>
-                    implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gethistoryResponseMimeType)
-                    BadRequest(l)
-            }
-        result
+
+    def gethistoryAction = (f: gethistoryActionType) => (offset: ErrorCode, limit: ErrorCode) => Action { request =>
+        val providedTypes = Seq[String]("application/json")
+
+        negotiateContent(request.acceptedTypes, providedTypes).map { gethistoryResponseMimeType =>
+                val possibleWriters = Map(
+                    200 -> anyToWritable[Activities]
+            ).withDefaultValue(anyToWritable[Error])
+            
+
+                val result =
+                        new HistoryGetValidator(offset, limit).errors match {
+                            case e if e.isEmpty => processValidgethistoryRequest(f)((offset, limit))(possibleWriters, gethistoryResponseMimeType)
+                            case l =>
+                                implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gethistoryResponseMimeType)
+                                BadRequest(l)
+                        }
+                result
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgethistoryRequest[T <: Any](f: gethistoryActionType)(request: gethistoryActionRequestType)(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def processValidgethistoryRequest[T <: Any](f: gethistoryActionType)(request: gethistoryActionRequestType)
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        import de.zalando.play.controllers.ResponseWriters
+        
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => (errorToStatusgethistory orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val gethistoryWritableJson = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)

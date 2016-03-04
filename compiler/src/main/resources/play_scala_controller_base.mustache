@@ -1,7 +1,7 @@
 package {{main_package}}
 
 import play.api.mvc.{Action, Controller, Results}
-import play.api.http.Writeable
+import play.api.http._
 import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
@@ -26,55 +26,74 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {
     {{/for}}{{if m.error_mappings}} } {{/if}}
 
     {{for body in m.body_param}}
-        private def {{m.parser_name}}(maxLength: Int = parse.DefaultMaxTextLength) = {{body.body_parser}}[{{body.parser_type}}]("{{m.request_mime_type_value}}", "Invalid {{body.type_name}}", maxLength)
+        private def {{m.parser_name}}(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
+            def bodyMimeType: Option[MediaType] => String = mediaType => {
+                val requestType = mediaType.toSeq.map {
+                    case m: MediaRange => m
+                    case MediaType(a,b,c) => new MediaRange(a,b,c,None,Nil)
+                }
+                negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
+            }
+            {{if m.needs_custom_readers}}
+            {{else}}
+            import de.zalando.play.controllers.WrappedBodyParsers
+            {{/if}}
+            val customParsers = WrappedBodyParsers.{{body.body_parser}}[{{body.parser_type}}]
+            {{body.body_parser}}[{{body.parser_type}}](bodyMimeType, customParsers, "Invalid {{body.type_name}}", maxLength)
+        }
     {{/for}}
 
-    def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} Action{{if m.body_param}}({{m.parser_name}}()){{/if}} { {{if m.request_needed}}request =>{{/if}}
-        val {{m.response_mime_type_name}}    = "{{m.response_mime_type_value}}"
+    def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} Action{{if m.body_param}}({{m.parser_name}}({{m.consumes}})){{/if}} { request =>
+        val providedTypes = {{m.produces}}
 
-        val possibleWriters = Map{{if m.result_types}}(
-            {{for result_type in m.result_types}}
-                {{result_type.code}} -> anyToWritable[{{result_type.type}}]{{if result_type.isNotLast}}, {{/if}}
-            {{/for}}
-        ){{else}}.empty[Int,String => Writeable[Any]]{{/if}}{{if m.default_result_type}}.withDefaultValue(anyToWritable[{{m.default_result_type}}]){{/if}}
-        {{for body in m.body_param}}
-        val {{body.field_name}} = request.body
-        {{/for}}
-        {{for header in m.header_params}}
-        val {{header.field_name}} =
-            fromHeaders[{{header.type_name}}]("{{header.real_name}}", request.headers.toMap)
-        {{/for}}
-        {{if m.header_params}}
-            ({{for header in m.header_params}}{{header.field_name}}{{if header.isNotLast}}, {{/if}}{{/for}}) match {
-                case ({{for header in m.header_params}}Right({{header.field_name}}){{if header.isNotLast}}, {{/if}}{{/for}}) =>
-        {{/if}}
-
-            val result ={{if m.has_no_validations}} {{m.process_valid_request}}(f)()(possibleWriters, {{m.response_mime_type_name}}){{/if}}
-                {{for v in m.validations}}
-                    new {{v.validation_name}}({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}).errors match {
-                        case e if e.isEmpty => {{m.process_valid_request}}(f)(({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}))(possibleWriters, {{m.response_mime_type_name}})
-                        case l =>
-                            implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{m.response_mime_type_name}})
-                            BadRequest(l)
-                    }
+        negotiateContent(request.acceptedTypes, providedTypes).map { {{m.response_mime_type_name}} =>
+                val possibleWriters = Map{{if m.result_types}}(
+                {{for result_type in m.result_types}}
+                    {{result_type.code}} -> anyToWritable[{{result_type.type}}]{{if result_type.isNotLast}}, {{/if}}
                 {{/for}}
-            result
-        {{if m.header_params}}
-            case ({{for h in m.header_params}}_{{if h.isNotLast}}, {{/if}}{{/for}}) =>
-                val msg = Seq({{for h in m.header_params}}{{h.field_name}}{{if h.isNotLast}}, {{/if}}{{/for}}).filter{_.isLeft}.map(_.left.get).mkString("\n")
-                BadRequest(msg)
-            }
-        {{/if}}
+            ){{else}}.empty[Int,String => Writeable[Any]]{{/if}}{{if m.default_result_type}}.withDefaultValue(anyToWritable[{{m.default_result_type}}]){{/if}}
+            {{for body in m.body_param}}
+            val {{body.field_name}} = request.body
+            {{/for}}
+            {{for header in m.header_params}}
+            val {{header.field_name}} =
+                fromHeaders[{{header.type_name}}]("{{header.real_name}}", request.headers.toMap)
+            {{/for}}
+            {{if m.header_params}}
+                ({{for header in m.header_params}}{{header.field_name}}{{if header.isNotLast}}, {{/if}}{{/for}}) match {
+                    case ({{for header in m.header_params}}Right({{header.field_name}}){{if header.isNotLast}}, {{/if}}{{/for}}) =>
+            {{/if}}
 
+                val result ={{if m.has_no_validations}} {{m.process_valid_request}}(f)()(possibleWriters, {{m.response_mime_type_name}}){{/if}}
+                    {{for v in m.validations}}
+                        new {{v.validation_name}}({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}).errors match {
+                            case e if e.isEmpty => {{m.process_valid_request}}(f)(({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}))(possibleWriters, {{m.response_mime_type_name}})
+                            case l =>
+                                implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{m.response_mime_type_name}})
+                                BadRequest(l)
+                        }
+                    {{/for}}
+                result
+            {{if m.header_params}}
+                case ({{for h in m.header_params}}_{{if h.isNotLast}}, {{/if}}{{/for}}) =>
+                    val msg = Seq({{for h in m.header_params}}{{h.field_name}}{{if h.isNotLast}}, {{/if}}{{/for}}).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                    BadRequest(msg)
+                }
+            {{/if}}
+        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def {{m.process_valid_request}}[T <: Any](f: {{m.action_type}})(request: {{m.action_request_type}})(writers: Map[Int, String => Writeable[T]], mimeType: String) = {
+    private def {{m.process_valid_request}}[T <: Any](f: {{m.action_type}})(request: {{m.action_request_type}})
+                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
+        {{if m.needs_custom_writers}}
+        {{else}}import de.zalando.play.controllers.ResponseWriters
+        {{/if}}
         val callerResult = f(request)
         val status = callerResult match {
             case Failure(error) => ({{m.error_to_status}} orElse defaultErrorMapping)(error)
             case Success((code: Int, result: T @ unchecked)) =>
-                writers.get(code).map { writer =>
-                    implicit val {{m.writable_json}} = writer(mimeType)
+                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
+                writerOpt.map { implicit writer =>
                     Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)

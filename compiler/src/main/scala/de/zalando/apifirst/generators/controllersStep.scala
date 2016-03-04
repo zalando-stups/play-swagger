@@ -2,10 +2,11 @@ package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef}
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.ParameterPlace
+import de.zalando.apifirst.{Http, ParameterPlace}
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
+import de.zalando.play.controllers.WriterFactories
 
 /**
   * @author  slasch
@@ -18,7 +19,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
   val nameMapping = Map(
     "action"                      -> controllersSuffix,
     "parser_name"                 -> "Parser",
-    "writable_json"               -> "WritableJson",
     "action_type"                 -> "ActionType",
     "action_result_type"          -> "ActionResultType",
     "action_success_status_name"  -> "ActionSuccessStatus",
@@ -45,6 +45,9 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val actionErrorMappings = errorMappings(call)
     val nameParamPair       = singleOrMultipleParameters(call)(table)
 
+    val customWriters       = needsCustom(call.mimeOut)
+    val customReaders       = bodyParam.nonEmpty && needsCustom(call.mimeIn)
+
     val nameMappings        = nameMapping map { case (k, v) => k -> nameWithSuffix(call, v) }
 
     val method              = nameMappings("method")
@@ -53,8 +56,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     val (allActionResults, defaultResultType) = actionResults(call)(table)
 
     Map(
-      "response_mime_type_value"      -> call.mimeOut.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
-      "request_mime_type_value"       -> call.mimeIn.headOption.map(_.name).getOrElse("application/json"), // TODO implement content negotiation
       "result_types"                  -> allActionResults,
       "default_result_type"           -> defaultResultType,
       "method"                        -> method,
@@ -70,12 +71,21 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "non_body_params"               -> nonBodyParams,
       "header_params"                 -> headerParams,
 
-      "request_needed"                -> (bodyParam.nonEmpty || headerParams.nonEmpty),
+      "produces"                      -> mimeTypes2StringList(call.mimeOut),
+      "consumes"                      -> mimeTypes2StringList(call.mimeIn),
 
+      "needs_custom_writers"          -> customWriters,
+      "needs_custom_readers"          -> customReaders,
       "has_no_validations"            -> allValidations.isEmpty,
       "has_no_error_mappings"         -> actionErrorMappings.isEmpty
     ) ++ nameMappings ++ nameParamPair
   }
+
+  def needsCustom(mimeTypes: Set[Http.MimeType]): Boolean =
+    mimeTypes.map(_.name).diff(WriterFactories.factories.keySet).nonEmpty
+
+  def mimeTypes2StringList(in: Set[Http.MimeType]): String =
+    in.map(_.name).map("\"" + _ + "\"").mkString("Seq[String](",", ",")")
 
   private def nameWithSuffix(call: ApiCall, suffix: String): String =
     escape(call.handler.method + suffix)
