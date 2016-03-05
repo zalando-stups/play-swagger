@@ -148,6 +148,8 @@ securityDefinitions:
     type: apiKey
     in: header
     name: api_key
+  justBasicStuff:
+    type: basic
 definitions:
   Pet:
     required:
