@@ -26,12 +26,12 @@ object ModelConverter extends ParameterNaming {
     val typeDefs = converter.convert
     val discriminators = converter.discriminators.toMap
     val inlineParameters = new ParametersConverter(base, model, keyPrefix, typeDefs, autoConvert).parameters
-    val apiCalls = new PathsConverter(base, model, keyPrefix, inlineParameters, file.map(_.getName)).convert
+    val securityDefinitions = SecurityConverter.convertDefinitions(model.securityDefinitions)
+    val apiCalls = new PathsConverter(base, model, keyPrefix, inlineParameters, securityDefinitions, file.map(_.getName)).convert
     val packageName = model.vendorExtensions.get(s"$keyPrefix-package")
     val inheritedPackageName = apiCalls.headOption collect {
       case h if apiCalls.seq.forall { _.handler.packageName == h.handler.packageName } => h.handler.packageName
     }
-    val securityDefinitions = SecurityConverter.convertDefinitions(model.securityDefinitions)
     StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators,
       model.basePath, packageName orElse inheritedPackageName, securityDefinitions)
   }

@@ -224,23 +224,47 @@ object Security {
   sealed trait Definition {
     def description: Option[String]
   }
+  sealed trait OAuth2Definition extends Definition {
+    def description: Option[String]
+    def scopes: OAuth2Scopes
+  }
   case class Basic(description: Option[String]) extends Definition
   case class ApiKey(description: Option[String], name: String, in: ParameterPlace) extends Definition {
     require(in == ParameterPlace.QUERY || in == ParameterPlace.HEADER)
     require(name.nonEmpty)
   }
-  case class OAuth2Implicit(description: Option[String], authorizationUrl: URL, scopes: OAuth2Scopes) extends Definition {
+  case class OAuth2Implicit(description: Option[String], authorizationUrl: URL,
+                            scopes: OAuth2Scopes) extends OAuth2Definition {
     require(authorizationUrl != null)
   }
-  case class OAuth2Password(description: Option[String], tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+  case class OAuth2Password(description: Option[String], tokenUrl: URL,
+                            scopes: OAuth2Scopes) extends OAuth2Definition {
     require(tokenUrl != null)
   }
-  case class OAuth2Application(description: Option[String], tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+  case class OAuth2Application(description: Option[String], tokenUrl: URL,
+                               scopes: OAuth2Scopes) extends OAuth2Definition {
     require(tokenUrl != null)
   }
-  case class OAuth2AccessCode(description: Option[String], authorizationUrl: URL, tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+  case class OAuth2AccessCode(description: Option[String], authorizationUrl: URL, tokenUrl: URL,
+                              scopes: OAuth2Scopes) extends OAuth2Definition {
     require(tokenUrl != null)
     require(authorizationUrl != null)
+  }
+
+  sealed trait Constraint {
+    def definition: Definition
+  }
+  case class BasicConstraint(definition: Definition) extends Constraint
+  case class ApiKeyConstraint(definition: Definition) extends Constraint
+  case class OAuth2Constraint(definition: OAuth2Definition, scopes: Set[String]) extends Constraint {
+    require(scopes.forall(definition.scopes.keySet.contains))
+  }
+  object Constraint {
+    def fromDefinition(definition: Definition, scopes: Set[String]): Constraint = definition match {
+      case b: Basic => BasicConstraint(b)
+      case a: ApiKey => ApiKeyConstraint(a)
+      case o: OAuth2Definition => OAuth2Constraint(o, scopes)
+    }
   }
 }
 
@@ -277,7 +301,7 @@ object Application {
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
     resultTypes:      Map[Int, ParameterRef],
     defaultResult:    Option[ParameterRef],
-    security:         Set[String] = Set.empty
+    security:         Set[Security.Constraint] = Set.empty
   ) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }

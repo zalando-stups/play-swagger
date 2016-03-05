@@ -2,8 +2,9 @@ package de.zalando.swagger
 
 import java.net.URI
 
-import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef, ApiCall, HandlerCall}
+import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Http.{MimeType, Verb}
+import de.zalando.apifirst.Security.Constraint
 import de.zalando.apifirst._
 import de.zalando.apifirst.naming.{Path, Reference}
 import de.zalando.swagger.strictModel._
@@ -12,7 +13,8 @@ import de.zalando.swagger.strictModel._
   * @author  slasch 
   * @since   20.10.2015.
   */
-class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String, params: ParameterLookupTable,
+class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String,
+                     params: ParameterLookupTable, securityDefinitions: SecurityDefinitionsTable,
                      val definitionFileName: Option[String] = None, val useFileNameAsPackage: Boolean = true)
   extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
@@ -33,8 +35,23 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
       (results, default)  = resultTypes(namePrefix, operation)
       (mimeIn, mimeOut)   = mimeTypes(operation)
       errMappings         = errorMappings(path, operation)
-    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, results, default)
+      security            = securityRequirements(operation)
+    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, results, default, security.toSet)
   }
+
+  private def securityRequirements(operation: Operation) = {
+    val security = Option(operation.security) orElse Option(model.security)
+    for {
+      requirement <- security.toSeq.flatten
+      (name, scopes) <- requirement
+      definition = securityDefinitionByName(name)
+    } yield Constraint.fromDefinition(definition, scopes)
+  }
+
+  private def securityDefinitionByName(name: String): Security.Definition =
+    securityDefinitions.getOrElse(name,
+      throw new scala.IllegalArgumentException(s"Could not find security definition with name $name")
+    )
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
