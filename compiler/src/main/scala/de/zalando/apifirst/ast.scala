@@ -1,6 +1,9 @@
 package de.zalando.apifirst
 
+import java.net.URL
+
 import de.zalando.apifirst.Http.MimeType
+import de.zalando.apifirst.ParameterPlace.ParameterPlace
 import de.zalando.apifirst.naming.{Path, Reference, TypeName}
 
 import scala.language.{implicitConversions, postfixOps}
@@ -216,6 +219,31 @@ case object ParameterPlace extends Enumeration {
   val HEADER  = Value("header")
 }
 
+object Security {
+  type OAuth2Scopes = Map[String, String]
+  sealed trait Definition {
+    def description: String
+  }
+  case class Basic(description: String) extends Definition
+  case class ApiKey(description: String, name: String, in: ParameterPlace) extends Definition {
+    require(in == ParameterPlace.QUERY || in == ParameterPlace.HEADER)
+    require(name.nonEmpty)
+  }
+  case class OAuth2Implicit(description: String, authorizationUrl: URL, scopes: OAuth2Scopes) extends Definition {
+    require(authorizationUrl != null)
+  }
+  case class OAuth2Password(description: String, tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+    require(tokenUrl != null)
+  }
+  case class OAuth2Application(description: String, tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+    require(tokenUrl != null)
+  }
+  case class OAuth2AccessCode(description: String, authorizationUrl: URL, tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+    require(tokenUrl != null)
+    require(authorizationUrl != null)
+  }
+}
+
 object Application {
 
   case class ParameterRef(name: Reference) {
@@ -248,14 +276,20 @@ object Application {
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
     resultTypes:      Map[Int, ParameterRef],
-    defaultResult:    Option[ParameterRef]
+    defaultResult:    Option[ParameterRef],
+    security:         Set[Security.Definition] = Set.empty
   ) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
 
+
+
+
   type ParameterLookupTable     = Map[ParameterRef, Parameter]
   type TypeLookupTable          = Map[Reference, Domain.Type]
   type DiscriminatorLookupTable = Map[Reference, Reference]
+
+  type SecurityDefinitionsDable = Map[String, Security.Definition]
 
   case class StrictModel(calls: Seq[ApiCall],
                          typeDefs: TypeLookupTable,
