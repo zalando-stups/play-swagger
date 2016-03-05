@@ -45,7 +45,7 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
       requirement <- security.toSeq.flatten
       (name, scopes) <- requirement
       definition = securityDefinitionByName(name)
-    } yield Constraint.fromDefinition(definition, scopes)
+    } yield Constraint.fromDefinition(name, definition, scopes)
   }
 
   private def securityDefinitionByName(name: String): Security.Definition =

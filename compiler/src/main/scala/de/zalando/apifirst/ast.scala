@@ -252,18 +252,19 @@ object Security {
   }
 
   sealed trait Constraint {
+    def name: String
     def definition: Definition
   }
-  case class BasicConstraint(definition: Definition) extends Constraint
-  case class ApiKeyConstraint(definition: Definition) extends Constraint
-  case class OAuth2Constraint(definition: OAuth2Definition, scopes: Set[String]) extends Constraint {
+  case class BasicConstraint(name: String, definition: Definition) extends Constraint
+  case class ApiKeyConstraint(name: String, definition: Definition) extends Constraint
+  case class OAuth2Constraint(name: String, definition: OAuth2Definition, scopes: Set[String]) extends Constraint {
     require(scopes.forall(definition.scopes.keySet.contains))
   }
   object Constraint {
-    def fromDefinition(definition: Definition, scopes: Set[String]): Constraint = definition match {
-      case b: Basic => BasicConstraint(b)
-      case a: ApiKey => ApiKeyConstraint(a)
-      case o: OAuth2Definition => OAuth2Constraint(o, scopes)
+    def fromDefinition(name: String, definition: Definition, scopes: Set[String]): Constraint = definition match {
+      case b: Basic => BasicConstraint(name, b)
+      case a: ApiKey => ApiKeyConstraint(name, a)
+      case o: OAuth2Definition => OAuth2Constraint(name, o, scopes)
     }
   }
 }
