@@ -25,7 +25,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def findPetsByTagsAction = (f: findPetsByTagsActionType) => (tags: PetsFindByStatusGetStatus) => Action { request =>
+    def findPetsByTagsAction = (f: findPetsByTagsActionType) => (tags: PetsFindByStatusGetStatus) => petstore_auth_Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsByTagsResponseMimeType =>
@@ -457,7 +457,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             optionParser[Pet](bodyMimeType, customParsers, "Invalid PetsPostBody", maxLength)
         }
 
-    def updatePetAction = (f: updatePetActionType) => Action(updatePetParser(Seq[String]("application/json", "application/xml"))) { request =>
+    def updatePetAction = (f: updatePetActionType) => petstore_auth_Action(updatePetParser(Seq[String]("application/json", "application/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { updatePetResponseMimeType =>
@@ -524,7 +524,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             optionParser[Pet](bodyMimeType, customParsers, "Invalid PetsPostBody", maxLength)
         }
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser(Seq[String]("application/json", "application/xml"))) { request =>
+    def addPetAction = (f: addPetActionType) => petstore_auth_Action(addPetParser(Seq[String]("application/json", "application/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
@@ -788,7 +788,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def getPetByIdAction = (f: getPetByIdActionType) => (petId: Long) => Action { request =>
+    def getPetByIdAction = (f: getPetByIdActionType) => (petId: Long) => api_key_petstore_auth_Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getPetByIdResponseMimeType =>
@@ -841,7 +841,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def updatePetWithFormAction = (f: updatePetWithFormActionType) => (petId: String, name: String, status: String) => Action { request =>
+    def updatePetWithFormAction = (f: updatePetWithFormActionType) => (petId: String, name: String, status: String) => petstore_auth_Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { updatePetWithFormResponseMimeType =>
@@ -892,7 +892,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def deletePetAction = (f: deletePetActionType) => (petId: Long) => Action { request =>
+    def deletePetAction = (f: deletePetActionType) => (petId: Long) => petstore_auth_Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>
@@ -952,7 +952,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def findPetsByStatusAction = (f: findPetsByStatusActionType) => (status: PetsFindByStatusGetStatus) => Action { request =>
+    def findPetsByStatusAction = (f: findPetsByStatusActionType) => (status: PetsFindByStatusGetStatus) => petstore_auth_Action { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsByStatusResponseMimeType =>

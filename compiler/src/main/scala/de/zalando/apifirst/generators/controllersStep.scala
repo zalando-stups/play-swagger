@@ -2,7 +2,7 @@ package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef}
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.{Http, ParameterPlace}
+import de.zalando.apifirst.{Security, ScalaName, Http, ParameterPlace}
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
@@ -77,9 +77,14 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "needs_custom_writers"          -> customWriters,
       "needs_custom_readers"          -> customReaders,
       "has_no_validations"            -> allValidations.isEmpty,
-      "has_no_error_mappings"         -> actionErrorMappings.isEmpty
+      "has_no_error_mappings"         -> actionErrorMappings.isEmpty,
+      "needs_security"                -> call.security.nonEmpty,
+      "secure_action"                 -> actionName(call.security)
     ) ++ nameMappings ++ nameParamPair
   }
+
+  private def actionName(security: Set[Security.Constraint]): String =
+    security.map(_.name).mkString("", "_", "_Action")
 
   def needsCustom(mimeTypes: Set[Http.MimeType]): Boolean =
     mimeTypes.map(_.name).diff(WriterFactories.factories.keySet).nonEmpty

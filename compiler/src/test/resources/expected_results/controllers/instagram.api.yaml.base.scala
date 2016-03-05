@@ -19,7 +19,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaByMedia_idLikesAction = (f: getmediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
+    def getmediaByMedia_idLikesAction = (f: getmediaByMedia_idLikesActionType) => (media_id: Int) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idLikesResponseMimeType =>
@@ -66,7 +66,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatuspostmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def postmediaByMedia_idLikesAction = (f: postmediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
+    def postmediaByMedia_idLikesAction = (f: postmediaByMedia_idLikesActionType) => (media_id: Int) => oauth_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idLikesResponseMimeType =>
@@ -113,7 +113,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusdeletemediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def deletemediaByMedia_idLikesAction = (f: deletemediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
+    def deletemediaByMedia_idLikesAction = (f: deletemediaByMedia_idLikesActionType) => (media_id: Int) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletemediaByMedia_idLikesResponseMimeType =>
@@ -160,7 +160,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersByUser_idFollows: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersByUser_idFollowsAction = (f: getusersByUser_idFollowsActionType) => (user_id: Double) => Action { request =>
+    def getusersByUser_idFollowsAction = (f: getusersByUser_idFollowsActionType) => (user_id: Double) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idFollowsResponseMimeType =>
@@ -207,7 +207,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetlocationsByLocation_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getlocationsByLocation_idAction = (f: getlocationsByLocation_idActionType) => (location_id: Int) => Action { request =>
+    def getlocationsByLocation_idAction = (f: getlocationsByLocation_idActionType) => (location_id: Int) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsByLocation_idResponseMimeType =>
@@ -254,7 +254,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersSearchAction = (f: getusersSearchActionType) => (q: String, count: MediaFilter) => Action { request =>
+    def getusersSearchAction = (f: getusersSearchActionType) => (q: String, count: MediaFilter) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSearchResponseMimeType =>
@@ -301,7 +301,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersSelfMediaLiked: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersSelfMediaLikedAction = (f: getusersSelfMediaLikedActionType) => (count: MediaId, max_like_id: MediaId) => Action { request =>
+    def getusersSelfMediaLikedAction = (f: getusersSelfMediaLikedActionType) => (count: MediaId, max_like_id: MediaId) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfMediaLikedResponseMimeType =>
@@ -348,7 +348,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgettagsByTag_name: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gettagsByTag_nameAction = (f: gettagsByTag_nameActionType) => (tag_name: String) => Action { request =>
+    def gettagsByTag_nameAction = (f: gettagsByTag_nameActionType) => (tag_name: String) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsByTag_nameResponseMimeType =>
@@ -395,7 +395,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgettagsSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gettagsSearchAction = (f: gettagsSearchActionType) => (q: MediaFilter) => Action { request =>
+    def gettagsSearchAction = (f: gettagsSearchActionType) => (q: MediaFilter) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsSearchResponseMimeType =>
@@ -442,7 +442,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersByUser_idFollowed_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersByUser_idFollowed_byAction = (f: getusersByUser_idFollowed_byActionType) => (user_id: Double) => Action { request =>
+    def getusersByUser_idFollowed_byAction = (f: getusersByUser_idFollowed_byActionType) => (user_id: Double) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idFollowed_byResponseMimeType =>
@@ -489,7 +489,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaByMedia_idCommentsAction = (f: getmediaByMedia_idCommentsActionType) => (media_id: Int) => Action { request =>
+    def getmediaByMedia_idCommentsAction = (f: getmediaByMedia_idCommentsActionType) => (media_id: Int) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idCommentsResponseMimeType =>
@@ -550,7 +550,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             optionParser[Double](bodyMimeType, customParsers, "Invalid LocationLatitude", maxLength)
         }
 
-    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => Action(postmediaByMedia_idCommentsParser(Seq[String]("application/json"))) { request =>
+    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => oauth_Action(postmediaByMedia_idCommentsParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idCommentsResponseMimeType =>
@@ -598,7 +598,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusdeletemediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def deletemediaByMedia_idCommentsAction = (f: deletemediaByMedia_idCommentsActionType) => (media_id: Int) => Action { request =>
+    def deletemediaByMedia_idCommentsAction = (f: deletemediaByMedia_idCommentsActionType) => (media_id: Int) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletemediaByMedia_idCommentsResponseMimeType =>
@@ -645,7 +645,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgettagsByTag_nameMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gettagsByTag_nameMediaRecentAction = (f: gettagsByTag_nameMediaRecentActionType) => (tag_name: String) => Action { request =>
+    def gettagsByTag_nameMediaRecentAction = (f: gettagsByTag_nameMediaRecentActionType) => (tag_name: String) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsByTag_nameMediaRecentResponseMimeType =>
@@ -706,7 +706,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             optionParser[String](bodyMimeType, customParsers, "Invalid MediaFilter", maxLength)
         }
 
-    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => Action(postusersByUser_idRelationshipParser(Seq[String]("application/json"))) { request =>
+    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => oauth_Action(postusersByUser_idRelationshipParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postusersByUser_idRelationshipResponseMimeType =>
@@ -754,7 +754,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersSelfFeed: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersSelfFeedAction = (f: getusersSelfFeedActionType) => (count: MediaId, max_id: MediaId, min_id: MediaId) => Action { request =>
+    def getusersSelfFeedAction = (f: getusersSelfFeedActionType) => (count: MediaId, max_id: MediaId, min_id: MediaId) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfFeedResponseMimeType =>
@@ -801,7 +801,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersByUser_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersByUser_idAction = (f: getusersByUser_idActionType) => (user_id: Double) => Action { request =>
+    def getusersByUser_idAction = (f: getusersByUser_idActionType) => (user_id: Double) => key_oauth_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idResponseMimeType =>
@@ -848,7 +848,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => Action { request =>
+    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaSearchResponseMimeType =>
@@ -895,7 +895,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetgeographiesByGeo_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (geo_id: Int, count: MediaId, min_id: MediaId) => Action { request =>
+    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (geo_id: Int, count: MediaId, min_id: MediaId) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getgeographiesByGeo_idMediaRecentResponseMimeType =>
@@ -942,7 +942,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaByShortcode: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaByShortcodeAction = (f: getmediaByShortcodeActionType) => (shortcode: String) => Action { request =>
+    def getmediaByShortcodeAction = (f: getmediaByShortcodeActionType) => (shortcode: String) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByShortcodeResponseMimeType =>
@@ -989,7 +989,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetlocationsSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getlocationsSearchAction = (f: getlocationsSearchActionType) => (foursquare_v2_id: MediaId, facebook_places_id: MediaId, distance: MediaId, lat: LocationLatitude, foursquare_id: MediaId, lng: LocationLatitude) => Action { request =>
+    def getlocationsSearchAction = (f: getlocationsSearchActionType) => (foursquare_v2_id: MediaId, facebook_places_id: MediaId, distance: MediaId, lat: LocationLatitude, foursquare_id: MediaId, lng: LocationLatitude) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsSearchResponseMimeType =>
@@ -1036,7 +1036,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersSelfRequested_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersSelfRequested_byAction = (f: getusersSelfRequested_byActionType) => Action { request =>
+    def getusersSelfRequested_byAction = (f: getusersSelfRequested_byActionType) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfRequested_byResponseMimeType =>
@@ -1077,7 +1077,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaByMedia_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaByMedia_idAction = (f: getmediaByMedia_idActionType) => (media_id: Int) => Action { request =>
+    def getmediaByMedia_idAction = (f: getmediaByMedia_idActionType) => (media_id: Int) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idResponseMimeType =>
@@ -1124,7 +1124,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetlocationsByLocation_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (location_id: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => Action { request =>
+    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (location_id: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsByLocation_idMediaRecentResponseMimeType =>
@@ -1171,7 +1171,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersByUser_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (user_id: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => Action { request =>
+    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (user_id: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idMediaRecentResponseMimeType =>
@@ -1218,7 +1218,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaPopular: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaPopularAction = (f: getmediaPopularActionType) => Action { request =>
+    def getmediaPopularAction = (f: getmediaPopularActionType) => oauth_key_Action { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaPopularResponseMimeType =>

@@ -20,7 +20,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetPetsById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => Action { request =>
+    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => githubAccessCode_internalApiKey_Action { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getPetsByIdResponseMimeType =>
