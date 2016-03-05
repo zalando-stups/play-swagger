@@ -20,7 +20,8 @@ trait ParameterNaming {
 
 object ModelConverter extends ParameterNaming {
 
-  def fromModel(base: URI, model: SwaggerModel, file: Option[File] = None, keyPrefix: String = "x-api-first", autoConvert: Boolean = true) = {
+  def fromModel(base: URI, model: SwaggerModel, file: Option[File] = None,
+                keyPrefix: String = "x-api-first", autoConvert: Boolean = true) = {
     val converter = new TypeConverter(base, model, keyPrefix)
     val typeDefs = converter.convert
     val discriminators = converter.discriminators.toMap
@@ -30,7 +31,9 @@ object ModelConverter extends ParameterNaming {
     val inheritedPackageName = apiCalls.headOption collect {
       case h if apiCalls.seq.forall { _.handler.packageName == h.handler.packageName } => h.handler.packageName
     }
-    StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators, model.basePath, packageName orElse inheritedPackageName)
+    val securityDefinitions = SecurityConverter.convertDefinitions(model.securityDefinitions)
+    StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators,
+      model.basePath, packageName orElse inheritedPackageName, securityDefinitions)
   }
 
 }

@@ -222,23 +222,23 @@ case object ParameterPlace extends Enumeration {
 object Security {
   type OAuth2Scopes = Map[String, String]
   sealed trait Definition {
-    def description: String
+    def description: Option[String]
   }
-  case class Basic(description: String) extends Definition
-  case class ApiKey(description: String, name: String, in: ParameterPlace) extends Definition {
+  case class Basic(description: Option[String]) extends Definition
+  case class ApiKey(description: Option[String], name: String, in: ParameterPlace) extends Definition {
     require(in == ParameterPlace.QUERY || in == ParameterPlace.HEADER)
     require(name.nonEmpty)
   }
-  case class OAuth2Implicit(description: String, authorizationUrl: URL, scopes: OAuth2Scopes) extends Definition {
+  case class OAuth2Implicit(description: Option[String], authorizationUrl: URL, scopes: OAuth2Scopes) extends Definition {
     require(authorizationUrl != null)
   }
-  case class OAuth2Password(description: String, tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+  case class OAuth2Password(description: Option[String], tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
     require(tokenUrl != null)
   }
-  case class OAuth2Application(description: String, tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+  case class OAuth2Application(description: Option[String], tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
     require(tokenUrl != null)
   }
-  case class OAuth2AccessCode(description: String, authorizationUrl: URL, tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
+  case class OAuth2AccessCode(description: Option[String], authorizationUrl: URL, tokenUrl: URL, scopes: OAuth2Scopes) extends Definition {
     require(tokenUrl != null)
     require(authorizationUrl != null)
   }
@@ -277,7 +277,7 @@ object Application {
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
     resultTypes:      Map[Int, ParameterRef],
     defaultResult:    Option[ParameterRef],
-    security:         Set[Security.Definition] = Set.empty
+    security:         Set[String] = Set.empty
   ) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
@@ -289,14 +289,15 @@ object Application {
   type TypeLookupTable          = Map[Reference, Domain.Type]
   type DiscriminatorLookupTable = Map[Reference, Reference]
 
-  type SecurityDefinitionsDable = Map[String, Security.Definition]
+  type SecurityDefinitionsTable = Map[String, Security.Definition]
 
   case class StrictModel(calls: Seq[ApiCall],
                          typeDefs: TypeLookupTable,
                          params: ParameterLookupTable,
                          discriminators: DiscriminatorLookupTable,
                          basePath: String,
-                         packageName: Option[String]) {
+                         packageName: Option[String],
+                         securityDefinitionsTable: SecurityDefinitionsTable) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
     def findType(ref: Reference) = typeDefs(ref)
