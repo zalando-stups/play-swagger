@@ -6,13 +6,15 @@ import de.zalando.play.controllers.PlayBodyParsing
 
 
 trait InstagramApiYamlSecurity {
+    val unauthorizedContent = ???
+    val mimeType: String = ???
     
     def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
     def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -25,7 +27,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_Checks = Seq(oauth_Extractor _)
 
-    class oauth_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -39,7 +41,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -53,7 +55,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -67,7 +69,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -81,7 +83,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -95,7 +97,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -109,7 +111,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -123,7 +125,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -137,7 +139,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -151,7 +153,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -164,7 +166,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_Checks = Seq(oauth_Extractor _)
 
-    class oauth_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -178,7 +180,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -192,7 +194,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -205,7 +207,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_Checks = Seq(oauth_Extractor _)
 
-    class oauth_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -219,7 +221,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -233,7 +235,7 @@ trait InstagramApiYamlSecurity {
 
     val key_oauth_Checks = Seq(key_Extractor _, oauth_Extractor _)
 
-    class key_oauth_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object key_oauth_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = key_oauth_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -247,7 +249,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -261,7 +263,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -275,7 +277,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -289,7 +291,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -303,7 +305,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -317,7 +319,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -331,7 +333,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -345,7 +347,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
@@ -359,7 +361,7 @@ trait InstagramApiYamlSecurity {
 
     val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
 
-    class oauth_key_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object oauth_key_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = oauth_key_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))

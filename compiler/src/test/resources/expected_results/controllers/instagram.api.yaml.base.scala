@@ -12,7 +12,8 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
-trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
+
+trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with InstagramApiYamlSecurity {
     private type getmediaByMedia_idLikesActionRequestType       = (Int)
     private type getmediaByMedia_idLikesActionType              = getmediaByMedia_idLikesActionRequestType => Try[(Int, Any)]
 

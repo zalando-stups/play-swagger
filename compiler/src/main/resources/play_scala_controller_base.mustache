@@ -16,7 +16,7 @@ import {{import.name}}
 
 {{for controller in controllers}}
 
-trait {{controller.base}} extends Controller with PlayBodyParsing {
+trait {{controller.base}} extends Controller with PlayBodyParsing {{if controller.security_trait}} with {{controller.security_trait}} {{/if}}{
     {{for m in controller.methods}}
     private type {{m.action_request_type}}       = ({{for v in m.validations}}{{for f in v.fields}}{{f.type_name}}{{if f.isNotLast}}, {{/if}}{{/for}}{{/for}}{{if m.has_no_validations}}Unit{{/if}})
     private type {{m.action_type}}              = {{m.action_request_type}} => Try[(Int, Any)]

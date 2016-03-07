@@ -14,7 +14,8 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
-trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing {
+
+trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with FullPetstoreApiYamlSecurity {
     private type findPetsByTagsActionRequestType       = (PetsFindByStatusGetStatus)
     private type findPetsByTagsActionType              = findPetsByTagsActionRequestType => Try[(Int, Any)]
 

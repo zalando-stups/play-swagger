@@ -13,7 +13,8 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
-trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
+
+trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with SecurityApiYamlSecurity {
     private type getPetsByIdActionRequestType       = (PetsIdGetId)
     private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[(Int, Any)]
 

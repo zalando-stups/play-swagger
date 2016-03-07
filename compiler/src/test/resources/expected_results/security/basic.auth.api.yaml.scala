@@ -6,12 +6,14 @@ import de.zalando.play.controllers.PlayBodyParsing
 
 
 trait BasicAuthApiYamlSecurity {
+    val unauthorizedContent = ???
+    val mimeType: String = ???
     
     def basicAuth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
 
     val basicAuth_Checks = Seq(basicAuth_Extractor _)
 
-    class basicAuth_Action(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
+    object basicAuth_Action extends AuthenticatedBuilder(
         req => {
             val individualChecks = basicAuth_Checks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))

@@ -10,7 +10,8 @@ import scala.util._
 
 
 
-trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
+
+trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing  with BasicAuthApiYamlSecurity {
     private type getActionRequestType       = (Unit)
     private type getActionType              = getActionRequestType => Try[(Int, Any)]
 
