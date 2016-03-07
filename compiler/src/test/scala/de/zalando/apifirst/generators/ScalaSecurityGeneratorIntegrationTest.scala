@@ -15,9 +15,15 @@ class ScalaSecurityGeneratorIntegrationTest extends FunSpec with MustMatchers wi
 
   def toTest: File => Boolean = f => f.getName.endsWith(".yaml")
 
-  describe("ScalaSecurityGenerator should generate model files") {
+  describe("ScalaSecurityGenerator should generate security plumbing files") {
     exampleFixtures.filter(toTest).foreach { file =>
       testScalaSecurityGenerator(file)
+    }
+  }
+
+  describe("ScalaSecurityGenerator should generate security helper files") {
+    exampleFixtures.filter(toTest).foreach { file =>
+      testScalaSecurityExtractorsGenerator(file)
     }
   }
 
@@ -31,6 +37,20 @@ class ScalaSecurityGeneratorIntegrationTest extends FunSpec with MustMatchers wi
       val expected    = asInFile(file, "scala")
       if (expected.isEmpty)
         dump(scalaModel, file, "scala")
+      clean(scalaModel) mustBe clean(expected)
+    }
+  }
+
+  def testScalaSecurityExtractorsGenerator(file: File): Unit = {
+    it(s"should parse the yaml swagger file ${file.getName} as security extractor") {
+      val (base, model) = StrictYamlParser.parse(file)
+      val packageName = ScalaName.scalaPackageName(file.getName)
+      val ast         = ModelConverter.fromModel(base, model, Option(file))
+      val flatAst     = TypeNormaliser.flatten(ast)
+      val scalaModel  = new ScalaGenerator(flatAst).playScalaSecurityExtractors(file.getName, packageName)
+      val expected    = asInFile(file, "extractor.scala")
+      if (expected.isEmpty)
+        dump(scalaModel, file, "extractor.scala")
       clean(scalaModel) mustBe clean(expected)
     }
   }

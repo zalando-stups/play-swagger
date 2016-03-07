@@ -51,6 +51,14 @@ object SwaggerCompiler {
     SwaggerControllerCompilationResult(swaggerFiles.flatten)
   }
 
+  def compileExtractors(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String]): SwaggerCompilationResult = {
+    implicit val flatAst  = readFlatAst(task)
+    val places            = Seq("/security/")
+    val generator         = new ScalaGenerator(flatAst).generateExtractors
+    val swaggerFiles      = compileSwagger(task, outputDir, places, generator, overwrite = false)
+    SwaggerControllerCompilationResult(swaggerFiles.flatten)
+  }
+
   def compileRoutes(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String]): SwaggerCompilationResult = {
     implicit val flatAst  = readFlatAst(task)
     val routesFiles       = compileRoutes(task, outputDir, routesImport)

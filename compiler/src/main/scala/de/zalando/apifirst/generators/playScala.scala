@@ -16,14 +16,15 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName, securityDefinitions) = strictModel
 
-  val testsTemplateName           = "play_scala_test"
-  val validatorsTemplateName      = "play_validation"
-  val generatorsTemplateName      = "generators"
-  val modelTemplateName           = "model"
-  val controllersTemplateName     = "play_scala_controller"
-  val controllerBaseTemplateName  = "play_scala_controller_base"
-  val marschallersTemplateName    = "play_scala_response_writers"
-  val securityTemplateName        = "play_scala_controller_security"
+  val testsTemplateName               = "play_scala_test"
+  val validatorsTemplateName          = "play_validation"
+  val generatorsTemplateName          = "generators"
+  val modelTemplateName               = "model"
+  val controllersTemplateName         = "play_scala_controller"
+  val controllerBaseTemplateName      = "play_scala_controller_base"
+  val marschallersTemplateName        = "play_scala_response_writers"
+  val securityTemplateName            = "play_scala_controller_security"
+  val securityExtractorsTemplateName  = "play_scala_security_extractors"
 
   def generateBase: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateModel(fileName, packageName),
@@ -39,6 +40,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   def generateMarshallers: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     playScalaMarshallers(fileName, packageName)
+  )
+
+  def generateExtractors: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
+    playScalaSecurityExtractors(fileName, packageName)
   )
 
   def generateControllers: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
@@ -72,6 +77,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   def playScalaMarshallers(fileName: String, packageName: String) =
     if (modelCalls.isEmpty) ""
     else apply(fileName, packageName, marschallersTemplateName)
+
+  def playScalaSecurityExtractors(fileName: String, packageName: String) =
+    if (modelCalls.isEmpty) ""
+    else apply(fileName, packageName, securityExtractorsTemplateName)
 
   def playScalaSecurity(fileName: String, packageName: String) =
     if (securityDefinitions.isEmpty) ""
