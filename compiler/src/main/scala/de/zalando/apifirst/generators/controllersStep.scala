@@ -77,19 +77,28 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
       "needs_custom_writers"          -> customWriters,
       "needs_custom_readers"          -> customReaders,
       "has_no_validations"            -> allValidations.isEmpty,
-      "has_no_error_mappings"         -> actionErrorMappings.isEmpty,
-      "needs_security"                -> call.security.nonEmpty,
-      "secure_action"                 -> actionName(call.security)
-    ) ++ nameMappings ++ nameParamPair
+      "has_no_error_mappings"         -> actionErrorMappings.isEmpty
+    ) ++ nameMappings ++ nameParamPair ++ securityData(call)
   }
 
-  private def actionName(security: Set[Security.Constraint]): String =
-    security.map(_.name).mkString("", "_", "_Action")
+  private def securityData(call: ApiCall)(implicit table: DenotationTable): Map[String, Any] = Map(
+    "needs_security"                -> call.security.nonEmpty,
+    "secure_action"                 -> securityName(call.security, "Action"),
+    "secure_checks"                 -> securityName(call.security, "Checks"),
+    "security_checks"               -> call.security.map(securityCheck)
+  )
 
-  def needsCustom(mimeTypes: Set[Http.MimeType]): Boolean =
+  private def securityCheck(constraint: Security.Constraint): Map[String, Any] = Map(
+    "name" -> securityName(Set(constraint), "Extractor")
+  )
+
+  private def securityName(security: Set[Security.Constraint], suffix: String): String =
+    security.map(_.name).mkString("", "_", "_"+suffix)
+
+  private def needsCustom(mimeTypes: Set[Http.MimeType]): Boolean =
     mimeTypes.map(_.name).diff(WriterFactories.factories.keySet).nonEmpty
 
-  def mimeTypes2StringList(in: Set[Http.MimeType]): String =
+  private def mimeTypes2StringList(in: Set[Http.MimeType]): String =
     in.map(_.name).map("\"" + _ + "\"").mkString("Seq[String](",", ",")")
 
   private def nameWithSuffix(call: ApiCall, suffix: String): String =

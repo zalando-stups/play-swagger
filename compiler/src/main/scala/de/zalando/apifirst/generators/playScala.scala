@@ -14,7 +14,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   val denotationTable = AstScalaPlayEnricher(strictModel)
 
-  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName, _) = strictModel
+  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName, securityDefinitions) = strictModel
 
   val testsTemplateName           = "play_scala_test"
   val validatorsTemplateName      = "play_validation"
@@ -23,6 +23,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   val controllersTemplateName     = "play_scala_controller"
   val controllerBaseTemplateName  = "play_scala_controller_base"
   val marschallersTemplateName    = "play_scala_response_writers"
+  val securityTemplateName        = "play_scala_controller_security"
 
   def generateBase: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateModel(fileName, packageName),
@@ -70,6 +71,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   def playScalaMarshallers(fileName: String, packageName: String) =
     if (modelCalls.isEmpty) ""
     else apply(fileName, packageName, marschallersTemplateName)
+
+  def playScalaSecurity(fileName: String, packageName: String) =
+    if (securityDefinitions.isEmpty) ""
+    else apply(fileName, packageName, securityTemplateName)
 
   private def apply(fileName: String, packageName: String, templateName: String, currentController: String = ""): String = {
     nonEmptyTemplate(fileName, packageName, templateName, currentController)
@@ -242,6 +247,7 @@ trait PlayScalaControllersGenerator {
   case class UnmanagedPart(marker: ApiCall, relevantCode: String, deadCode: String)
 
   val baseControllersSuffix = "Base"
+  val securityTraitSuffix = "Security"
 
   def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart], packageName: String)(table: DenotationTable) = {
     allCalls groupBy { c =>
@@ -253,11 +259,13 @@ trait PlayScalaControllersGenerator {
           "Current plugin version only supports single package definition per specification.\n\t" +
           "Play's route files will fail to compile.")
       }
+      val securityTrait = calls.find(_.security.nonEmpty).map(_ => escape(controller._2 + securityTraitSuffix))
       Map(
         "effective_package"   -> packageName,
         "controller"          -> escape(controller._2),
         "base"                -> escape(controller._2 + baseControllersSuffix),
-        "methods"             -> methods
+        "methods"             -> methods,
+        "security_trait"      -> securityTrait
       )
     }
   }
