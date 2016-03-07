@@ -2,27 +2,35 @@ package {{main_package}}
 
 import play.api.mvc._
 import Security.AuthenticatedBuilder
+import de.zalando.play.controllers.PlayBodyParsing
 {{for import in imports}}
 import {{import.name}}
 {{/for}}
 
 {{for controller in controllers}}
 
-trait {{controller.security}} {
+trait {{controller.security_trait}} {
     {{for m in controller.methods}}
     {{if m.needs_security}}
+    {{for security_check in m.security_checks}}
+    def {{security_check.name}}[User >: Any](header: RequestHeader): Option[User] = ???
+    {{/for}}
+
     val {{m.secure_checks}} = Seq({{for security_check in m.security_checks}}{{security_check.name}} _{{if security_check.isNotLast}}, {{/if}}{{/for}})
 
-    object {{m.secure_checks}} extends AuthenticatedBuilder(
+    class {{m.secure_action}}(mimeType: String, unauthorizedContent: Any) extends AuthenticatedBuilder(
         req => {
             val individualChecks = {{m.secure_checks}}.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
-        onUnauthorized({{m.secure_content}})
+        onUnauthorized(mimeType, unauthorizedContent)
     )
     {{/if}}
     {{/for}}
 
-    private def onUnauthorized(content: AnyContent): RequestHeader => Result = _ => Results.Unauthorized(content)
+    private def onUnauthorized[C](mimeType: String, content: C): RequestHeader => Result =_ => {
+        implicit val writeable = PlayBodyParsing.anyToWritable[C](mimeType)
+        Results.Unauthorized(content)
+    }
 }
 {{/for}}
