@@ -216,7 +216,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[SimpleStreamEvent]
             )
             
-            val x_nakadi_cursors =
+            val x_nakadi_cursors: Either[String,String] =
                 fromHeaders[String]("x_nakadi_cursors", request.headers.toMap)
             
                 (x_nakadi_cursors) match {
@@ -231,7 +231,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
                 case (_) =>
-                    val msg = Seq(x_nakadi_cursors).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                    val problem: Seq[String] = Seq(x_nakadi_cursors).filter{_.isLeft}.map(_.left.get)
+                    val msg = problem.mkString("\n")
                     BadRequest(msg)
                 }
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))

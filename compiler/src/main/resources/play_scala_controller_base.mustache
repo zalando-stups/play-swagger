@@ -56,7 +56,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
             val {{body.field_name}} = request.body
             {{/for}}
             {{for header in m.header_params}}
-            val {{header.field_name}} =
+            val {{header.field_name}}: Either[String,{{header.type_name}}] =
                 fromHeaders[{{header.type_name}}]("{{header.real_name}}", request.headers.toMap)
             {{/for}}
             {{if m.header_params}}
@@ -76,7 +76,8 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
                 result
             {{if m.header_params}}
                 case ({{for h in m.header_params}}_{{if h.isNotLast}}, {{/if}}{{/for}}) =>
-                    val msg = Seq({{for h in m.header_params}}{{h.field_name}}{{if h.isNotLast}}, {{/if}}{{/for}}).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                    val problem: Seq[String] = Seq({{for h in m.header_params}}{{h.field_name}}{{if h.isNotLast}}, {{/if}}{{/for}}).filter{_.isLeft}.map(_.left.get)
+                    val msg = problem.mkString("\n")
                     BadRequest(msg)
                 }
             {{/if}}

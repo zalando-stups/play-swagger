@@ -69,6 +69,7 @@ object PlaySwagger extends AutoPlugin {
     inConfig(Test)(rawSwaggerSettings) ++
     inConfig(Compile)(swaggerBaseSettings) ++
     inConfig(Compile)(swaggerMarshallerSettings) ++
+    inConfig(Compile)(swaggerSecuritySettings) ++
     inConfig(Compile)(swaggerControllerSettings) ++
     inConfig(Compile)(swaggerRoutesSettings) ++
     inConfig(Test)(swaggerTestSettings)

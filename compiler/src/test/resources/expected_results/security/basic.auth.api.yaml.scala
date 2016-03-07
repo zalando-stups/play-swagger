@@ -11,7 +11,7 @@ trait BasicAuthApiYamlSecurity extends SecurityExtractors {
         req => {
             val secureChecks = Seq(basicAuth_Extractor _)
             val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
+            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
         }, unauthorizedContent)
     
 }

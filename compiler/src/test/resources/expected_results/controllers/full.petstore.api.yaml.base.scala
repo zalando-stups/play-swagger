@@ -900,7 +900,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     400 -> anyToWritable[Null]
             )
             
-            val api_key =
+            val api_key: Either[String,String] =
                 fromHeaders[String]("api_key", request.headers.toMap)
             
                 (api_key) match {
@@ -915,7 +915,8 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
                 case (_) =>
-                    val msg = Seq(api_key).filter{_.isLeft}.map(_.left.get).mkString("\n")
+                    val problem: Seq[String] = Seq(api_key).filter{_.isLeft}.map(_.left.get)
+                    val msg = problem.mkString("\n")
                     BadRequest(msg)
                 }
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
