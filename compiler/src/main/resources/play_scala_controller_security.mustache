@@ -2,38 +2,34 @@ package {{main_package}}
 
 import play.api.mvc._
 import Security.AuthenticatedBuilder
-import de.zalando.play.controllers.PlayBodyParsing
+import de.zalando.play.controllers.{PlayBodyParsing, SwaggerSecurityExtractors}
+import SwaggerSecurityExtractors._
 {{for import in imports}}
 import {{import.name}}
 {{/for}}
 
 trait SecurityExtractors {
-{{for extractor in security_extractors.extractors}}
-    def {{extractor.name}}[User >: Any](header: RequestHeader): Option[User] = ???
-{{/for}}
-
+    {{for extractor in security_extractors.extractors}}
+    def {{extractor.name}}[User >: Any](header: RequestHeader): Option[User] =
+        {{extractor.type}}{{if extractor.security_params}}({{for param in extractor.security_params}}{{param.name}}{{if param.isNotLast}}, {{/if}}){{/for}}{{/if}}(header) { {{if extractor.user_params}}({{for param in extractor.user_params}}{{param.name}}: String{{if param.isNotLast}}, {{/if}}{{/for}}){{else}}_{{/if}} =>
+            ???
+        }
+    {{/for}}
+    implicit val unauthorizedContentWriter = ???
+    def unauthorizedContent(req: RequestHeader) = Results.Unauthorized(???)
 }
 
 {{for controller in controllers}}
-
+{{if controller.security_trait}}
 trait {{controller.security_trait}} extends SecurityExtractors {
-    val unauthorizedContent = ???
-    val mimeType: String = ???
-
     {{for m in controller.methods}}{{if m.needs_security}}
     object {{m.secure_action}} extends AuthenticatedBuilder(
         req => {
             val secureChecks = Seq({{for security_check in m.security_checks}}{{security_check.name}} _{{if security_check.isNotLast}}, {{/if}}{{/for}})
-            val individualChecks = secureChecks.map(_.apply(req))
+            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
-        },
-        onUnauthorized(mimeType, unauthorizedContent)
-    )
+        }, unauthorizedContent)
     {{/if}}{{/for}}
-
-    private def onUnauthorized[C](mimeType: String, content: C): RequestHeader => Result =_ => {
-        implicit val writeable = PlayBodyParsing.anyToWritable[C](mimeType)
-        Results.Unauthorized(content)
-    }
 }
+{{/if}}
 {{/for}}
