@@ -21,7 +21,7 @@ object SwaggerCompiler {
 
   def compileBase(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String]): SwaggerCompilationResult = {
     implicit val flatAst  = readFlatAst(task)
-    val places            = Seq("/model/", "/validators/", "/controllers_base/")
+    val places            = Seq("/model/", "/validators/", "/controllers_base/", "/security/")
     val generator         = new ScalaGenerator(flatAst).generateBase
     val swaggerFiles      = compileSwagger(task, outputDir, places, generator)
     SwaggerCompilationResult(swaggerFiles)
@@ -140,13 +140,15 @@ sealed trait SwaggerCompilationResult {
 }
 object SwaggerCompilationResult {
   def apply(results: Seq[Seq[File]]) = results match {
-    case model :: validators :: controllers :: Nil => SwaggerBaseCompilationResult(model, validators, controllers)
+    case model :: validators :: controllers :: security :: Nil =>
+      SwaggerBaseCompilationResult(model, validators, controllers, security)
     case testData :: tests :: Nil => SwaggerTestCompilationResult(testData, tests)
     case routes :: Nil => SwaggerRoutesCompilationResult(routes)
     case other => throw new IllegalArgumentException("Not recognized: " + other)
   }
 }
-case class SwaggerBaseCompilationResult(modelFiles: Seq[File], validatorFiles: Seq[File], controllerBaseFiles: Seq[File]) extends SwaggerCompilationResult {
+case class SwaggerBaseCompilationResult(modelFiles: Seq[File], validatorFiles: Seq[File],
+  controllerBaseFiles: Seq[File], securityFiles: Seq[File]) extends SwaggerCompilationResult {
   def allFiles: Set[File] = (modelFiles ++ validatorFiles ++ controllerBaseFiles).toSet
 }
 case class SwaggerRoutesCompilationResult(routesFiles: Seq[File]) extends SwaggerCompilationResult {
@@ -155,6 +157,7 @@ case class SwaggerRoutesCompilationResult(routesFiles: Seq[File]) extends Swagge
 case class SwaggerControllerCompilationResult(controllerFiles: Seq[File]) extends SwaggerCompilationResult {
   def allFiles: Set[File] = controllerFiles.toSet
 }
-case class SwaggerTestCompilationResult(testDataGeneratorFiles: Seq[File], testFiles: Seq[File]) extends SwaggerCompilationResult {
+case class SwaggerTestCompilationResult(testDataGeneratorFiles: Seq[File],
+                                        testFiles: Seq[File]) extends SwaggerCompilationResult {
   def allFiles: Set[File] = (testDataGeneratorFiles ++ testFiles).toSet
 }

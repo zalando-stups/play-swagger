@@ -28,7 +28,8 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   def generateBase: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateModel(fileName, packageName),
     playValidators(fileName, packageName),
-    playScalaControllerBases(fileName, packageName)
+    playScalaControllerBases(fileName, packageName),
+    playScalaSecurity(fileName, packageName)
   )
 
   def generateTest: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
