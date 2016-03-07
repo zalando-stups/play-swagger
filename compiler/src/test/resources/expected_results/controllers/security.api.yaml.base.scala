@@ -13,7 +13,6 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
-
 trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with SecurityApiYamlSecurity {
     private type getPetsByIdActionRequestType       = (PetsIdGetId)
     private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[(Int, Any)]
@@ -21,7 +20,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with Security
     private val errorToStatusgetPetsById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => githubAccessCode_internalApiKey_Action { request =>
+    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => getPetsByIdSecureAction { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getPetsByIdResponseMimeType =>

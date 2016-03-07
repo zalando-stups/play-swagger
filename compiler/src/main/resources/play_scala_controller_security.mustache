@@ -7,28 +7,29 @@ import de.zalando.play.controllers.PlayBodyParsing
 import {{import.name}}
 {{/for}}
 
+trait SecurityExtractors {
+{{for extractor in security_extractors.extractors}}
+    def {{extractor.name}}[User >: Any](header: RequestHeader): Option[User] = ???
+{{/for}}
+
+}
+
 {{for controller in controllers}}
 
-trait {{controller.security_trait}} {
+trait {{controller.security_trait}} extends SecurityExtractors {
     val unauthorizedContent = ???
     val mimeType: String = ???
-    {{for m in controller.methods}}
-    {{if m.needs_security}}
-    {{for security_check in m.security_checks}}
-    def {{security_check.name}}[User >: Any](header: RequestHeader): Option[User] = ???
-    {{/for}}
 
-    val {{m.secure_checks}} = Seq({{for security_check in m.security_checks}}{{security_check.name}} _{{if security_check.isNotLast}}, {{/if}}{{/for}})
-
+    {{for m in controller.methods}}{{if m.needs_security}}
     object {{m.secure_action}} extends AuthenticatedBuilder(
         req => {
-            val individualChecks = {{m.secure_checks}}.map(_.apply(req))
+            val secureChecks = Seq({{for security_check in m.security_checks}}{{security_check.name}} _{{if security_check.isNotLast}}, {{/if}}{{/for}})
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
-    {{/if}}
-    {{/for}}
+    {{/if}}{{/for}}
 
     private def onUnauthorized[C](mimeType: String, content: C): RequestHeader => Result =_ => {
         implicit val writeable = PlayBodyParsing.anyToWritable[C](mimeType)

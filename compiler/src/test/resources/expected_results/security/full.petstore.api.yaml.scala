@@ -6,112 +6,80 @@ import de.zalando.play.controllers.PlayBodyParsing
 import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
 
-
-trait FullPetstoreApiYamlSecurity {
-    val unauthorizedContent = ???
-    val mimeType: String = ???
-    
-    def petstore_auth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val petstore_auth_Checks = Seq(petstore_auth_Extractor _)
-
-    object petstore_auth_Action extends AuthenticatedBuilder(
-        req => {
-            val individualChecks = petstore_auth_Checks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
-        },
-        onUnauthorized(mimeType, unauthorizedContent)
-    )
-    
-    
-    
-    
-    
-    
-    
-    
-    def petstore_auth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val petstore_auth_Checks = Seq(petstore_auth_Extractor _)
-
-    object petstore_auth_Action extends AuthenticatedBuilder(
-        req => {
-            val individualChecks = petstore_auth_Checks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
-        },
-        onUnauthorized(mimeType, unauthorizedContent)
-    )
-    
-    
-    def petstore_auth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val petstore_auth_Checks = Seq(petstore_auth_Extractor _)
-
-    object petstore_auth_Action extends AuthenticatedBuilder(
-        req => {
-            val individualChecks = petstore_auth_Checks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
-        },
-        onUnauthorized(mimeType, unauthorizedContent)
-    )
-    
-    
-    
-    
-    
-    
+trait SecurityExtractors {
     def api_key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
     def petstore_auth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
 
-    val api_key_petstore_auth_Checks = Seq(api_key_Extractor _, petstore_auth_Extractor _)
+}
 
-    object api_key_petstore_auth_Action extends AuthenticatedBuilder(
+
+trait FullPetstoreApiYamlSecurity extends SecurityExtractors {
+    val unauthorizedContent = ???
+    val mimeType: String = ???
+
+    
+    object findPetsByTagsSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = api_key_petstore_auth_Checks.map(_.apply(req))
+            val secureChecks = Seq(petstore_auth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def petstore_auth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val petstore_auth_Checks = Seq(petstore_auth_Extractor _)
-
-    object petstore_auth_Action extends AuthenticatedBuilder(
+    object updatePetSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = petstore_auth_Checks.map(_.apply(req))
+            val secureChecks = Seq(petstore_auth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def petstore_auth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val petstore_auth_Checks = Seq(petstore_auth_Extractor _)
-
-    object petstore_auth_Action extends AuthenticatedBuilder(
+    object addPetSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = petstore_auth_Checks.map(_.apply(req))
+            val secureChecks = Seq(petstore_auth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def petstore_auth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val petstore_auth_Checks = Seq(petstore_auth_Extractor _)
-
-    object petstore_auth_Action extends AuthenticatedBuilder(
+    object getPetByIdSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = petstore_auth_Checks.map(_.apply(req))
+            val secureChecks = Seq(api_key_Extractor _, petstore_auth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
+    object updatePetWithFormSecureAction extends AuthenticatedBuilder(
+        req => {
+            val secureChecks = Seq(petstore_auth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
+            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
+        },
+        onUnauthorized(mimeType, unauthorizedContent)
+    )
+    
+    object deletePetSecureAction extends AuthenticatedBuilder(
+        req => {
+            val secureChecks = Seq(petstore_auth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
+            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
+        },
+        onUnauthorized(mimeType, unauthorizedContent)
+    )
+    
+    object findPetsByStatusSecureAction extends AuthenticatedBuilder(
+        req => {
+            val secureChecks = Seq(petstore_auth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
+            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
+        },
+        onUnauthorized(mimeType, unauthorizedContent)
+    )
     
 
     private def onUnauthorized[C](mimeType: String, content: C): RequestHeader => Result =_ => {

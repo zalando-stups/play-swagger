@@ -2,7 +2,7 @@ package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef}
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.{Security, ScalaName, Http, ParameterPlace}
+import de.zalando.apifirst.{Http, ParameterPlace}
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
@@ -12,7 +12,7 @@ import de.zalando.play.controllers.WriterFactories
   * @author  slasch
   * @since   31.12.2015.
   */
-trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommons {
+trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommons with SecurityCommons {
 
   override def steps = controllers +: super.steps
 
@@ -83,17 +83,9 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
 
   private def securityData(call: ApiCall)(implicit table: DenotationTable): Map[String, Any] = Map(
     "needs_security"                -> call.security.nonEmpty,
-    "secure_action"                 -> securityName(call.security, "Action"),
-    "secure_checks"                 -> securityName(call.security, "Checks"),
-    "security_checks"               -> call.security.map(securityCheck)
+    "secure_action"                 -> nameWithSuffix(call, "SecureAction"),
+    "security_checks"               -> call.security.map(s => Map("name" -> securityCheck(s.name)))
   )
-
-  private def securityCheck(constraint: Security.Constraint): Map[String, Any] = Map(
-    "name" -> securityName(Set(constraint), "Extractor")
-  )
-
-  private def securityName(security: Set[Security.Constraint], suffix: String): String =
-    security.map(_.name).mkString("", "_", "_"+suffix)
 
   private def needsCustom(mimeTypes: Set[Http.MimeType]): Boolean =
     mimeTypes.map(_.name).diff(WriterFactories.factories.keySet).nonEmpty

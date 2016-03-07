@@ -106,6 +106,9 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val unmarshallers         = ReShaper.filterByType("unmarshallers", denotationTable)
     val grouppedunMarshallers = ReShaper.groupByType(unmarshallers.toSeq).toMap
 
+    val securityExtractors    = ReShaper.filterByType("security_extractors", denotationTable)
+    val extractors            = ReShaper.groupByType(securityExtractors.toSeq).toMap
+
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)
 
@@ -126,6 +129,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "unmanaged_imports"   -> unmanagedImports.map(i => Map("name" -> i))
     )
 
+    val securityChecks = ReShaper.groupByType(controllersList.toSeq).toMap
 
     val singlePackage = Map(
       "classes"             -> ReShaper.filterByType("classes", denotationTable),
@@ -136,6 +140,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "tests"               -> ReShaper.filterByType("tests", denotationTable),
       "marshallers"         -> grouppedMarshallers,
       "unmarshallers"       -> grouppedunMarshallers,
+      "security_extractors" -> extractors,
       "bindings"            -> bindingsByType
     )
 

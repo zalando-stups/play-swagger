@@ -4,366 +4,247 @@ import play.api.mvc._
 import Security.AuthenticatedBuilder
 import de.zalando.play.controllers.PlayBodyParsing
 
+trait SecurityExtractors {
+    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
+    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
 
-trait InstagramApiYamlSecurity {
+}
+
+
+trait InstagramApiYamlSecurity extends SecurityExtractors {
     val unauthorizedContent = ???
     val mimeType: String = ???
+
     
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getmediaByMedia_idLikesSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_Checks = Seq(oauth_Extractor _)
-
-    object oauth_Action extends AuthenticatedBuilder(
+    object postmediaByMedia_idLikesSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object deletemediaByMedia_idLikesSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getusersByUser_idFollowsSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getlocationsByLocation_idSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getusersSearchSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getusersSelfMediaLikedSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object gettagsByTag_nameSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object gettagsSearchSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getusersByUser_idFollowed_bySecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getmediaByMedia_idCommentsSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_Checks = Seq(oauth_Extractor _)
-
-    object oauth_Action extends AuthenticatedBuilder(
+    object postmediaByMedia_idCommentsSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object deletemediaByMedia_idCommentsSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object gettagsByTag_nameMediaRecentSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_Checks = Seq(oauth_Extractor _)
-
-    object oauth_Action extends AuthenticatedBuilder(
+    object postusersByUser_idRelationshipSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getusersSelfFeedSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val key_oauth_Checks = Seq(key_Extractor _, oauth_Extractor _)
-
-    object key_oauth_Action extends AuthenticatedBuilder(
+    object getusersByUser_idSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = key_oauth_Checks.map(_.apply(req))
+            val secureChecks = Seq(key_Extractor _, oauth_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getmediaSearchSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getgeographiesByGeo_idMediaRecentSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getmediaByShortcodeSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getlocationsSearchSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getusersSelfRequested_bySecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getmediaByMedia_idSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getlocationsByLocation_idMediaRecentSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getusersByUser_idMediaRecentSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
     )
     
-    
-    def oauth_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-    def key_Extractor[User >: Any](header: RequestHeader): Option[User] = ???
-
-    val oauth_key_Checks = Seq(oauth_Extractor _, key_Extractor _)
-
-    object oauth_key_Action extends AuthenticatedBuilder(
+    object getmediaPopularSecureAction extends AuthenticatedBuilder(
         req => {
-            val individualChecks = oauth_key_Checks.map(_.apply(req))
+            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val individualChecks = secureChecks.map(_.apply(req))
             individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.flatten))
         },
         onUnauthorized(mimeType, unauthorizedContent)
