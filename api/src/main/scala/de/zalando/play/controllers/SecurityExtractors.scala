@@ -14,6 +14,14 @@ object SwaggerSecurityExtractors extends BasicAuthSecurityExtractor {
       decodeBasicAuth(basicAuth).map(p => convertToUser(p._1, p._2))
     }
 
+  def headerApiKey[User >: Any](name: String)(header: RequestHeader)(convertToUser: String => User): Option[User] =
+    header.headers.get(name) map convertToUser
+
+  def queryApiKey[User >: Any](name: String)(header: RequestHeader)(convertToUser: Seq[String] => User): Option[User] =
+    header.queryString.get(name) map convertToUser
+
+  def oAuth[User >: Any](header: RequestHeader)(convertToUser: Seq[String] => User): Option[User] =
+    ???
 }
 
 trait BasicAuthSecurityExtractor {
@@ -31,5 +39,4 @@ trait BasicAuthSecurityExtractor {
     else if (usernamePassword.length != 2) None
     else Some(usernamePassword.head, usernamePassword.last)
   }
-
 }
