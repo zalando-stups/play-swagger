@@ -1,192 +1,244 @@
 package instagram.api.yaml
 
+import scala.concurrent.Future
 import play.api.mvc._
-import Security.AuthenticatedBuilder
-import de.zalando.play.controllers.PlayBodyParsing
+import de.zalando.play.controllers.{FutureAuthenticatedBuilder,PlayBodyParsing}
 
 
 trait InstagramApiYamlSecurity extends SecurityExtractors {
     
-    object getmediaByMedia_idLikesSecureAction extends AuthenticatedBuilder(
+    object getmediaByMedia_idLikesSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object postmediaByMedia_idLikesSecureAction extends AuthenticatedBuilder(
+    object postmediaByMedia_idLikesSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object deletemediaByMedia_idLikesSecureAction extends AuthenticatedBuilder(
+    object deletemediaByMedia_idLikesSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getusersByUser_idFollowsSecureAction extends AuthenticatedBuilder(
+    object getusersByUser_idFollowsSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getlocationsByLocation_idSecureAction extends AuthenticatedBuilder(
+    object getlocationsByLocation_idSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getusersSearchSecureAction extends AuthenticatedBuilder(
+    object getusersSearchSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getusersSelfMediaLikedSecureAction extends AuthenticatedBuilder(
+    object getusersSelfMediaLikedSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object gettagsByTag_nameSecureAction extends AuthenticatedBuilder(
+    object gettagsByTag_nameSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object gettagsSearchSecureAction extends AuthenticatedBuilder(
+    object gettagsSearchSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getusersByUser_idFollowed_bySecureAction extends AuthenticatedBuilder(
+    object getusersByUser_idFollowed_bySecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getmediaByMedia_idCommentsSecureAction extends AuthenticatedBuilder(
+    object getmediaByMedia_idCommentsSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object postmediaByMedia_idCommentsSecureAction extends AuthenticatedBuilder(
+    object postmediaByMedia_idCommentsSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object deletemediaByMedia_idCommentsSecureAction extends AuthenticatedBuilder(
+    object deletemediaByMedia_idCommentsSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object gettagsByTag_nameMediaRecentSecureAction extends AuthenticatedBuilder(
+    object gettagsByTag_nameMediaRecentSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object postusersByUser_idRelationshipSecureAction extends AuthenticatedBuilder(
+    object postusersByUser_idRelationshipSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getusersSelfFeedSecureAction extends AuthenticatedBuilder(
+    object getusersSelfFeedSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getusersByUser_idSecureAction extends AuthenticatedBuilder(
+    object getusersByUser_idSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(key_Extractor _, oauth_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getmediaSearchSecureAction extends AuthenticatedBuilder(
+    object getmediaSearchSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getgeographiesByGeo_idMediaRecentSecureAction extends AuthenticatedBuilder(
+    object getgeographiesByGeo_idMediaRecentSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getmediaByShortcodeSecureAction extends AuthenticatedBuilder(
+    object getmediaByShortcodeSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getlocationsSearchSecureAction extends AuthenticatedBuilder(
+    object getlocationsSearchSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getusersSelfRequested_bySecureAction extends AuthenticatedBuilder(
+    object getusersSelfRequested_bySecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getmediaByMedia_idSecureAction extends AuthenticatedBuilder(
+    object getmediaByMedia_idSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getlocationsByLocation_idMediaRecentSecureAction extends AuthenticatedBuilder(
+    object getlocationsByLocation_idMediaRecentSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getusersByUser_idMediaRecentSecureAction extends AuthenticatedBuilder(
+    object getusersByUser_idMediaRecentSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
-    object getmediaPopularSecureAction extends AuthenticatedBuilder(
+    object getmediaPopularSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
 }

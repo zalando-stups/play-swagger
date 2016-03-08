@@ -1,17 +1,19 @@
 package basic.auth.api.yaml
 
+import scala.concurrent.Future
 import play.api.mvc._
-import Security.AuthenticatedBuilder
-import de.zalando.play.controllers.PlayBodyParsing
+import de.zalando.play.controllers.{FutureAuthenticatedBuilder,PlayBodyParsing}
 
 
 trait BasicAuthApiYamlSecurity extends SecurityExtractors {
     
-    object getSecureAction extends AuthenticatedBuilder(
+    object getSecureAction extends FutureAuthenticatedBuilder(
         req => {
             val secureChecks = Seq(basicAuth_Extractor _)
-            val individualChecks: Seq[Option[_]] = secureChecks.map(_.apply(req))
-            individualChecks.find(_.isEmpty).getOrElse(Option(individualChecks.map(_.get)))
+            val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
+                individualChecks.map { checks =>
+                    checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
+                }
         }, unauthorizedContent)
     
 }

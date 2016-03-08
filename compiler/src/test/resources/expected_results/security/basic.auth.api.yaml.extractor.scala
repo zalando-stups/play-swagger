@@ -1,12 +1,12 @@
 
 package basic.auth.api.yaml
 
+import scala.concurrent.Future
 import play.api.mvc._
-import Security.AuthenticatedBuilder
 import de.zalando.play.controllers.SwaggerSecurityExtractors._
 
 trait SecurityExtractors {
-    def basicAuth_Extractor[User >: Any](header: RequestHeader): Option[User] =
+    def basicAuth_Extractor[User >: Any](header: RequestHeader): Future[Option[User]] =
         basicAuth(header) { (username: String, password: String) =>
             ???
     }
