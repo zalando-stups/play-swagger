@@ -122,7 +122,7 @@ trait OAuthResourceOwnerPasswordCredentialsFlow extends OAuthCommon {
       lazy val scope = (json \ "scope").asOpt[String]
       lazy val scopes = (json \ "scopes").asOpt[Array[String]]
       lazy val allScopes = (scope.map(_.split(' ')) orElse scopes).map(_.toSeq)
-      val valid = active && allScopes.forall(s => s.intersect(requiredScopes) == scopes)
+      val valid = active && allScopes.exists(s => s.intersect(requiredScopes) == scopes)
       if (valid) Some(json) else None
     }
   }
