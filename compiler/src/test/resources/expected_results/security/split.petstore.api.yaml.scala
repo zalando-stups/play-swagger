@@ -9,63 +9,70 @@ import org.joda.time.DateTime
 
 trait SplitPetstoreApiYamlSecurity extends SecurityExtractors {
     
-    object findPetsByTagsSecureAction extends FutureAuthenticatedBuilder(
+    class findPetsByTagsSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(petstore_auth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(petstore_auth_Extractor("write_pets", "read_pets"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object updatePetSecureAction extends FutureAuthenticatedBuilder(
+    class updatePetSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(petstore_auth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(petstore_auth_Extractor("write_pets", "read_pets"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object addPetSecureAction extends FutureAuthenticatedBuilder(
+    class addPetSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(petstore_auth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(petstore_auth_Extractor("write_pets", "read_pets"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getPetByIdSecureAction extends FutureAuthenticatedBuilder(
+    class getPetByIdSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(api_key_Extractor _, petstore_auth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(api_key_Extractor(), petstore_auth_Extractor("write_pets", "read_pets"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object updatePetWithFormSecureAction extends FutureAuthenticatedBuilder(
+    class updatePetWithFormSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(petstore_auth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(petstore_auth_Extractor("write_pets", "read_pets"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object deletePetSecureAction extends FutureAuthenticatedBuilder(
+    class deletePetSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(petstore_auth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(petstore_auth_Extractor("write_pets", "read_pets"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object findPetsByStatusSecureAction extends FutureAuthenticatedBuilder(
+    class findPetsByStatusSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(petstore_auth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(petstore_auth_Extractor("write_pets", "read_pets"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))

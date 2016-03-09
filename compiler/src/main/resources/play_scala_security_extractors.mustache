@@ -10,8 +10,8 @@ import {{import.name}}
 
 trait SecurityExtractors {
     {{for extractor in security_extractors.extractors}}
-    def {{extractor.name}}[User >: Any](header: RequestHeader): Future[Option[User]] =
-        {{extractor.type}}{{if extractor.security_params}}({{for param in extractor.security_params}}{{param.name}}{{if param.isNotLast}}, {{/if}}){{/for}}{{/if}}(header) { {{if extractor.user_params}}({{for param in extractor.user_params}}{{param.name}}: String{{if param.isNotLast}}, {{/if}}{{/for}}){{else}}_{{/if}} =>
+    def {{extractor.name}}[User >: Any]({{for param in extractor.external_security_params}}{{param.name}}: {{param.type}}{{if param.isNotLast}}, {{/if}}{{/for}}): RequestHeader => Future[Option[User]] =
+        header => {{extractor.type}}{{if extractor.external_security_params}}({{for param in extractor.external_security_params}}{{param.name}}{{if param.isNotLast}}, {{/if}}{{/for}}){{/if}}{{if extractor.security_params}}({{for param in extractor.security_params}}{{param.name}}{{if param.isNotLast}}, {{/if}}{{/for}}){{/if}}(header) { {{if extractor.user_params}}({{for param in extractor.user_params}}{{param.name}}: {{param.type}}{{if param.isNotLast}}, {{/if}}{{/for}}){{else}}_{{/if}} =>
             ???
     }
     {{/for}}

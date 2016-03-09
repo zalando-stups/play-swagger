@@ -8,12 +8,12 @@ import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
 
 trait SecurityExtractors {
-    def api_key_Extractor[User >: Any](header: RequestHeader): Future[Option[User]] =
-        headerApiKey("api_key")(header) { (apiKey: String) =>
+    def api_key_Extractor[User >: Any](): RequestHeader => Future[Option[User]] =
+        header => headerApiKey("api_key")(header) { (apiKey: String) =>
             ???
     }
-    def petstore_auth_Extractor[User >: Any](header: RequestHeader): Future[Option[User]] =
-        oAuth(header) { _ =>
+    def petstore_auth_Extractor[User >: Any](scopes: String*): RequestHeader => Future[Option[User]] =
+        header => oAuth(scopes)(header) { _ =>
             ???
     }
     implicit val unauthorizedContentWriter = ???

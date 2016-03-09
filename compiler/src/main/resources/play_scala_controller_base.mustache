@@ -43,7 +43,8 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
         }
     {{/for}}
 
-    def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} {{if m.needs_security}}{{m.secure_action}}{{else}}Action{{/if}}{{if m.body_param}}({{m.parser_name}}({{m.consumes}})){{/if}} { request =>
+    val {{m.action_constructor}}  = {{if m.needs_security}}{{if m.security_instance}}new {{/if}}{{m.secure_action}}{{for check in m.security_checks}}{{if check.params}}({{for param in check.params}}{{param.name}}{{if param.isNotLast}}, {{/if}}{{/for}}){{/if}}{{/for}}{{else}}Action{{/if}}
+    def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} {{m.action_constructor}}{{if m.body_param}}({{m.parser_name}}({{m.consumes}})){{/if}} { request =>
         val providedTypes = {{m.produces}}
 
         negotiateContent(request.acceptedTypes, providedTypes).map { {{m.response_mime_type_name}} =>

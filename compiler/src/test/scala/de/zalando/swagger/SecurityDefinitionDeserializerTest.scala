@@ -17,11 +17,13 @@ class SecurityDefinitionDeserializerTest extends FunSpec with MustMatchers {
     it(s"should parse security definitions in the ${file.getName}") {
       val (uri, model) = StrictYamlParser.parse(file)
       val result = model.securityDefinitions
-      result.size mustBe 4
-      result("githubAccessCode") mustBe a[Oauth2AccessCodeSecurity]
+      result.size mustBe 6
       result("petstoreImplicit") mustBe a[Oauth2ImplicitSecurity]
-      result("internalApiKey") mustBe a[ApiKeySecurity]
+      result("githubAccessCode") mustBe a[Oauth2AccessCodeSecurity]
+      result("petstorePassword") mustBe a[Oauth2PasswordSecurity]
       result("justBasicStuff") mustBe a[BasicAuthenticationSecurity]
+      result("petstoreApplication") mustBe a[Oauth2ApplicationSecurity]
+      result("internalApiKey") mustBe a[ApiKeySecurity]
     }
   }
 }

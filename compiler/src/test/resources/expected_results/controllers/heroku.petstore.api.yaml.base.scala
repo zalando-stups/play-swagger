@@ -17,7 +17,8 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getAction = (f: getActionType) => (limit: Int) => Action { request =>
+    val getActionConstructor  = Action
+    def getAction = (f: getActionType) => (limit: Int) => getActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
@@ -77,7 +78,8 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             optionParser[Pet](bodyMimeType, customParsers, "Invalid PutPet", maxLength)
         }
 
-    def putAction = (f: putActionType) => Action(putParser(Seq[String]("application/json", "text/xml"))) { request =>
+    val putActionConstructor  = Action
+    def putAction = (f: putActionType) => putActionConstructor(putParser(Seq[String]("application/json", "text/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putResponseMimeType =>
@@ -138,7 +140,8 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             anyParser[Pet](bodyMimeType, customParsers, "Invalid Pet", maxLength)
         }
 
-    def postAction = (f: postActionType) => Action(postParser(Seq[String]("application/json", "text/xml"))) { request =>
+    val postActionConstructor  = Action
+    def postAction = (f: postActionType) => postActionConstructor(postParser(Seq[String]("application/json", "text/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
@@ -186,7 +189,8 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetbyPetId: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getbyPetIdAction = (f: getbyPetIdActionType) => (petId: String) => Action { request =>
+    val getbyPetIdActionConstructor  = Action
+    def getbyPetIdAction = (f: getbyPetIdActionType) => (petId: String) => getbyPetIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getbyPetIdResponseMimeType =>

@@ -2,6 +2,7 @@ package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef}
 import de.zalando.apifirst.Domain._
+import de.zalando.apifirst.Security.{OAuth2Constraint, Constraint}
 import de.zalando.apifirst.{Http, ParameterPlace}
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
@@ -23,6 +24,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     "action_result_type"          -> "ActionResultType",
     "action_success_status_name"  -> "ActionSuccessStatus",
     "action_request_type"         -> "ActionRequestType",
+    "action_constructor"          -> "ActionConstructor",
     "response_mime_type_name"     -> "ResponseMimeType",
     "request"                     -> "Request",
     "method"                      -> ""
@@ -81,11 +83,29 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
     ) ++ nameMappings ++ nameParamPair ++ securityData(call)
   }
 
-  private def securityData(call: ApiCall)(implicit table: DenotationTable): Map[String, Any] = Map(
-    "needs_security"                -> call.security.nonEmpty,
-    "secure_action"                 -> nameWithSuffix(call, "SecureAction"),
-    "security_checks"               -> call.security.map(s => Map("name" -> securityCheck(s.name)))
-  )
+  private def securityData(call: ApiCall)(implicit table: DenotationTable): Map[String, Any] = {
+    val checks = securityChecks(call.security.toSeq)
+    val allParams = checks.flatMap(_.apply("params").asInstanceOf[Iterable[String]])
+    Map(
+      "needs_security" -> call.security.nonEmpty,
+      "secure_action" -> nameWithSuffix(call, "SecureAction"),
+      "security_checks" -> checks,
+      "security_instance" -> allParams.nonEmpty,
+      "security_params" -> securityParams(call.security)
+    )
+  }
+
+  private def securityChecks(security: Seq[Constraint]) =
+    security.map(s => Map("name" -> securityCheck(s.name), "params" -> securityParamValue(s)))
+
+  private def securityParams(security: Set[Constraint]) = security collect {
+    case OAuth2Constraint(_, _, scopes) => Map("name" -> "scopes", "type" -> "String*")
+  }
+
+  private def securityParamValue(c: Constraint) = c match {
+    case OAuth2Constraint(_, _, scopes) => scopes map { s => Map("name" -> ("\"" + s + "\"")) }
+    case _ => Set.empty[Map[String, String]]
+  }
 
   private def needsCustom(mimeTypes: Set[Http.MimeType]): Boolean =
     mimeTypes.map(_.name).diff(WriterFactories.factories.keySet).nonEmpty

@@ -20,7 +20,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusnakadiHackGet_metrics: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def nakadiHackGet_metricsAction = (f: nakadiHackGet_metricsActionType) => Action { request =>
+    val nakadiHackGet_metricsActionConstructor  = Action
+    def nakadiHackGet_metricsAction = (f: nakadiHackGet_metricsActionType) => nakadiHackGet_metricsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_metricsResponseMimeType =>
@@ -63,7 +64,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusnakadiHackGet_events_from_single_partition: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def nakadiHackGet_events_from_single_partitionAction = (f: nakadiHackGet_events_from_single_partitionActionType) => (start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: Int, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) => Action { request =>
+    val nakadiHackGet_events_from_single_partitionActionConstructor  = Action
+    def nakadiHackGet_events_from_single_partitionAction = (f: nakadiHackGet_events_from_single_partitionActionType) => (start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: Int, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) => nakadiHackGet_events_from_single_partitionActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_events_from_single_partitionResponseMimeType =>
@@ -114,7 +116,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusnakadiHackGet_partition: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def nakadiHackGet_partitionAction = (f: nakadiHackGet_partitionActionType) => (topic: String, partition: String) => Action { request =>
+    val nakadiHackGet_partitionActionConstructor  = Action
+    def nakadiHackGet_partitionAction = (f: nakadiHackGet_partitionActionType) => (topic: String, partition: String) => nakadiHackGet_partitionActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_partitionResponseMimeType =>
@@ -161,7 +164,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusnakadiHackGet_topics: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def nakadiHackGet_topicsAction = (f: nakadiHackGet_topicsActionType) => Action { request =>
+    val nakadiHackGet_topicsActionConstructor  = Action
+    def nakadiHackGet_topicsAction = (f: nakadiHackGet_topicsActionType) => nakadiHackGet_topicsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_topicsResponseMimeType =>
@@ -204,7 +208,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusnakadiHackGet_events_from_multiple_partitions: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def nakadiHackGet_events_from_multiple_partitionsAction = (f: nakadiHackGet_events_from_multiple_partitionsActionType) => (stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, batch_limit: Int, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) => Action { request =>
+    val nakadiHackGet_events_from_multiple_partitionsActionConstructor  = Action
+    def nakadiHackGet_events_from_multiple_partitionsAction = (f: nakadiHackGet_events_from_multiple_partitionsActionType) => (stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, batch_limit: Int, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) => nakadiHackGet_events_from_multiple_partitionsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_events_from_multiple_partitionsResponseMimeType =>
@@ -279,7 +284,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
             optionParser[Event](bodyMimeType, customParsers, "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
         }
 
-    def nakadiHackPost_eventAction = (f: nakadiHackPost_eventActionType) => (topic: String) => Action(nakadiHackPost_eventParser(Seq[String]("application/json"))) { request =>
+    val nakadiHackPost_eventActionConstructor  = Action
+    def nakadiHackPost_eventAction = (f: nakadiHackPost_eventActionType) => (topic: String) => nakadiHackPost_eventActionConstructor(nakadiHackPost_eventParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackPost_eventResponseMimeType =>
@@ -331,7 +337,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusnakadiHackGet_partitions: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def nakadiHackGet_partitionsAction = (f: nakadiHackGet_partitionsActionType) => (topic: String) => Action { request =>
+    val nakadiHackGet_partitionsActionConstructor  = Action
+    def nakadiHackGet_partitionsAction = (f: nakadiHackGet_partitionsActionType) => (topic: String) => nakadiHackGet_partitionsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_partitionsResponseMimeType =>
@@ -392,7 +399,8 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
             optionParser[Event](bodyMimeType, customParsers, "Invalid TopicsTopicEventsBatchPostEvent", maxLength)
         }
 
-    def nakadiHackPost_eventsAction = (f: nakadiHackPost_eventsActionType) => (topic: String) => Action(nakadiHackPost_eventsParser(Seq[String]("application/json"))) { request =>
+    val nakadiHackPost_eventsActionConstructor  = Action
+    def nakadiHackPost_eventsAction = (f: nakadiHackPost_eventsActionType) => (topic: String) => nakadiHackPost_eventsActionConstructor(nakadiHackPost_eventsParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackPost_eventsResponseMimeType =>

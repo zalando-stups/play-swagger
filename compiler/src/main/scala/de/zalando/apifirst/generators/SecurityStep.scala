@@ -23,6 +23,7 @@ trait SecurityStep extends EnrichmentStep[StrictModel] with SecurityCommons {
         "name" -> securityCheck(name),
         "type" -> securityType(definition),
         "security_params" -> securityParams(definition),
+        "external_security_params" -> externalSecurityParams(definition),
         "user_params" -> userParams(definition)
       )
     }
@@ -34,21 +35,31 @@ trait SecurityStep extends EnrichmentStep[StrictModel] with SecurityCommons {
     case b: Basic => "basicAuth"
     case ApiKey(_, _, in) if in == ParameterPlace.HEADER => "headerApiKey"
     case ApiKey(_, _, in) if in == ParameterPlace.QUERY => "queryApiKey"
-    case o: OAuth2Implicit => "oAuth"
-    case o: OAuth2Password => "oAuth"
-    case o: OAuth2Application => "oAuth"
-    case o: OAuth2AccessCode => "oAuth"
+    case o: OAuth2Password => "oAuthPassword"
+    case o: OAuth2Application => "oAuthPassword"
+    case o: OAuth2Implicit => "oAuth" // FIXME
+    case o: OAuth2AccessCode => "oAuth" // FIXME
   }
 
   private def securityParams(definition: Definition): Seq[Map[String,String]] = definition match {
     case b: Basic => Nil
     case ApiKey(_, name, _) => Seq(Map("name" -> ("\"" + name + "\"")))
+    case OAuth2Password(_, tokenUrl, scopes) => Seq(Map("name" -> ("\"" + tokenUrl + "\"")))
+    case OAuth2Application(_, tokenUrl, scopes) => Seq(Map("name" -> ("\"" + tokenUrl + "\"")))
+
     case _ => Nil // FIXME
   }
 
+  private def externalSecurityParams(definition: Definition): Seq[Map[String,String]] = definition match {
+    case o: OAuth2Definition  => Seq(Map("name" -> "scopes", "type" -> "String*"))
+    case _ => Nil
+  }
+
   private def userParams(definition: Definition): Seq[Map[String,String]] = definition match {
-    case b: Basic => Seq(Map("name" -> "username"), Map("name" -> "password"))
-    case ApiKey(_, name, _) => Seq(Map("name" -> "apiKey"))
+    case b: Basic => Seq(Map("name" -> "username", "type" -> "String"), Map("name" -> "password", "type" -> "String"))
+    case ApiKey(_, name, _) => Seq(Map("name" -> "apiKey", "type" -> "String"))
+    case OAuth2Password(_, tokenUrl, scopes) => Seq(Map("name" -> "token", "type" -> "play.api.libs.json.JsValue"))
+    case OAuth2Application(_, tokenUrl, scopes) => Seq(Map("name" -> "token", "type" -> "play.api.libs.json.JsValue"))
     case _ => Nil // FIXME
   }
 }

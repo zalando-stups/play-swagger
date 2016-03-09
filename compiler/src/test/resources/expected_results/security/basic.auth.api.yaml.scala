@@ -7,9 +7,10 @@ import de.zalando.play.controllers.{FutureAuthenticatedBuilder,PlayBodyParsing}
 
 trait BasicAuthApiYamlSecurity extends SecurityExtractors {
     
-    object getSecureAction extends FutureAuthenticatedBuilder(
+    object getSecureAction
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(basicAuth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(basicAuth_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))

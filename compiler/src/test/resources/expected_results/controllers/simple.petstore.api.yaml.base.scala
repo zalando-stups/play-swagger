@@ -34,7 +34,8 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
             anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength)
         }
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser(Seq[String]("application/json"))) { request =>
+    val addPetActionConstructor  = Action
+    def addPetAction = (f: addPetActionType) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
@@ -85,7 +86,8 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val errorToStatusmethodLevel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def methodLevelAction = (f: methodLevelActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action { request =>
+    val methodLevelActionConstructor  = Action
+    def methodLevelAction = (f: methodLevelActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => methodLevelActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml", "text/xml", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { methodLevelResponseMimeType =>
@@ -132,7 +134,8 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val errorToStatuspathLevelGet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def pathLevelGetAction = (f: pathLevelGetActionType) => (id: Long) => Action { request =>
+    val pathLevelGetActionConstructor  = Action
+    def pathLevelGetAction = (f: pathLevelGetActionType) => (id: Long) => pathLevelGetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml", "text/xml", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { pathLevelGetResponseMimeType =>
@@ -179,7 +182,8 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val errorToStatuspathLevelDelete: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def pathLevelDeleteAction = (f: pathLevelDeleteActionType) => (id: Long) => Action { request =>
+    val pathLevelDeleteActionConstructor  = Action
+    def pathLevelDeleteAction = (f: pathLevelDeleteActionType) => (id: Long) => pathLevelDeleteActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { pathLevelDeleteResponseMimeType =>

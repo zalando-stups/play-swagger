@@ -17,7 +17,8 @@ trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing  with BasicAu
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getAction = (f: getActionType) => getSecureAction { request =>
+    val getActionConstructor  = getSecureAction
+    def getAction = (f: getActionType) => getActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>

@@ -6,8 +6,8 @@ import play.api.mvc._
 import de.zalando.play.controllers.SwaggerSecurityExtractors._
 
 trait SecurityExtractors {
-    def basicAuth_Extractor[User >: Any](header: RequestHeader): Future[Option[User]] =
-        basicAuth(header) { (username: String, password: String) =>
+    def basicAuth_Extractor[User >: Any](): RequestHeader => Future[Option[User]] =
+        header => basicAuth(header) { (username: String, password: String) =>
             ???
     }
     implicit val unauthorizedContentWriter = ???

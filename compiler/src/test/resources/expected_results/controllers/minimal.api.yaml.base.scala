@@ -17,7 +17,8 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val errorToStatusindex: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def indexAction = (f: indexActionType) => Action { request =>
+    val indexActionConstructor  = Action
+    def indexAction = (f: indexActionType) => indexActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { indexResponseMimeType =>

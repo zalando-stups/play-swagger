@@ -44,21 +44,21 @@ class FutureAuthenticatedBuilder[U](userinfo: RequestHeader => Future[Option[U]]
 object SwaggerSecurityExtractors extends BasicAuthSecurityExtractor with OAuthResourceOwnerPasswordCredentialsFlow {
   private implicit def option2futureOption[User](o:Option[User]): Future[Option[User]] = Future.successful(o)
 
-  def basicAuth[User >: Any](header: RequestHeader)(convertToUser: (String, String) => User): Future[Option[User]] =
-    header.headers.get("Authorization").map { basicAuth =>
+  def basicAuth[User >: Any]: RequestHeader => ((String, String) => User) => Future[Option[User]] =
+    header => convertToUser => header.headers.get("Authorization").map { basicAuth =>
       decodeBasicAuth(basicAuth).map(p => convertToUser(p._1, p._2))
     }
 
-  def headerApiKey[User >: Any](name: String)(header: RequestHeader)(convertToUser: String => User): Future[Option[User]] =
-    header.headers.get(name) map convertToUser
+  def headerApiKey[User >: Any]: String => RequestHeader => (String => User) => Future[Option[User]] =
+    name => header => convertToUser => header.headers.get(name) map convertToUser
 
-  def queryApiKey[User >: Any](name: String)(header: RequestHeader)(convertToUser: Seq[String] => User): Option[User] =
-    header.queryString.get(name) map convertToUser
+  def queryApiKey[User >: Any]: String => RequestHeader => (String => User) => Future[Option[User]] =
+    name => header => convertToUser => header.queryString.get(name).flatMap(_.headOption) map convertToUser
 
-  def oAuthPassword[User >: Any](tokenUrl: String, scopes: Seq[String])
-                                (header: RequestHeader)(convertToUser: JsValue => User): Future[Option[User]] = {
+  def oAuthPassword[User >: Any]: Seq[String] => String => RequestHeader => (JsValue => User) => Future[Option[User]] =
+    scopes => tokenUrl => header => convertToUser => {
     val futureResult = header.headers.get("Authorization").flatMap(decodeBearer).map { token: String =>
-      checkOAuthToken(tokenUrl, token, scopes)
+      checkOAuthToken(tokenUrl, token, scopes:_*)
     } match {
       case None => Future.successful(None)
       case Some(f) => f
@@ -66,8 +66,8 @@ object SwaggerSecurityExtractors extends BasicAuthSecurityExtractor with OAuthRe
     futureResult.map(_.map(convertToUser))
   }
 
-  def oAuth[User >: Any](header: RequestHeader)(convertToUser: Seq[String] => User): Future[Option[User]] =
-    ???
+  def oAuth[User >: Any]: (String*) => RequestHeader => (Seq[String] => User) => Future[Option[User]] =
+    scopes => header => convertUer => ???
 }
 
 trait BasicAuthSecurityExtractor {
@@ -110,7 +110,7 @@ trait OAuthResourceOwnerPasswordCredentialsFlow extends OAuthCommon {
   import play.api.libs.ws._
   import play.api.Play.current
   private val placeHolder = ":token"
-  protected def checkOAuthToken(tokenUrl: String, token: String, requiredScopes: Seq[String]): Future[Option[JsValue]] = {
+  protected def checkOAuthToken(tokenUrl: String, token: String, requiredScopes: String*): Future[Option[JsValue]] = {
     val escapedToken = URLEncoder.encode(token, "UTF-8")
     val (method, url, body) =
       if (tokenUrl.contains(placeHolder)) ("GET", tokenUrl.replaceAllLiterally(placeHolder, escapedToken), "")

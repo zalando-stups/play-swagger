@@ -8,9 +8,10 @@ import de.zalando.play.controllers.ArrayWrapper
 
 trait SecurityApiYamlSecurity extends SecurityExtractors {
     
-    object getPetsByIdSecureAction extends FutureAuthenticatedBuilder(
+    class getPetsByIdSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(githubAccessCode_Extractor _, internalApiKey_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(githubAccessCode_Extractor("user"), internalApiKey_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))

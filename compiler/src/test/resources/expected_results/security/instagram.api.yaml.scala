@@ -7,234 +7,260 @@ import de.zalando.play.controllers.{FutureAuthenticatedBuilder,PlayBodyParsing}
 
 trait InstagramApiYamlSecurity extends SecurityExtractors {
     
-    object getmediaByMedia_idLikesSecureAction extends FutureAuthenticatedBuilder(
+    class getmediaByMedia_idLikesSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object postmediaByMedia_idLikesSecureAction extends FutureAuthenticatedBuilder(
+    class postmediaByMedia_idLikesSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("comments"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object deletemediaByMedia_idLikesSecureAction extends FutureAuthenticatedBuilder(
+    class deletemediaByMedia_idLikesSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getusersByUser_idFollowsSecureAction extends FutureAuthenticatedBuilder(
+    class getusersByUser_idFollowsSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getlocationsByLocation_idSecureAction extends FutureAuthenticatedBuilder(
+    class getlocationsByLocation_idSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getusersSearchSecureAction extends FutureAuthenticatedBuilder(
+    class getusersSearchSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getusersSelfMediaLikedSecureAction extends FutureAuthenticatedBuilder(
+    class getusersSelfMediaLikedSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object gettagsByTag_nameSecureAction extends FutureAuthenticatedBuilder(
+    class gettagsByTag_nameSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object gettagsSearchSecureAction extends FutureAuthenticatedBuilder(
+    class gettagsSearchSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getusersByUser_idFollowed_bySecureAction extends FutureAuthenticatedBuilder(
+    class getusersByUser_idFollowed_bySecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getmediaByMedia_idCommentsSecureAction extends FutureAuthenticatedBuilder(
+    class getmediaByMedia_idCommentsSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object postmediaByMedia_idCommentsSecureAction extends FutureAuthenticatedBuilder(
+    class postmediaByMedia_idCommentsSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("comments"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object deletemediaByMedia_idCommentsSecureAction extends FutureAuthenticatedBuilder(
+    class deletemediaByMedia_idCommentsSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object gettagsByTag_nameMediaRecentSecureAction extends FutureAuthenticatedBuilder(
+    class gettagsByTag_nameMediaRecentSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object postusersByUser_idRelationshipSecureAction extends FutureAuthenticatedBuilder(
+    class postusersByUser_idRelationshipSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("relationships"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getusersSelfFeedSecureAction extends FutureAuthenticatedBuilder(
+    class getusersSelfFeedSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getusersByUser_idSecureAction extends FutureAuthenticatedBuilder(
+    class getusersByUser_idSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(key_Extractor _, oauth_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(key_Extractor(), oauth_Extractor("basic"))
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getmediaSearchSecureAction extends FutureAuthenticatedBuilder(
+    class getmediaSearchSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getgeographiesByGeo_idMediaRecentSecureAction extends FutureAuthenticatedBuilder(
+    class getgeographiesByGeo_idMediaRecentSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getmediaByShortcodeSecureAction extends FutureAuthenticatedBuilder(
+    class getmediaByShortcodeSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getlocationsSearchSecureAction extends FutureAuthenticatedBuilder(
+    class getlocationsSearchSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getusersSelfRequested_bySecureAction extends FutureAuthenticatedBuilder(
+    class getusersSelfRequested_bySecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getmediaByMedia_idSecureAction extends FutureAuthenticatedBuilder(
+    class getmediaByMedia_idSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getlocationsByLocation_idMediaRecentSecureAction extends FutureAuthenticatedBuilder(
+    class getlocationsByLocation_idMediaRecentSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getusersByUser_idMediaRecentSecureAction extends FutureAuthenticatedBuilder(
+    class getusersByUser_idMediaRecentSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
                 }
         }, unauthorizedContent)
     
-    object getmediaPopularSecureAction extends FutureAuthenticatedBuilder(
+    class getmediaPopularSecureAction(scopes: String*)
+ extends FutureAuthenticatedBuilder(
         req => {
-            val secureChecks = Seq(oauth_Extractor _, key_Extractor _)
+            val secureChecks: Seq[RequestHeader => Future[Option[_]]] = Seq(oauth_Extractor("basic", "comments", "relationships", "likes"), key_Extractor())
             val individualChecks: Future[Seq[Option[_]]] = Future.sequence(secureChecks.map(_.apply(req)))
                 individualChecks.map { checks =>
                     checks.find(_.isEmpty).getOrElse(Option(checks.map(_.get)))
