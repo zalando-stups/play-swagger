@@ -91,7 +91,7 @@ object SwaggerCompiler {
               (directory: String, content: String)(implicit ast: StrictModel): Seq[File] = {
     val fileName: String = fullFileName(task, directory)
     val fileContents = readFile(outputDir, fileName)
-    val canWrite = overwrite || fileContents.isEmpty
+    val canWrite = overwrite && content.nonEmpty
     if (canWrite) {
       val file = new File(outputDir, fileName)
       if (fileContents != content) writeToFile(file, content)
