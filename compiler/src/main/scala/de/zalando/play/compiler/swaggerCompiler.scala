@@ -100,23 +100,24 @@ object SwaggerCompiler {
               (directory: String, content: String)(implicit ast: StrictModel): Seq[File] = {
     val fileName: String = fullFileName(task, directory)
     val fileContents = readFile(outputDir, fileName)
-    val canWrite = overwrite || fileContents.isEmpty
-    if (fileContents != content && canWrite)
-      Seq(writeToFile(outputDir)(fileName, content))
-    else
+    val file = new File(outputDir, fileName)
+    val canWrite = (overwrite || !file.exists()) && content.nonEmpty
+    if (canWrite) {
+      if (fileContents != content) writeToFile(file, content)
+      Seq(file)
+    } else {
       Seq.empty[File]
+    }
   }
 
   def fullFileName(task: Option[SwaggerCompilationTask], directory: String): String =
     directory + task.map { _.definitionFile.getName + ".scala" }.getOrElse("")
 
-  def writeToFile(outputDir: File) = (filename: String, content: String) => {
-    val file = new File(outputDir, filename)
+  def writeToFile(file: File, content: String): Unit = {
     val parent = file.getParentFile
     if (parent.exists && parent.isFile) parent.renameTo(new File(parent.getAbsolutePath + ".backup"))
     if (!parent.exists) parent.mkdirs()
     FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
-    file
   }
 
   def readFile(outputDir: File, fileName: String) = {

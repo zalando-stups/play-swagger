@@ -65,6 +65,9 @@ object PlaySwagger extends AutoPlugin {
       "org.scalacheck" %% "scalacheck" % "1.12.4" % Test,
       "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Test
     )
+  ) ++ Seq(
+    managedSourceDirectories in Compile += crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
+    managedSourceDirectories in Test += crossTarget.value / "routes" / Defaults.nameForSrc(Test.name)
   ) ++ inConfig(Compile)(rawSwaggerSettings) ++
     inConfig(Test)(rawSwaggerSettings) ++
     inConfig(Compile)(swaggerBaseSettings) ++
@@ -110,7 +113,7 @@ object PlaySwagger extends AutoPlugin {
 
   def swaggerBaseSettings: Seq[Setting[_]] = Seq(
     target in swaggerBase := crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
-    swaggerBase  := swaggerGenerateBase.value,
+    swaggerBase := swaggerGenerateBase.value,
     managedSources ++= swaggerBase.value
   )
   def swaggerTestSettings: Seq[Setting[_]] = Seq(
@@ -171,14 +174,9 @@ object PlaySwagger extends AutoPlugin {
 
       // Read the detailed scaladoc for syncIncremental to see how it works
       val (products, errors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
-
-        // TODO sometimes tasksToRun are empty here, even if tasks are not
-        // streams.value.log.verbose("SyncInc in " + config.key.label + tasksToRun.map(_.definitionFile.name).mkString(", "))
-
         val results = tasksToRun map { task =>
             task -> Try { compiler(task, outputDirectory, swaggerKeyPrefix.value, routesImport) }
         }
-
         // Collect the results into a map of task to OpResult for syncIncremental
         val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
           case (task, Success(result)) =>
@@ -192,11 +190,9 @@ object PlaySwagger extends AutoPlugin {
         }
         (taskResults, errors)
       }
-
-      if (errors.nonEmpty) throw errors.head
-
-      // Return all the files that were or have in the past been compiled
-      products.to[Seq]
+      if (errors.nonEmpty)
+        throw errors.head
+      else
+        products.to[Seq]
     }
-
 }

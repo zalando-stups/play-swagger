@@ -139,8 +139,6 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "unmanaged_imports"   -> unmanagedImports.map(i => Map("name" -> i))
     )
 
-    val securityChecks = ReShaper.groupByType(controllersList.toSeq).toMap
-
     val singlePackage = Map(
       "classes"             -> ReShaper.filterByType("classes", denotationTable),
       "aliases"             -> ReShaper.filterByType("aliases", denotationTable),
@@ -156,7 +154,6 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
     val allPackages         = enrichWithStructuralInfo(rawAllPackages)
-
 
     renderTemplate(packages, templateName, allPackages)
 
@@ -290,7 +287,7 @@ trait PlayScalaControllersGenerator {
       val method = table(call.asReference)("controller")
       val methodWithCode = method + (
         "dead_code"       -> unmanagedParts.get(call).map(_.deadCode).getOrElse(""),
-        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode).getOrElse("Failure(???)")
+        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode.trim).getOrElse("Failure(???)")
         )
       methodWithCode
     }
