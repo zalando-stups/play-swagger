@@ -14,6 +14,7 @@ lazy val api = (project in file("api"))
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-csv" % "2.6.4",
       "joda-time" % "joda-time" % "2.9.1",
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
+      "com.typesafe.play" %% "play-java-ws" % PlayVersion,
       "org.scalacheck" %% "scalacheck" % "1.12.4",
       "org.specs2" %% "specs2-scalacheck" % "3.6"
     ),
@@ -89,7 +90,7 @@ lazy val root = (project in file("."))
 
 def common: Seq[Setting[_]] = Seq(
   organization := "de.zalando",
-  version      := "0.1.6",
+  version      := "0.1.7",
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(

@@ -7,11 +7,10 @@ import PlayValidations._
 // ----- constraints and wrapper validations -----
 class NestedObjectsPlainSimpleConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
-        Seq(pattern("the pattern".r))
+        Seq(pattern("""the pattern""".r))
 }
 class NestedObjectsPlainSimpleValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new NestedObjectsPlainSimpleConstraints(instance))
-
 }
 class NestedObjectsNestedNested2Nested3BottomOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -19,39 +18,32 @@ class NestedObjectsNestedNested2Nested3BottomOptConstraints(override val instanc
 }
 class NestedObjectsNestedNested2Nested3BottomOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new NestedObjectsNestedNested2Nested3BottomOptConstraints(instance))
-
 }
 // ----- complex type validators -----
 class NestedObjectsValidator(instance: NestedObjects) extends RecursiveValidator {
     override val validators = Seq(
-    new NestedObjectsPlainValidator(instance.plain), 
-
-    new NestedObjectsNestedValidator(instance.nested)
-
+        new NestedObjectsPlainValidator(instance.plain), 
+        new NestedObjectsNestedValidator(instance.nested)
     )
 }
 class NestedObjectsPlainOptValidator(instance: NestedObjectsPlainOpt) extends RecursiveValidator {
     override val validators = Seq(
-    new NestedObjectsPlainSimpleValidator(instance.simple)
-
+        new NestedObjectsPlainSimpleValidator(instance.simple)
     )
 }
 class NestedObjectsNestedOptValidator(instance: NestedObjectsNestedOpt) extends RecursiveValidator {
     override val validators = Seq(
-    new NestedObjectsNestedNested2Validator(instance.nested2)
-
+        new NestedObjectsNestedNested2Validator(instance.nested2)
     )
 }
 class NestedObjectsNestedNested2Validator(instance: NestedObjectsNestedNested2) extends RecursiveValidator {
     override val validators = Seq(
-    new NestedObjectsNestedNested2Nested3Validator(instance.nested3)
-
+        new NestedObjectsNestedNested2Nested3Validator(instance.nested3)
     )
 }
 class NestedObjectsNestedNested2Nested3OptValidator(instance: NestedObjectsNestedNested2Nested3Opt) extends RecursiveValidator {
     override val validators = Seq(
-    new NestedObjectsNestedNested2Nested3BottomValidator(instance.bottom)
-
+        new NestedObjectsNestedNested2Nested3BottomValidator(instance.bottom)
     )
 }
 // ----- option delegating validators -----
@@ -73,5 +65,6 @@ class NestedObjectsNestedNested2Nested3BottomValidator(instance: NestedObjectsNe
 class GetValidator(nestedObject: NestedObjects) extends RecursiveValidator {
     override val validators = Seq(
         new NestedObjectsValidator(nestedObject)
+    
     )
 }

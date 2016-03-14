@@ -48,7 +48,7 @@ object ValidationsConverter {
     Seq(
       ifDefined(p.maxLength, s"maxLength(${p.maxLength.get})"),
       ifDefined(p.minLength, s"minLength(${p.minLength.get})"),
-      p.pattern map { p => s"""pattern("$p".r)""" },
+      p.pattern map { p => "pattern(\"\"\"" + p + "\"\"\".r)"},
       emailConstraint
     ).flatten
   }

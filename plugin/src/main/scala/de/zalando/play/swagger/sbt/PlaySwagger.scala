@@ -41,6 +41,7 @@ object PlaySwagger extends AutoPlugin {
     lazy val swaggerTests              = taskKey[Seq[File]]("Generate test data generators and tests from swagger definitions")
     lazy val swaggerControllers        = taskKey[Seq[File]]("Generate controllers from swagger definitions")
     lazy val swaggerMarshallers        = taskKey[Seq[File]]("Generate marshallers from swagger definitions")
+    lazy val swaggerSecurity           = taskKey[Seq[File]]("Generate security adapters from swagger definitions")
 
     // By default, end users won't define this themselves, they'll just use the options above for one single
     // swagger definition, however, if they want more control over settings, or what to compile multiple files,
@@ -71,6 +72,7 @@ object PlaySwagger extends AutoPlugin {
     inConfig(Test)(rawSwaggerSettings) ++
     inConfig(Compile)(swaggerBaseSettings) ++
     inConfig(Compile)(swaggerMarshallerSettings) ++
+    inConfig(Compile)(swaggerSecuritySettings) ++
     inConfig(Compile)(swaggerControllerSettings) ++
     inConfig(Compile)(swaggerRoutesSettings) ++
     inConfig(Test)(swaggerTestSettings)
@@ -137,6 +139,13 @@ object PlaySwagger extends AutoPlugin {
       swaggerGenerateMarshallers.value
     }
   )
+  def swaggerSecuritySettings: Seq[Setting[_]] = Seq(
+    target in swaggerSecurity := scalaSource.value,
+    swaggerSecurity := {
+      val comp = swaggerBase.value
+      swaggerGenerateSecurity.value
+    }
+  )
   def swaggerRoutesSettings: Seq[Setting[_]] = Seq(
     target in swaggerRoutes := crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
     swaggerRoutes := {
@@ -153,6 +162,7 @@ object PlaySwagger extends AutoPlugin {
   val swaggerGenerateTests        = commonSwaggerCompile(SwaggerCompiler.compileTests, swaggerTests)
   val swaggerGenerateControllers  = commonSwaggerCompile(SwaggerCompiler.compileControllers, swaggerControllers)
   val swaggerGenerateMarshallers  = commonSwaggerCompile(SwaggerCompiler.compileMarshallers, swaggerMarshallers)
+  val swaggerGenerateSecurity     = commonSwaggerCompile(SwaggerCompiler.compileExtractors, swaggerSecurity)
 
   private def commonSwaggerCompile: ((SwaggerCompilationTask, File, String, Seq[String]) => SwaggerCompilationResult, TaskKey[scala.Seq[sbt.File]]) =>
     Def.Initialize[Task[Seq[File]]] =
