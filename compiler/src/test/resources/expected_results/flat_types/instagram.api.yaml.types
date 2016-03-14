@@ -85,6 +85,8 @@
 	Str
 ⌿paths⌿/locations/{location-id}⌿⌿location-id -> 
 	Intgr
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action -> 
+	Opt(Str)
 ⌿definitions⌿Media⌿tags⌿Opt -> 
 	ArrResult(TypeRef(⌿definitions⌿Tag))
 ⌿definitions⌿User⌿counts⌿Opt -> 
@@ -92,6 +94,8 @@
 		Field(⌿definitions⌿User⌿counts⌿media, TypeRef(⌿definitions⌿Media⌿id)), 
 		Field(⌿definitions⌿User⌿counts⌿follows, TypeRef(⌿definitions⌿Media⌿id)), 
 		Field(⌿definitions⌿User⌿counts⌿follwed_by, TypeRef(⌿definitions⌿Media⌿id))))
+⌿paths⌿/media/search⌿get⌿DISTANCE -> 
+	Intgr
 ⌿definitions⌿Media⌿users_in_photo⌿Opt -> 
 	ArrResult(TypeRef(⌿definitions⌿MiniProfile))
 ⌿definitions⌿Media⌿comments:⌿Opt -> 
@@ -202,7 +206,7 @@
 ⌿paths⌿/locations/{location-id}⌿get⌿location-id -> Parameter(location-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/media/search⌿get⌿MAX_TIMESTAMP -> Parameter(MAX_TIMESTAMP,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/media/{media-id}/likes⌿post⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/{user-id}/relationship⌿post⌿action -> Parameter(action,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,false,body)
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action -> Parameter(action,TypeRef(⌿paths⌿/users/{user-id}/relationship⌿post⌿action),None,None,.+,false,body)
 ⌿paths⌿/users/{user-id}⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user-id}/followed-by⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/self/feed⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)

@@ -54,6 +54,13 @@ class MediaFilterOptConstraints(override val instance: String) extends Validatio
 class MediaFilterOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new MediaFilterOptConstraints(instance))
 }
+class UsersUser_idRelationshipPostActionOptConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
+        Seq(enum("approve,unblock,block,unfollow,follow"))
+}
+class UsersUser_idRelationshipPostActionOptValidator(instance: String) extends RecursiveValidator {
+    override val validators = Seq(new UsersUser_idRelationshipPostActionOptConstraints(instance))
+}
 class MediaMedia_idLikesGetMedia_idConstraints(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
         Seq()
@@ -177,152 +184,205 @@ class LocationLatitudeValidator(instance: LocationLatitude) extends RecursiveVal
 class MediaFilterValidator(instance: MediaFilter) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new MediaFilterOptValidator(_) }
 }
+class UsersUser_idRelationshipPostActionValidator(instance: UsersUser_idRelationshipPostAction) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new UsersUser_idRelationshipPostActionOptValidator(_) }
+}
 // ----- array delegating validators -----
 // ----- catch all simple validators -----
 // ----- call validations -----
 class UsersUser_idGetValidator(user_id: Double) extends RecursiveValidator {
     override val validators = Seq(
-        new UsersUser_idGetUser_idValidator(user_id)    
+        new UsersUser_idGetUser_idValidator(user_id)
+    
     )
 }
 class UsersUser_idFollowed_byGetValidator(user_id: Double) extends RecursiveValidator {
     override val validators = Seq(
-        new UsersUser_idFollowed_byGetUser_idValidator(user_id)    
+        new UsersUser_idFollowed_byGetUser_idValidator(user_id)
+    
     )
 }
 class MediaMedia_idLikesGetValidator(media_id: Int) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaMedia_idLikesGetMedia_idValidator(media_id)    
+        new MediaMedia_idLikesGetMedia_idValidator(media_id)
+    
     )
 }
 class LocationsSearchGetValidator(foursquare_v2_id: MediaId, facebook_places_id: MediaId, distance: MediaId, lat: LocationLatitude, foursquare_id: MediaId, lng: LocationLatitude) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaIdValidator(foursquare_v2_id),     
-        new MediaIdValidator(facebook_places_id),     
-        new MediaIdValidator(distance),     
-        new LocationLatitudeValidator(lat),     
-        new MediaIdValidator(foursquare_id),     
-        new LocationLatitudeValidator(lng)    
+        new MediaIdValidator(foursquare_v2_id), 
+    
+        new MediaIdValidator(facebook_places_id), 
+    
+        new MediaIdValidator(distance), 
+    
+        new LocationLatitudeValidator(lat), 
+    
+        new MediaIdValidator(foursquare_id), 
+    
+        new LocationLatitudeValidator(lng)
+    
     )
 }
 class MediaMedia_idCommentsDeleteValidator(media_id: Int) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaMedia_idCommentsDeleteMedia_idValidator(media_id)    
+        new MediaMedia_idCommentsDeleteMedia_idValidator(media_id)
+    
     )
 }
 class UsersSelfMediaLikedGetValidator(count: MediaId, max_like_id: MediaId) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaIdValidator(count),     
-        new MediaIdValidator(max_like_id)    
+        new MediaIdValidator(count), 
+    
+        new MediaIdValidator(max_like_id)
+    
     )
 }
 class TagsSearchGetValidator(q: MediaFilter) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaFilterValidator(q)    
+        new MediaFilterValidator(q)
+    
     )
 }
 class MediaMedia_idCommentsGetValidator(media_id: Int) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaMedia_idCommentsGetMedia_idValidator(media_id)    
+        new MediaMedia_idCommentsGetMedia_idValidator(media_id)
+    
     )
 }
 class MediaMedia_idLikesDeleteValidator(media_id: Int) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaMedia_idLikesDeleteMedia_idValidator(media_id)    
+        new MediaMedia_idLikesDeleteMedia_idValidator(media_id)
+    
     )
 }
 class MediaMedia_idGetValidator(media_id: Int) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaMedia_idGetMedia_idValidator(media_id)    
+        new MediaMedia_idGetMedia_idValidator(media_id)
+    
     )
 }
 class MediaShortcodeGetValidator(shortcode: String) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaShortcodeGetShortcodeValidator(shortcode)    
+        new MediaShortcodeGetShortcodeValidator(shortcode)
+    
     )
 }
 class UsersSearchGetValidator(q: String, count: MediaFilter) extends RecursiveValidator {
     override val validators = Seq(
-        new UsersSearchGetQValidator(q),     
-        new MediaFilterValidator(count)    
+        new UsersSearchGetQValidator(q), 
+    
+        new MediaFilterValidator(count)
+    
     )
 }
 class MediaMedia_idCommentsPostValidator(media_id: Int, tEXT: LocationLatitude) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaMedia_idCommentsPostMedia_idValidator(media_id),     
-        new LocationLatitudeValidator(tEXT)    
+        new MediaMedia_idCommentsPostMedia_idValidator(media_id), 
+    
+        new LocationLatitudeValidator(tEXT)
+    
     )
 }
 class MediaMedia_idLikesPostValidator(media_id: Int) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaMedia_idLikesPostMedia_idValidator(media_id)    
+        new MediaMedia_idLikesPostMedia_idValidator(media_id)
+    
     )
 }
-class UsersUser_idRelationshipPostValidator(user_id: Double, action: MediaFilter) extends RecursiveValidator {
+class UsersUser_idRelationshipPostValidator(user_id: Double, action: UsersUser_idRelationshipPostAction) extends RecursiveValidator {
     override val validators = Seq(
-        new UsersUser_idRelationshipPostUser_idValidator(user_id),     
-        new MediaFilterValidator(action)    
+        new UsersUser_idRelationshipPostUser_idValidator(user_id), 
+    
+        new UsersUser_idRelationshipPostActionValidator(action)
+    
     )
 }
 class TagsTag_nameGetValidator(tag_name: String) extends RecursiveValidator {
     override val validators = Seq(
-        new TagsTag_nameGetTag_nameValidator(tag_name)    
+        new TagsTag_nameGetTag_nameValidator(tag_name)
+    
     )
 }
 class LocationsLocation_idGetValidator(location_id: Int) extends RecursiveValidator {
     override val validators = Seq(
-        new LocationsLocation_idGetLocation_idValidator(location_id)    
+        new LocationsLocation_idGetLocation_idValidator(location_id)
+    
     )
 }
 class LocationsLocation_idMediaRecentGetValidator(location_id: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) extends RecursiveValidator {
     override val validators = Seq(
-        new LocationsLocation_idMediaRecentGetLocation_idValidator(location_id),     
-        new MediaIdValidator(max_timestamp),     
-        new MediaIdValidator(min_timestamp),     
-        new MediaFilterValidator(min_id),     
-        new MediaFilterValidator(max_id)    
+        new LocationsLocation_idMediaRecentGetLocation_idValidator(location_id), 
+    
+        new MediaIdValidator(max_timestamp), 
+    
+        new MediaIdValidator(min_timestamp), 
+    
+        new MediaFilterValidator(min_id), 
+    
+        new MediaFilterValidator(max_id)
+    
     )
 }
 class MediaSearchGetValidator(mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaIdValidator(mAX_TIMESTAMP),     
-        new MediaSearchGetDISTANCEValidator(dISTANCE),     
-        new LocationLatitudeValidator(lNG),     
-        new MediaIdValidator(mIN_TIMESTAMP),     
-        new LocationLatitudeValidator(lAT)    
+        new MediaIdValidator(mAX_TIMESTAMP), 
+    
+        new MediaSearchGetDISTANCEValidator(dISTANCE), 
+    
+        new LocationLatitudeValidator(lNG), 
+    
+        new MediaIdValidator(mIN_TIMESTAMP), 
+    
+        new LocationLatitudeValidator(lAT)
+    
     )
 }
 class TagsTag_nameMediaRecentGetValidator(tag_name: String) extends RecursiveValidator {
     override val validators = Seq(
-        new TagsTag_nameMediaRecentGetTag_nameValidator(tag_name)    
+        new TagsTag_nameMediaRecentGetTag_nameValidator(tag_name)
+    
     )
 }
 class UsersUser_idFollowsGetValidator(user_id: Double) extends RecursiveValidator {
     override val validators = Seq(
-        new UsersUser_idFollowsGetUser_idValidator(user_id)    
+        new UsersUser_idFollowsGetUser_idValidator(user_id)
+    
     )
 }
 class UsersUser_idMediaRecentGetValidator(user_id: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) extends RecursiveValidator {
     override val validators = Seq(
-        new UsersUser_idMediaRecentGetUser_idValidator(user_id),     
-        new MediaIdValidator(max_timestamp),     
-        new MediaFilterValidator(min_id),     
-        new MediaIdValidator(min_timestamp),     
-        new MediaFilterValidator(max_id),     
-        new MediaIdValidator(count)    
+        new UsersUser_idMediaRecentGetUser_idValidator(user_id), 
+    
+        new MediaIdValidator(max_timestamp), 
+    
+        new MediaFilterValidator(min_id), 
+    
+        new MediaIdValidator(min_timestamp), 
+    
+        new MediaFilterValidator(max_id), 
+    
+        new MediaIdValidator(count)
+    
     )
 }
 class UsersSelfFeedGetValidator(count: MediaId, max_id: MediaId, min_id: MediaId) extends RecursiveValidator {
     override val validators = Seq(
-        new MediaIdValidator(count),     
-        new MediaIdValidator(max_id),     
-        new MediaIdValidator(min_id)    
+        new MediaIdValidator(count), 
+    
+        new MediaIdValidator(max_id), 
+    
+        new MediaIdValidator(min_id)
+    
     )
 }
 class GeographiesGeo_idMediaRecentGetValidator(geo_id: Int, count: MediaId, min_id: MediaId) extends RecursiveValidator {
     override val validators = Seq(
-        new GeographiesGeo_idMediaRecentGetGeo_idValidator(geo_id),     
-        new MediaIdValidator(count),     
-        new MediaIdValidator(min_id)    
+        new GeographiesGeo_idMediaRecentGetGeo_idValidator(geo_id), 
+    
+        new MediaIdValidator(count), 
+    
+        new MediaIdValidator(min_id)
+    
     )
 }
