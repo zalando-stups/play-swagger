@@ -101,7 +101,7 @@ object SwaggerCompiler {
     val fileName: String = fullFileName(task, directory)
     val fileContents = readFile(outputDir, fileName)
     val file = new File(outputDir, fileName)
-    val canWrite = (overwrite || !file.exists()) && content.nonEmpty
+    val canWrite = (overwrite || !file.exists()) && content.trim.nonEmpty
     if (canWrite) {
       if (fileContents != content) writeToFile(file, content)
       Seq(file)

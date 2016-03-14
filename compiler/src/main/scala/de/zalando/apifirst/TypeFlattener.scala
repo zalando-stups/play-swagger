@@ -26,7 +26,7 @@ object TypeDeduplicator extends TypeAnalyzer {
   }
 
   private def replaceSingle(model: StrictModel): Type => StrictModel = tpe => {
-    val duplicates = model.typeDefs.filter { d => isSameTypeDef(tpe)(d._2) }
+    val duplicates = model.typeDefs.filter { d => isSameTypeDef(tpe)(d._2) && isSameConstraints(tpe)(d._2) }
     val duplicateNames = sortByDiscriminatorOrPathLength(model.discriminators, duplicates)
     val bestMatch :: refsToRemove = duplicateNames
     val typesToRewrite = model.typeDefs filterNot { t => refsToRemove.contains(t._1) }
@@ -190,8 +190,23 @@ trait TypeAnalyzer {
     case _ => false
   }
 
-  def isSameConstraints(one: Type)(two: Type): Boolean =
-    one.meta.constraints.intersect(two.meta.constraints).size == one.meta.constraints.size
+  def isSameConstraints(one: Type)(two: Type): Boolean = (one, two) match {
+    case (c1: Container, c2: Container) if c1.getClass == c2.getClass =>
+      isSameConstraints(c1.tpe)(c2.tpe)
+    case (c1: Composite, c2: Composite) if c1.getClass == c2.getClass && c1.descendants.size == c2.descendants.size =>
+      c1.descendants.zip(c2.descendants).map(d => isSameConstraints(d._1)(d._2)).forall(_ == true)
+    case (t1: TypeDef, t2: TypeDef) if t1.fields.size == t2.fields.size =>
+      t1.fields.zip(t2.fields).map(f => isSameConstraints(f._1.tpe)(f._2.tpe)).forall(_ == true)
+    case (t1: ProvidedType, t2: ProvidedType) if t1.getClass == t2.getClass =>
+      isSamePrimitiveConstraints(t1)(t2)
+    case (r1: TypeRef, r2: TypeRef) =>
+      r1.meta == r2.meta
+    case _ => false
+  }
+
+  def isSamePrimitiveConstraints(one: Type)(two: Type): Boolean =
+    one.meta.constraints.size == two.meta.constraints.size &&
+      one.meta.constraints.intersect(two.meta.constraints).size == one.meta.constraints.size
 
   def isSameTypeDef(one: Type)(two: Type): Boolean = (one, two) match {
     case (c1: Container, c2: Container) if c1.getClass == c2.getClass =>

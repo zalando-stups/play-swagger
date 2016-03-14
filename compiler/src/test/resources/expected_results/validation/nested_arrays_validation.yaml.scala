@@ -8,11 +8,10 @@ import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class ActivityActionsOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
-        Seq(pattern("the pattern to validate".r))
+        Seq(pattern("""the pattern to validate""".r))
 }
 class ActivityActionsOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new ActivityActionsOptConstraints(instance))
-
 }
 class ExampleNestedArraysOptArrArrArrArrConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -20,21 +19,17 @@ class ExampleNestedArraysOptArrArrArrArrConstraints(override val instance: Strin
 }
 class ExampleNestedArraysOptArrArrArrArrValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new ExampleNestedArraysOptArrArrArrArrConstraints(instance))
-
 }
 // ----- complex type validators -----
 class ActivityValidator(instance: Activity) extends RecursiveValidator {
     override val validators = Seq(
-    new ActivityActionsValidator(instance.actions)
-
+        new ActivityActionsValidator(instance.actions)
     )
 }
 class ExampleValidator(instance: Example) extends RecursiveValidator {
     override val validators = Seq(
-    new ExampleMessagesValidator(instance.messages), 
-
-    new ExampleNestedArraysValidator(instance.nestedArrays)
-
+        new ExampleMessagesValidator(instance.messages), 
+        new ExampleNestedArraysValidator(instance.nestedArrays)
     )
 }
 // ----- option delegating validators -----
@@ -97,7 +92,9 @@ class ExampleNestedArraysOptArrArrArrValidator(instance: ExampleNestedArraysOptA
 // ----- call validations -----
 class GetValidator(activity: Activity, example: GetExample) extends RecursiveValidator {
     override val validators = Seq(
-        new ActivityValidator(activity),
+        new ActivityValidator(activity), 
+    
         new GetExampleValidator(example)
+    
     )
 }
