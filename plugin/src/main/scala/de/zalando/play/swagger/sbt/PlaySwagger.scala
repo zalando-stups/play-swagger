@@ -34,7 +34,7 @@ object PlaySwagger extends AutoPlugin {
 
     lazy val swaggerAutogenerateControllers = settingKey[Boolean]("Auto - generate swagger controllers")
 
-    lazy val swaggerDefinitions        = taskKey[Seq[File]]("The swagger definition files")
+    lazy val swaggerDefinitions        = taskKey[Seq[File]]("The swagger definition files (or apib parsed with drafter into json)")
 
     lazy val swaggerBase               = taskKey[Seq[File]]("Generate model, validators and controller bases from swagger definitions")
     lazy val swaggerRoutes             = taskKey[Seq[File]]("Generate play routes from swagger definitions")
@@ -87,7 +87,19 @@ object PlaySwagger extends AutoPlugin {
 
     swaggerKeyPrefix      :=  "x-api-first",
 
-    swaggerDefinitions    := ((resourceDirectory in Compile).value * "*.yaml").get,
+    swaggerDefinitions    := {
+      (
+        (resourceDirectory in Compile).value * "*.yaml" +++
+        ((resourceDirectory in Compile).value * "*.apib").get.map({apib =>
+          val tmpdir = (resourceManaged in Compile).value
+          tmpdir.mkdirs()
+          val output = tmpdir / (s"${apib.base}.apij")
+          (apib #> "drafter -f json" #> output).!
+          output
+        }) +++
+        (resourceDirectory in Compile).value * "*.json"
+      ).get
+    },
 
     sources in swagger    := swaggerDefinitions.value,
 

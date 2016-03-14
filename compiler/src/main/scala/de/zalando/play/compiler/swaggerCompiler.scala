@@ -1,5 +1,6 @@
 package de.zalando.play.compiler
 
+import de.zalando.swagger.StrictParser
 import java.io.File
 
 import de.zalando.apifirst.Application.StrictModel
@@ -9,6 +10,7 @@ import de.zalando.swagger.{ModelConverter, StrictJsonParser, StrictYamlParser}
 import org.apache.commons.io.FileUtils
 import play.routes.compiler.RoutesCompiler.RoutesCompilerTask
 import play.routes.compiler.RoutesGenerator
+import com.oaganalytics.apib.ApibParser
 
 import scala.io.Codec
 
@@ -79,10 +81,19 @@ object SwaggerCompiler {
     Seq(routesFiles.flatten)
   }
 
-  def readFlatAst(task: SwaggerCompilationTask): StrictModel = {
-    val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
+  def model(task: SwaggerCompilationTask, parser: StrictParser): StrictModel = {
     val (uri, model) = parser.parse(task.definitionFile)
-    val initialAst = ModelConverter.fromModel(uri, model, Option(task.definitionFile))
+    ModelConverter.fromModel(uri, model, Option(task.definitionFile))
+  }
+
+  def readFlatAst(task: SwaggerCompilationTask): StrictModel = {
+    val name = task.definitionFile.getName
+    val initialAst = name.slice(name.lastIndexOf(".") + 1, name.length) match {
+      case "yaml" => model(task, StrictYamlParser)
+      case "json" => model(task, StrictJsonParser)
+      // apij is short for apip in json form
+      case "apij" => ApibParser.parse(task.definitionFile, "api") // TODO make it depend on filename
+    }
     implicit val flatAst = TypeNormaliser.flatten(initialAst)
     flatAst
   }

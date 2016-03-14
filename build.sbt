@@ -43,7 +43,11 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalacheck" %% "scalacheck" % "1.12.5",
       "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
-      "de.zalando" %% "beard" % "0.0.6"
+      "de.zalando" %% "beard" % "0.0.6",
+      "io.argonaut" %% "argonaut" % "6.1"
+    ),
+    scalacOptions ++= Seq(
+      "-Ywarn-value-discard"
     )
   )
 

@@ -26,7 +26,9 @@ object Http {
   def string2verb(name: String): Option[Verb] = verbs find { _.name == name.trim.toUpperCase }
 
   // TODO flesh out this hierarchy
-  class MimeType(val name: String) extends Expr
+  class MimeType(val name: String) extends Expr {
+    override def toString = s"MimeType($name)"
+  }
 
   case object ApplicationJson extends MimeType("application/json")
 
@@ -227,7 +229,7 @@ object Application {
     typeName:         Domain.Type,
     fixed:            Option[String],
     default:          Option[String],
-    constraint:       String,
+    constraint:       String, // Regex used to match in play routes
     encode:           Boolean,
     place:            ParameterPlace.Value
   ) extends Expr with Positional
@@ -242,12 +244,12 @@ object Application {
 
   case class ApiCall(
     verb:             Http.Verb,
-    path:             Path,
+    path:             Path, // Route
     handler:          HandlerCall,
     mimeIn:           Set[MimeType],  // can be empty for swagger specification
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
-    resultTypes:      Map[Int, ParameterRef],
+    resultTypes:      Map[Int, ParameterRef],             // HTTP status code -> parameter type
     defaultResult:    Option[ParameterRef]
   ) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
