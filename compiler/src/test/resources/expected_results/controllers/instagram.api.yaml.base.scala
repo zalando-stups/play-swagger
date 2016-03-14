@@ -686,7 +686,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
         }
         status
     }
-    private type postusersByUser_idRelationshipActionRequestType       = (Double, MediaFilter)
+    private type postusersByUser_idRelationshipActionRequestType       = (Double, UsersUser_idRelationshipPostAction)
     private type postusersByUser_idRelationshipActionType              = postusersByUser_idRelationshipActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspostusersByUser_idRelationship: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -703,7 +703,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.optionParser[String]
-            optionParser[String](bodyMimeType, customParsers, "Invalid MediaFilter", maxLength)
+            optionParser[String](bodyMimeType, customParsers, "Invalid UsersUser_idRelationshipPostAction", maxLength)
         }
 
     def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => Action(postusersByUser_idRelationshipParser(Seq[String]("application/json"))) { request =>

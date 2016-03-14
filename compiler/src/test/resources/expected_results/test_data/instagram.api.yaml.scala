@@ -5,6 +5,7 @@ import org.scalacheck.Arbitrary
 import Arbitrary._
 
 object Generators {
+    
 
     
     def createTagsSearchGetResponses200MetaGenerator = _generate(TagsSearchGetResponses200MetaGenerator)
@@ -16,9 +17,11 @@ object Generators {
     def createMediaTagsGenerator = _generate(MediaTagsGenerator)
     def createMediaMedia_idLikesGetResponses200DataGenerator = _generate(MediaMedia_idLikesGetResponses200DataGenerator)
     def createMediaIdGenerator = _generate(MediaIdGenerator)
+    def createUsersUser_idRelationshipPostActionGenerator = _generate(UsersUser_idRelationshipPostActionGenerator)
     def createMediaTagsOptGenerator = _generate(MediaTagsOptGenerator)
     def createMediaImagesGenerator = _generate(MediaImagesGenerator)
     def createMediaLikesGenerator = _generate(MediaLikesGenerator)
+    def createIntNameClashGenerator = _generate(IntNameClashGenerator)
     def createMediaMedia_idCommentsGetResponses200DataOptGenerator = _generate(MediaMedia_idCommentsGetResponses200DataOptGenerator)
     def createMediaUsers_in_photoOptGenerator = _generate(MediaUsers_in_photoOptGenerator)
     def createMediaMedia_idLikesGetResponses200DataOptGenerator = _generate(MediaMedia_idLikesGetResponses200DataOptGenerator)
@@ -39,6 +42,7 @@ object Generators {
     def createDoubleGenerator = _generate(DoubleGenerator)
     def createUserCountsGenerator = _generate(UserCountsGenerator)
     def createStringGenerator = _generate(StringGenerator)
+    
 
     
     def TagsSearchGetResponses200MetaGenerator = Gen.option(UsersSelfRequested_byGetResponses200MetaOptGenerator)
@@ -50,9 +54,11 @@ object Generators {
     def MediaTagsGenerator = Gen.option(MediaTagsOptGenerator)
     def MediaMedia_idLikesGetResponses200DataGenerator = Gen.option(MediaMedia_idLikesGetResponses200DataOptGenerator)
     def MediaIdGenerator = Gen.option(arbitrary[Int])
+    def UsersUser_idRelationshipPostActionGenerator = Gen.option(arbitrary[String])
     def MediaTagsOptGenerator = Gen.containerOf[List,Tag](TagGenerator)
     def MediaImagesGenerator = Gen.option(MediaImagesOptGenerator)
     def MediaLikesGenerator = Gen.option(MediaLikesOptGenerator)
+    def IntNameClashGenerator = arbitrary[Int]
     def MediaMedia_idCommentsGetResponses200DataOptGenerator = Gen.containerOf[List,Comment](CommentGenerator)
     def MediaUsers_in_photoOptGenerator = Gen.containerOf[List,MiniProfile](MiniProfileGenerator)
     def MediaMedia_idLikesGetResponses200DataOptGenerator = Gen.containerOf[List,Like](LikeGenerator)
@@ -73,64 +79,38 @@ object Generators {
     def DoubleGenerator = arbitrary[Double]
     def UserCountsGenerator = Gen.option(UserCountsOptGenerator)
     def StringGenerator = arbitrary[String]
+    
 
-    
     def createUsersSelfFeedGetResponses200Generator = _generate(UsersSelfFeedGetResponses200Generator)
-    
     def createMediaMedia_idCommentsDeleteResponses200Generator = _generate(MediaMedia_idCommentsDeleteResponses200Generator)
-    
     def createMediaSearchGetResponses200DataOptArrResultGenerator = _generate(MediaSearchGetResponses200DataOptArrResultGenerator)
-    
     def createUsersUser_idFollowsGetResponses200Generator = _generate(UsersUser_idFollowsGetResponses200Generator)
-    
     def createUserCountsOptGenerator = _generate(UserCountsOptGenerator)
-    
     def createUserGenerator = _generate(UserGenerator)
-    
     def createTagsTag_nameMediaRecentGetResponses200Generator = _generate(TagsTag_nameMediaRecentGetResponses200Generator)
-    
     def createImageGenerator = _generate(ImageGenerator)
-    
     def createUsersSelfRequested_byGetResponses200Generator = _generate(UsersSelfRequested_byGetResponses200Generator)
-    
     def createTagGenerator = _generate(TagGenerator)
-    
     def createUsersSelfRequested_byGetResponses200MetaOptGenerator = _generate(UsersSelfRequested_byGetResponses200MetaOptGenerator)
-    
     def createLocationsLocation_idGetResponses200Generator = _generate(LocationsLocation_idGetResponses200Generator)
-    
     def createCommentGenerator = _generate(CommentGenerator)
-    
     def createMediaGenerator = _generate(MediaGenerator)
-    
     def createMediaMedia_idLikesGetResponses200Generator = _generate(MediaMedia_idLikesGetResponses200Generator)
-    
     def createMediaMedia_idLikesGetResponses200MetaOptGenerator = _generate(MediaMedia_idLikesGetResponses200MetaOptGenerator)
-    
     def createMediaSearchGetResponses200Generator = _generate(MediaSearchGetResponses200Generator)
-    
     def createTagsSearchGetResponses200Generator = _generate(TagsSearchGetResponses200Generator)
-    
     def createLikeGenerator = _generate(LikeGenerator)
-    
     def createMediaComments_OptGenerator = _generate(MediaComments_OptGenerator)
-    
     def createUsersUser_idGetResponses200Generator = _generate(UsersUser_idGetResponses200Generator)
-    
     def createMediaMedia_idCommentsGetResponses200Generator = _generate(MediaMedia_idCommentsGetResponses200Generator)
-    
     def createMediaVideosOptGenerator = _generate(MediaVideosOptGenerator)
-    
     def createLocationGenerator = _generate(LocationGenerator)
-    
     def createMiniProfileGenerator = _generate(MiniProfileGenerator)
-    
     def createMediaLikesOptGenerator = _generate(MediaLikesOptGenerator)
-    
     def createLocationsSearchGetResponses200Generator = _generate(LocationsSearchGetResponses200Generator)
-    
     def createMediaImagesOptGenerator = _generate(MediaImagesOptGenerator)
-    
+
+
     def UsersSelfFeedGetResponses200Generator = for {
         data <- UsersSelfFeedGetResponses200DataGenerator
     } yield UsersSelfFeedGetResponses200(data)
@@ -275,4 +255,7 @@ object Generators {
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 
+    
+    
+    
 }

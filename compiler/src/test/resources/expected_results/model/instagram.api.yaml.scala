@@ -16,9 +16,11 @@ package object yaml {
     type MediaTags = Option[MediaTagsOpt]
     type MediaMedia_idLikesGetResponses200Data = Option[MediaMedia_idLikesGetResponses200DataOpt]
     type MediaId = Option[Int]
+    type UsersUser_idRelationshipPostAction = Option[String]
     type MediaTagsOpt = Seq[Tag]
     type MediaImages = Option[MediaImagesOpt]
     type MediaLikes = Option[MediaLikesOpt]
+    type MediaSearchGetDISTANCE = Int
     type MediaMedia_idCommentsGetResponses200DataOpt = Seq[Comment]
     type MediaUsers_in_photoOpt = Seq[MiniProfile]
     type MediaMedia_idLikesGetResponses200DataOpt = Seq[Like]
