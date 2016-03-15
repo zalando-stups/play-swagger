@@ -167,7 +167,7 @@ object Generator {
       packageName = packageName,
       controller = controller,
       instantiate = false, // Random guess
-      method = req.verb.name,
+      method = req.verb.name.toLowerCase,
       parameters = (pathParameters ++ reqParameter).map(_._1).toSeq
     )
     val call = ApiCall(
