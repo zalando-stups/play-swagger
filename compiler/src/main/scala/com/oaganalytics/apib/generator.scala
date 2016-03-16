@@ -235,7 +235,8 @@ object Generator {
       params = translation.parameters,
       discriminators = Map(),
       basePath = basePath,
-      packageName = Some(packageName)
+      packageName = Some(packageName),
+      Map.empty
     )
   }
 }

@@ -1,11 +1,9 @@
 package com.oaganalytics.apib
 
-import de.zalando.apifirst.Application.StrictModel
-import de.zalando.swagger.strictModel.SwaggerModel
-import de.zalando.swagger.StrictSwaggerParser
-import java.net.URI
 import java.io.File
 
+import argonaut.Parse
+import de.zalando.apifirst.Application.StrictModel
 import argonaut._, Argonaut._
 import scalaz._, Scalaz._
 import Decoder._
