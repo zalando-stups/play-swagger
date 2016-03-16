@@ -75,13 +75,15 @@ object PlayValidations extends Constraints {
     * '''name'''[constraint.enum]
     * '''error'''[error.enum]
     */
-  def enum[T <: String](commaSeparatedList: String): Constraint[T] = Constraint[T]("constraint.enum") { o =>
+  def enum[T <: String](commaSeparatedList: String): Constraint[T] =
+    enum(commaSeparatedList.split(",[^,]").map(_.replaceAll(",,",",")).toSeq)
+
+  def enum[T <: String](allowedValues: Seq[String]): Constraint[T] = Constraint[T]("constraint.enum") { o =>
     def onlyAllowedItems: Boolean = {
-      val items = commaSeparatedList.split(",[^,]").map(_.replaceAll(",,",",")).toSeq
-      o.map{i=>i.toString}.forall(items.contains)
+      o.map{i=>i.toString}.forall(allowedValues.contains)
     }
     if (o == null) Invalid(ValidationError("error.required"))
-    else if (commaSeparatedList.isEmpty) Invalid(ValidationError("error.enum.empty"))
+    else if (allowedValues.isEmpty) Invalid(ValidationError("error.enum.empty"))
     else if (onlyAllowedItems) Valid
     else Invalid(ValidationError("error.enum.not.allowed", o))
 

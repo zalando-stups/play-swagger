@@ -58,15 +58,16 @@ object naming {
     val responses = "responses"
     val definitions = "definitions"
     val delimiter = "⌿"
-    val root: Reference = Reference(List.empty)
+    val root: Reference = new Reference(List.empty)
     def apply(base: String, s: Reference): Reference = s
     def fromUrl(url: String): Reference = parse(url, "/")
     def apply(ref: String): Reference = parse(ref, delimiter)
     def apply()         : Reference = Reference.root
+    def definition(ref: String): Reference = new Reference(List(definitions, ref))
     private def parse(s: String, delim: String) = {
       val normalized = s.dropWhile(_.toString == delim).split(delim, -1).toList
       val parts = if (normalized.length == 1 && normalized.head.isEmpty) List.empty else normalized
-      Reference(parts)
+      new Reference(parts)
     }
   }
 
@@ -86,15 +87,18 @@ object naming {
     }
     def prepend(prefix: String) = if (prefix != null) Path(ref.prepend(clean(prefix))) else this
     def /(suffix: String) = if (suffix != null && suffix.nonEmpty) Path(ref / clean(suffix)) else this
+    def /(suffix: Path) = Path(ref / suffix.ref)
     private def clean(prefix: String) =
       if (prefix != null && prefix.nonEmpty) prefix.dropWhile(sep).reverse.dropWhile(sep).reverse else prefix
     def map[That](f: String => That) = ref.parts.map(f)
     def nonEmpty = ref.parts.nonEmpty
     def last = ref.parts.last
+    def parts = ref.parts
   }
 
   object Path {
     def apply(s: String):Path = Path(Reference.fromUrl(s))
+    def apply(l: List[String]): Path = Path(Reference(l))
     def pathParam(part: String) = part != null && part.nonEmpty && part.startsWith("{") && part.endsWith("}")
     def strip(part: String) = if (pathParam(part)) part.tail.dropRight(1) else part
     def toString(prefix: String, suffix: String, transform: String => String = identity)(part: String) =
@@ -171,6 +175,7 @@ case class ScalaName(ref: Reference) {
     escape(caseTransformer("/", withPrefix.mkString("/")))
   }
 
-  def methodName = escape(camelize("/", parts.last))
+  def methodName: String = escape(camelize("/", parts.last))
+  def methodName(verb: Http.Verb): String = methodName + camelize("/", verb.name.toLowerCase())
   def names = (packageName, className, methodName)
 }
