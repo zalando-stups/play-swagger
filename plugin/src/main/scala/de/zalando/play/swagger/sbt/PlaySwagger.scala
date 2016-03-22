@@ -79,8 +79,11 @@ object PlaySwagger extends AutoPlugin {
     FileFunction.cached(tmpdir, inStyle = FilesInfo.hash) {(set: Set[File]) =>
       set.map({apib =>
         val output = tmpdir / (s"${apib.base}.apij")
-          (apib #> "drafter -f json" #> output).!
-          output
+        val exitCode = (apib #> "drafter -f json" #> output).!
+        if (exitCode !=  0) {
+          throw new MessageOnlyException(s"Apiary parser error.")
+        }
+        output
       })
     }
   }
