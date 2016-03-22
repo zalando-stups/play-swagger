@@ -16,6 +16,6 @@ object ApibParser {
     val doc = Parse.decodeValidation[Document](input).fold({
       message => throw new IllegalArgumentException(s"Incorrect json. The document root is at the right, the current cursor at the left:\n$message")
     }, {x => x})
-    Generator.model(doc, packageName, "")
+    Generator.model(doc, packageName, "apib")
   }
 }

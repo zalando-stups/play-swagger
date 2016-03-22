@@ -346,7 +346,7 @@ object Data {
                   "content": {
                     "key": {
                       "element": "string",
-                      "content": "email"
+                      "content": "'email'"
                     },
                     "value": {
                       "element": "string",
@@ -1609,7 +1609,7 @@ object Data {
             {
               "element": "resource",
               "meta": {
-                "title": "Company"
+                "title": "Company Company"
               },
               "attributes": {
                 "href": "/companies"
@@ -1621,7 +1621,7 @@ object Data {
                     {
                       "element": "object",
                       "meta": {
-                        "id": "Company"
+                        "id": "Company Company"
                       },
                       "content": [
                         {
@@ -1797,7 +1797,7 @@ object Data {
                                           "content": "company"
                                         },
                                         "value": {
-                                          "element": "Company"
+                                          "element": "Company Company"
                                         }
                                       }
                                     }
