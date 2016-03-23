@@ -45,7 +45,8 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
             anyParser[BinaryString](bodyMimeType, customParsers, "Invalid BinaryString", maxLength)
         }
 
-    def getAction = (f: getActionType) => (base64: GetBase64, date: GetDate, date_time: GetDate_time) => Action(getParser(Seq[String]())) { request =>
+    val getActionConstructor  = Action
+    def getAction = (f: getActionType) => (base64: GetBase64, date: GetDate, date_time: GetDate_time) => getActionConstructor(getParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/yaml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>

@@ -20,7 +20,8 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetme: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmeAction = (f: getmeActionType) => Action { request =>
+    val getmeActionConstructor  = Action
+    def getmeAction = (f: getmeActionType) => getmeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmeResponseMimeType =>
@@ -61,7 +62,8 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetproducts: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getproductsAction = (f: getproductsActionType) => (latitude: Double, longitude: Double) => Action { request =>
+    val getproductsActionConstructor  = Action
+    def getproductsAction = (f: getproductsActionType) => (latitude: Double, longitude: Double) => getproductsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getproductsResponseMimeType =>
@@ -108,7 +110,8 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetestimatesTime: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getestimatesTimeAction = (f: getestimatesTimeActionType) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) => Action { request =>
+    val getestimatesTimeActionConstructor  = Action
+    def getestimatesTimeAction = (f: getestimatesTimeActionType) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) => getestimatesTimeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesTimeResponseMimeType =>
@@ -155,7 +158,8 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetestimatesPrice: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getestimatesPriceAction = (f: getestimatesPriceActionType) => (start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) => Action { request =>
+    val getestimatesPriceActionConstructor  = Action
+    def getestimatesPriceAction = (f: getestimatesPriceActionType) => (start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) => getestimatesPriceActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesPriceResponseMimeType =>
@@ -202,7 +206,8 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgethistory: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gethistoryAction = (f: gethistoryActionType) => (offset: ErrorCode, limit: ErrorCode) => Action { request =>
+    val gethistoryActionConstructor  = Action
+    def gethistoryAction = (f: gethistoryActionType) => (offset: ErrorCode, limit: ErrorCode) => gethistoryActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gethistoryResponseMimeType =>

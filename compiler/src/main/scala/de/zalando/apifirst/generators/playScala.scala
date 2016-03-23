@@ -14,19 +14,22 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   val denotationTable = AstScalaPlayEnricher(strictModel)
 
-  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName) = strictModel
+  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName, securityDefinitions) = strictModel
 
-  val testsTemplateName           = "play_scala_test"
-  val validatorsTemplateName      = "play_validation"
-  val generatorsTemplateName      = "generators"
-  val modelTemplateName           = "model"
-  val controllersTemplateName     = "play_scala_controller"
-  val controllerBaseTemplateName  = "play_scala_controller_base"
-  val marschallersTemplateName    = "play_scala_response_writers"
+  val testsTemplateName               = "play_scala_test"
+  val validatorsTemplateName          = "play_validation"
+  val generatorsTemplateName          = "generators"
+  val modelTemplateName               = "model"
+  val controllersTemplateName         = "play_scala_controller"
+  val controllerBaseTemplateName      = "play_scala_controller_base"
+  val marschallersTemplateName        = "play_scala_response_writers"
+  val securityTemplateName            = "play_scala_controller_security"
+  val securityExtractorsTemplateName  = "play_scala_security_extractors"
 
   def generateBase: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateModel(fileName, packageName),
     playValidators(fileName, packageName),
+    playScalaSecurity(fileName, packageName),
     playScalaControllerBases(fileName, packageName)
   )
 
@@ -37,6 +40,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   def generateMarshallers: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     playScalaMarshallers(fileName, packageName)
+  )
+
+  def generateExtractors: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
+    playScalaSecurityExtractors(fileName, packageName)
   )
 
   def generateControllers: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
@@ -71,6 +78,14 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     if (modelCalls.isEmpty) ""
     else apply(fileName, packageName, marschallersTemplateName)
 
+  def playScalaSecurityExtractors(fileName: String, packageName: String) =
+    if (modelCalls.isEmpty) ""
+    else apply(fileName, packageName, securityExtractorsTemplateName)
+
+  def playScalaSecurity(fileName: String, packageName: String) =
+    if (securityDefinitions.isEmpty) ""
+    else apply(fileName, packageName, securityTemplateName)
+
   private def apply(fileName: String, packageName: String, templateName: String, currentController: String = ""): String = {
     nonEmptyTemplate(fileName, packageName, templateName, currentController)
   }
@@ -101,6 +116,9 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val unmarshallers         = ReShaper.filterByType("unmarshallers", denotationTable)
     val grouppedunMarshallers = ReShaper.groupByType(unmarshallers.toSeq).toMap
 
+    val securityExtractors    = ReShaper.filterByType("security_extractors", denotationTable)
+    val extractors            = ReShaper.groupByType(securityExtractors.toSeq).toMap
+
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable)
 
@@ -130,6 +148,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "tests"               -> ReShaper.filterByType("tests", denotationTable),
       "marshallers"         -> grouppedMarshallers,
       "unmarshallers"       -> grouppedunMarshallers,
+      "security_extractors" -> extractors,
       "bindings"            -> bindingsByType
     )
 
@@ -240,6 +259,7 @@ trait PlayScalaControllersGenerator {
   case class UnmanagedPart(marker: ApiCall, relevantCode: String, deadCode: String)
 
   val baseControllersSuffix = "Base"
+  val securityTraitSuffix = "Security"
 
   def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart], packageName: String)(table: DenotationTable) = {
     allCalls groupBy { c =>
@@ -251,11 +271,13 @@ trait PlayScalaControllersGenerator {
           "Current plugin version only supports single package definition per specification.\n\t" +
           "Play's route files will fail to compile.")
       }
+      val securityTrait = calls.find(_.security.nonEmpty).map(_ => escape(controller._2 + securityTraitSuffix))
       Map(
         "effective_package"   -> packageName,
         "controller"          -> escape(controller._2),
         "base"                -> escape(controller._2 + baseControllersSuffix),
-        "methods"             -> methods
+        "methods"             -> methods,
+        "security_trait"      -> securityTrait
       )
     }
   }

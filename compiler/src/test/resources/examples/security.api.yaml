@@ -144,10 +144,26 @@ securityDefinitions:
       admin:public_key: Fully manage public keys.
     flow: implicit
     authorizationUrl: http://petstore.swagger.wordnik.com/oauth/dialog
+  petstorePassword:
+    type: oauth2
+    scopes:
+      user: Grants read/write access to profile
+      admin: Fully manage
+    flow: password
+    tokenUrl: http://petstore.swagger.wordnik.com/oauth/dialog
+  petstoreApplication:
+    type: oauth2
+    scopes:
+      user: Grants read/write access to profile
+      admin: Fully manage
+    flow: application
+    tokenUrl: http://petstore.swagger.wordnik.com/oauth/token
   internalApiKey:
     type: apiKey
     in: header
     name: api_key
+  justBasicStuff:
+    type: basic
 definitions:
   Pet:
     required:
