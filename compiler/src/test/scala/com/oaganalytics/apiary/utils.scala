@@ -4,10 +4,5 @@ import scalaz._, Scalaz._
 
 object Utils {
   def json[T: DecodeJson](json: String, check: T => Unit) =
-    Parse.decodeEither[T](json) match {
-      case -\/(error: String) => assert(false, error)
-      case \/-(result: T) => {
-        check(result)
-      }
-    }
+    check(ApibParser.noisyParse[T](json))
 }

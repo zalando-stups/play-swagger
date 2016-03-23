@@ -646,6 +646,10 @@ object Data {
           "element": "httpTransaction",
           "content": [
             {
+              "element": "copy",
+              "content": "Random comment"
+            },
+            {
               "element": "httpRequest",
               "attributes": {
                 "method": "GET"
@@ -1308,6 +1312,10 @@ object Data {
     }
   },
   "content": [
+    {
+      "element": "copy",
+      "content": "Random Comment"
+    },
     {
       "element": "httpTransaction",
       "content": [
