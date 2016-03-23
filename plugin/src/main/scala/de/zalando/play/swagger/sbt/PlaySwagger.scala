@@ -48,13 +48,21 @@ object PlaySwagger extends AutoPlugin {
     // By default, end users won't define this themselves, they'll just use the options above for one single
     // swagger definition, however, if they want more control over settings, or what to compile multiple files,
     // they can ignore the above options, and just define this directly.
-    lazy val swaggerCompilationTasks   = taskKey[Seq[SwaggerCompilationTask]]("The compilation tasks")
+    lazy val swaggerCompilationTasks    = taskKey[Seq[SwaggerCompilationTask]]("The compilation tasks")
 
-    lazy val swaggerParseSpec          = taskKey[Seq[(java.net.URI, SwaggerModel)]]("Parse API specifications (swaggerDefinitions)")
-    lazy val swaggerSpec2Ast           = taskKey[Seq[StrictModel]]("Convert API specifications (swaggerDefinitions) to AST")
-    lazy val swaggerFlattenAst         = taskKey[Seq[StrictModel]]("Prepares AST by removing duplicate types and flattening it")
+    lazy val swaggerParseSpec           = taskKey[Seq[(java.net.URI, SwaggerModel)]]("Parse API specifications (swaggerDefinitions)")
+    lazy val swaggerSpec2Ast            = taskKey[Seq[StrictModel]]("Convert API specifications (swaggerDefinitions) to AST")
+    lazy val swaggerFlattenAst          = taskKey[Seq[StrictModel]]("Prepares AST by removing duplicate types and flattening it")
 
+    lazy val swaggerRawData             = taskKey[Seq[(SwaggerCompilationTask, StrictModel)]]("Pairs compilation tasks with raw model to be used for debugging purposes")
     lazy val swaggerPreparedData        = taskKey[Seq[(SwaggerCompilationTask, StrictModel)]]("Pairs compilation tasks with models to prepare them for code generation")
+
+    lazy val swaggerPrintRawAstTypes        = taskKey[Seq[Unit]]("Prints AST type information before type optimisation")
+    lazy val swaggerPrintRawAstParameters   = taskKey[Seq[Unit]]("Prints AST parameter information before type optimisation")
+
+    lazy val swaggerPrintFlatAstTypes       = taskKey[Seq[Unit]]("Prints AST type information before after optimisation")
+    lazy val swaggerPrintFlatAstParameters  = taskKey[Seq[Unit]]("Prints AST parameter information after type optimisation")
+
   }
 
   // Users have to explicitly enable it
@@ -125,9 +133,22 @@ object PlaySwagger extends AutoPlugin {
 
     swaggerFlattenAst <<= swaggerSpec2Ast map { t => t.map(SwaggerCompiler.flattenAST) },
 
-    swaggerPreparedData <<= (swaggerCompilationTasks, swaggerFlattenAst) map { _ zip _ }
+    swaggerRawData <<= (swaggerCompilationTasks, swaggerSpec2Ast) map { _ zip _ },
+
+    swaggerPreparedData <<= (swaggerCompilationTasks, swaggerFlattenAst) map { _ zip _ },
+
+    swaggerPrintRawAstTypes <<= (swaggerRawData, streams) map prettyPrint(SwaggerPrettyPrinter.types),
+    swaggerPrintRawAstParameters <<= (swaggerRawData, streams) map prettyPrint(SwaggerPrettyPrinter.parameters),
+
+    swaggerPrintFlatAstTypes <<= (swaggerPreparedData, streams) map prettyPrint(SwaggerPrettyPrinter.types),
+    swaggerPrintFlatAstParameters <<= (swaggerPreparedData, streams) map prettyPrint(SwaggerPrettyPrinter.parameters)
 
   )
+
+  def prettyPrint(printer: (SwaggerCompilationTask, StrictModel) => Seq[String]):
+    (Types.Id[Seq[(SwaggerCompilationTask, StrictModel)]], Types.Id[TaskStreams]) => Seq[Unit] = {
+    case (r, s) => r map { case (a,b) => printer(a, b) } flatMap { _ map { m => s.log.info(m) } }
+  }
 
   def swaggerBaseSettings: Seq[Setting[_]] = Seq(
     target in swaggerBase := crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
