@@ -206,7 +206,7 @@ object Generator {
   def transform(resource: Resource, packageName: String): ResourceTranslation = {
     val href = Href(resource.href)
     val path = href.path
-    val controller = resource.meta.title.replace(" ", "") + "Controller"
+    val controller = escape(resource.meta.title) + "Controller"
     resource.content.map(c => transform(c, packageName, path, controller)).suml
   }
 
