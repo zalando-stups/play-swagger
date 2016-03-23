@@ -131,7 +131,7 @@ object Generator {
       request.dataStructure.map(ds =>
         Parameter(
           name = "requestBody",
-          typeName = transform(ds, ref / verb.name),
+          typeName = transform(ds, ref / "requestBody"),
           fixed = None,
           default = None,
           constraint = "", // """[^/]+""", // TODO make this more sophisticated
@@ -144,12 +144,12 @@ object Generator {
   }
 
   def transform(response: HttpResponse, ref: naming.Reference): Response = {
-    val responseRef = ref / response.statusCode.toString
+    val responseRef = ref / response.statusCode.toString / "responseBody"
     Response(
       response.statusCode,
       responseRef,
       Parameter(
-        name = "requestBody",
+        name = "responseBody",
         typeName = transform(response.dataStructure.getOrElse { throw new IllegalStateException(s"A response is supposed to have a type. Response in question: $response, Path: $responseRef")}, responseRef),
         fixed = None,
         default = None,
@@ -173,8 +173,9 @@ object Generator {
     val href = transition.attributes.map(attr => Href(attr.href))
     val hrefRef = href.map(_.path).getOrElse(defaultPath)
     val ref = naming.Reference("paths") / hrefRef
-    val req = transform(transition.request, ref)
-    val namespacedRef = ref / req.verb.name
+    val initialReq = transform(transition.request, ref)
+    val namespacedRef = ref / s"${initialReq.verb.name.toLowerCase}body"
+    val req = transform(transition.request, namespacedRef)
     val resp = transform(transition.response, namespacedRef)
     val name = naming.Reference(namespacedRef.parts.init :+ escape(namespacedRef.parts.last))
     val vars = transition.attributes.map(a => transform(a.hrefVariables, namespacedRef)).getOrElse(List())
