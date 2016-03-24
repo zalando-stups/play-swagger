@@ -33,10 +33,4 @@ ${successfulCursor.map(_.history)}
 """)
     }, {x => x})
   }
-
-  def parse(file: File, packageName: String): StrictModel = {
-    val input = scala.io.Source.fromFile(file).getLines().mkString("\n")
-    val doc = noisyParse[Document](input)
-    Generator.model(doc, packageName, "apib")
-  }
 }

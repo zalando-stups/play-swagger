@@ -3,7 +3,7 @@ package com.oaganalytics.apib
 import argonaut._, Argonaut._
 import scalaz._, Scalaz._
 
-case class Document(content: List[Category])
+case class ApibModel(content: List[Category])
 
 case class Meta(description: Option[String], classes: Option[List[String]], id: Option[String], title: Option[String])
 
@@ -200,7 +200,7 @@ object Decoder {
   implicit def dummyObjectDecode: DecodeJson[DummyObject] = dummyDecode("object", DummyObject())
   implicit def dummyArrayObjectDecode: DecodeJson[DummyArrayObject] = dummyDecode("[]", DummyArrayObject())
 
-  implicit def documentDecode: DecodeJson[Document] = decodeAndValidate[Document]("parseResult")(jdecode1L(Document.apply)("content"))
+  implicit def apibModelDecode: DecodeJson[ApibModel] = decodeAndValidate[ApibModel]("parseResult")(jdecode1L(ApibModel.apply)("content"))
   implicit def memberDecode: DecodeJson[Member] = decodeAndValidate[Member]("member")(jdecode3L(Member.apply)("content", "meta", "attributes"))
   implicit def headersDecode: DecodeJson[HttpHeaders] = decodeAndValidate[HttpHeaders]("httpHeaders")(jdecode1L(HttpHeaders.apply)("content"))
   implicit def assetDecode: DecodeJson[Asset] = decodeAndValidate[Asset]("asset")(jdecode3L(Asset.apply)("meta", "attributes", "content"))

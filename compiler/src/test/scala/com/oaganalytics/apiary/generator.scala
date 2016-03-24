@@ -68,7 +68,7 @@ class GeneratorTest extends FunSpec with MustMatchers {
     })
   }
   it("should generate a correct StrictModel") {
-    json[Document](document, { doc =>
+    json[ApibModel](document, { doc =>
       val model = Generator.model(doc, "testPackage", "testBase")
       model.typeDefs.keys should contain (naming.Reference(List("definitions", "CompanyCompany")))
       model.typeDefs(naming.Reference(List("paths", "companies", "{company}", "getbody", "200", "responseBody"))).asInstanceOf[TypeDef].fields.head.asInstanceOf[Field].tpe.asInstanceOf[TypeRef].name mustBe(naming.Reference(List("definitions", "CompanyCompany")))

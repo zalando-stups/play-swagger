@@ -243,11 +243,11 @@ object Generator {
     }
   }
 
-  def transform(doc: Document, packageName: String): ResourceTranslation = {
+  def transform(doc: ApibModel, packageName: String): ResourceTranslation = {
     doc.content.map(cat => transform(cat, packageName)).suml
   }
 
-  def model(doc: Document, packageName: String, basePath: String): StrictModel = {
+  def model(doc: ApibModel, packageName: String, basePath: String): StrictModel = {
     val translation = transform(doc, packageName) |+| pureObjectDef
     StrictModel(
       calls = translation.calls,

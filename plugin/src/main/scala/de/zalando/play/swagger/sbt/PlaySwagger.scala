@@ -4,8 +4,11 @@ import sbt.Keys._
 import sbt._
 import com.typesafe.sbt.web.incremental._
 import de.zalando.BuildInfo
+import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.ScalaName
-import de.zalando.play.compiler.{SwaggerCompilationResult, SwaggerCompilationTask, SwaggerCompiler}
+import de.zalando.play.compiler.{CompilationResult, CompilationTask, SwaggerCompiler, SpecType, Swagger, Apib}
+import de.zalando.swagger.strictModel.SwaggerModel
+import com.oaganalytics.apib.ApibModel
 import play.routes.compiler.RoutesGenerator
 import play.sbt.routes.RoutesCompiler
 
@@ -34,7 +37,7 @@ object PlaySwagger extends AutoPlugin {
 
     lazy val swaggerAutogenerateControllers = settingKey[Boolean]("Auto - generate swagger controllers")
 
-    lazy val swaggerDefinitions        = taskKey[Seq[File]]("The swagger definition files (or apib parsed with drafter into json)")
+    lazy val swaggerDefinitions        = taskKey[Seq[(File, SpecType)]]("The swagger definition files (or apib parsed with drafter into json)")
 
     lazy val swaggerBase               = taskKey[Seq[File]]("Generate model, validators and controller bases from swagger definitions")
     lazy val swaggerRoutes             = taskKey[Seq[File]]("Generate play routes from swagger definitions")
@@ -45,7 +48,19 @@ object PlaySwagger extends AutoPlugin {
     // By default, end users won't define this themselves, they'll just use the options above for one single
     // swagger definition, however, if they want more control over settings, or what to compile multiple files,
     // they can ignore the above options, and just define this directly.
-    lazy val swaggerCompilationTasks = taskKey[Seq[SwaggerCompilationTask]]("The compilation tasks")
+    lazy val swaggerCompilationTasks    = taskKey[Seq[CompilationTask]]("The compilation tasks")
+
+    lazy val swaggerSpec2Ast            = taskKey[Seq[StrictModel]]("Convert API specifications (swaggerDefinitions) to AST")
+    lazy val swaggerFlattenAst          = taskKey[Seq[StrictModel]]("Prepares AST by removing duplicate types and flattening it")
+
+    lazy val swaggerRawData             = taskKey[Seq[(CompilationTask, StrictModel)]]("Pairs compilation tasks with raw model to be used for debugging purposes")
+    lazy val swaggerPreparedData        = taskKey[Seq[(CompilationTask, StrictModel)]]("Pairs compilation tasks with models to prepare them for code generation")
+
+    lazy val swaggerPrintRawAstTypes        = taskKey[Seq[Unit]]("Prints AST type information before type optimisation")
+    lazy val swaggerPrintRawAstParameters   = taskKey[Seq[Unit]]("Prints AST parameter information before type optimisation")
+
+    lazy val swaggerPrintFlatAstTypes       = taskKey[Seq[Unit]]("Prints AST type information before after optimisation")
+    lazy val swaggerPrintFlatAstParameters  = taskKey[Seq[Unit]]("Prints AST parameter information after type optimisation")
 
   }
 
@@ -94,6 +109,8 @@ object PlaySwagger extends AutoPlugin {
    */
   def rawSwaggerSettings: Seq[Setting[_]] = Seq(
 
+    sourcePositionMappers := Seq(),
+
     swaggerAutogenerateControllers := true,
 
     swaggerPlayGenerator  :=  RoutesCompiler.autoImport.routesGenerator.value,
@@ -107,14 +124,14 @@ object PlaySwagger extends AutoPlugin {
 
       (
         (resourceDirectory in Compile).value * "*.yaml" +++
-        cache(((resourceDirectory in Compile).value * "*.apib").get.toSet) +++
         (resourceDirectory in Compile).value * "*.json"
-      ).get
+      ).get.map(_ -> Swagger) ++
+        cache(((resourceDirectory in Compile).value * "*.apib").get.toSet).get.map(_ -> Apib)
     },
 
-    sources in swagger    := swaggerDefinitions.value,
+    sources in swagger    := swaggerDefinitions.value.map(_._1),
 
-    swaggerCompilationTasks := (sources in swagger).value.map { source =>
+    swaggerCompilationTasks := swaggerDefinitions.value.map { case (source, typ) =>
       val version = if (BuildInfo.version.endsWith("-SNAPSHOT")) {
         // This essentially disables incremental compilation if we're using a SNAPSHOT version of the swagger plugin.
         // You may want to get rid of this eventually, but during development, it's going to make things a lot nicer,
@@ -124,13 +141,33 @@ object PlaySwagger extends AutoPlugin {
       } else {
         BuildInfo.version
       }
-      SwaggerCompilationTask(source, ScalaName.scalaPackageName(source.getName), swaggerPlayGenerator.value, version)
+      CompilationTask(source, ScalaName.scalaPackageName(source.getName), swaggerPlayGenerator.value, version, typ)
     },
 
     watchSources in Defaults.ConfigGlobal <++= sources in swagger,
 
-    swagger := swaggerRoutes.value
+    swagger := swaggerRoutes.value,
+
+    swaggerSpec2Ast   <<= swaggerCompilationTasks map { _.map(_.strictModel)},
+
+    swaggerFlattenAst <<= swaggerSpec2Ast map { _.map(SwaggerCompiler.flattenAST) },
+
+    swaggerRawData <<= (swaggerCompilationTasks, swaggerSpec2Ast) map { _ zip _ },
+
+    swaggerPreparedData <<= (swaggerCompilationTasks, swaggerFlattenAst) map { _ zip _ },
+
+    swaggerPrintRawAstTypes <<= (swaggerRawData, streams) map prettyPrint(SwaggerPrettyPrinter.types),
+    swaggerPrintRawAstParameters <<= (swaggerRawData, streams) map prettyPrint(SwaggerPrettyPrinter.parameters),
+
+    swaggerPrintFlatAstTypes <<= (swaggerPreparedData, streams) map prettyPrint(SwaggerPrettyPrinter.types),
+    swaggerPrintFlatAstParameters <<= (swaggerPreparedData, streams) map prettyPrint(SwaggerPrettyPrinter.parameters)
+
   )
+
+  def prettyPrint(printer: (CompilationTask, StrictModel) => Seq[String]):
+    (Types.Id[Seq[(CompilationTask, StrictModel)]], Types.Id[TaskStreams]) => Seq[Unit] = {
+    case (r, s) => r map { case (a,b) => printer(a, b) } flatMap { _ map { m => s.log.info(m) } }
+  }
 
   def swaggerBaseSettings: Seq[Setting[_]] = Seq(
     target in swaggerBase := crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
@@ -171,29 +208,34 @@ object PlaySwagger extends AutoPlugin {
     managedSources ++= swaggerRoutes.value
   )
 
-  val swaggerGenerateBase         = commonSwaggerCompile(SwaggerCompiler.compileBase, swaggerBase)
-  val swaggerGenerateRoutes       = commonSwaggerCompile(SwaggerCompiler.compileRoutes, swaggerRoutes)
-  val swaggerGenerateTests        = commonSwaggerCompile(SwaggerCompiler.compileTests, swaggerTests)
-  val swaggerGenerateControllers  = commonSwaggerCompile(SwaggerCompiler.compileControllers, swaggerControllers)
-  val swaggerGenerateMarshallers  = commonSwaggerCompile(SwaggerCompiler.compileMarshallers, swaggerMarshallers)
+  val swaggerGenerateBase         = commonSwaggerCompile(SwaggerCompiler.compileBase, swaggerBase, swaggerPreparedData)
+  val swaggerGenerateRoutes       = commonSwaggerCompile(SwaggerCompiler.compileRoutes, swaggerRoutes, swaggerPreparedData)
+  val swaggerGenerateTests        = commonSwaggerCompile(SwaggerCompiler.compileTests, swaggerTests, swaggerPreparedData)
+  val swaggerGenerateControllers  = commonSwaggerCompile(SwaggerCompiler.compileControllers, swaggerControllers, swaggerPreparedData)
+  val swaggerGenerateMarshallers  = commonSwaggerCompile(SwaggerCompiler.compileMarshallers, swaggerMarshallers, swaggerPreparedData)
 
-  private def commonSwaggerCompile: ((SwaggerCompilationTask, File, String, Seq[String]) => SwaggerCompilationResult, TaskKey[scala.Seq[sbt.File]]) =>
+  private def commonSwaggerCompile: (
+    (
+      CompilationTask, File, String, Seq[String], StrictModel) => CompilationResult,
+      TaskKey[scala.Seq[sbt.File]],
+      TaskKey[scala.Seq[(CompilationTask, StrictModel)]]
+    ) =>
     Def.Initialize[Task[Seq[File]]] =
-    (compiler, config) => Def.task {
+    (compiler, config, tmPairs) => Def.task {
       val routesImport      = RoutesCompiler.autoImport.routesImport.value
       val cacheDirectory    = streams.value.cacheDirectory
-      val tasks             = swaggerCompilationTasks.value
+      val taskModelPairs    = tmPairs.value
       val outputDirectory   = (target in config).value
 
       // Read the detailed scaladoc for syncIncremental to see how it works
-      val (products, errors) = syncIncremental(cacheDirectory, tasks) { tasksToRun: Seq[SwaggerCompilationTask] =>
-        val results = tasksToRun map { task =>
-            task -> Try { compiler(task, outputDirectory, swaggerKeyPrefix.value, routesImport) }
+      val (products, errors) = syncIncremental(cacheDirectory, taskModelPairs) { taskAndModel: Seq[(CompilationTask, StrictModel)] =>
+        val results = taskAndModel map { case (task, model) =>
+          (task, model) -> Try { compiler(task, outputDirectory, swaggerKeyPrefix.value, routesImport, model) }
         }
         // Collect the results into a map of task to OpResult for syncIncremental
-        val taskResults: Map[SwaggerCompilationTask, OpResult] = results.map {
-          case (task, Success(result)) =>
-            task -> OpSuccess(Set(task.definitionFile), result.allFiles)
+        val taskResults: Map[(CompilationTask, StrictModel), OpResult] = results.map {
+          case ((task, model), Success(result)) =>
+            (task, model) -> OpSuccess(Set(task.definitionFile), result.allFiles)
           case (op, Failure(_)) => op -> OpFailure
         }.toMap
 
