@@ -35,7 +35,7 @@ object SwaggerCompiler {
 
   def compileBase(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
                   flatAst: StrictModel): SwaggerCompilationResult = {
-    val places            = Seq("/model/", "/validators/", "/security/", "/controllers_base/")
+    val places            = Seq("/model/", "/validators/", "/controllers_base/")
     val generator         = new ScalaGenerator(flatAst).generateBase
     val swaggerFiles      = compileSwagger(task, outputDir, places, generator)(flatAst)
     SwaggerCompilationResult(swaggerFiles)
