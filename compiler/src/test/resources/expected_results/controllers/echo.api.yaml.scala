@@ -15,7 +15,7 @@ import scala.util._
 
 package echo {
 
-    class Handler extends HandlerBase {
+    class EchoHandler extends EchoHandlerBase {
         val method = methodAction { _ =>
             
             

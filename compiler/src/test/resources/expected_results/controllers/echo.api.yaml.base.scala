@@ -10,7 +10,7 @@ import scala.util._
 
 
 
-trait HandlerBase extends Controller with PlayBodyParsing {
+trait EchoHandlerBase extends Controller with PlayBodyParsing {
     private type methodActionRequestType       = (Unit)
     private type methodActionType              = methodActionRequestType => Try[(Int, Any)]
 
