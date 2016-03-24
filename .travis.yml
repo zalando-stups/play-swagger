@@ -29,4 +29,5 @@ after_success:
 #  - codecov
 
 script:
-  - sbt -jvm-opts travis/jvmopts compile test +publishLocal scripted
+  - sbt -jvm-opts travis/jvmopts compile test +publishLocal
+  - sbt -jvm-opts travis/jvmopts scripted
