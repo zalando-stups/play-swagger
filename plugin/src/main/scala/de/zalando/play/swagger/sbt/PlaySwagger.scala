@@ -96,6 +96,8 @@ object PlaySwagger extends AutoPlugin {
    */
   def rawSwaggerSettings: Seq[Setting[_]] = Seq(
 
+    sourcePositionMappers := Seq(),
+
     swaggerAutogenerateControllers := true,
 
     swaggerPlayGenerator  :=  RoutesCompiler.autoImport.routesGenerator.value,
