@@ -46,6 +46,7 @@ $ absent target/routes/test/generators/echo.api.yaml.scala
 > swagger
 -> compile
 > swaggerMarshallers
+> swaggerSecurity
 # $ pause
 > compile
 

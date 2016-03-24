@@ -17,7 +17,8 @@ trait HandlerBase extends Controller with PlayBodyParsing {
     private val errorToStatusmethod: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def methodAction = (f: methodActionType) => Action { request =>
+    val methodActionConstructor  = Action
+    def methodAction = (f: methodActionType) => methodActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { methodResponseMimeType =>
@@ -61,7 +62,8 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def postAction = (f: postActionType) => (name: PostName, year: PostName) => Action { request =>
+    val postActionConstructor  = Action
+    def postAction = (f: postActionType) => (name: PostName, year: PostName) => postActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
@@ -108,7 +110,8 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgettest_pathById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => Action { request =>
+    val gettest_pathByIdActionConstructor  = Action
+    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => gettest_pathByIdActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettest_pathByIdResponseMimeType =>

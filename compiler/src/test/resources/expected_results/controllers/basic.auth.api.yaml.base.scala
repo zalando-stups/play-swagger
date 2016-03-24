@@ -10,14 +10,15 @@ import scala.util._
 
 
 
-trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
+trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing  with BasicAuthApiYamlSecurity {
     private type getActionRequestType       = (Unit)
     private type getActionType              = getActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getAction = (f: getActionType) => Action { request =>
+    val getActionConstructor  = getSecureAction
+    def getAction = (f: getActionType) => getActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
