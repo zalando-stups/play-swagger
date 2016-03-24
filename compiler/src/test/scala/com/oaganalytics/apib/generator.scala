@@ -2,6 +2,7 @@ package com.oaganalytics.apib
 
 import org.scalatest.{FunSpec, MustMatchers}
 import org.scalatest.Assertions._
+import org.scalatest.Matchers._
 import argonaut._, Argonaut._
 
 import de.zalando.apifirst._
@@ -22,7 +23,9 @@ class GeneratorTest extends FunSpec with MustMatchers {
       val res = Generator.transform(ds, naming.Reference("definitions")).asInstanceOf[TypeDef]
       res.name.parts mustBe(List("definitions"))
       res.fields.head.name.parts mustBe(List("definitions", "configSelection"))
-      res.fields.head.tpe.asInstanceOf[TypeDef].fields.head.tpe mustBe(Opt(Str(None, Generator.emptyMeta), TypeMeta(Some("Unique ID"))))
+      val typedef = res.fields.head.tpe.asInstanceOf[TypeDef]
+      typedef.fields.head.tpe mustBe(Opt(Str(None, Generator.emptyMeta), TypeMeta(Some("Unique ID"))))
+      typedef.fields(1).name mustBe(naming.Reference(List("definitions", "configSelection", "_singlequote_email_singlequote_")))
     })
 
   }
@@ -67,7 +70,8 @@ class GeneratorTest extends FunSpec with MustMatchers {
   it("should generate a correct StrictModel") {
     json[Document](document, { doc =>
       val model = Generator.model(doc, "testPackage", "testBase")
-      println(model)
+      model.typeDefs.keys should contain (naming.Reference(List("definitions", "CompanyCompany")))
+      model.typeDefs(naming.Reference(List("paths", "companies", "{company}", "200"))).asInstanceOf[TypeDef].fields.head.asInstanceOf[Field].tpe.asInstanceOf[TypeRef].name mustBe(naming.Reference(List("definitions", "CompanyCompany")))
     })
   }
 }

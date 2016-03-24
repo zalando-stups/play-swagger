@@ -57,12 +57,28 @@ object Generator {
   val pureObjectName = naming.Reference(List("definitions", "pureJSObject"))
   val pureObjectDef = ResourceTranslation(List(), Map(), Map(pureObjectName -> CatchAll(Str(None, None), emptyMeta)))
   val pureObject = TypeRef(pureObjectName)
+  val escapees = List(
+    " " -> "",
+    "&" -> "_ampersand_",
+    "/" -> "_slash_",
+    "\\\\" -> "_backslash_",
+    "'" -> "_singlequote_",
+    "\"" -> "_doublequote_",
+    "\\(" -> "_openparens_",
+    "\\)" -> "_closeparens_",
+    "\\{" -> "_openbrace_",
+    "\\}" -> "_closebrace_"
+  )
+  /*
+   Replace all characters with are invalid in Scala type/variable names.
+   */
+  def escape(name: String): String = escapees.foldLeft(name)({case (name, (literal, escaped)) => name.replaceAll(literal, escaped) })
 
   def transform(element: Element, meta: TypeMeta, path: naming.TypeName): Type = {
     element match {
       case StringElement(content, attributes) => Str(None, meta)
       case ArrayElement(content, attributes) => ArrResult(transform(content, emptyMeta, path / "array"), meta)
-      case Reference(to) => TypeRef(naming.Reference.definition(to))
+      case Reference(to) => TypeRef(naming.Reference.definition(escape(to)))
       case NumberElement(content, attributes) => Dbl(meta)
       case BooleanElement(content, attributes) => Bool(meta)
       case EnumElement(content, attributes) => {
@@ -79,13 +95,13 @@ object Generator {
   }
 
   def transform(so: StructObject, meta: TypeMeta, path: naming.TypeName): TypeDef = {
-    val p = so.meta.flatMap(_.id).map(id => naming.Reference("definitions") / id).getOrElse(path)
+    val p = so.meta.flatMap(_.id).map(id => naming.Reference.definition(escape(id))).getOrElse(path)
     TypeDef(
       p,
       so.content
         .map({ member =>
           val name = member.keyString.getOrElse(throw new IllegalStateException(s"An object member needs a key name. Illegal object: $so"))
-          transform(member, p, name)
+          transform(member, p, escape(name))
         }),
       meta
     )
@@ -109,12 +125,13 @@ object Generator {
   }
 
   def transform(request: HttpRequest, ref: naming.Reference): Request = {
+    val verb = Http.string2verb(request.method).getOrElse { throw new IllegalStateException(s"Invalid verb: ${request.method}") }
     Request(
-      Http.string2verb(request.method).getOrElse { throw new IllegalStateException(s"Invalid verb: ${request.method}") },
+      verb,
       request.dataStructure.map(ds =>
         Parameter(
           name = "requestBody",
-          typeName = transform(ds, ref),
+          typeName = transform(ds, ref / verb.name),
           fixed = None,
           default = None,
           constraint = "", // """[^/]+""", // TODO make this more sophisticated
@@ -146,7 +163,7 @@ object Generator {
 
   def transform(vars: HrefVariables, ref: naming.Reference): List[(ParameterRef, Type)] = {
     vars.content.map({ member =>
-      val r = (ref / member.keyString.getOrElse { throw new IllegalStateException("A href variable needs a name") })
+      val r = (ref / escape(member.keyString.getOrElse { throw new IllegalStateException("A href variable needs a name") } ))
       ParameterRef(r) -> transform(member.value, emptyMeta, ref)
     })
   }
@@ -157,12 +174,14 @@ object Generator {
     val hrefRef = href.map(_.path).getOrElse(defaultPath)
     val ref = naming.Reference("paths") / hrefRef
     val req = transform(transition.request, ref)
-    val resp = transform(transition.response, ref)
-    val vars = transition.attributes.map(a => transform(a.hrefVariables, ref)).getOrElse(List())
+    val namespacedRef = ref / req.verb.name
+    val resp = transform(transition.response, namespacedRef)
+    val name = naming.Reference(namespacedRef.parts.init :+ escape(namespacedRef.parts.last))
+    val vars = transition.attributes.map(a => transform(a.hrefVariables, namespacedRef)).getOrElse(List())
     val pathParameters: ParameterLookupTable = href.map(_.compile(vars)).getOrElse(Map())
     val responseRef = ParameterRef(resp.ref)
     val respParameter = Map(responseRef -> resp.parameter)
-    val reqParameter = req.parameter.map(p => Map(ParameterRef(ref) -> p)).getOrElse(Map())
+    val reqParameter = req.parameter.map(p => Map(ParameterRef(name) -> p)).getOrElse(Map())
     val handler = HandlerCall(
       packageName = packageName,
       controller = controller,
@@ -187,14 +206,14 @@ object Generator {
   def transform(resource: Resource, packageName: String): ResourceTranslation = {
     val href = Href(resource.href)
     val path = href.path
-    val controller = resource.meta.title.replace(" ", "")
+    val controller = escape(resource.meta.title) + "Controller"
     resource.content.map(c => transform(c, packageName, path, controller)).suml
   }
 
   def transform(content: ResourceContent, packageName: String, ref: naming.Reference, controller: String): ResourceTranslation = {
     content match {
       case so: DataStructure => {
-        val typ = transform(so, ref / controller)
+        val typ = transform(so, ref / escape(controller))
         ResourceTranslation(List(), Map(), Map(typ.name -> typ))
       }
       case trans: Transition =>

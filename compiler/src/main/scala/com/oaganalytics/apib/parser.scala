@@ -118,15 +118,7 @@ object Decoder {
     }
   )
 
-  def singleContent[T: DecodeJson]: DecodeJson[T] = (DecodeJson(c =>
-    (c --\ "content").as[List[T]].flatMap({ single =>
-      if(single.length == 1) {
-        DecodeResult.ok(single(0))
-      } else {
-        DecodeResult.fail(s"The content wasn't a single element.", c.history)
-      }
-    })
-  ))
+  def find[T: DecodeJson]: DecodeJson[T] = DecodeJson({_.downField("content").downArray.find(j => ! j.as[T].isError).as[T]})
 
   def dummyDecode[T](key: String, value: T): DecodeJson[T] = decodeAndValidate[T](key)(DecodeJson(c =>
     c.fieldSet.map(set =>
@@ -198,7 +190,7 @@ object Decoder {
   implicit def enumElementDecode: DecodeJson[EnumElement] = decodeAndValidate[EnumElement]("enum")(jdecode2L(EnumElement.apply)("content", "attributes"))
   implicit def literalObjectDecode: DecodeJson[LiteralObject] = decodeAndValidate[LiteralObject]("object")(DecodeJson(c =>
     (c --\ "content").as[List[StringElement]].flatMap({ se =>
-      if(se.length == 1 && se(0).content.map(_ == "{}").getOrElse(false)) {
+      if(se.length == 1 && se(0).content.map(s => s.startsWith("{") && s.endsWith("}")).getOrElse(false)) {
         DecodeResult.ok(LiteralObject())
       } else {
         DecodeResult.fail(s"The content wasn't a single {}, not a literal object", c.history)
@@ -216,12 +208,12 @@ object Decoder {
   implicit def responseDecode: DecodeJson[HttpResponse] = decodeAndValidate[HttpResponse]("httpResponse")(jdecode2L(HttpResponse.apply)("attributes", "content"))
   implicit def responseAttributesDecode: DecodeJson[HttpResponseAttributes] = jdecode2L(HttpResponseAttributes.apply)("statusCode", "headers")
   implicit def requestDecode: DecodeJson[HttpRequest] = decodeAndValidate[HttpRequest]("httpRequest")(jdecode2L(HttpRequest.apply)("attributes", "content"))
-  implicit def transactionDecode: DecodeJson[HttpTransaction] = decodeAndValidate[HttpTransaction]("httpTransaction")(DecodeJson(c =>
+  implicit def transactionDecode: DecodeJson[HttpTransaction] = decodeAndValidate[HttpTransaction]("httpTransaction")(DecodeJson({c =>
     for {
-      req <- (c --\ "content" =\(0)).as[HttpRequest]
-      resp <- (c --\ "content" =\(1)).as[HttpResponse]
+      req <- find[HttpRequest].apply(c)
+      resp <- find[HttpResponse].apply(c)
     } yield HttpTransaction(req, resp)
-  ))
+  }))
   implicit def httpDescriptionDecode: DecodeJson[HttpDescription] = implicitly[DecodeJson[List[HttpDescriptionContent]]].flatMap({content =>
     DecodeJson({c =>
     val (dataStructures, assets) = content.foldLeft((List[DataStructure](), List[Asset]()))({case (keep, elem) =>
@@ -238,14 +230,14 @@ object Decoder {
   })})
   implicit def structObjectDecode: DecodeJson[StructObject] = decodeAndValidate[StructObject]("object")(jdecode2L(StructObject.apply)("content", "meta"))
   implicit def metaDecode: DecodeJson[Meta] = jdecode4L(Meta.apply)("description", "classes", "id", "title")
-  implicit def dataStructureDecode: DecodeJson[DataStructure] = decodeAndValidate[DataStructure]("dataStructure")(singleContent[Element].map(x => DataStructure.apply(x)))
+  implicit def dataStructureDecode: DecodeJson[DataStructure] = decodeAndValidate[DataStructure]("dataStructure")(find[Element].map(x => DataStructure.apply(x)))
   implicit def resourceDecode: DecodeJson[Resource] = decodeAndValidate[Resource]("resource")(jdecode3L(Resource.apply)("attributes", "meta", "content"))
   implicit def resourceAttributesDecode: DecodeJson[ResourceAttributes] = jdecode1L(ResourceAttributes)("href")
   implicit def transitionDecode: DecodeJson[Transition] = decodeAndValidate("transition")(DecodeJson(c =>
     for {
       meta <- (c --\ "meta").as[Meta]
       attributes <- (c --\ "attributes").as[Option[TransitionAttributes]]
-      content <- singleContent[HttpTransaction].apply(c)
+      content <- find[HttpTransaction].apply(c)
     } yield Transition(content, meta, attributes)
   ))
   implicit def resourceMetaDecode: DecodeJson[ResourceMeta] = jdecode2L(ResourceMeta.apply)("title", "description")
