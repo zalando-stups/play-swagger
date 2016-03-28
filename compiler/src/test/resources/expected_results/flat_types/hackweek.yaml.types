@@ -22,8 +22,8 @@
 		Field(⌿definitions⌿ModelSchema⌿silhouetteId, Str), 
 		Field(⌿definitions⌿ModelSchema⌿description, TypeRef(⌿definitions⌿Meta⌿copyright)), 
 		Field(⌿definitions⌿ModelSchema⌿ageGroups, TypeRef(⌿definitions⌿ModelSchema⌿ageGroups)), 
-		Field(⌿definitions⌿ModelSchema⌿keywords, TypeRef(⌿definitions⌿Meta⌿copyright)), 
-		Field(⌿definitions⌿ModelSchema⌿lengthRegister, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿ModelSchema⌿keywords, TypeRef(⌿definitions⌿ModelSchema⌿keywords)), 
+		Field(⌿definitions⌿ModelSchema⌿lengthRegister, TypeRef(⌿definitions⌿ModelSchema⌿lengthRegister)), 
 		Field(⌿definitions⌿ModelSchema⌿specialDescriptions, TypeRef(⌿definitions⌿ModelSchema⌿specialDescriptions)), 
 		Field(⌿definitions⌿ModelSchema⌿articleModelAttributes, TypeRef(⌿definitions⌿ModelSchema⌿articleModelAttributes))))
 ⌿definitions⌿Error -> 
@@ -39,6 +39,8 @@
 		Field(⌿definitions⌿Links⌿related, TypeRef(⌿definitions⌿Meta⌿copyright))))
 ⌿definitions⌿Meta⌿copyright -> 
 	Opt(Str)
+⌿definitions⌿ModelSchema⌿keywords -> 
+	Opt(Str)
 ⌿definitions⌿ModelSchema⌿specialDescriptions -> 
 	Opt(TypeRef(⌿definitions⌿ModelSchema⌿specialDescriptions⌿Opt))
 ⌿definitions⌿ModelSchemaRoot⌿data -> 
@@ -49,6 +51,8 @@
 	Opt(TypeRef(⌿definitions⌿Links))
 ⌿definitions⌿ModelSchema⌿articleModelAttributes -> 
 	Opt(TypeRef(⌿definitions⌿ModelSchema⌿articleModelAttributes⌿Opt))
+⌿definitions⌿ModelSchema⌿lengthRegister -> 
+	Opt(Str)
 ⌿definitions⌿Errors⌿errors -> 
 	Opt(TypeRef(⌿definitions⌿Errors⌿errors⌿Opt))
 ⌿definitions⌿ModelSchema⌿ageGroups -> 

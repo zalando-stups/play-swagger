@@ -12,8 +12,8 @@ branches:
 notifications:
   email:
     recipients:
-      - marco.borst.extern@zalando.de
-      - slava.schmidt.extern@zalando.de
+      - marco@splatter.nl
+      - slavaschmidt@gmx.de
 jdk:
   - oraclejdk8
 
@@ -29,4 +29,15 @@ after_success:
 #  - codecov
 
 script:
-  - sbt -jvm-opts travis/jvmopts compile test +publishLocal scripted
+  - sbt -jvm-opts travis/jvmopts compile test +publishLocal
+  - sbt -jvm-opts travis/jvmopts scripted
+
+# cache:
+#  directories:
+#    - $HOME/.ivy2/cache
+#    - $HOME/.sbt/boot/
+
+#before_cache:
+#  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+#  - find $HOME/.sbt -name "*.lock" -delete
+#  - find $HOME/.sbt -name "de.zalando" -delete

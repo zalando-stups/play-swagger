@@ -142,7 +142,7 @@ package instagram.api.yaml {
             
 
         } //////// EOF ////////  gettagsByTag_nameMediaRecentAction
-        val postusersByUser_idRelationship = postusersByUser_idRelationshipAction { input: (Double, MediaFilter) =>
+        val postusersByUser_idRelationship = postusersByUser_idRelationshipAction { input: (Double, UsersUser_idRelationshipPostAction) =>
             val (user_id, action) = input
             
 

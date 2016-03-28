@@ -67,7 +67,10 @@ lazy val plugin = (project in file("plugin"))
       scriptedLaunchOpts.value ++
       Seq(
         "-Dproject.version=" + version.value,
-        "-Dscala.version=" + scalaVersion.value
+        "-Dscala.version=" + scalaVersion.value,
+        "-Xmx512M",
+        "-XX:MaxPermSize=256M",
+        "-XX:ReservedCodeCacheSize=256M"
       )
     },
     scriptedDependencies := {
