@@ -18,7 +18,7 @@ object RuleGenerator {
   def apiCalls2PlayRules(calls: ApiCall*)(implicit model: StrictModel): Seq[Rule] = calls map { call =>
     val verb = HttpVerb(call.verb.name)
 
-    val handlerCall = HandlerCall(packageName(call), call.handler.controller, call.handler.instantiate,
+    val handlerCall = HandlerCall(packageName(model.packageName, call.handler.packageName), call.handler.controller, call.handler.instantiate,
       call.handler.method, Some(parameters2parameters(call)))
 
     val path = convertPath(call.path)
@@ -27,7 +27,7 @@ object RuleGenerator {
     Route(verb, path, handlerCall, comments)
   }
 
-  def packageName(call: ApiCall) = ScalaName.scalaPackageName(call.handler.packageName)
+  def packageName(spec: Option[String], handler: String): String = ScalaName.scalaPackageName(spec getOrElse handler)
 
   private def parameters2parameters(call: ApiCall)(implicit model: StrictModel): Seq[Parameter] = {
     val params = call.handler.parameters flatMap { param =>
@@ -42,6 +42,7 @@ object RuleGenerator {
 
   /**
     * See `RuleGeneratorTest` for Play path conversion rules:
+    *
     * @param path   a path to convert
     * @param model  the model used to look up parameters
     * @return
