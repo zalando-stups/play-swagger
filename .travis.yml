@@ -32,13 +32,12 @@ script:
   - sbt -jvm-opts travis/jvmopts compile test +publishLocal
   - sbt -jvm-opts travis/jvmopts scripted
 
-cache:
-  directories:
-    - $HOME/.ivy2/cache
-    - $HOME/.sbt/boot/
+# cache:
+#  directories:
+#    - $HOME/.ivy2/cache
+#    - $HOME/.sbt/boot/
 
-before_cache:
-  # Tricks to avoid unnecessary cache updates
-  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
-  - find $HOME/.sbt -name "*.lock" -delete
-  - find $HOME/.sbt -name "de.zalando" -delete
+#before_cache:
+#  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+#  - find $HOME/.sbt -name "*.lock" -delete
+#  - find $HOME/.sbt -name "de.zalando" -delete
