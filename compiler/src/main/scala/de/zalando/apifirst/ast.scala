@@ -1,7 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Http.MimeType
-import de.zalando.apifirst.Hypermedia.State
+import de.zalando.apifirst.Hypermedia.{State, StateTransitionsTable}
 import de.zalando.apifirst.naming.{Path, Reference, TypeName}
 
 import scala.language.{implicitConversions, postfixOps}
@@ -31,6 +31,10 @@ object Http {
 
   case object ApplicationJson extends MimeType("application/json")
 
+  case object HalJson extends MimeType("application/hal+json")
+
+  case object SirenJson extends MimeType("application/vnd.siren+json")
+
   case class Body(value: Option[String]) extends Expr
 
 }
@@ -39,6 +43,36 @@ object Hypermedia {
 
   trait State extends Expr {
     def name: String
+  }
+
+  type Condition                = String
+  type StateTransitionsTable    = Map[State, Map[State, Option[Condition]]]
+
+  object State {
+    def apply(name: String): State = if (Self.name.equalsIgnoreCase(name)) Self else NamedState(name)
+    def toDot(table: StateTransitionsTable): String = {
+      val transitions = for {
+        (from, destinations) <- table
+        (to, condition) <- destinations
+        toNode = if (to == Self) from else to
+        label = condition.getOrElse("")
+        transition = s""" "${from.name}" -> "${toNode.name}" [label="$label"];"""
+      } yield transition
+      val acceptingNodes = table collect {
+        case (from, destinations) if destinations.keySet == Set(Self) => from.name
+      } map { name =>
+        s""" "$name" [color="red",style="bold"] """
+      }
+      val allDestinations = table.values.flatMap(_.keySet).toSet
+      val startingNodes = table collect {
+        case (from, destinations) if ! allDestinations.contains(from) => from.name
+      } map { name =>
+        s""" "$name" [color="green",style="bold"] """
+      }
+      s"digraph {\n${transitions.mkString("\n")}\n" +
+        s"${acceptingNodes.mkString("\n")}\n" +
+        s"${startingNodes.mkString("\n")}\n}"
+    }
   }
 
   case class NamedState(name: String) extends State
@@ -280,7 +314,8 @@ object Application {
                          params: ParameterLookupTable,
                          discriminators: DiscriminatorLookupTable,
                          basePath: String,
-                         packageName: Option[String]) {
+                         packageName: Option[String],
+                         stateTransitions: StateTransitionsTable) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
     def findType(ref: Reference) = typeDefs(ref)
