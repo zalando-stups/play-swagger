@@ -8,6 +8,9 @@ paths:
       responses:
         200:
           description: OK
+          x-api-first-target-state: resource created
+        default:
+          description: Something else
 x-api-first-transitions:
   resource created:
     resource updated: "some rule to show the transition"

@@ -42,6 +42,8 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
           Map("resource updated" -> None, "self" -> None, "resource deleted" -> None))
       swagger.transitions.nonEmpty mustBe true
       swagger.transitions mustEqual expected
+      swagger.paths("/").get.responses("200").targetState mustEqual Some("resource created")
+      swagger.paths("/").get.responses("default").targetState mustEqual None
     }
     it("should reject hypermedia definitions without well-formed definition") {
       val exception = intercept[JsonMappingException] {

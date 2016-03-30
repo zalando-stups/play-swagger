@@ -537,7 +537,9 @@ object strictModel {
     schema: SchemaOrFileSchema[T],
     headers: Headers,
     examples: Examples
-  ) extends ResponseValue with VendorExtensions
+  ) extends ResponseValue with VendorExtensions {
+    def targetState = vendorExtensions.get("x-api-first-target-state")
+  }
 
 
   /**
