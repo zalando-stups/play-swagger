@@ -1,6 +1,7 @@
 package de.zalando.apifirst
 
 import de.zalando.apifirst.Http.MimeType
+import de.zalando.apifirst.Hypermedia.State
 import de.zalando.apifirst.naming.{Path, Reference, TypeName}
 
 import scala.language.{implicitConversions, postfixOps}
@@ -36,8 +37,17 @@ object Http {
 
 object Hypermedia {
 
-  // TODO relation should be another API call, not an url
-  case class Relation(tpe: String, url: String)
+  trait State extends Expr {
+    def name: String
+  }
+
+  case class NamedState(name: String) extends State
+
+  case object Self extends State {
+    override val name = "Self"
+  }
+
+  case class Relation(tpe: String, from: State, to: State)
 
 }
 
@@ -240,6 +250,14 @@ object Application {
     parameters:       Seq[ParameterRef]
   )
 
+  abstract class ResponseInfo[T] {
+    def results: Map[Int, T]
+    def default: Option[T]
+  }
+
+  case class TypesResponseInfo(results: Map[Int, ParameterRef], default: Option[ParameterRef]) extends ResponseInfo[ParameterRef]
+  case class StateResponseInfo(results: Map[Int, State], default: Option[State]) extends ResponseInfo[State]
+
   case class ApiCall(
     verb:             Http.Verb,
     path:             Path,
@@ -247,8 +265,8 @@ object Application {
     mimeIn:           Set[MimeType],  // can be empty for swagger specification
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
-    resultTypes:      Map[Int, ParameterRef],
-    defaultResult:    Option[ParameterRef]
+    resultTypes:      TypesResponseInfo,
+    targetStates:     StateResponseInfo
   ) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
