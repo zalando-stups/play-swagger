@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import java.net.URL
 
-import com.fasterxml.jackson.annotation.{JsonProperty, JsonAnySetter}
+import com.fasterxml.jackson.annotation.{JsonAnySetter, JsonProperty}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
@@ -804,12 +804,21 @@ object strictModel {
   trait VendorExtensions { self =>
     private[this] val extensions = new mutable.HashMap[String, String]
     private[this] val errorMappings = new mutable.HashMap[String, Seq[Class[Exception]]]
-
+    private[this] val transitionDefinitions = new mutable.HashMap[String, Map[String, Option[String]]]
     @JsonAnySetter
     def handleUnknown(key: String, value: Any) {
       value match {
         case str: String if key.startsWith("x-") =>
           extensions += key -> str
+        case trans: Map[String, Map[String, String]]
+          if key.equalsIgnoreCase("x-api-first-transitions") =>
+          transitionDefinitions ++= trans.map { case (k, v) =>
+            k -> v.map { case (kk, vv) =>
+              kk -> Option(vv).filter(_.nonEmpty)
+            }
+          }
+        case trans if key.equalsIgnoreCase("x-api-first-transitions") =>
+          throw new IllegalArgumentException("Malformed transition definitions")
         case mapping: Map[_, _] if key.startsWith("x-") =>
           import scala.util.control.Exception._
           handling(classOf[ClassNotFoundException]) by { e =>
@@ -822,7 +831,7 @@ object strictModel {
             }
             errorMappings ++= errors
           }
-        case _ =>
+        case other =>
           throw new UnrecognizedPropertyException(
             s"Unknown property: $key",
             null,
@@ -834,6 +843,7 @@ object strictModel {
     }
     lazy val vendorExtensions = extensions.toMap
     lazy val vendorErrorMappings = errorMappings.toMap
+    lazy val transitions: Map[String, Map[String, Option[String]]] = transitionDefinitions.toMap
   }
 
   type Many[T]                = List[T]
@@ -852,6 +862,7 @@ object strictModel {
   type MimeType               = String // The MIME type of the HTTP message.
   type Title                  = String
   type Description            = String
+  type Condition              = String
 
   type SchemesList            = ManyUnique[Scheme.Value]
   type MediaTypeList          = ManyUnique[MimeType]
@@ -873,6 +884,8 @@ object strictModel {
   type SchemaProperties       = AdditionalProperties[SchemaOrFileSchema[_]]
   type Paths                  = AdditionalProperties[PathItem] with VendorExtensions
   type Oauth2Scopes           = AdditionalProperties[String]
+  type Transitions            = AdditionalProperties[TargetStates]
+  type TargetStates           = AdditionalProperties[Condition]
 
   type SchemaOrReference[T]   = Either[Schema[T], JsonReference]
   type SchemaOrBoolean[T]     = Either[SchemaOrReference[T], Boolean]
