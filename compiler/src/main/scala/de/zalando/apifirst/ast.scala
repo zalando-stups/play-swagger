@@ -50,7 +50,7 @@ object Hypermedia {
 
   object State {
     def apply(name: String): State = if (Self.name.equalsIgnoreCase(name)) Self else NamedState(name)
-    def toDot(table: StateTransitionsTable): String = {
+    def toDot(table: StateTransitionsTable): Seq[String] = {
       val transitions = for {
         (from, destinations) <- table
         (to, condition) <- destinations
@@ -69,9 +69,8 @@ object Hypermedia {
       } map { name =>
         s""" "$name" [color="green",style="bold"] """
       }
-      s"digraph {\n${transitions.mkString("\n")}\n" +
-        s"${acceptingNodes.mkString("\n")}\n" +
-        s"${startingNodes.mkString("\n")}\n}"
+      val lines = transitions ++ acceptingNodes ++ startingNodes
+      "digraph {" +: lines.toSeq :+ "}"
     }
   }
 

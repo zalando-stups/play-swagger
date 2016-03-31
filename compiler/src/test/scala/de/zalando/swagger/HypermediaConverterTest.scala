@@ -27,7 +27,7 @@ class HypermediaConverterTest extends FunSpec with MustMatchers with ExpectedRes
       val ast = ModelConverter.fromModel(base, model, Some(file))
       val hypermedia = ast.stateTransitions
       val expected = asInFile(file, "hypermedia")
-      val media = State.toDot(hypermedia)
+      val media = State.toDot(hypermedia).mkString("\n")
       if (expected.isEmpty && media.nonEmpty)
         dump(media, file, "hypermedia")
       clean(media) mustBe clean(expected)
