@@ -26,7 +26,6 @@ object Http {
 
   def string2verb(name: String): Option[Verb] = verbs find { _.name == name.trim.toUpperCase }
 
-  // TODO flesh out this hierarchy
   class MimeType(val name: String) extends Expr
 
   case object ApplicationJson extends MimeType("application/json")
@@ -34,6 +33,10 @@ object Http {
   case object HalJson extends MimeType("application/hal+json")
 
   case object SirenJson extends MimeType("application/vnd.siren+json")
+
+  case object CollectionJson extends MimeType("application/vnd.collection+json")
+
+  case object LdJson extends MimeType("application/ld+json")
 
   case class Body(value: Option[String]) extends Expr
 
@@ -45,17 +48,18 @@ object Hypermedia {
     def name: String
   }
 
-  type Condition                = String
-  type StateTransitionsTable    = Map[State, Map[State, Option[Condition]]]
+  type Condition                = Option[String]
+  case class TransitionProperties(condition: Condition)
+  type StateTransitionsTable    = Map[State, Map[State, TransitionProperties]]
 
   object State {
     def apply(name: String): State = if (Self.name.equalsIgnoreCase(name)) Self else NamedState(name)
     def toDot(table: StateTransitionsTable): Seq[String] = {
       val transitions = for {
         (from, destinations) <- table
-        (to, condition) <- destinations
+        (to, props) <- destinations
         toNode = if (to == Self) from else to
-        label = condition.getOrElse("")
+        label = props.condition.getOrElse("")
         transition = s""" "${from.name}" -> "${toNode.name}" [label="$label"];"""
       } yield transition
       val acceptingNodes = table collect {

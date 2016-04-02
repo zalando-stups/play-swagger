@@ -5,7 +5,7 @@ import java.net.URI
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Domain.Type
-import de.zalando.apifirst.Hypermedia.{NamedState, State}
+import de.zalando.apifirst.Hypermedia.{NamedState, State, TransitionProperties}
 import de.zalando.apifirst.naming.Reference
 import de.zalando.swagger.strictModel.SwaggerModel
 
@@ -32,8 +32,8 @@ object ModelConverter extends ParameterNaming {
       case h if apiCalls.seq.forall { _.handler.packageName == h.handler.packageName } => h.handler.packageName
     }
     val stateTransitionsTable = model.transitions map { case (fromName, toStates) =>
-        State(fromName) -> toStates.map { case (toName, condition) =>
-            State(toName) -> condition
+        State(fromName) -> toStates.map { case (toName, props) =>
+            State(toName) -> TransitionProperties(Option(props).flatMap(_.get("condition").map(_.toString)))
         }
     }
     StrictModel(apiCalls, typeDefs.toMap, inlineParameters, discriminators,

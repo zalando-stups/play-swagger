@@ -31,15 +31,11 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
     }
     it("should read hypermedia definitions") {
       implicit val (uri, swagger) = StrictYamlParser.parse(hypermediaOk)
-      val expected = Map(
-        "resource created" ->
-          Map("resource updated" -> Some("some rule to show the transition"), "subresource added" -> None),
-        "resource updated" ->
-          Map("subresource added" -> None, "self" -> Some("non-empty rule")),
-        "resource deleted" ->
-          Map("self" -> None),
-        "subresource added" ->
-          Map("resource updated" -> None, "self" -> None, "resource deleted" -> None))
+      val expected = Map("resource created" ->
+        Map("resource updated" -> Map("condition" -> "some rule to show the transition"), "subresource added" -> null),
+        "resource updated" -> Map("subresource added" -> Map("condition" -> ""),
+          "self" -> Map("condition" -> "non-empty rule")), "resource deleted" -> Map("self" -> null),
+        "subresource added" -> Map("resource updated" -> null, "self" -> null, "resource deleted" -> null))
       swagger.transitions.nonEmpty mustBe true
       swagger.transitions mustEqual expected
       swagger.paths("/").get.responses("200").targetState mustEqual Some("resource created")

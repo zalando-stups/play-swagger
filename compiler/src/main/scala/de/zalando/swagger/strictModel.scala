@@ -806,19 +806,15 @@ object strictModel {
   trait VendorExtensions { self =>
     private[this] val extensions = new mutable.HashMap[String, String]
     private[this] val errorMappings = new mutable.HashMap[String, Seq[Class[Exception]]]
-    private[this] val transitionDefinitions = new mutable.HashMap[String, Map[String, Option[String]]]
+    private[this] val transitionDefinitions = new mutable.HashMap[String, Map[String, Map[String, Any]]]
     @JsonAnySetter
     def handleUnknown(key: String, value: Any) {
       value match {
         case str: String if key.startsWith("x-") =>
           extensions += key -> str
-        case trans: Map[String, Map[String, String]]
+        case trans: Map[String, Map[String, Map[String, Any]]]
           if key.equalsIgnoreCase("x-api-first-transitions") =>
-          transitionDefinitions ++= trans.map { case (k, v) =>
-            k -> v.map { case (kk, vv) =>
-              kk -> Option(vv).filter(_.nonEmpty)
-            }
-          }
+          transitionDefinitions ++= trans
         case trans if key.equalsIgnoreCase("x-api-first-transitions") =>
           throw new IllegalArgumentException("Malformed transition definitions")
         case mapping: Map[_, _] if key.startsWith("x-") =>
@@ -845,7 +841,7 @@ object strictModel {
     }
     lazy val vendorExtensions = extensions.toMap
     lazy val vendorErrorMappings = errorMappings.toMap
-    lazy val transitions: Map[String, Map[String, Option[String]]] = transitionDefinitions.toMap
+    lazy val transitions: Map[String, Map[String, Map[String, Any]]] = transitionDefinitions.toMap
   }
 
   type Many[T]                = List[T]
@@ -864,7 +860,6 @@ object strictModel {
   type MimeType               = String // The MIME type of the HTTP message.
   type Title                  = String
   type Description            = String
-  type Condition              = String
 
   type SchemesList            = ManyUnique[Scheme.Value]
   type MediaTypeList          = ManyUnique[MimeType]
@@ -887,7 +882,8 @@ object strictModel {
   type Paths                  = AdditionalProperties[PathItem] with VendorExtensions
   type Oauth2Scopes           = AdditionalProperties[String]
   type Transitions            = AdditionalProperties[TargetStates]
-  type TargetStates           = AdditionalProperties[Condition]
+  type TargetStates           = AdditionalProperties[TransitionProp]
+  type TransitionProp         = AdditionalProperties[Any]
 
   type SchemaOrReference[T]   = Either[Schema[T], JsonReference]
   type SchemaOrBoolean[T]     = Either[SchemaOrReference[T], Boolean]
