@@ -224,31 +224,14 @@ object Security {
   sealed trait Definition {
     def description: Option[String]
   }
-  sealed trait OAuth2Definition extends Definition {
-    def description: Option[String]
-    def scopes: OAuth2Scopes
-  }
   case class Basic(description: Option[String]) extends Definition
   case class ApiKey(description: Option[String], name: String, in: ParameterPlace) extends Definition {
     require(in == ParameterPlace.QUERY || in == ParameterPlace.HEADER)
     require(name.nonEmpty)
   }
-  case class OAuth2Implicit(description: Option[String], authorizationUrl: URL,
-                            scopes: OAuth2Scopes) extends OAuth2Definition {
-    require(authorizationUrl != null)
-  }
-  case class OAuth2Password(description: Option[String], tokenUrl: URL,
-                            scopes: OAuth2Scopes) extends OAuth2Definition {
-    require(tokenUrl != null)
-  }
-  case class OAuth2Application(description: Option[String], tokenUrl: URL,
-                               scopes: OAuth2Scopes) extends OAuth2Definition {
-    require(tokenUrl != null)
-  }
-  case class OAuth2AccessCode(description: Option[String], authorizationUrl: URL, tokenUrl: URL,
-                              scopes: OAuth2Scopes) extends OAuth2Definition {
-    require(tokenUrl != null)
-    require(authorizationUrl != null)
+  case class OAuth2Definition(description: Option[String], validationURL: Option[URL],
+                            scopes: OAuth2Scopes) extends Definition {
+    require(validationURL != null)
   }
 
   sealed trait Constraint {

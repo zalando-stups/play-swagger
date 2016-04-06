@@ -8,15 +8,15 @@ import de.zalando.play.controllers.ArrayWrapper
 
 trait SecurityExtractors {
     def petstoreImplicit_Extractor[User >: Any](scopes: String*): RequestHeader => Future[Option[User]] =
-        header => oAuth(scopes)(header) { _ =>
+        header => oAuth(scopes)("http://petstore.swagger.wordnik.com/oauth/dialog")(header) { (token: play.api.libs.json.JsValue) =>
             ???
     }
     def githubAccessCode_Extractor[User >: Any](scopes: String*): RequestHeader => Future[Option[User]] =
-        header => oAuth(scopes)(header) { _ =>
+        header => oAuth(scopes)("https://github.com/login/oauth/access_token")(header) { (token: play.api.libs.json.JsValue) =>
             ???
     }
     def petstorePassword_Extractor[User >: Any](scopes: String*): RequestHeader => Future[Option[User]] =
-        header => oAuthPassword(scopes)("http://petstore.swagger.wordnik.com/oauth/dialog")(header) { (token: play.api.libs.json.JsValue) =>
+        header => oAuth(scopes)("http://petstore.swagger.wordnik.com/oauth/dialog")(header) { (token: play.api.libs.json.JsValue) =>
             ???
     }
     def justBasicStuff_Extractor[User >: Any](): RequestHeader => Future[Option[User]] =
@@ -24,7 +24,7 @@ trait SecurityExtractors {
             ???
     }
     def petstoreApplication_Extractor[User >: Any](scopes: String*): RequestHeader => Future[Option[User]] =
-        header => oAuthPassword(scopes)("http://petstore.swagger.wordnik.com/oauth/token")(header) { (token: play.api.libs.json.JsValue) =>
+        header => oAuth(scopes)("http://petstore.swagger.wordnik.com/oauth/token")(header) { (token: play.api.libs.json.JsValue) =>
             ???
     }
     def internalApiKey_Extractor[User >: Any](): RequestHeader => Future[Option[User]] =

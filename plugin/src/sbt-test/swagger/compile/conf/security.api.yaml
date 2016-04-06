@@ -120,6 +120,7 @@ securityDefinitions:
     flow: accessCode
     authorizationUrl: https://github.com/login/oauth/authorize
     tokenUrl: https://github.com/login/oauth/access_token
+    x-token-validation-url: http://petstore.swagger.wordnik.com/oauth/dialog
   petstoreImplicit:
     type: oauth2
     scopes:
@@ -144,6 +145,7 @@ securityDefinitions:
       admin:public_key: Fully manage public keys.
     flow: implicit
     authorizationUrl: http://petstore.swagger.wordnik.com/oauth/dialog
+    x-token-validation-url: http://petstore.swagger.wordnik.com/oauth/dialog
   internalApiKey:
     type: apiKey
     in: header

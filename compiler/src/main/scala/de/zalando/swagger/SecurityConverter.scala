@@ -23,19 +23,9 @@ object SecurityConverter {
         val place = ParameterPlace.withName(apiKey.in.toLowerCase)
         require(place == ParameterPlace.HEADER || place == ParameterPlace.QUERY)
         name -> Security.ApiKey(Option(apiKey.description), apiKey.name, place)
-      case (name, oauth: Oauth2ImplicitSecurity) =>
-        val authorizationUrl = new URL(oauth.authorizationUrl)
-        name -> Security.OAuth2Implicit(Option(oauth.description), authorizationUrl, oauth.scopes)
-      case (name, oauth: Oauth2PasswordSecurity) =>
-        val tokenUrl = new URL(oauth.tokenUrl)
-        name -> Security.OAuth2Password(Option(oauth.description), tokenUrl, oauth.scopes)
-      case (name, oauth: Oauth2ApplicationSecurity) =>
-        val tokenUrl = new URL(oauth.tokenUrl)
-        name -> Security.OAuth2Application(Option(oauth.description), tokenUrl, oauth.scopes)
-      case (name, oauth: Oauth2AccessCodeSecurity) =>
-        val authorizationUrl = new URL(oauth.authorizationUrl)
-        val tokenUrl = new URL(oauth.tokenUrl)
-        name -> Security.OAuth2AccessCode(Option(oauth.description), authorizationUrl, tokenUrl, oauth.scopes)
+      case (name, oauth: Oauth2SecurityDefinition) =>
+        val validationURL = oauth.validationUrl.map(new URL(_))
+        name -> Security.OAuth2Definition(Option(oauth.description), validationURL, oauth.scopes)
     }
 }
 

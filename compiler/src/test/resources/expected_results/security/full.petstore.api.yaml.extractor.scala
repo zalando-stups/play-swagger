@@ -13,7 +13,7 @@ trait SecurityExtractors {
             ???
     }
     def petstore_auth_Extractor[User >: Any](scopes: String*): RequestHeader => Future[Option[User]] =
-        header => oAuth(scopes)(header) { _ =>
+        header => oAuth(scopes)("http://petstore.swagger.wordnik.com/oauth/dialog")(header) { (token: play.api.libs.json.JsValue) =>
             ???
     }
     implicit val unauthorizedContentWriter = ???

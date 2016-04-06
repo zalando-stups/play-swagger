@@ -35,19 +35,15 @@ trait SecurityStep extends EnrichmentStep[StrictModel] with SecurityCommons {
     case b: Basic => "basicAuth"
     case ApiKey(_, _, in) if in == ParameterPlace.HEADER => "headerApiKey"
     case ApiKey(_, _, in) if in == ParameterPlace.QUERY => "queryApiKey"
-    case o: OAuth2Password => "oAuthPassword"
-    case o: OAuth2Application => "oAuthPassword"
-    case o: OAuth2Implicit => "oAuth" // FIXME
-    case o: OAuth2AccessCode => "oAuth" // FIXME
+    case o: OAuth2Definition => "oAuth"
   }
 
   private def securityParams(definition: Definition): Seq[Map[String,String]] = definition match {
     case b: Basic => Nil
     case ApiKey(_, name, _) => Seq(Map("name" -> ("\"" + name + "\"")))
-    case OAuth2Password(_, tokenUrl, scopes) => Seq(Map("name" -> ("\"" + tokenUrl + "\"")))
-    case OAuth2Application(_, tokenUrl, scopes) => Seq(Map("name" -> ("\"" + tokenUrl + "\"")))
-
-    case _ => Nil // FIXME
+    case OAuth2Definition(_, None, _) =>
+      throw new IllegalStateException("Validation URL is required for play security code generator")
+    case OAuth2Definition(_, Some(validationURL), scopes) => Seq(Map("name" -> ("\"" + validationURL + "\"")))
   }
 
   private def externalSecurityParams(definition: Definition): Seq[Map[String,String]] = definition match {
@@ -58,9 +54,7 @@ trait SecurityStep extends EnrichmentStep[StrictModel] with SecurityCommons {
   private def userParams(definition: Definition): Seq[Map[String,String]] = definition match {
     case b: Basic => Seq(Map("name" -> "username", "type" -> "String"), Map("name" -> "password", "type" -> "String"))
     case ApiKey(_, name, _) => Seq(Map("name" -> "apiKey", "type" -> "String"))
-    case OAuth2Password(_, tokenUrl, scopes) => Seq(Map("name" -> "token", "type" -> "play.api.libs.json.JsValue"))
-    case OAuth2Application(_, tokenUrl, scopes) => Seq(Map("name" -> "token", "type" -> "play.api.libs.json.JsValue"))
-    case _ => Nil // FIXME
+    case OAuth2Definition(_, tokenUrl, scopes) => Seq(Map("name" -> "token", "type" -> "play.api.libs.json.JsValue"))
   }
 }
 

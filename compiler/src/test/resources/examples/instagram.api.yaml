@@ -175,6 +175,7 @@ securityDefinitions:
     type: oauth2
     flow: implicit
     authorizationUrl: https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token
+    x-token-validation-url: https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token
     scopes:
       basic: |
        to read any and all data related to a user (e.g. following/followed-by

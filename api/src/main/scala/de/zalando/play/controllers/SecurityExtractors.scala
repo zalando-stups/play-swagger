@@ -55,7 +55,7 @@ object SwaggerSecurityExtractors extends BasicAuthSecurityExtractor with OAuthRe
   def queryApiKey[User >: Any]: String => RequestHeader => (String => User) => Future[Option[User]] =
     name => header => convertToUser => header.queryString.get(name).flatMap(_.headOption) map convertToUser
 
-  def oAuthPassword[User >: Any]: Seq[String] => String => RequestHeader => (JsValue => User) => Future[Option[User]] =
+  def oAuth[User >: Any]: Seq[String] => String => RequestHeader => (JsValue => User) => Future[Option[User]] =
     scopes => tokenUrl => header => convertToUser => {
     val futureResult = header.headers.get("Authorization").flatMap(decodeBearer).map { token: String =>
       checkOAuthToken(tokenUrl, token, scopes:_*)
@@ -66,8 +66,6 @@ object SwaggerSecurityExtractors extends BasicAuthSecurityExtractor with OAuthRe
     futureResult.map(_.map(convertToUser))
   }
 
-  def oAuth[User >: Any]: (String*) => RequestHeader => (Seq[String] => User) => Future[Option[User]] =
-    scopes => header => convertUer => ???
 }
 
 trait BasicAuthSecurityExtractor {
