@@ -2,8 +2,9 @@ package de.zalando.play.controllers
 
 import java.net.URLEncoder
 
+import play.api.http._
 import play.api.libs.json.JsValue
-import play.api.mvc.{Result, ActionBuilder, Request, RequestHeader}
+import play.api.mvc.{ActionBuilder, Request, RequestHeader, Result}
 import play.api.mvc.Security.AuthenticatedRequest
 import sun.misc.BASE64Decoder
 
@@ -45,8 +46,8 @@ object SwaggerSecurityExtractors extends BasicAuthSecurityExtractor with OAuthRe
   private implicit def option2futureOption[User](o:Option[User]): Future[Option[User]] = Future.successful(o)
 
   def basicAuth[User >: Any]: RequestHeader => ((String, String) => User) => Future[Option[User]] =
-    header => convertToUser => header.headers.get("Authorization").map { basicAuth =>
-      decodeBasicAuth(basicAuth).map(p => convertToUser(p._1, p._2))
+    header => convertToUser => header.headers.get(HeaderNames.AUTHORIZATION).map { basicAuth =>
+      decodeBasicAuth(basicAuth).map { case (username, password) => convertToUser(username, password) }
     }
 
   def headerApiKey[User >: Any]: String => RequestHeader => (String => User) => Future[Option[User]] =
@@ -57,7 +58,7 @@ object SwaggerSecurityExtractors extends BasicAuthSecurityExtractor with OAuthRe
 
   def oAuth[User >: Any]: Seq[String] => String => RequestHeader => (JsValue => User) => Future[Option[User]] =
     scopes => tokenUrl => header => convertToUser => {
-    val futureResult = header.headers.get("Authorization").flatMap(decodeBearer).map { token: String =>
+    val futureResult = header.headers.get(HeaderNames.AUTHORIZATION).flatMap(decodeBearer).map { token: String =>
       checkOAuthToken(tokenUrl, token, scopes:_*)
     } match {
       case None => Future.successful(None)
@@ -111,10 +112,10 @@ trait OAuthResourceOwnerPasswordCredentialsFlow extends OAuthCommon {
   protected def checkOAuthToken(tokenUrl: String, token: String, requiredScopes: String*): Future[Option[JsValue]] = {
     val escapedToken = URLEncoder.encode(token, "UTF-8")
     val (method, url, body) =
-      if (tokenUrl.contains(placeHolder)) ("GET", tokenUrl.replaceAllLiterally(placeHolder, escapedToken), "")
-      else ("POST", tokenUrl, s"token=$escapedToken")
+      if (tokenUrl.contains(placeHolder)) (HttpVerbs.GET, tokenUrl.replaceAllLiterally(placeHolder, escapedToken), "")
+      else (HttpVerbs.POST, tokenUrl, s"token=$escapedToken")
     val request = WS.url(url).withMethod(method).withFollowRedirects(true).
-      withBody(InMemoryBody(body.getBytes)).withHeaders("Accept" -> "application/json")
+      withBody(InMemoryBody(body.getBytes)).withHeaders(HeaderNames.ACCEPT -> MimeTypes.JSON)
     request.execute().map(_.json).map { json =>
       val active = (json \ "active").asOpt[Boolean].getOrElse(true)
       lazy val scope = (json \ "scope").asOpt[String]
