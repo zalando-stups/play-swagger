@@ -187,7 +187,7 @@ object Generator {
       packageName = packageName,
       controller = controller,
       instantiate = false, // Random guess
-      method = req.verb.name.toLowerCase,
+      method = transition.meta.title.map(escape).getOrElse(req.verb.name.toLowerCase),
       parameters = (pathParameters ++ reqParameter).map(_._1).toSeq
     )
     val call = ApiCall(
