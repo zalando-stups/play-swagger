@@ -141,7 +141,7 @@ object PlaySwagger extends AutoPlugin {
       } else {
         BuildInfo.version
       }
-      CompilationTask(source, ScalaName.scalaPackageName(source.getName), swaggerPlayGenerator.value, version, typ)
+      CompilationTask(source, ScalaName.scalaPackageName(source.getName.replace(".apij", ".apib")), swaggerPlayGenerator.value, version, typ)
     },
 
     watchSources in Defaults.ConfigGlobal <++= sources in swagger,
