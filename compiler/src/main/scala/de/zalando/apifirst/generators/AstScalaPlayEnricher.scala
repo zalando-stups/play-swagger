@@ -66,7 +66,8 @@ class ScalaPlayTypeEnricher(val app: StrictModel) extends Transformation[Type] w
 /**
   * Enriches AST with information related to the specification as whole
   */
-class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictModel] with MarshallersStep {
+class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictModel]
+  with MarshallersStep with SecurityStep {
 
   override def data = Seq(Reference.root -> app)
 

@@ -22,7 +22,8 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def findPetsAction = (f: findPetsActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action { request =>
+    val findPetsActionConstructor  = Action
+    def findPetsAction = (f: findPetsActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => findPetsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsResponseMimeType =>
@@ -85,7 +86,8 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
             anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength)
         }
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser(Seq[String]("application/json"))) { request =>
+    val addPetActionConstructor  = Action
+    def addPetAction = (f: addPetActionType) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
@@ -135,7 +137,8 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def deletePetAction = (f: deletePetActionType) => (id: Long) => Action { request =>
+    val deletePetActionConstructor  = Action
+    def deletePetAction = (f: deletePetActionType) => (id: Long) => deletePetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>

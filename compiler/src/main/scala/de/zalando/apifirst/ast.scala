@@ -1,6 +1,9 @@
 package de.zalando.apifirst
 
+import java.net.URL
+
 import de.zalando.apifirst.Http.MimeType
+import de.zalando.apifirst.ParameterPlace.ParameterPlace
 import de.zalando.apifirst.naming.{Path, Reference, TypeName}
 
 import scala.language.{implicitConversions, postfixOps}
@@ -216,6 +219,39 @@ case object ParameterPlace extends Enumeration {
   val HEADER  = Value("header")
 }
 
+object Security {
+  type OAuth2Scopes = Map[String, String]
+  sealed trait Definition {
+    def description: Option[String]
+  }
+  case class Basic(description: Option[String]) extends Definition
+  case class ApiKey(description: Option[String], name: String, in: ParameterPlace) extends Definition {
+    require(in == ParameterPlace.QUERY || in == ParameterPlace.HEADER)
+    require(name.nonEmpty)
+  }
+  case class OAuth2Definition(description: Option[String], validationURL: Option[URL],
+                            scopes: OAuth2Scopes) extends Definition {
+    require(validationURL != null)
+  }
+
+  sealed trait Constraint {
+    def name: String
+    def definition: Definition
+  }
+  case class BasicConstraint(name: String, definition: Definition) extends Constraint
+  case class ApiKeyConstraint(name: String, definition: Definition) extends Constraint
+  case class OAuth2Constraint(name: String, definition: OAuth2Definition, scopes: Set[String]) extends Constraint {
+    require(scopes.forall(definition.scopes.keySet.contains))
+  }
+  object Constraint {
+    def fromDefinition(name: String, definition: Definition, scopes: Set[String]): Constraint = definition match {
+      case b: Basic => BasicConstraint(name, b)
+      case a: ApiKey => ApiKeyConstraint(name, a)
+      case o: OAuth2Definition => OAuth2Constraint(name, o, scopes)
+    }
+  }
+}
+
 object Application {
 
   case class ParameterRef(name: Reference) {
@@ -248,21 +284,28 @@ object Application {
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
     resultTypes:      Map[Int, ParameterRef],
-    defaultResult:    Option[ParameterRef]
+    defaultResult:    Option[ParameterRef],
+    security:         Set[Security.Constraint] = Set.empty
   ) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
 
+
+
+
   type ParameterLookupTable     = Map[ParameterRef, Parameter]
   type TypeLookupTable          = Map[Reference, Domain.Type]
   type DiscriminatorLookupTable = Map[Reference, Reference]
+
+  type SecurityDefinitionsTable = Map[String, Security.Definition]
 
   case class StrictModel(calls: Seq[ApiCall],
                          typeDefs: TypeLookupTable,
                          params: ParameterLookupTable,
                          discriminators: DiscriminatorLookupTable,
                          basePath: String,
-                         packageName: Option[String]) {
+                         packageName: Option[String],
+                         securityDefinitionsTable: SecurityDefinitionsTable) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
     def findType(ref: Reference) = typeDefs(ref)

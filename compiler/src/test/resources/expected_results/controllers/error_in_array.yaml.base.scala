@@ -32,7 +32,8 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
             anyParser[ModelSchemaRoot](bodyMimeType, customParsers, "Invalid ModelSchemaRoot", maxLength)
         }
 
-    def getschemaModelAction = (f: getschemaModelActionType) => Action(getschemaModelParser(Seq[String]())) { request =>
+    val getschemaModelActionConstructor  = Action
+    def getschemaModelAction = (f: getschemaModelActionType) => getschemaModelActionConstructor(getschemaModelParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getschemaModelResponseMimeType =>
