@@ -19,8 +19,14 @@ object ApibParser {
 
     decode.decodeJson(json).result.fold({
       decodeFail =>
-      val cursor = decodeFail._2.acursor(json.cursor)
-      val successfulCursor = Stream.iterate(cursor)(_.up).find(!_.failed)
+      val history = decodeFail._2.toList.flatMap({
+        _ match {
+          case Reattempt => List()
+          case El(o, success) => List(o)
+        }
+      })
+      val cursors = history.toStream.scanRight(json.cursor.acursor)({case (op, c) => apply(op, c)})
+      val successfulCursor = cursors.find(!_.failed)
       val focus = successfulCursor.flatMap(_.focus)
       throw new IllegalArgumentException(s"""Incorrect json. Message:
 ${decodeFail._1}
@@ -32,5 +38,33 @@ Cursor to the above JSON:
 ${successfulCursor.map(_.history)}
 """)
     }, {x => x})
+  }
+
+  def apply(op: CursorOpElement, c: ACursor): ACursor = op match {
+    case CursorOpLeft => c.left
+    case CursorOpRight => c.right
+    case CursorOpFirst => c.first
+    case CursorOpLast => c.last
+    case CursorOpUp => c.up
+    case CursorOpLeftN(n) => c.leftN(n)
+    case CursorOpRightN(n) => c.rightN(n)
+    case CursorOpLeftAt(x) => c.leftAt(x)
+    case CursorOpRightAt(x) => c.rightAt(x)
+    case CursorOpFind(x) => c.find(x)
+    case CursorOpField(f) => c.field(f)
+    case CursorOpDownField(f) => c.downField(f)
+    case CursorOpDownArray => c.downArray
+    case CursorOpDownAt(x) => c.downAt(x)
+    case CursorOpDownN(n) => c.downN(n)
+    case CursorOpDeleteGoParent => c.deleteGoParent
+    case CursorOpDeleteGoLeft => c.deleteGoLeft
+    case CursorOpDeleteGoRight => c.deleteGoRight
+    case CursorOpDeleteGoFirst => c.deleteGoFirst
+    case CursorOpDeleteGoLast => c.deleteGoLast
+    case CursorOpDeleteGoField(f) => c.deleteGoField(f)
+    case CursorOpDeleteLefts => c.deleteLefts
+    case CursorOpDeleteRights => c.deleteRights
+    // case CursorOpSetLefts(x) => c.setLefts(x)
+    // case CursorOpSetRights(x) => c.setRights(x)
   }
 }
