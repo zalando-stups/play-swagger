@@ -150,7 +150,7 @@ object Generator {
       responseRef,
       Parameter(
         name = "responseBody",
-        typeName = transform(response.dataStructure.getOrElse { throw new IllegalStateException(s"A response is supposed to have a type. Response in question: $response, Path: $responseRef")}, responseRef),
+        typeName = response.dataStructure.map(ds => transform(ds, responseRef)).getOrElse(pureObject),
         fixed = None,
         default = None,
         constraint = "", // """[^/]+""", // TODO make this more sophisticated
