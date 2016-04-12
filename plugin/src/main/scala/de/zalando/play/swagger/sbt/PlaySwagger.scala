@@ -63,6 +63,8 @@ object PlaySwagger extends AutoPlugin {
     lazy val swaggerPrintFlatAstTypes       = taskKey[Seq[Unit]]("Prints AST type information before after optimisation")
     lazy val swaggerPrintFlatAstParameters  = taskKey[Seq[Unit]]("Prints AST parameter information after type optimisation")
 
+    lazy val swaggerPrintDenotations   = taskKey[Seq[Unit]]("Prints AST denotation.")
+
   }
 
   // Users have to explicitly enable it
@@ -162,7 +164,9 @@ object PlaySwagger extends AutoPlugin {
     swaggerPrintRawAstParameters <<= (swaggerRawData, streams) map prettyPrint(SwaggerPrettyPrinter.parameters),
 
     swaggerPrintFlatAstTypes <<= (swaggerPreparedData, streams) map prettyPrint(SwaggerPrettyPrinter.types),
-    swaggerPrintFlatAstParameters <<= (swaggerPreparedData, streams) map prettyPrint(SwaggerPrettyPrinter.parameters)
+    swaggerPrintFlatAstParameters <<= (swaggerPreparedData, streams) map prettyPrint(SwaggerPrettyPrinter.parameters),
+
+    swaggerPrintDenotations <<= (swaggerPreparedData, streams) map prettyPrint(SwaggerPrettyPrinter.denotations)
 
   )
 

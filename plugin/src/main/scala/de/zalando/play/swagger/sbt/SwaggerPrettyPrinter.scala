@@ -2,6 +2,7 @@ package de.zalando.play.swagger.sbt
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.play.compiler.CompilationTask
+import de.zalando.apifirst.generators.AstScalaPlayEnricher
 
 /**
   * @since 23.03.2016.
@@ -17,6 +18,12 @@ object SwaggerPrettyPrinter {
   def parameters(task: CompilationTask, ast: StrictModel): Seq[String] = {
     val params      = ast.params
     val lines       = params.toSeq.sortBy(_._1.name.parts.size).map(p => formatText(p._1.name.toString)(dyellow,black) + " → " + p._2)
+    withFileName("Parameters:\t", task, lines)
+  }
+
+  def denotations(task: CompilationTask, ast: StrictModel): Seq[String] = {
+    val play = AstScalaPlayEnricher(ast)
+    val lines = play.toSeq.map({case (ref, den) => formatText(ref.toString)(dyellow, black) + " → " + den })
     withFileName("Parameters:\t", task, lines)
   }
 
