@@ -174,7 +174,7 @@ object Generator {
     val hrefRef = href.map(_.path).getOrElse(defaultPath)
     val ref = naming.Reference("paths") / hrefRef
     val initialReq = transform(transition.request, ref)
-    val namespacedRef = ref / s"${initialReq.verb.name.toLowerCase}body"
+    val namespacedRef = ref / s"${initialReq.verb.name.toLowerCase}Body"
     val req = transform(transition.request, namespacedRef)
     val resp = transform(transition.response, namespacedRef)
     val name = naming.Reference(namespacedRef.parts.init :+ escape(namespacedRef.parts.last))

@@ -64,14 +64,14 @@ class GeneratorTest extends FunSpec with MustMatchers {
   }
   it("should generate the correct query string paths") {
     json[Transition](queryParameters, { transition =>
-      Generator.transform(transition, naming.Reference("test"), "test", "testController").parameters.keys.head.name.parts mustBe(List("paths", "versions", "validate", "getbody", "name"))
+      Generator.transform(transition, naming.Reference("test"), "test", "testController").parameters.keys.head.name.parts mustBe(List("paths", "versions", "validate", "getBody", "name"))
     })
   }
   it("should generate a correct StrictModel") {
     json[ApibModel](document, { doc =>
       val model = Generator.model(doc, "testPackage", "testBase")
       model.typeDefs.keys should contain (naming.Reference(List("definitions", "CompanyCompany")))
-      model.typeDefs(naming.Reference(List("paths", "companies", "{company}", "getbody", "200", "responseBody"))).asInstanceOf[TypeDef].fields.head.asInstanceOf[Field].tpe.asInstanceOf[TypeRef].name mustBe(naming.Reference(List("definitions", "CompanyCompany")))
+      model.typeDefs(naming.Reference(List("paths", "companies", "{company}", "getBody", "200", "responseBody"))).asInstanceOf[TypeDef].fields.head.asInstanceOf[Field].tpe.asInstanceOf[TypeRef].name mustBe(naming.Reference(List("definitions", "CompanyCompany")))
     })
   }
 }
