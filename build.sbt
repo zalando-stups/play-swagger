@@ -1,3 +1,5 @@
+import bintray.Keys._
+
 val PlayVersion  = "2.4.3"
 val ScalaVersion = "2.11.7"
 
@@ -14,6 +16,7 @@ lazy val api = (project in file("api"))
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-csv" % "2.6.4",
       "joda-time" % "joda-time" % "2.9.1",
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
+      "com.typesafe.play" %% "play-java-ws" % PlayVersion,
       "org.scalacheck" %% "scalacheck" % "1.12.4",
       "org.specs2" %% "specs2-scalacheck" % "3.6"
     ),
@@ -70,7 +73,10 @@ lazy val plugin = (project in file("plugin"))
       scriptedLaunchOpts.value ++
       Seq(
         "-Dproject.version=" + version.value,
-        "-Dscala.version=" + scalaVersion.value
+        "-Dscala.version=" + scalaVersion.value,
+        "-Xmx512M",
+        "-XX:MaxPermSize=256M",
+        "-XX:ReservedCodeCacheSize=256M"
       )
     },
     scriptedDependencies := {
@@ -91,9 +97,9 @@ lazy val root = (project in file("."))
   )
   .aggregate(api, compiler, plugin)
 
-def common: Seq[Setting[_]] = Seq(
+def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   organization := "de.zalando",
-  version      := "0.1.7",
+  version      := "0.1.8",
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
@@ -103,7 +109,8 @@ def common: Seq[Setting[_]] = Seq(
   resolvers           += Resolver.bintrayRepo("zalando", "sbt-plugins"),
   licenses            += ("MIT", url("http://opensource.org/licenses/MIT")),
   publishMavenStyle   := false,
-  bintrayOrganization := Some("zalando")
+  repository in bintray := "sbt-plugins",
+  bintrayOrganization in bintray := Some("zalando")
 )
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60

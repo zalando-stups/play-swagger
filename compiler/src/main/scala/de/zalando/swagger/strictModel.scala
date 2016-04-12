@@ -748,6 +748,12 @@ object strictModel {
   /********* security definitions *********/
   sealed trait SecurityDefinition extends VendorExtensions
 
+  sealed trait Oauth2SecurityDefinition extends SecurityDefinition {
+    lazy val validationUrl: Option[Uri] = vendorExtensions.get("x-token-validation-url")
+    def description: String
+    def scopes: Oauth2Scopes
+  }
+
   case class BasicAuthenticationSecurity(
     @JsonProperty(required = true) `type`: String, // "enum": basic
     description: Description
@@ -766,7 +772,7 @@ object strictModel {
     @JsonProperty(required = true) authorizationUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with UriChecker {
+  ) extends Oauth2SecurityDefinition with UriChecker {
     val url = authorizationUrl
   }
 
@@ -776,7 +782,7 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with UriChecker {
+  ) extends Oauth2SecurityDefinition with UriChecker {
     val url = tokenUrl
   }
 
@@ -786,7 +792,7 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with UriChecker {
+  ) extends Oauth2SecurityDefinition with UriChecker {
     val url = tokenUrl
   }
 
@@ -797,7 +803,7 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with UriChecker {
+  ) extends Oauth2SecurityDefinition with UriChecker {
     val url = tokenUrl
   }
 

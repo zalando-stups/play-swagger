@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils
 import play.routes.compiler.RoutesCompiler.RoutesCompilerTask
 import play.routes.compiler.RoutesGenerator
 
+import scala.collection.immutable.::
 import scala.io.Codec
 
 /**
@@ -23,12 +24,21 @@ object SwaggerCompiler {
 
   type generatorF = (String, String, String) => Seq[String]
 
+  def readSwaggerModel(task: SwaggerCompilationTask): (URI, SwaggerModel) = {
+    val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
+    val (uri, model) = parser.parse(task.definitionFile)
+    (uri, model)
+  }
+
+  def convertModelToAST(definitionFile: File, uri: URI, model: SwaggerModel): StrictModel =
+    ModelConverter.fromModel(uri, model, Option(definitionFile))
+
   def flattenAST(initialAst: StrictModel): StrictModel =
     TypeNormaliser.flatten(initialAst)
 
   def compileBase(task: CompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
                   flatAst: StrictModel): CompilationResult = {
-    val places            = Seq("/model/", "/validators/", "/controllers_base/")
+    val places            = Seq("/model/", "/validators/", "/security/", "/controllers_base/")
     val generator         = new ScalaGenerator(flatAst).generateBase
     val swaggerFiles      = compileSwagger(task, outputDir, places, generator)(flatAst)
     CompilationResult(swaggerFiles)
@@ -54,6 +64,14 @@ object SwaggerCompiler {
                          flatAst: StrictModel): CompilationResult = {
     val places            = Seq("/marshallers/")
     val generator         = new ScalaGenerator(flatAst).generateMarshallers
+    val swaggerFiles      = compileSwagger(task, outputDir, places, generator, overwrite = false)(flatAst)
+    ControllerCompilationResult(swaggerFiles.flatten)
+  }
+
+  def compileExtractors(task: CompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
+                        flatAst: StrictModel): CompilationResult = {
+    val places            = Seq("/security/")
+    val generator         = new ScalaGenerator(flatAst).generateExtractors
     val swaggerFiles      = compileSwagger(task, outputDir, places, generator, overwrite = false)(flatAst)
     ControllerCompilationResult(swaggerFiles.flatten)
   }
@@ -201,14 +219,16 @@ sealed trait CompilationResult {
 }
 object CompilationResult {
   def apply(results: Seq[Seq[File]]) = results match {
-    case model :: validators :: controllers :: Nil => BaseCompilationResult(model, validators, controllers)
+    case model :: validators :: security :: controllers :: Nil =>
+      BaseCompilationResult(model, validators, security, controllers)
     case testData :: tests :: Nil => TestCompilationResult(testData, tests)
     case routes :: Nil => RoutesCompilationResult(routes)
     case other => throw new IllegalArgumentException("Not recognized: " + other)
   }
 }
-case class BaseCompilationResult(modelFiles: Seq[File], validatorFiles: Seq[File], controllerBaseFiles: Seq[File]) extends CompilationResult {
-  def allFiles: Set[File] = (modelFiles ++ validatorFiles ++ controllerBaseFiles).toSet
+case class BaseCompilationResult(modelFiles: Seq[File], validatorFiles: Seq[File],
+  securityFiles: Seq[File], controllerBaseFiles: Seq[File]) extends CompilationResult {
+  def allFiles: Set[File] = (modelFiles ++ validatorFiles ++ securityFiles ++ controllerBaseFiles).toSet
 }
 case class RoutesCompilationResult(routesFiles: Seq[File]) extends CompilationResult {
   def allFiles: Set[File] = routesFiles.toSet
@@ -216,6 +236,7 @@ case class RoutesCompilationResult(routesFiles: Seq[File]) extends CompilationRe
 case class ControllerCompilationResult(controllerFiles: Seq[File]) extends CompilationResult {
   def allFiles: Set[File] = controllerFiles.toSet
 }
-case class TestCompilationResult(testDataGeneratorFiles: Seq[File], testFiles: Seq[File]) extends CompilationResult {
+case class TestCompilationResult(testDataGeneratorFiles: Seq[File],
+                                        testFiles: Seq[File]) extends CompilationResult {
   def allFiles: Set[File] = (testDataGeneratorFiles ++ testFiles).toSet
 }
