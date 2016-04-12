@@ -22,7 +22,7 @@ package hackweek.yaml {
     class HackweekYaml extends HackweekYamlBase {
         val getschemaModel = getschemaModelAction { (root: ModelSchemaRoot) =>  
             // ----- Start of unmanaged code area for action  HackweekYaml.getschemaModel
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  HackweekYaml.getschemaModel
         }
     

@@ -3,6 +3,7 @@ package de.zalando.play.swagger.sbt
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Hypermedia
 import de.zalando.play.compiler.SwaggerCompilationTask
+import de.zalando.apifirst.generators.AstScalaPlayEnricher
 
 /**
   * @since 23.03.2016.
@@ -26,14 +27,20 @@ object SwaggerPrettyPrinter {
     withFileName("State Diagram:\t", task, lines)
   }
 
+  def denotations(task: SwaggerCompilationTask, ast: StrictModel): Seq[String] = {
+    val play = AstScalaPlayEnricher(ast)
+    val lines = play.toSeq.map({case (ref, den) => formatText(ref.toString)(dyellow, black) + " → " + den })
+    withFileName("Parameters:\t", task, lines)
+  }
+
   def withFileName(prefix: String, task: SwaggerCompilationTask, lines: Seq[String]): Seq[String] =
     s"\n$prefix${formatText(task.definitionFile.getName)(blue,black)}\n" +: "\n" +: lines :+ "\n" :+ "\n"
 
-  def textColor(color: Int)      = { s"\033[38;5;${color}m" }
-  def backgroundColor(color:Int) = { s"\033[48;5;${color}m" }
-  def reset                      = { s"\033[0m" }
+  def textColor(color: Int): String = { s"\033[38;5;${color}m" }
+  def backgroundColor(color:Int): String = { s"\033[48;5;${color}m" }
+  def reset: String = { s"\033[0m" }
 
-  def formatText(str: String)(txtColor: Int, backColor: Int) = {
+  def formatText(str: String)(txtColor: Int, backColor: Int): String = {
     s"${textColor(txtColor)}${backgroundColor(backColor)}$str$reset"
   }
   // see http://misc.flogisoft.com/bash/tip_colors_and_formatting, 88/256 Colors for more color codes

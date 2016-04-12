@@ -12,3 +12,5 @@ lazy val swaggerPlugin = ProjectRef(Path.fileProperty("user.dir").getParentFile,
 scalaVersion := "2.10.5"
 
 routesGenerator := InjectedRoutesGenerator
+
+libraryDependencies += specs2

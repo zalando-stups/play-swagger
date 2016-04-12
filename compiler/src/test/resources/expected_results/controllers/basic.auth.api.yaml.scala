@@ -22,7 +22,7 @@ package basic.auth.api.yaml {
     class BasicAuthApiYaml extends BasicAuthApiYamlBase {
         val get = getAction {  _ =>  
             // ----- Start of unmanaged code area for action  BasicAuthApiYaml.get
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  BasicAuthApiYaml.get
         }
     

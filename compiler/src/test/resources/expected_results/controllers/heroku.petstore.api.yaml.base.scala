@@ -3,7 +3,8 @@ package heroku.petstore.api.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
+
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 import scala.math.BigInt
@@ -12,28 +13,27 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
-
 trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
-    private type getActionRequestType       = (BigInt)
-    private type getActionType              = getActionRequestType => Try[(Int, Any)]
+    sealed trait getType[ResultT] extends ResultWrapper[ResultT]
+    case class get200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends getType[Seq[Pet]] { val statusCode = 200 }
+    
 
-    private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type getActionRequestType       = (BigInt)
+    private type getActionType[T]            = getActionRequestType => getType[T]
 
 
     val getActionConstructor  = Action
-    def getAction = (f: getActionType) => (limit: BigInt) => getActionConstructor { request =>
+    def getAction[T] = (f: getActionType[T]) => (limit: BigInt) => getActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Seq[Pet]]
-            )
+
             
             
 
                 val result =
                         new GetValidator(limit).errors match {
-                            case e if e.isEmpty => processValidgetRequest(f)((limit))(possibleWriters, getResponseMimeType)
+                            case e if e.isEmpty => processValidgetRequest(f)((limit))(getResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getResponseMimeType)
                                 BadRequest(l)
@@ -43,31 +43,17 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetRequest[T <: Any](f: getActionType)(request: getActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusget orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidgetRequest[T](f: getActionType[T])(request: getActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type putActionRequestType       = (PutPet)
-    private type putActionType              = putActionRequestType => Try[(Int, Any)]
+    sealed trait putType[ResultT] extends ResultWrapper[ResultT]
+    case class put200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putType[Null] { val statusCode = 200 }
+    
 
-    private val errorToStatusput: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type putActionRequestType       = (PutPet)
+    private type putActionType[T]            = putActionRequestType => putType[T]
 
         private def putParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -84,20 +70,18 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         }
 
     val putActionConstructor  = Action
-    def putAction = (f: putActionType) => putActionConstructor(putParser(Seq[String]("application/json", "text/xml"))) { request =>
+    def putAction[T] = (f: putActionType[T]) => putActionConstructor(putParser(Seq[String]("application/json", "text/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Null]
-            )
+
             val pet = request.body
             
             
 
                 val result =
                         new PutValidator(pet).errors match {
-                            case e if e.isEmpty => processValidputRequest(f)((pet))(possibleWriters, putResponseMimeType)
+                            case e if e.isEmpty => processValidputRequest(f)((pet))(putResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(putResponseMimeType)
                                 BadRequest(l)
@@ -107,31 +91,17 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidputRequest[T <: Any](f: putActionType)(request: putActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusput orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidputRequest[T](f: putActionType[T])(request: putActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type postActionRequestType       = (Pet)
-    private type postActionType              = postActionRequestType => Try[(Int, Any)]
+    sealed trait postType[ResultT] extends ResultWrapper[ResultT]
+    case class post200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends postType[Null] { val statusCode = 200 }
+    
 
-    private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type postActionRequestType       = (Pet)
+    private type postActionType[T]            = postActionRequestType => postType[T]
 
         private def postParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -148,20 +118,18 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         }
 
     val postActionConstructor  = Action
-    def postAction = (f: postActionType) => postActionConstructor(postParser(Seq[String]("application/json", "text/xml"))) { request =>
+    def postAction[T] = (f: postActionType[T]) => postActionConstructor(postParser(Seq[String]("application/json", "text/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Null]
-            )
+
             val pet = request.body
             
             
 
                 val result =
                         new PostValidator(pet).errors match {
-                            case e if e.isEmpty => processValidpostRequest(f)((pet))(possibleWriters, postResponseMimeType)
+                            case e if e.isEmpty => processValidpostRequest(f)((pet))(postResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
                                 BadRequest(l)
@@ -171,47 +139,31 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatuspost orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidpostRequest[T](f: postActionType[T])(request: postActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type getbyPetIdActionRequestType       = (String)
-    private type getbyPetIdActionType              = getbyPetIdActionRequestType => Try[(Int, Any)]
+    sealed trait getbyPetIdType[ResultT] extends ResultWrapper[ResultT]
+    case class getbyPetId200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getbyPetIdType[Null] { val statusCode = 200 }
+    
 
-    private val errorToStatusgetbyPetId: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type getbyPetIdActionRequestType       = (String)
+    private type getbyPetIdActionType[T]            = getbyPetIdActionRequestType => getbyPetIdType[T]
 
 
     val getbyPetIdActionConstructor  = Action
-    def getbyPetIdAction = (f: getbyPetIdActionType) => (petId: String) => getbyPetIdActionConstructor { request =>
+    def getbyPetIdAction[T] = (f: getbyPetIdActionType[T]) => (petId: String) => getbyPetIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getbyPetIdResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Null]
-            )
+
             
             
 
                 val result =
                         new PetIdGetValidator(petId).errors match {
-                            case e if e.isEmpty => processValidgetbyPetIdRequest(f)((petId))(possibleWriters, getbyPetIdResponseMimeType)
+                            case e if e.isEmpty => processValidgetbyPetIdRequest(f)((petId))(getbyPetIdResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getbyPetIdResponseMimeType)
                                 BadRequest(l)
@@ -221,25 +173,11 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetbyPetIdRequest[T <: Any](f: getbyPetIdActionType)(request: getbyPetIdActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusgetbyPetId orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidgetbyPetIdRequest[T](f: getbyPetIdActionType[T])(request: getbyPetIdActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
+    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]              { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with getType[Results.EmptyContent] with putType[Results.EmptyContent] with postType[Results.EmptyContent] with getbyPetIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

@@ -146,8 +146,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
 
   private def errorMappings(call: ApiCall): Iterable[Map[String, String]] =
     call.errorMapping.flatMap { case (k, v) => v.map { ex =>
-      Map("exception_name" -> ex.getCanonicalName, "exception_code" -> k)
-    }
+        Map("exception_name" -> ex.getCanonicalName, "simple_exception_name" -> ex.getSimpleName,"exception_code" -> k)
+      }
     }
 
   private def singleOrMultipleParameters(call: ApiCall)(table: DenotationTable) = {

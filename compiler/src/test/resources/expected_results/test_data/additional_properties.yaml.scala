@@ -2,12 +2,13 @@ package additional_properties.yaml
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
+import play.api.libs.json.scalacheck.JsValueGenerators
 import Arbitrary._
 import scala.collection.immutable.Map
 import de.zalando.play.controllers.ArrayWrapper
 import scala.math.BigInt
 
-object Generators {
+object Generators extends JsValueGenerators {
     
 
     

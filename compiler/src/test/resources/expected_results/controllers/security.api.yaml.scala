@@ -22,7 +22,7 @@ package security.api.yaml {
     class SecurityApiYaml extends SecurityApiYamlBase {
         val getPetsById = getPetsByIdAction { (id: PetsIdGetId) =>  
             // ----- Start of unmanaged code area for action  SecurityApiYaml.getPetsById
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  SecurityApiYaml.getPetsById
         }
     

@@ -22,7 +22,7 @@ package echo {
     class EchoHandler extends EchoHandlerBase {
         val method = methodAction {  _ =>  
             // ----- Start of unmanaged code area for action  EchoHandler.method
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  EchoHandler.method
         }
     
@@ -34,12 +34,12 @@ package echo {
         val post = postAction { input: (PostName, PostName) =>
             val (name, year) = input
             // ----- Start of unmanaged code area for action  EchoApiYaml.post
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  EchoApiYaml.post
         }
         val gettest_pathById = gettest_pathByIdAction { (id: String) =>  
             // ----- Start of unmanaged code area for action  EchoApiYaml.gettest_pathById
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  EchoApiYaml.gettest_pathById
         }
     

@@ -2,11 +2,12 @@ package form_data.yaml
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
+import play.api.libs.json.scalacheck.JsValueGenerators
 import Arbitrary._
 import java.io.File
 import scala.math.BigInt
 
-object Generators {
+object Generators extends JsValueGenerators {
     
 
     

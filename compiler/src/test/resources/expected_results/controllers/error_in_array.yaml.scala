@@ -22,7 +22,7 @@ package error_in_array.yaml {
     class Error_in_arrayYaml extends Error_in_arrayYamlBase {
         val getschemaModel = getschemaModelAction { (root: ModelSchemaRoot) =>  
             // ----- Start of unmanaged code area for action  Error_in_arrayYaml.getschemaModel
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Error_in_arrayYaml.getschemaModel
         }
     

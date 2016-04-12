@@ -68,7 +68,7 @@ import Generators._
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Nil
-                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
@@ -108,7 +108,7 @@ import Generators._
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Nil
-                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
@@ -189,7 +189,7 @@ import Generators._
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Seq(FilePart("ringtone", ringtone.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(ringtone))) ++ Nil
-                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq        
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq        
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
@@ -229,7 +229,7 @@ import Generators._
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Seq(FilePart("ringtone", ringtone.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(ringtone))) ++ Nil
-                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq        
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq        
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
@@ -312,7 +312,7 @@ import Generators._
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Seq(FilePart("avatar", avatar.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(avatar))) ++ Nil
-                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
@@ -352,7 +352,7 @@ import Generators._
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Seq(FilePart("avatar", avatar.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(avatar))) ++ Nil
-                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get

@@ -3,7 +3,8 @@ package {{main_package}}
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
+
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 {{for import in imports}}
@@ -15,15 +16,18 @@ import {{import.name}}
 
 
 {{for controller in controllers}}
-
 trait {{controller.base}} extends Controller with PlayBodyParsing {{if controller.security_trait}} with {{controller.security_trait}} {{/if}}{
     {{for m in controller.methods}}
-    private type {{m.action_request_type}}       = ({{for v in m.validations}}{{for f in v.fields}}{{f.type_name}}{{if f.isNotLast}}, {{/if}}{{/for}}{{/for}}{{if m.has_no_validations}}Unit{{/if}})
-    private type {{m.action_type}}              = {{m.action_request_type}} => Try[(Int, Any)]
+    sealed trait {{m.method}}Type[ResultT] extends ResultWrapper[ResultT]
+    {{for result_type in m.result_types}}
+    case class {{m.method}}{{result_type.code}}(result: {{result_type.type}})(implicit val writer: String => Option[Writeable[{{result_type.type}}]]) extends {{m.method}}Type[{{result_type.type}}] { val statusCode = {{result_type.code}} }
+    {{/for}}
+    {{for mapping in m.error_mappings}}
+    case class {{m.method}}{{mapping.simple_exception_name}}(result: {{mapping.exception_name}})(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends {{m.method}}Type[{{mapping.exception_name}}] { val statusCode = {{mapping.exception_code}} }
+    {{/for}}
 
-    private val {{m.error_to_status}}: PartialFunction[Throwable, Status] = {{if m.has_no_error_mappings}}PartialFunction.empty[Throwable, Status]{{/if}}{{if m.error_mappings}}{ {{/if}}{{for mapping in m.error_mappings}}
-        case _: {{mapping.exception_name}} => Status({{mapping.exception_code}})
-    {{/for}}{{if m.error_mappings}} } {{/if}}
+    private type {{m.action_request_type}}       = ({{for v in m.validations}}{{for f in v.fields}}{{f.type_name}}{{if f.isNotLast}}, {{/if}}{{/for}}{{/for}}{{if m.has_no_validations}}Unit{{/if}})
+    private type {{m.action_type}}[T]            = {{m.action_request_type}} => {{m.method}}Type[T]
 
     {{for body in m.body_param}}
         private def {{m.parser_name}}(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
@@ -44,15 +48,11 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
     {{/for}}
 
     val {{m.action_constructor}}  = {{if m.needs_security}}{{if m.security_instance}}new {{/if}}{{m.secure_action}}{{for check in m.security_checks}}{{if check.params}}({{for param in check.params}}{{param.name}}{{if param.isNotLast}}, {{/if}}{{/for}}){{/if}}{{/for}}{{else}}Action{{/if}}
-    def {{m.action}} = (f: {{m.action_type}}) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} {{m.action_constructor}}{{if m.body_param}}({{m.parser_name}}({{m.consumes}})){{/if}} { request =>
+    def {{m.action}}[T] = (f: {{m.action_type}}[T]) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} {{m.action_constructor}}{{if m.body_param}}({{m.parser_name}}({{m.consumes}})){{/if}} { request =>
         val providedTypes = {{m.produces}}
 
         negotiateContent(request.acceptedTypes, providedTypes).map { {{m.response_mime_type_name}} =>
-                val possibleWriters = Map{{if m.result_types}}(
-                {{for result_type in m.result_types}}
-                    {{result_type.code}} -> anyToWritable[{{result_type.type}}]{{if result_type.isNotLast}}, {{/if}}
-                {{/for}}
-            ){{else}}.empty[Int,String => Writeable[Any]]{{/if}}{{if m.default_result_type}}.withDefaultValue(anyToWritable[{{m.default_result_type}}]){{/if}}
+
             {{for body in m.body_param}}
             val {{body.field_name}} = request.body
             {{/for}}
@@ -74,10 +74,10 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
                     case ({{for header in m.header_params}}Right({{header.field_name}}){{if header.isNotLast}}, {{/if}}{{/for}}) =>
             {{/if}}
 
-                val result ={{if m.has_no_validations}} {{m.process_valid_request}}(f)()(possibleWriters, {{m.response_mime_type_name}}){{/if}}
+                val result ={{if m.has_no_validations}} {{m.process_valid_request}}(f)()({{m.response_mime_type_name}}){{/if}}
                     {{for v in m.validations}}
                         new {{v.validation_name}}({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}).errors match {
-                            case e if e.isEmpty => {{m.process_valid_request}}(f)(({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}))(possibleWriters, {{m.response_mime_type_name}})
+                            case e if e.isEmpty => {{m.process_valid_request}}(f)(({{for f in v.fields}}{{f.field_name}}{{if f.isNotLast}}, {{/if}}{{/for}}))({{m.response_mime_type_name}})
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable({{m.response_mime_type_name}})
                                 BadRequest(l)
@@ -97,28 +97,13 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def {{m.process_valid_request}}[T <: Any](f: {{m.action_type}})(request: {{m.action_request_type}})
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        {{if m.needs_custom_writers}}
-        {{else}}import de.zalando.play.controllers.ResponseWriters
-        {{/if}}
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => ({{m.error_to_status}} orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def {{m.process_valid_request}}[T](f: {{m.action_type}}[T])(request: {{m.action_request_type}})(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
     {{/for}}
+    case object EmptyReturn extends ResultWrapper[Results.EmptyContent] {{for m in controller.methods}} {{if m.result_types}} {{else}} with {{m.method}}Type[Results.EmptyContent] {{/if}} {{/for}} { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent] {{for m in controller.methods}} with {{m.method}}Type[Results.EmptyContent]{{/for}} { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }
 {{/for}}
