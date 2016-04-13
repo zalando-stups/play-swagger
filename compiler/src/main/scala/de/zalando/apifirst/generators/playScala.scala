@@ -220,7 +220,7 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
       case ((((call, (marker, length)), start), end)) => start >= 0
     } map {
       case ((((call, (marker, length)), start), end)) =>
-        val code = lines.slice(start + length, end - 1)
+        val code = lines.slice(start + length, end - 1).filter(! _.trim.startsWith("// Response:"))
         val relevantCode = code.takeWhile(!_.contains(eof))
         val deadCode = code.dropWhile(!_.contains(eof)).drop(1).filterNot(_.trim.isEmpty)
         val commentedOut = if (deadCode.isEmpty) "" else deadCode.mkString("/*\n", "\n", "\n*/\n")

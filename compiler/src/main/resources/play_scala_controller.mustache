@@ -15,8 +15,9 @@ package {{controller.effective_package}} {
             val ({{for p in method.multiple_parameters}}{{p.field_name}}{{if p.isNotLast}}, {{/if}}{{/for}}) = input
             {{else}}{{if method.single_parameter}}
             {{else}} _ =>
-            {{/if}}
-            {{/if}}
+            {{/if}}{{/if}}
+            {{for result_type in method.result_types}}// Response: Success(({{result_type.code}}, {{result_type.type}}{{if result_type.isNotLast}}, {{/if}}))
+            {{/for}}
 
             {{method.implementation}}
 
