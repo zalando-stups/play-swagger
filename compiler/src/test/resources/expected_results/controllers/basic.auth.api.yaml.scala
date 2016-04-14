@@ -18,6 +18,7 @@ package basic.auth.api.yaml {
     class BasicAuthApiYaml extends BasicAuthApiYamlBase {
         val get = getAction { _ =>
             
+            // Response: Success((200, Null))
             
 
             Failure(???)

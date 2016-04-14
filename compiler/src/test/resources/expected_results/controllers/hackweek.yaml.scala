@@ -18,6 +18,7 @@ package hackweek.yaml {
     class HackweekYaml extends HackweekYamlBase {
         val getschemaModel = getschemaModelAction { (root: ModelSchemaRoot) =>
             
+            // Response: Success((200, ModelSchemaRoot))
             
 
             Failure(???)

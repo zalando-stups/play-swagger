@@ -18,6 +18,7 @@ package uber.api.yaml {
     class UberApiYaml extends UberApiYamlBase {
         val getme = getmeAction { _ =>
             
+            // Response: Success((200, Profile))
             
 
             Failure(???)
@@ -28,6 +29,8 @@ package uber.api.yaml {
         val getproducts = getproductsAction { input: (Double, Double) =>
             val (latitude, longitude) = input
             
+            // Response: Success((200, Seq[Product]))
+            
 
             Failure(???)
 
@@ -36,6 +39,8 @@ package uber.api.yaml {
         } //////// EOF ////////  getproductsAction
         val getestimatesTime = getestimatesTimeAction { input: (Double, Double, ProfilePicture, ProfilePicture) =>
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
+            
+            // Response: Success((200, Seq[Product]))
             
 
             Failure(???)
@@ -46,6 +51,8 @@ package uber.api.yaml {
         val getestimatesPrice = getestimatesPriceAction { input: (Double, Double, Double, Double) =>
             val (start_latitude, start_longitude, end_latitude, end_longitude) = input
             
+            // Response: Success((200, Seq[PriceEstimate]))
+            
 
             Failure(???)
 
@@ -54,6 +61,8 @@ package uber.api.yaml {
         } //////// EOF ////////  getestimatesPriceAction
         val gethistory = gethistoryAction { input: (ErrorCode, ErrorCode) =>
             val (offset, limit) = input
+            
+            // Response: Success((200, Activities))
             
 
             Failure(???)

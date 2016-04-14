@@ -19,6 +19,8 @@ package string_formats.yaml {
         val get = getAction { input: (BinaryString, GetBase64, GetDate, GetDate_time) =>
             val (petId, base64, date, date_time) = input
             
+            // Response: Success((200, Null))
+            
 
             Failure(???)
 
