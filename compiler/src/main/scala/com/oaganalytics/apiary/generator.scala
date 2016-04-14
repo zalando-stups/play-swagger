@@ -52,10 +52,14 @@ object ResourceTranslation {
 }
 import ResourceTranslation._
 
+case class JsObject(override val meta: TypeMeta) extends ProvidedType("JsObject", meta) with PrimitiveType {
+  override val imports = Set("play.api.libs.json.JsObject")
+}
+
 object Generator {
   val emptyMeta = TypeMeta(None)
   val pureObjectName = naming.Reference(List("definitions", "pureJSObject"))
-  val pureObjectDef = ResourceTranslation(List(), Map(), Map(pureObjectName -> CatchAll(Str(None, None), emptyMeta)))
+  val pureObjectDef = ResourceTranslation(List(), Map(), Map(pureObjectName -> JsObject(emptyMeta)))
   val pureObject = TypeRef(pureObjectName)
   val escapees = List(
     " " -> "",
