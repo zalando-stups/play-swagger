@@ -130,8 +130,8 @@ object Generator {
       verb,
       request.dataStructure.map(ds =>
         Parameter(
-          name = "requestBody",
-          typeName = transform(ds, ref / "requestBody"),
+          name = s"${verb.name.toLowerCase}Body",
+          typeName = transform(ds, ref / s"${verb.name.toLowerCase}Body"),
           fixed = None,
           default = None,
           constraint = "", // """[^/]+""", // TODO make this more sophisticated
