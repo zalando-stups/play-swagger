@@ -220,7 +220,7 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
       case ((((call, (marker, length)), start), end)) => start >= 0
     } map {
       case ((((call, (marker, length)), start), end)) =>
-        val code = lines.slice(start + length, end - 1).filter(! _.trim.startsWith("// Response:"))
+        val code = lines.slice(start + length, end - 1)
         val relevantCode = code.takeWhile(!_.contains(eof))
         val deadCode = code.dropWhile(!_.contains(eof)).drop(1).filterNot(_.trim.isEmpty)
         val commentedOut = if (deadCode.isEmpty) "" else deadCode.mkString("/*\n", "\n", "\n*/\n")
@@ -287,7 +287,7 @@ trait PlayScalaControllersGenerator {
       val method = table(call.asReference)("controller")
       val methodWithCode = method + (
         "dead_code"       -> unmanagedParts.get(call).map(_.deadCode).getOrElse(""),
-        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode.trim).getOrElse("Failure(???)")
+        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode.trim).getOrElse("NotImplementedYet")
         )
       methodWithCode
     }

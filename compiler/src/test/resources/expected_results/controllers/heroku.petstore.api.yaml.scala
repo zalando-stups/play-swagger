@@ -18,9 +18,8 @@ package heroku.petstore.api.yaml {
     class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
         val get = getAction { (limit: Int) =>
             
-            // Response: Success((200, Seq[Pet]))
-            
 
+            // Response: Success((200, Seq[Pet]))
             Failure(???)
 
             
@@ -28,9 +27,8 @@ package heroku.petstore.api.yaml {
         } //////// EOF ////////  getAction
         val put = putAction { (pet: PutPet) =>
             
-            // Response: Success((200, Null))
-            
 
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -38,9 +36,8 @@ package heroku.petstore.api.yaml {
         } //////// EOF ////////  putAction
         val post = postAction { (pet: Pet) =>
             
-            // Response: Success((200, Null))
-            
 
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -48,9 +45,8 @@ package heroku.petstore.api.yaml {
         } //////// EOF ////////  postAction
         val getbyPetId = getbyPetIdAction { (petId: String) =>
             
-            // Response: Success((200, Null))
-            
 
+            // Response: Success((200, Null))
             Failure(???)
 
             

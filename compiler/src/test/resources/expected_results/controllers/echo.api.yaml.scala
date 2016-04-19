@@ -18,9 +18,8 @@ package echo {
     class EchoHandler extends EchoHandlerBase {
         val method = methodAction { _ =>
             
-            // Response: Success((200, Null))
-            
 
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -34,9 +33,8 @@ package echo {
         val post = postAction { input: (PostName, PostName) =>
             val (name, year) = input
             
-            // Response: Success((200, PostResponses200))
-            
 
+            // Response: Success((200, PostResponses200))
             Failure(???)
 
             
@@ -44,9 +42,8 @@ package echo {
         } //////// EOF ////////  postAction
         val gettest_pathById = gettest_pathByIdAction { (id: String) =>
             
-            // Response: Success((200, Null))
-            
 
+            // Response: Success((200, Null))
             Failure(???)
 
             

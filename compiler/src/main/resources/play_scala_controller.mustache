@@ -16,8 +16,6 @@ package {{controller.effective_package}} {
             {{else}}{{if method.single_parameter}}
             {{else}} _ =>
             {{/if}}{{/if}}
-            {{for result_type in method.result_types}}// Response: Success(({{result_type.code}}, {{result_type.type}}{{if result_type.isNotLast}}, {{/if}}))
-            {{/for}}
 
             {{method.implementation}}
 

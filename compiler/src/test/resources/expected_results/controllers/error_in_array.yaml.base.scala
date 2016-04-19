@@ -3,19 +3,21 @@ package error_in_array.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
+// import PickAvailableWriteable._ // if you want play to pick the first available writable
 import de.zalando.play.controllers.ArrayWrapper
 
 
 
-
 trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
-    private type getschemaModelActionRequestType       = (ModelSchemaRoot)
-    private type getschemaModelActionType              = getschemaModelActionRequestType => Try[(Int, Any)]
+    sealed trait getschemaModelType[Result] extends ResultWrapper[Result]
+    case class getschemaModel200(result: ModelSchemaRoot)(implicit val writers: List[Writeable[ModelSchemaRoot]]) extends getschemaModelType[ModelSchemaRoot] { val statusCode = 200 }
+    
 
-    private val errorToStatusgetschemaModel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type getschemaModelActionRequestType       = (ModelSchemaRoot)
+    private type getschemaModelActionType[T]            = getschemaModelActionRequestType => getschemaModelType[T]
 
         private def getschemaModelParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -33,19 +35,17 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
         }
 
     val getschemaModelActionConstructor  = Action
-    def getschemaModelAction = (f: getschemaModelActionType) => getschemaModelActionConstructor(getschemaModelParser(Seq[String]())) { request =>
+    def getschemaModelAction[T] = (f: getschemaModelActionType[T]) => getschemaModelActionConstructor(getschemaModelParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getschemaModelResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[ModelSchemaRoot]
-            )
+
             val root = request.body
             
 
                 val result =
                         new SchemaModelGetValidator(root).errors match {
-                            case e if e.isEmpty => processValidgetschemaModelRequest(f)((root))(possibleWriters, getschemaModelResponseMimeType)
+                            case e if e.isEmpty => processValidgetschemaModelRequest(f)((root))(getschemaModelResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getschemaModelResponseMimeType)
                                 BadRequest(l)
@@ -54,25 +54,11 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgetschemaModelRequest[T <: Any](f: getschemaModelActionType)(request: getschemaModelActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusgetschemaModel orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidgetschemaModelRequest[T](f: getschemaModelActionType[T])(request: getschemaModelActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
+    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]     { val statusCode = 204; val result = Results.EmptyContent(); val writers = List(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with getschemaModelType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writers = List(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

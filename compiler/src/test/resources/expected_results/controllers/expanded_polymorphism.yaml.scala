@@ -19,9 +19,8 @@ package expanded {
         val findPets = findPetsAction { input: (PetsGetTags, PetsGetLimit) =>
             val (tags, limit) = input
             
-            // Response: Success((200, Seq[Pet]))
-            
 
+            // Response: Success((200, Seq[Pet]))
             Failure(???)
 
             
@@ -29,9 +28,8 @@ package expanded {
         } //////// EOF ////////  findPetsAction
         val addPet = addPetAction { (pet: NewPet) =>
             
-            // Response: Success((200, Pet))
-            
 
+            // Response: Success((200, Pet))
             Failure(???)
 
             
@@ -39,9 +37,8 @@ package expanded {
         } //////// EOF ////////  addPetAction
         val deletePet = deletePetAction { (id: Long) =>
             
-            // Response: Success((204, Null))
-            
 
+            // Response: Success((204, Null))
             Failure(???)
 
             

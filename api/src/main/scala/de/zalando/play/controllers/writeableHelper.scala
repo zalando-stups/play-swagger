@@ -1,7 +1,8 @@
 package de.zalando.play.controllers
 
-import play.api.http.Writeable
-import play.api.mvc.RequestHeader
+import play.api.mvc.{RequestHeader, Result, Results}
+import play.api.http._
+import Results.Status
 
 case class WriteableWrapper[T](w: Writeable[T], m: Manifest[T])
 
@@ -45,4 +46,16 @@ trait WrappedBodyParsersBase {
     custom.filter(_._2.m.runtimeClass.isAssignableFrom(manifest.runtimeClass)).map { e =>
       e.copy(_2 = e._2.asInstanceOf[ParserWrapper[T]].p) }
   def optionParser[T](implicit manifest: Manifest[T]) = anyParser[Option[T]]
+}
+
+trait ResultWrapper[Result] {
+  def statusCode: Int
+  def result: Result
+  def writers: List[Writeable[Result]]
+  def toResult(mimeType: String): Option[play.api.mvc.Result] = writer(mimeType).map(w => Status(statusCode)(result)(w))
+  def writer(mimeType: String): Option[Writeable[Result]] = writers.find({_.contentType.map(_ == mimeType).getOrElse(true)})
+}
+
+object PickAvailableWriteable {
+  implicit def writers[T: Writeable](): List[Writeable[T]] = List(implicitly[Writeable[T]])
 }
