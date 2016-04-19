@@ -18,10 +18,14 @@ lazy val api = (project in file("api"))
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "com.typesafe.play" %% "play-java-ws" % PlayVersion,
       "org.scalacheck" %% "scalacheck" % "1.12.4",
-      "org.specs2" %% "specs2-scalacheck" % "3.6"
+      "org.specs2" %% "specs2-scalacheck" % "3.6",
+      "me.jeffmay" %% "play-json-tests" % "1.3.0"
     ),
     scalaVersion :=  "2.10.5",
-    crossScalaVersions := Seq(scalaVersion.value, ScalaVersion)
+    crossScalaVersions := Seq(scalaVersion.value, ScalaVersion),
+    resolvers ++= Seq(
+      "jeffmay" at "https://dl.bintray.com/jeffmay/maven"
+    )
   )
 
 // This is the compiler, it does compilation of swagger definitions,

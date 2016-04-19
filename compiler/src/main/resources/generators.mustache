@@ -7,7 +7,7 @@ import Arbitrary._
 import {{import.name}}
 {{/for}}
 
-object Generators {
+object Generators extends play.api.libs.json.scalacheck.JsValueGenerators {
     {{if test_data_aliases}}
 
     {{for alias in test_data_aliases}}
