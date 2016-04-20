@@ -51,11 +51,6 @@ trait WrappedBodyParsersBase {
 trait ResultWrapper[Result] {
   def statusCode: Int
   def result: Result
-  def writers: List[Writeable[Result]]
+  def writer: String => Option[Writeable[Result]]
   def toResult(mimeType: String): Option[play.api.mvc.Result] = writer(mimeType).map(w => Status(statusCode)(result)(w))
-  def writer(mimeType: String): Option[Writeable[Result]] = writers.find({_.contentType.map(_ == mimeType).getOrElse(true)})
-}
-
-object PickAvailableWriteable {
-  implicit def writers[T: Writeable](): List[Writeable[T]] = List(implicitly[Writeable[T]])
 }

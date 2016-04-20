@@ -131,6 +131,11 @@ object PlayBodyParsing extends PlayBodyParsing {
 
   private def parsingErrors2Bytes(mimeType: String): Seq[ParsingError] => Array[Byte] = errors =>
     jacksonMapper(mimeType).writeValueAsBytes(errors)
+
+  implicit def writers[T]: String => Option[Writeable[T]] =
+    mimeType => util.Try(Some(PlayBodyParsing.anyToWritable[T](mimeType))).recover {
+      case _: java.util.NoSuchElementException => None
+    }.get
 }
 
 
