@@ -30,9 +30,12 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults {
 
     val (allActionResults, defaultResultType) = actionResults(call)(table)
 
-    val allHeaders = headers(call) :+ acceptHeader(call)
+    val acceptHeaders = acceptHeader(call)
+
+    val allHeaders    = headers(call)
 
     Map(
+      "accept_headers"        -> acceptHeaders,
       "result_types"          -> allActionResults,
       "default_result_type"   -> defaultResultType,
       "verb_name"             -> call.verb.name,
@@ -44,14 +47,11 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults {
     ) ++ parameters(call)(table)
   }
 
-  // FIXME should try all possible input types
-  def acceptHeader(call: ApiCall): Map[String, String] = {
-    val header = call.mimeIn.map("\"" + _.name + "\"").headOption.getOrElse("\"application/json\"")
-    Map(
-      "name" -> "Accept",
-      "parameter_name" -> header
-    )
-  }
+  def acceptHeader(call: ApiCall): Set[Map[String, String]] =
+    call.mimeIn.map(_.name).map { header =>
+      Map("name" -> header)
+    }
+
 
   // TODO should try all possible marshallers
   def bodyParameter(call: ApiCall, resultType: Option[String]) = {

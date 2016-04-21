@@ -13,6 +13,7 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
 import play.api.http.Writeable
+import com.fasterxml.jackson.databind.ObjectMapper
 
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
@@ -37,8 +38,8 @@ import Generators._
 
       private def parserConstructor(mimeType: String) = PlayBodyParsing.jacksonMapper(mimeType)
 
-      def parseResponseContent[T](content: String, mimeType: Option[String], expectedType: Class[T]) =
-        parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
+      def parseResponseContent[T](mapper: ObjectMapper, content: String, mimeType: Option[String], expectedType: Class[T]) =
+        mapper.readValue(content, expectedType)
 
 
     "GET /topics/{topic}/partitions/{partition}" should {
@@ -47,40 +48,60 @@ import Generators._
             val (topic, partition) = input
 
             val url = s"""/topics/${toPath(topic)}/partitions/${toPath(partition)}"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new TopicsTopicPartitionsPartitionGetValidator(topic, partition).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some(""),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
+
+
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new TopicsTopicPartitionsPartitionGetValidator(topic, partition).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, String)) = {
             val (topic, partition) = input
             
             val url = s"""/topics/${toPath(topic)}/partitions/${toPath(partition)}"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new TopicsTopicPartitionsPartitionGetValidator(topic, partition).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some(""),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new TopicsTopicPartitionsPartitionGetValidator(topic, partition).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    200 -> classOf[TopicPartition]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -115,40 +136,68 @@ import Generators._
             val (stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic) = input
 
             val url = s"""/topics/${toPath(topic)}/events?${toQuery("stream_timeout", stream_timeout)}&${toQuery("stream_limit", stream_limit)}&${toQuery("batch_flush_timeout", batch_flush_timeout)}&${toQuery("batch_limit", batch_limit)}&${toQuery("batch_keep_alive_limit", batch_keep_alive_limit)}"""
-            val headers = Seq("x_nakadi_cursors" -> toHeader(x_nakadi_cursors), "Accept" -> toHeader("application/json"))
-
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new TopicsTopicEventsGetValidator(stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some(""),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq(
+                        "x_nakadi_cursors" -> toHeader(x_nakadi_cursors)
+                        ) :+ ("Accept" -> acceptHeader)
+
+
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new TopicsTopicEventsGetValidator(stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)) = {
             val (stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic) = input
             
             val url = s"""/topics/${toPath(topic)}/events?${toQuery("stream_timeout", stream_timeout)}&${toQuery("stream_limit", stream_limit)}&${toQuery("batch_flush_timeout", batch_flush_timeout)}&${toQuery("batch_limit", batch_limit)}&${toQuery("batch_keep_alive_limit", batch_keep_alive_limit)}"""
-            val headers = Seq("x_nakadi_cursors" -> toHeader(x_nakadi_cursors), "Accept" -> toHeader("application/json"))
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new TopicsTopicEventsGetValidator(stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some(""),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq(
+                        "x_nakadi_cursors" -> toHeader(x_nakadi_cursors)
+                    ) :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new TopicsTopicEventsGetValidator(stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    500 -> classOf[Problem], 
+                    404 -> classOf[Problem], 
+                    401 -> classOf[Problem], 
+                    400 -> classOf[Problem], 
+                    200 -> classOf[SimpleStreamEvent]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -193,40 +242,64 @@ import Generators._
             val (start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit) = input
 
             val url = s"""/topics/${toPath(topic)}/partitions/${toPath(partition)}/events?${toQuery("start_from", start_from)}&${toQuery("stream_limit", stream_limit)}&${toQuery("batch_limit", batch_limit)}&${toQuery("batch_flush_timeout", batch_flush_timeout)}&${toQuery("stream_timeout", stream_timeout)}&${toQuery("batch_keep_alive_limit", batch_keep_alive_limit)}"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new TopicsTopicPartitionsPartitionEventsGetValidator(start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some(""),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
+
+
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new TopicsTopicPartitionsPartitionEventsGetValidator(start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)) = {
             val (start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit) = input
             
             val url = s"""/topics/${toPath(topic)}/partitions/${toPath(partition)}/events?${toQuery("start_from", start_from)}&${toQuery("stream_limit", stream_limit)}&${toQuery("batch_limit", batch_limit)}&${toQuery("batch_flush_timeout", batch_flush_timeout)}&${toQuery("stream_timeout", stream_timeout)}&${toQuery("batch_keep_alive_limit", batch_keep_alive_limit)}"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new TopicsTopicPartitionsPartitionEventsGetValidator(start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some(""),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new TopicsTopicPartitionsPartitionEventsGetValidator(start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    500 -> classOf[Problem], 
+                    404 -> classOf[Problem], 
+                    401 -> classOf[Problem], 
+                    400 -> classOf[Problem], 
+                    200 -> classOf[SimpleStreamEvent]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -273,20 +346,28 @@ import Generators._
             val (topic, event) = input
 
             val url = s"""/topics/${toPath(topic)}/events"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-                val parsed_event = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(event)
-
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_event)).get
-            val errors = new TopicsTopicEventsPostValidator(topic, event).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" + "and body [" + parsed_event + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some(""),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
+
+                    val parsed_event = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(event)
+
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_event)).get
+                val errors = new TopicsTopicEventsPostValidator(topic, event).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_event + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, TopicsTopicEventsBatchPostEvent)) = {
             val (topic, event) = input
@@ -294,22 +375,38 @@ import Generators._
             val parsed_event = parserConstructor("application/json").writeValueAsString(event)
             
             val url = s"""/topics/${toPath(topic)}/events"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_event)).get
-            val errors = new TopicsTopicEventsPostValidator(topic, event).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_event + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some(""),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_event)).get
+                val errors = new TopicsTopicEventsPostValidator(topic, event).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    201 -> classOf[Null], 
+                    403 -> classOf[Problem], 
+                    503 -> classOf[Problem], 
+                    401 -> classOf[Problem], 
+                    422 -> classOf[Problem]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_event + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -343,39 +440,59 @@ import Generators._
 
 
             val url = s"""/topics/${toPath(topic)}/partitions"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new TopicsTopicPartitionsGetValidator(topic).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some(""),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
+
+
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new TopicsTopicPartitionsGetValidator(topic).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(topic: String) = {
             
             val url = s"""/topics/${toPath(topic)}/partitions"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new TopicsTopicPartitionsGetValidator(topic).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some(""),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new TopicsTopicPartitionsGetValidator(topic).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    200 -> classOf[Seq[TopicPartition]]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -406,20 +523,28 @@ import Generators._
             val (topic, event) = input
 
             val url = s"""/topics/${toPath(topic)}/events/batch"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-                val parsed_event = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(event)
-
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_event)).get
-            val errors = new TopicsTopicEventsBatchPostValidator(topic, event).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" + "and body [" + parsed_event + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some(""),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
+
+                    val parsed_event = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(event)
+
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_event)).get
+                val errors = new TopicsTopicEventsBatchPostValidator(topic, event).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_event + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, TopicsTopicEventsBatchPostEvent)) = {
             val (topic, event) = input
@@ -427,22 +552,38 @@ import Generators._
             val parsed_event = parserConstructor("application/json").writeValueAsString(event)
             
             val url = s"""/topics/${toPath(topic)}/events/batch"""
-            val headers = Seq("Accept" -> toHeader("application/json"))
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_event)).get
-            val errors = new TopicsTopicEventsBatchPostValidator(topic, event).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_event + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some(""),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/json"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_event)).get
+                val errors = new TopicsTopicEventsBatchPostValidator(topic, event).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    201 -> classOf[Null], 
+                    403 -> classOf[Problem], 
+                    503 -> classOf[Problem], 
+                    401 -> classOf[Problem], 
+                    422 -> classOf[Problem]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_event + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
