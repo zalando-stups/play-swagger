@@ -62,7 +62,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" {{for b in test.body_param}}+ "and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("{{test.expected_result_type}}"),
+                requestContentType_(path) ?= Some("{{test.default_result_type}}"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -92,7 +92,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" {{for b in test.body_param}}+ "and body [" + parsed_{{b.body_parameter_name}} + "]"{{/for}}) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("{{test.expected_result_type}}"),
+                requestContentType_(path) ?= Some("{{test.default_result_type}}"),
                 errors.isEmpty ?= true
             )
         }

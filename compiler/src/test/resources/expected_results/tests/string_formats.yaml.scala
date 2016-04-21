@@ -47,7 +47,7 @@ import Generators._
             val (petId, base64, date, date_time) = input
 
             val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
                 val parsed_petId = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(petId)
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)).get
@@ -57,7 +57,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_petId + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -68,7 +68,7 @@ import Generators._
             val parsed_petId = parserConstructor("application/json").writeValueAsString(petId)
             
             val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)).get
             val errors = new GetValidator(petId, base64, date, date_time).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -81,7 +81,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_petId + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.isEmpty ?= true
             )
         }

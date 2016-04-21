@@ -41,15 +41,13 @@ import Generators._
         parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
 
 
-
     "GET /v1/history" should {
         def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
 
+            val (offset, limit) = input
 
-                val (offset, limit) = input
-            
             val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new HistoryGetValidator(offset, limit).errors
@@ -58,19 +56,20 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (ErrorCode, ErrorCode)) = {
-                val (offset, limit) = input
-                        
+            val (offset, limit) = input
+            
             val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new HistoryGetValidator(offset, limit).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -79,7 +78,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -110,15 +109,13 @@ import Generators._
 
     }
 
-
     "GET /v1/estimates/time" should {
         def testInvalidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
 
+            val (start_latitude, start_longitude, customer_uuid, product_id) = input
 
-                val (start_latitude, start_longitude, customer_uuid, product_id) = input
-            
             val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors
@@ -127,19 +124,20 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
-                val (start_latitude, start_longitude, customer_uuid, product_id) = input
-                        
+            val (start_latitude, start_longitude, customer_uuid, product_id) = input
+            
             val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -148,7 +146,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -183,15 +181,13 @@ import Generators._
 
     }
 
-
     "GET /v1/products" should {
         def testInvalidInput(input: (Double, Double)) = {
 
+            val (latitude, longitude) = input
 
-                val (latitude, longitude) = input
-            
             val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new ProductsGetValidator(latitude, longitude).errors
@@ -200,19 +196,20 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (Double, Double)) = {
-                val (latitude, longitude) = input
-                        
+            val (latitude, longitude) = input
+            
             val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new ProductsGetValidator(latitude, longitude).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -221,7 +218,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -252,15 +249,13 @@ import Generators._
 
     }
 
-
     "GET /v1/estimates/price" should {
         def testInvalidInput(input: (Double, Double, Double, Double)) = {
 
+            val (start_latitude, start_longitude, end_latitude, end_longitude) = input
 
-                val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-            
             val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors
@@ -269,19 +264,20 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(input: (Double, Double, Double, Double)) = {
-                val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-                        
+            val (start_latitude, start_longitude, end_latitude, end_longitude) = input
+            
             val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -290,7 +286,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -324,5 +320,4 @@ import Generators._
         }
 
     }
-
 }

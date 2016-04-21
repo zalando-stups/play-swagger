@@ -41,13 +41,12 @@ import Generators._
         parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
 
 
-
     "GET /schema/model" should {
         def testInvalidInput(root: ModelSchemaRoot) = {
 
 
             val url = s"""/schema/model"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
                 val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
@@ -57,19 +56,21 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(root: ModelSchemaRoot) = {            
-                val parsed_root = parserConstructor("application/json").writeValueAsString(root)
+        def testValidInput(root: ModelSchemaRoot) = {
+            
+            val parsed_root = parserConstructor("application/json").writeValueAsString(root)
             
             val url = s"""/schema/model"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
             val errors = new SchemaModelGetValidator(root).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -78,7 +79,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.isEmpty ?= true
             )
         }
@@ -104,5 +105,4 @@ import Generators._
         }
 
     }
-
 }

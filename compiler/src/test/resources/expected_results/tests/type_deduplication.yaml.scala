@@ -47,8 +47,8 @@ import Generators._
             val (user_id, user) = input
 
             val url = s"""/api/users/${toPath(user_id)}"""
-            val headers = Seq()
-                val parsed_user = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(user)
+            val headers = Seq("Accept" -> toHeader("application/json"))
+                val parsed_user = PlayBodyParsing.jacksonMapper("Error").writeValueAsString(user)
 
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*).withBody(parsed_user)).get
             val errors = new UsersUser_idDeleteValidator(user_id, user).errors
@@ -57,7 +57,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_user + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -65,10 +65,10 @@ import Generators._
         def testValidInput(input: (String, User)) = {
             val (user_id, user) = input
             
-            val parsed_user = parserConstructor("application/json").writeValueAsString(user)
+            val parsed_user = parserConstructor("Error").writeValueAsString(user)
             
             val url = s"""/api/users/${toPath(user_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*).withBody(parsed_user)).get
             val errors = new UsersUser_idDeleteValidator(user_id, user).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -81,7 +81,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_user + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -117,8 +117,8 @@ import Generators._
 
 
             val url = s"""/api/users"""
-            val headers = Seq()
-                val parsed_signin_data = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(signin_data)
+            val headers = Seq("Accept" -> toHeader("application/json"))
+                val parsed_signin_data = PlayBodyParsing.jacksonMapper("Error").writeValueAsString(signin_data)
 
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_signin_data)).get
             val errors = new UsersPostValidator(signin_data).errors
@@ -127,17 +127,17 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_signin_data + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
         def testValidInput(signin_data: SigninData) = {
             
-            val parsed_signin_data = parserConstructor("application/json").writeValueAsString(signin_data)
+            val parsed_signin_data = parserConstructor("Error").writeValueAsString(signin_data)
             
             val url = s"""/api/users"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_signin_data)).get
             val errors = new UsersPostValidator(signin_data).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -150,7 +150,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_signin_data + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -182,7 +182,7 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}/water_needs"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idWater_needsGetValidator(plant_id).errors
@@ -191,7 +191,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -199,7 +199,7 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}/water_needs"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idWater_needsGetValidator(plant_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -212,7 +212,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -245,8 +245,8 @@ import Generators._
             val (plant_id, sunlight_needs) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/sunlight_needs"""
-            val headers = Seq()
-                val parsed_sunlight_needs = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(sunlight_needs)
+            val headers = Seq("Accept" -> toHeader("application/json"))
+                val parsed_sunlight_needs = PlayBodyParsing.jacksonMapper("Error").writeValueAsString(sunlight_needs)
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_sunlight_needs)).get
             val errors = new PlantsPlant_idSunlight_needsPutValidator(plant_id, sunlight_needs).errors
@@ -255,7 +255,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_sunlight_needs + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -263,10 +263,10 @@ import Generators._
         def testValidInput(input: (String, SunlightNeeds)) = {
             val (plant_id, sunlight_needs) = input
             
-            val parsed_sunlight_needs = parserConstructor("application/json").writeValueAsString(sunlight_needs)
+            val parsed_sunlight_needs = parserConstructor("Error").writeValueAsString(sunlight_needs)
             
             val url = s"""/api/plants/${toPath(plant_id)}/sunlight_needs"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_sunlight_needs)).get
             val errors = new PlantsPlant_idSunlight_needsPutValidator(plant_id, sunlight_needs).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -279,7 +279,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_sunlight_needs + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -315,7 +315,7 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idGetValidator(plant_id).errors
@@ -324,7 +324,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -332,7 +332,7 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idGetValidator(plant_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -345,7 +345,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -378,7 +378,7 @@ import Generators._
             val (plant_id, watering_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/waterings/${toPath(watering_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idWateringsWatering_idGetValidator(plant_id, watering_id).errors
@@ -387,7 +387,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -396,7 +396,7 @@ import Generators._
             val (plant_id, watering_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/waterings/${toPath(watering_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idWateringsWatering_idGetValidator(plant_id, watering_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -409,7 +409,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -446,8 +446,8 @@ import Generators._
             val (plant_id, water_needs) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/water_needs"""
-            val headers = Seq()
-                val parsed_water_needs = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(water_needs)
+            val headers = Seq("Accept" -> toHeader("application/json"))
+                val parsed_water_needs = PlayBodyParsing.jacksonMapper("Error").writeValueAsString(water_needs)
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_water_needs)).get
             val errors = new PlantsPlant_idWater_needsPutValidator(plant_id, water_needs).errors
@@ -456,7 +456,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_water_needs + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -464,10 +464,10 @@ import Generators._
         def testValidInput(input: (String, WaterNeeds)) = {
             val (plant_id, water_needs) = input
             
-            val parsed_water_needs = parserConstructor("application/json").writeValueAsString(water_needs)
+            val parsed_water_needs = parserConstructor("Error").writeValueAsString(water_needs)
             
             val url = s"""/api/plants/${toPath(plant_id)}/water_needs"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_water_needs)).get
             val errors = new PlantsPlant_idWater_needsPutValidator(plant_id, water_needs).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -480,7 +480,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_water_needs + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -516,7 +516,7 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idLocationGetValidator(plant_id).errors
@@ -525,7 +525,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -533,7 +533,7 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idLocationGetValidator(plant_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -546,7 +546,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -579,7 +579,7 @@ import Generators._
             val (user_id, limit, offset) = input
 
             val url = s"""/api/user/${toPath(user_id)}/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UserUser_idPlantsGetValidator(user_id, limit, offset).errors
@@ -588,7 +588,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -597,7 +597,7 @@ import Generators._
             val (user_id, limit, offset) = input
             
             val url = s"""/api/user/${toPath(user_id)}/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UserUser_idPlantsGetValidator(user_id, limit, offset).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -610,7 +610,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -648,7 +648,7 @@ import Generators._
 
 
             val url = s"""/api/users/${toPath(user_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UsersUser_idGetValidator(user_id).errors
@@ -657,7 +657,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -665,7 +665,7 @@ import Generators._
         def testValidInput(user_id: String) = {
             
             val url = s"""/api/users/${toPath(user_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UsersUser_idGetValidator(user_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -678,7 +678,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -711,8 +711,8 @@ import Generators._
             val (plant_id, location) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val headers = Seq()
-                val parsed_location = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(location)
+            val headers = Seq("Accept" -> toHeader("application/json"))
+                val parsed_location = PlayBodyParsing.jacksonMapper("Error").writeValueAsString(location)
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_location)).get
             val errors = new PlantsPlant_idLocationPutValidator(plant_id, location).errors
@@ -721,7 +721,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_location + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -729,10 +729,10 @@ import Generators._
         def testValidInput(input: (String, Location)) = {
             val (plant_id, location) = input
             
-            val parsed_location = parserConstructor("application/json").writeValueAsString(location)
+            val parsed_location = parserConstructor("Error").writeValueAsString(location)
             
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_location)).get
             val errors = new PlantsPlant_idLocationPutValidator(plant_id, location).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -745,7 +745,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_location + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -782,7 +782,7 @@ import Generators._
             val (plant_id, limit, offset) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/waterings?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idWateringsGetValidator(plant_id, limit, offset).errors
@@ -791,7 +791,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -800,7 +800,7 @@ import Generators._
             val (plant_id, limit, offset) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/waterings?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idWateringsGetValidator(plant_id, limit, offset).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -813,7 +813,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -852,7 +852,7 @@ import Generators._
             val (plant_id, watering_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/waterings/${toPath(watering_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idWateringsWatering_idPutValidator(plant_id, watering_id).errors
@@ -861,7 +861,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -870,7 +870,7 @@ import Generators._
             val (plant_id, watering_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/waterings/${toPath(watering_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idWateringsWatering_idPutValidator(plant_id, watering_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -883,7 +883,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -920,7 +920,7 @@ import Generators._
             val (limit, offset) = input
 
             val url = s"""/api/users?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UsersGetValidator(limit, offset).errors
@@ -929,7 +929,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -938,7 +938,7 @@ import Generators._
             val (limit, offset) = input
             
             val url = s"""/api/users?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UsersGetValidator(limit, offset).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -951,7 +951,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -987,7 +987,7 @@ import Generators._
 
 
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UsersUser_idPictureGetValidator(user_id).errors
@@ -996,7 +996,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1004,7 +1004,7 @@ import Generators._
         def testValidInput(user_id: String) = {
             
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new UsersUser_idPictureGetValidator(user_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1017,7 +1017,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1050,8 +1050,8 @@ import Generators._
             val (user_id, user) = input
 
             val url = s"""/api/users/${toPath(user_id)}"""
-            val headers = Seq()
-                val parsed_user = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(user)
+            val headers = Seq("Accept" -> toHeader("application/json"))
+                val parsed_user = PlayBodyParsing.jacksonMapper("Error").writeValueAsString(user)
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_user)).get
             val errors = new UsersUser_idPutValidator(user_id, user).errors
@@ -1060,7 +1060,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_user + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1068,10 +1068,10 @@ import Generators._
         def testValidInput(input: (String, User)) = {
             val (user_id, user) = input
             
-            val parsed_user = parserConstructor("application/json").writeValueAsString(user)
+            val parsed_user = parserConstructor("Error").writeValueAsString(user)
             
             val url = s"""/api/users/${toPath(user_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_user)).get
             val errors = new UsersUser_idPutValidator(user_id, user).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1084,7 +1084,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_user + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1121,7 +1121,7 @@ import Generators._
             val (plant_id, picture_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idPicturesPicture_idDeleteValidator(plant_id, picture_id).errors
@@ -1130,7 +1130,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1139,7 +1139,7 @@ import Generators._
             val (plant_id, picture_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idPicturesPicture_idDeleteValidator(plant_id, picture_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1152,7 +1152,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1188,7 +1188,7 @@ import Generators._
 
 
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*)).get
             val errors = new AreasArea_idPutValidator(area_id).errors
@@ -1197,7 +1197,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1205,7 +1205,7 @@ import Generators._
         def testValidInput(area_id: String) = {
             
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*)).get
             val errors = new AreasArea_idPutValidator(area_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1218,7 +1218,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1251,7 +1251,7 @@ import Generators._
             val (limit, offset) = input
 
             val url = s"""/api/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsGetValidator(limit, offset).errors
@@ -1260,7 +1260,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1269,7 +1269,7 @@ import Generators._
             val (limit, offset) = input
             
             val url = s"""/api/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsGetValidator(limit, offset).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1282,7 +1282,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1318,7 +1318,7 @@ import Generators._
 
 
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*)).get
             val errors = new UsersUser_idPicturePutValidator(user_id).errors
@@ -1327,7 +1327,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1335,7 +1335,7 @@ import Generators._
         def testValidInput(user_id: String) = {
             
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*)).get
             val errors = new UsersUser_idPicturePutValidator(user_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1348,7 +1348,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1380,7 +1380,7 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idLocationDeleteValidator(plant_id).errors
@@ -1389,7 +1389,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1397,7 +1397,7 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idLocationDeleteValidator(plant_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1410,7 +1410,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1442,7 +1442,7 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idDeleteValidator(plant_id).errors
@@ -1451,7 +1451,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1459,7 +1459,7 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idDeleteValidator(plant_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1472,7 +1472,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1505,8 +1505,8 @@ import Generators._
             val (plant_id, plant) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val headers = Seq()
-                val parsed_plant = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(plant)
+            val headers = Seq("Accept" -> toHeader("application/json"))
+                val parsed_plant = PlayBodyParsing.jacksonMapper("Error").writeValueAsString(plant)
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_plant)).get
             val errors = new PlantsPlant_idPutValidator(plant_id, plant).errors
@@ -1515,7 +1515,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_plant + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1523,10 +1523,10 @@ import Generators._
         def testValidInput(input: (String, Plant)) = {
             val (plant_id, plant) = input
             
-            val parsed_plant = parserConstructor("application/json").writeValueAsString(plant)
+            val parsed_plant = parserConstructor("Error").writeValueAsString(plant)
             
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_plant)).get
             val errors = new PlantsPlant_idPutValidator(plant_id, plant).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1539,7 +1539,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_plant + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1576,7 +1576,7 @@ import Generators._
             val (limit, offset) = input
 
             val url = s"""/api/areas?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new AreasGetValidator(limit, offset).errors
@@ -1585,7 +1585,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1594,7 +1594,7 @@ import Generators._
             val (limit, offset) = input
             
             val url = s"""/api/areas?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new AreasGetValidator(limit, offset).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1607,7 +1607,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1644,7 +1644,7 @@ import Generators._
             val (plant_id, picture_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idPicturesPicture_idPutValidator(plant_id, picture_id).errors
@@ -1653,7 +1653,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1662,7 +1662,7 @@ import Generators._
             val (plant_id, picture_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idPicturesPicture_idPutValidator(plant_id, picture_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1675,7 +1675,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1711,7 +1711,7 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}/sunlight_needs"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idSunlight_needsGetValidator(plant_id).errors
@@ -1720,7 +1720,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1728,7 +1728,7 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}/sunlight_needs"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idSunlight_needsGetValidator(plant_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1741,7 +1741,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1773,7 +1773,7 @@ import Generators._
 
 
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new AreasArea_idDeleteValidator(area_id).errors
@@ -1782,7 +1782,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1790,7 +1790,7 @@ import Generators._
         def testValidInput(area_id: String) = {
             
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new AreasArea_idDeleteValidator(area_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1803,7 +1803,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1835,7 +1835,7 @@ import Generators._
 
 
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new UsersUser_idPictureDeleteValidator(user_id).errors
@@ -1844,7 +1844,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1852,7 +1852,7 @@ import Generators._
         def testValidInput(user_id: String) = {
             
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
             val errors = new UsersUser_idPictureDeleteValidator(user_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1865,7 +1865,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1898,7 +1898,7 @@ import Generators._
             val (plant_id, picture_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idPicturesPicture_idGetValidator(plant_id, picture_id).errors
@@ -1907,7 +1907,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1916,7 +1916,7 @@ import Generators._
             val (plant_id, picture_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idPicturesPicture_idGetValidator(plant_id, picture_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1929,7 +1929,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -1965,7 +1965,7 @@ import Generators._
 
 
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new AreasArea_idGetValidator(area_id).errors
@@ -1974,7 +1974,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -1982,7 +1982,7 @@ import Generators._
         def testValidInput(area_id: String) = {
             
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new AreasArea_idGetValidator(area_id).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -1995,7 +1995,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }
@@ -2028,7 +2028,7 @@ import Generators._
             val (plant_id, limit, offset) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/pictures?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idPicturesGetValidator(plant_id, limit, offset).errors
@@ -2037,7 +2037,7 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
@@ -2046,7 +2046,7 @@ import Generators._
             val (plant_id, limit, offset) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PlantsPlant_idPicturesGetValidator(plant_id, limit, offset).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
@@ -2059,7 +2059,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some("Error"),
                 errors.isEmpty ?= true
             )
         }

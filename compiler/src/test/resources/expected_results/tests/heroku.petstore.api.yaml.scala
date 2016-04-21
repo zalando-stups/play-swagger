@@ -41,13 +41,12 @@ import Generators._
         parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
 
 
-
     "PUT /pet/" should {
         def testInvalidInput(pet: PutPet) = {
 
 
             val url = s"""/pet/"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
                 val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
 
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_pet)).get
@@ -57,19 +56,21 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(pet: PutPet) = {            
-                val parsed_pet = parserConstructor("application/json").writeValueAsString(pet)
+        def testValidInput(pet: PutPet) = {
+            
+            val parsed_pet = parserConstructor("application/json").writeValueAsString(pet)
             
             val url = s"""/pet/"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_pet)).get
             val errors = new PutValidator(pet).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -78,7 +79,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.isEmpty ?= true
             )
         }
@@ -105,13 +106,12 @@ import Generators._
 
     }
 
-
     "GET /pet/" should {
         def testInvalidInput(limit: Int) = {
 
 
             val url = s"""/pet/?${toQuery("limit", limit)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new GetValidator(limit).errors
@@ -120,17 +120,19 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(limit: Int) = {            
+        def testValidInput(limit: Int) = {
+            
             val url = s"""/pet/?${toQuery("limit", limit)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new GetValidator(limit).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -139,7 +141,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.isEmpty ?= true
             )
         }
@@ -166,13 +168,12 @@ import Generators._
 
     }
 
-
     "GET /pet/{petId}" should {
         def testInvalidInput(petId: String) = {
 
 
             val url = s"""/pet/${toPath(petId)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
 
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetIdGetValidator(petId).errors
@@ -181,17 +182,19 @@ import Generators._
 
             ("given an URL: [" + url + "]" ) |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(petId: String) = {            
+        def testValidInput(petId: String) = {
+            
             val url = s"""/pet/${toPath(petId)}"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
             val errors = new PetIdGetValidator(petId).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -200,7 +203,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" ) |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.isEmpty ?= true
             )
         }
@@ -227,13 +230,12 @@ import Generators._
 
     }
 
-
     "POST /pet/" should {
         def testInvalidInput(pet: Pet) = {
 
 
             val url = s"""/pet/"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
                 val parsed_pet = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(pet)
 
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
@@ -243,19 +245,21 @@ import Generators._
 
             ("given an URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
                 requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.nonEmpty ?= true,
                 all(validations:_*)
             )
         }
-        def testValidInput(pet: Pet) = {            
-                val parsed_pet = parserConstructor("application/json").writeValueAsString(pet)
+        def testValidInput(pet: Pet) = {
+            
+            val parsed_pet = parserConstructor("application/json").writeValueAsString(pet)
             
             val url = s"""/pet/"""
-            val headers = Seq()
+            val headers = Seq("Accept" -> toHeader("application/json"))
             val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
             val errors = new PostValidator(pet).errors
             val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+
             val expectedCode = requestStatusCode_(path)
             val expectedResponseType = possibleResponseTypes(expectedCode)
 
@@ -264,7 +268,7 @@ import Generators._
             }
             ("given an URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
                 parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
+                requestContentType_(path) ?= Some(""),
                 errors.isEmpty ?= true
             )
         }
@@ -290,5 +294,4 @@ import Generators._
         }
 
     }
-
 }
