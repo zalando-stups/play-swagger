@@ -13,6 +13,7 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
 import play.api.http.Writeable
+import com.fasterxml.jackson.databind.ObjectMapper
 
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
@@ -37,8 +38,8 @@ import Generators._
 
       private def parserConstructor(mimeType: String) = PlayBodyParsing.jacksonMapper(mimeType)
 
-      def parseResponseContent[T](content: String, mimeType: Option[String], expectedType: Class[T]) =
-        parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
+      def parseResponseContent[T](mapper: ObjectMapper, content: String, mimeType: Option[String], expectedType: Class[T]) =
+        mapper.readValue(content, expectedType)
 
 
     "POST /v2/users" should {
@@ -46,42 +47,56 @@ import Generators._
 
 
             val url = s"""/v2/users"""
-            val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new UsersPostValidator(body).errors
+                    val parsed_body = PlayBodyParsing.jacksonMapper("Null").writeValueAsString(body)
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new UsersPostValidator(body).errors
 
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(body: UsersUsernamePutBody) = {
             
-            val parsed_body = parserConstructor("application/json").writeValueAsString(body)
+            val parsed_body = parserConstructor("Null").writeValueAsString(body)
             
             val url = s"""/v2/users"""
-            val headers = Seq()
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new UsersPostValidator(body).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new UsersPostValidator(body).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map.empty[Int,Class[Any]]
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -111,42 +126,66 @@ import Generators._
 
 
             val url = s"""/v2/pets"""
-            val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new PetsPostValidator(body).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/json", 
+            
+               "application/xml"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
+
+                    val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new PetsPostValidator(body).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(body: PetsPostBody) = {
             
             val parsed_body = parserConstructor("application/json").writeValueAsString(body)
             
             val url = s"""/v2/pets"""
-            val headers = Seq()
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new PetsPostValidator(body).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/json", 
+            
+               "application/xml"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new PetsPostValidator(body).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    405 -> classOf[Null]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -176,42 +215,68 @@ import Generators._
 
 
             val url = s"""/v2/pets"""
-            val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
-
-            val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new PetsPutValidator(body).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/json", 
+            
+               "application/xml"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
+
+                    val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+
+                val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new PetsPutValidator(body).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(body: PetsPostBody) = {
             
             val parsed_body = parserConstructor("application/json").writeValueAsString(body)
             
             val url = s"""/v2/pets"""
-            val headers = Seq()
-            val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new PetsPutValidator(body).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/json", 
+            
+               "application/xml"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new PetsPutValidator(body).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    405 -> classOf[Null], 
+                    404 -> classOf[Null], 
+                    400 -> classOf[Null]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -241,39 +306,56 @@ import Generators._
 
 
             val url = s"""/v2/pets/findByStatus?${toQuery("status", status)}"""
-            val headers = Seq()
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsFindByStatusGetValidator(status).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new PetsFindByStatusGetValidator(status).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(status: PetsFindByStatusGetStatus) = {
             
             val url = s"""/v2/pets/findByStatus?${toQuery("status", status)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsFindByStatusGetValidator(status).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new PetsFindByStatusGetValidator(status).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    200 -> classOf[Seq[Pet]], 
+                    400 -> classOf[Null]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -303,42 +385,59 @@ import Generators._
 
 
             val url = s"""/v2/stores/order"""
-            val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new StoresOrderPostValidator(body).errors
+                    val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new StoresOrderPostValidator(body).errors
 
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(body: StoresOrderPostBody) = {
             
             val parsed_body = parserConstructor("application/json").writeValueAsString(body)
             
             val url = s"""/v2/stores/order"""
-            val headers = Seq()
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new StoresOrderPostValidator(body).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new StoresOrderPostValidator(body).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    400 -> classOf[Null], 
+                    200 -> classOf[Order]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -368,42 +467,56 @@ import Generators._
 
 
             val url = s"""/v2/users/createWithArray"""
-            val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new UsersCreateWithArrayPostValidator(body).errors
+                    val parsed_body = PlayBodyParsing.jacksonMapper("Null").writeValueAsString(body)
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new UsersCreateWithArrayPostValidator(body).errors
 
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(body: UsersCreateWithListPostBody) = {
             
-            val parsed_body = parserConstructor("application/json").writeValueAsString(body)
+            val parsed_body = parserConstructor("Null").writeValueAsString(body)
             
             val url = s"""/v2/users/createWithArray"""
-            val headers = Seq()
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new UsersCreateWithArrayPostValidator(body).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new UsersCreateWithArrayPostValidator(body).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map.empty[Int,Class[Any]]
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -434,40 +547,57 @@ import Generators._
             val (username, password) = input
 
             val url = s"""/v2/users/login?${toQuery("username", username)}&${toQuery("password", password)}"""
-            val headers = Seq()
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new UsersLoginGetValidator(username, password).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new UsersLoginGetValidator(username, password).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (OrderStatus, OrderStatus)) = {
             val (username, password) = input
             
             val url = s"""/v2/users/login?${toQuery("username", username)}&${toQuery("password", password)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new UsersLoginGetValidator(username, password).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new UsersLoginGetValidator(username, password).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    200 -> classOf[String], 
+                    400 -> classOf[Null]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -501,39 +631,57 @@ import Generators._
 
 
             val url = s"""/v2/stores/order/${toPath(orderId)}"""
-            val headers = Seq()
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new StoresOrderOrderIdGetValidator(orderId).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new StoresOrderOrderIdGetValidator(orderId).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(orderId: String) = {
             
             val url = s"""/v2/stores/order/${toPath(orderId)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new StoresOrderOrderIdGetValidator(orderId).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new StoresOrderOrderIdGetValidator(orderId).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    404 -> classOf[Null], 
+                    400 -> classOf[Null], 
+                    200 -> classOf[Order]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -563,39 +711,57 @@ import Generators._
 
 
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val headers = Seq()
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsPetIdGetValidator(petId).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new PetsPetIdGetValidator(petId).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(petId: Long) = {
             
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsPetIdGetValidator(petId).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new PetsPetIdGetValidator(petId).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    404 -> classOf[Null], 
+                    400 -> classOf[Null], 
+                    200 -> classOf[Pet]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -625,39 +791,57 @@ import Generators._
 
 
             val url = s"""/v2/users/${toPath(username)}"""
-            val headers = Seq()
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new UsersUsernameGetValidator(username).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new UsersUsernameGetValidator(username).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(username: String) = {
             
             val url = s"""/v2/users/${toPath(username)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new UsersUsernameGetValidator(username).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new UsersUsernameGetValidator(username).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    404 -> classOf[Null], 
+                    400 -> classOf[Null], 
+                    200 -> classOf[User]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -687,42 +871,56 @@ import Generators._
 
 
             val url = s"""/v2/users/createWithList"""
-            val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new UsersCreateWithListPostValidator(body).errors
+                    val parsed_body = PlayBodyParsing.jacksonMapper("Null").writeValueAsString(body)
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new UsersCreateWithListPostValidator(body).errors
 
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(body: UsersCreateWithListPostBody) = {
             
-            val parsed_body = parserConstructor("application/json").writeValueAsString(body)
+            val parsed_body = parserConstructor("Null").writeValueAsString(body)
             
             val url = s"""/v2/users/createWithList"""
-            val headers = Seq()
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new UsersCreateWithListPostValidator(body).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new UsersCreateWithListPostValidator(body).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map.empty[Int,Class[Any]]
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -753,40 +951,60 @@ import Generators._
             val (petId, name, status) = input
 
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val headers = Seq()
-
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
-            val errors = new PetsPetIdPostValidator(petId, name, status).errors
-
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
+            val acceptHeaders = Seq(
+               "application/x-www-form-urlencoded"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
+
+
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val errors = new PetsPetIdPostValidator(petId, name, status).errors
+
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, String, String)) = {
             val (petId, name, status) = input
             
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
-            val errors = new PetsPetIdPostValidator(petId, name, status).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
-
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
-            }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
+            val acceptHeaders = Seq(
+               "application/x-www-form-urlencoded"
             )
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val errors = new PetsPetIdPostValidator(petId, name, status).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    405 -> classOf[Null]
+                )
+
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -822,39 +1040,56 @@ import Generators._
 
 
             val url = s"""/v2/users/${toPath(username)}"""
-            val headers = Seq()
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-            val errors = new UsersUsernameDeleteValidator(username).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+                val errors = new UsersUsernameDeleteValidator(username).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(username: String) = {
             
             val url = s"""/v2/users/${toPath(username)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-            val errors = new UsersUsernameDeleteValidator(username).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+                val errors = new UsersUsernameDeleteValidator(username).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    404 -> classOf[Null], 
+                    400 -> classOf[Null]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -884,39 +1119,56 @@ import Generators._
 
 
             val url = s"""/v2/stores/order/${toPath(orderId)}"""
-            val headers = Seq()
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-            val errors = new StoresOrderOrderIdDeleteValidator(orderId).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+                val errors = new StoresOrderOrderIdDeleteValidator(orderId).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(orderId: String) = {
             
             val url = s"""/v2/stores/order/${toPath(orderId)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-            val errors = new StoresOrderOrderIdDeleteValidator(orderId).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+                val errors = new StoresOrderOrderIdDeleteValidator(orderId).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    404 -> classOf[Null], 
+                    400 -> classOf[Null]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -947,40 +1199,60 @@ import Generators._
             val (api_key, petId) = input
 
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val headers = Seq("api_key" -> toHeader(api_key))
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq(
+                        "api_key" -> toHeader(api_key)
+                        ) :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-            val errors = new PetsPetIdDeleteValidator(api_key, petId).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+                val errors = new PetsPetIdDeleteValidator(api_key, petId).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, Long)) = {
             val (api_key, petId) = input
             
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val headers = Seq("api_key" -> toHeader(api_key))
-            val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-            val errors = new PetsPetIdDeleteValidator(api_key, petId).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq(
+                        "api_key" -> toHeader(api_key)
+                    ) :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+                val errors = new PetsPetIdDeleteValidator(api_key, petId).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    400 -> classOf[Null]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -1014,39 +1286,56 @@ import Generators._
 
 
             val url = s"""/v2/pets/findByTags?${toQuery("tags", tags)}"""
-            val headers = Seq()
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsFindByTagsGetValidator(tags).errors
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new PetsFindByTagsGetValidator(tags).errors
 
-            ("given an URL: [" + url + "]" ) |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(tags: PetsFindByStatusGetStatus) = {
             
             val url = s"""/v2/pets/findByTags?${toQuery("tags", tags)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-            val errors = new PetsFindByTagsGetValidator(tags).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val errors = new PetsFindByTagsGetValidator(tags).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    400 -> classOf[Null], 
+                    200 -> classOf[Seq[Pet]]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" ) |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -1077,20 +1366,26 @@ import Generators._
             val (username, body) = input
 
             val url = s"""/v2/users/${toPath(username)}"""
-            val headers = Seq()
-                val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new UsersUsernamePutValidator(username, body).errors
+                    val parsed_body = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(body)
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new UsersUsernamePutValidator(username, body).errors
 
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, UsersUsernamePutBody)) = {
             val (username, body) = input
@@ -1098,22 +1393,33 @@ import Generators._
             val parsed_body = parserConstructor("application/json").writeValueAsString(body)
             
             val url = s"""/v2/users/${toPath(username)}"""
-            val headers = Seq()
-            val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
-            val errors = new UsersUsernamePutValidator(username, body).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(PUT, url).withHeaders(headers:_*).withBody(parsed_body)).get
+                val errors = new UsersUsernamePutValidator(username, body).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    404 -> classOf[Null], 
+                    400 -> classOf[Null]
+                )
 
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_body + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {

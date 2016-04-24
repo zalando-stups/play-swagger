@@ -13,6 +13,7 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
 import play.api.http.Writeable
+import com.fasterxml.jackson.databind.ObjectMapper
 
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
@@ -37,9 +38,8 @@ import Generators._
 
       private def parserConstructor(mimeType: String) = PlayBodyParsing.jacksonMapper(mimeType)
 
-      def parseResponseContent[T](content: String, mimeType: Option[String], expectedType: Class[T]) =
-        parserConstructor(mimeType.getOrElse("application/json")).readValue(content, expectedType)
-
+      def parseResponseContent[T](mapper: ObjectMapper, content: String, mimeType: Option[String], expectedType: Class[T]) =
+        mapper.readValue(content, expectedType)
 
 
     "GET /boo/schema/model" should {
@@ -47,40 +47,58 @@ import Generators._
 
 
             val url = s"""/boo/schema/model"""
-            val headers = Seq()
-                val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                    Seq() :+ ("Accept" -> acceptHeader)
 
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
-            val errors = new SchemaModelGetValidator(root).errors
+                    val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
 
-            lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
+                val errors = new SchemaModelGetValidator(root).errors
 
-            ("given an URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
-                requestStatusCode_(path) ?= BAD_REQUEST ,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.nonEmpty ?= true,
-                all(validations:_*)
-            )
+                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
+                    requestStatusCode_(path) ?= BAD_REQUEST ,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.nonEmpty ?= true,
+                    all(validations:_*)
+                )
+            }
+            propertyList.reduce(_ && _)
         }
-        def testValidInput(root: ModelSchemaRoot) = {            
-                val parsed_root = parserConstructor("application/json").writeValueAsString(root)
+        def testValidInput(root: ModelSchemaRoot) = {
+            
+            val parsed_root = parserConstructor("application/json").writeValueAsString(root)
             
             val url = s"""/boo/schema/model"""
-            val headers = Seq()
-            val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
-            val errors = new SchemaModelGetValidator(root).errors
-            val possibleResponseTypes: Map[Int,Class[Any]] = Map.empty[Int,Class[Any]]
-            val expectedCode = requestStatusCode_(path)
-            val expectedResponseType = possibleResponseTypes(expectedCode)
+            val acceptHeaders = Seq()
+            val propertyList = acceptHeaders.map { acceptHeader =>
+                val headers =
+                   Seq() :+ ("Accept" -> acceptHeader)
+                val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)).get
+                val errors = new SchemaModelGetValidator(root).errors
+                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
+                    200 -> classOf[ModelSchemaRoot]
+                )
 
-            val parsedApiResponse = scala.util.Try {
-                parseResponseContent(requestContentAsString_(path), requestContentType_(path), expectedResponseType)
+                val expectedCode = requestStatusCode_(path)
+                val mimeType = requestContentType_(path)
+                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
+
+                val parsedApiResponse = scala.util.Try {
+                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
+                }
+
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
+                    possibleResponseTypes.contains(expectedCode) ?= true,
+                    parsedApiResponse.isSuccess ?= true,
+                    requestContentType_(path) ?= Some(acceptHeader),
+                    errors.isEmpty ?= true
+                )
             }
-            ("given an URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
-                parsedApiResponse.isSuccess ?= true,
-                requestContentType_(path) ?= Some("application/json"),
-                errors.isEmpty ?= true
-            )
+            propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
@@ -104,5 +122,4 @@ import Generators._
         }
 
     }
-
 }

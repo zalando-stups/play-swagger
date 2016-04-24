@@ -13,7 +13,8 @@ import de.zalando.play.controllers.WriterFactories
   * @author  slasch
   * @since   31.12.2015.
   */
-trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommons with SecurityCommons {
+trait CallControllersStep extends EnrichmentStep[ApiCall]
+  with ControllersCommons with SecurityCommons with ActionResults {
 
   override def steps = controllers +: super.steps
 
@@ -115,28 +116,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall] with ControllersCommon
 
   private def nameWithSuffix(call: ApiCall, suffix: String): String =
     escape(call.handler.method + suffix)
-
-  private def actionResults(call: ApiCall)(table: DenotationTable): (Seq[Map[String, Any]], Option[String]) = {
-    val resultTypes = call.resultTypes.toSeq map { case(code, ref) =>
-        Map("code" -> code, "type" -> singleResultType(table)(ref))
-    }
-    val default = call.defaultResult.map(singleResultType(table))
-    if (default.isEmpty && resultTypes.isEmpty)
-      println("Could not found any response code definition. It's not possible to define any marshallers. This will lead to the error at runtime.")
-    (resultTypes, default)
-  }
-
-  private def singleResultType(table: DenotationTable)(ref: ParameterRef): String = {
-    val tpe = app.findType(ref.name)
-    tpe match {
-      case c: Container =>
-        // TODO this should be readable from model
-        c.name.simple + c.nestedTypes.map{ t => typeNameDenotation(table, t.name)}.mkString("[", ", ", "]")
-      case p: ProvidedType => typeNameDenotation(table, p.name)
-      case p: TypeDef => typeNameDenotation(table, p.name)
-      case o => o.name.className
-    }
-  }
 
   private def errorMappings(call: ApiCall): Iterable[Map[String, String]] =
     call.errorMapping.flatMap { case (k, v) => v.map { ex =>
