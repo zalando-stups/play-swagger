@@ -263,7 +263,7 @@ object Application {
     typeName:         Domain.Type,
     fixed:            Option[String],
     default:          Option[String],
-    constraint:       String,
+    constraint:       String, // Regex used to match in play routes
     encode:           Boolean,
     place:            ParameterPlace.Value
   ) extends Expr with Positional
@@ -278,20 +278,17 @@ object Application {
 
   case class ApiCall(
     verb:             Http.Verb,
-    path:             Path,
+    path:             Path, // Route
     handler:          HandlerCall,
     mimeIn:           Set[MimeType],  // can be empty for swagger specification
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
-    resultTypes:      Map[Int, ParameterRef],
+    resultTypes:      Map[Int, ParameterRef],             // HTTP status code -> parameter type
     defaultResult:    Option[ParameterRef],
     security:         Set[Security.Constraint] = Set.empty
   ) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
-
-
-
 
   type ParameterLookupTable     = Map[ParameterRef, Parameter]
   type TypeLookupTable          = Map[Reference, Domain.Type]

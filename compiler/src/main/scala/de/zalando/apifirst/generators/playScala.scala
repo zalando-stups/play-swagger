@@ -287,7 +287,7 @@ trait PlayScalaControllersGenerator {
       val method = table(call.asReference)("controller")
       val methodWithCode = method + (
         "dead_code"       -> unmanagedParts.get(call).map(_.deadCode).getOrElse(""),
-        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode.trim).getOrElse("Failure(???)")
+        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode.trim).getOrElse("NotImplementedYet")
         )
       methodWithCode
     }

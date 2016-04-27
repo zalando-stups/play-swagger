@@ -18,8 +18,8 @@ package security.api.yaml {
     class SecurityApiYaml extends SecurityApiYamlBase {
         val getPetsById = getPetsByIdAction { (id: PetsIdGetId) =>
             
-            
 
+            // Response: Success((200, Seq[Pet]))
             Failure(???)
 
             

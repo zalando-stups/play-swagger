@@ -2,10 +2,12 @@ package nakadi.yaml
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
+import play.api.libs.json.scalacheck.JsValueGenerators
 import Arbitrary._
 import de.zalando.play.controllers.ArrayWrapper
 
-object Generators {
+object Generators extends JsValueGenerators {
+    
 
     
     def createStringGenerator = _generate(StringGenerator)
@@ -21,6 +23,7 @@ object Generators {
     def createSimpleStreamEventEventsGenerator = _generate(SimpleStreamEventEventsGenerator)
     def createEventMetaDataScopesGenerator = _generate(EventMetaDataScopesGenerator)
     def createTopicsGetResponses200Generator = _generate(TopicsGetResponses200Generator)
+    
 
     
     def StringGenerator = arbitrary[String]
@@ -36,24 +39,18 @@ object Generators {
     def SimpleStreamEventEventsGenerator = Gen.option(SimpleStreamEventEventsOptGenerator)
     def EventMetaDataScopesGenerator = Gen.option(EventMetaDataScopesOptGenerator)
     def TopicsGetResponses200Generator = Gen.containerOf[List,Topic](TopicGenerator)
+    
 
-    
     def createEventMetaDataNameClashGenerator = _generate(EventMetaDataNameClashGenerator)
-    
     def createTopicGenerator = _generate(TopicGenerator)
-    
     def createMetricsGenerator = _generate(MetricsGenerator)
-    
     def createEventGenerator = _generate(EventGenerator)
-    
     def createCursorGenerator = _generate(CursorGenerator)
-    
     def createProblemGenerator = _generate(ProblemGenerator)
-    
     def createTopicPartitionGenerator = _generate(TopicPartitionGenerator)
-    
     def createSimpleStreamEventGenerator = _generate(SimpleStreamEventGenerator)
-    
+
+
     def EventMetaDataNameClashGenerator = for {
         root_id <- EventEvent_typeGenerator
         parent_id <- EventEvent_typeGenerator
@@ -91,8 +88,10 @@ object Generators {
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 
-
     def _genList[T](gen: Gen[T], format: String): Gen[ArrayWrapper[T]] = for {
         items <- Gen.containerOf[List,T](gen)
     } yield ArrayWrapper(format)(items)
-    }
+    
+    
+    
+}

@@ -18,8 +18,8 @@ package uber.api.yaml {
     class UberApiYaml extends UberApiYamlBase {
         val getme = getmeAction { _ =>
             
-            
 
+            // Response: Success((200, Profile))
             Failure(???)
 
             
@@ -29,6 +29,7 @@ package uber.api.yaml {
             val (latitude, longitude) = input
             
 
+            // Response: Success((200, Seq[Product]))
             Failure(???)
 
             
@@ -38,6 +39,7 @@ package uber.api.yaml {
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
             
 
+            // Response: Success((200, Seq[Product]))
             Failure(???)
 
             
@@ -47,6 +49,7 @@ package uber.api.yaml {
             val (start_latitude, start_longitude, end_latitude, end_longitude) = input
             
 
+            // Response: Success((200, Seq[PriceEstimate]))
             Failure(???)
 
             
@@ -56,6 +59,7 @@ package uber.api.yaml {
             val (offset, limit) = input
             
 
+            // Response: Success((200, Activities))
             Failure(???)
 
             

@@ -3,84 +3,68 @@ package nakadi.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
+// import PickAvailableWriteable._ // if you want play to pick the first available writable
 import de.zalando.play.controllers.ArrayWrapper
 
 import de.zalando.play.controllers.PlayPathBindables
 
 
 
-
 trait NakadiYamlBase extends Controller with PlayBodyParsing {
-    private type nakadiHackGet_metricsActionRequestType       = (Unit)
-    private type nakadiHackGet_metricsActionType              = nakadiHackGet_metricsActionRequestType => Try[(Int, Any)]
+    sealed trait nakadiHackGet_metricsType[Result] extends ResultWrapper[Result]
+    case class nakadiHackGet_metrics401(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_metricsType[Problem] { val statusCode = 401 }
+    case class nakadiHackGet_metrics503(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_metricsType[Problem] { val statusCode = 503 }
+    case class nakadiHackGet_metrics200(result: Metrics)(implicit val writers: List[Writeable[Metrics]]) extends nakadiHackGet_metricsType[Metrics] { val statusCode = 200 }
+    
 
-    private val errorToStatusnakadiHackGet_metrics: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type nakadiHackGet_metricsActionRequestType       = (Unit)
+    private type nakadiHackGet_metricsActionType[T]            = nakadiHackGet_metricsActionRequestType => nakadiHackGet_metricsType[T]
 
 
     val nakadiHackGet_metricsActionConstructor  = Action
-    def nakadiHackGet_metricsAction = (f: nakadiHackGet_metricsActionType) => nakadiHackGet_metricsActionConstructor { request =>
+    def nakadiHackGet_metricsAction[T] = (f: nakadiHackGet_metricsActionType[T]) => nakadiHackGet_metricsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_metricsResponseMimeType =>
-                val possibleWriters = Map(
-                    401 -> anyToWritable[Problem], 
-                    503 -> anyToWritable[Problem], 
-                    200 -> anyToWritable[Metrics]
-            )
+
             
 
-                val result = processValidnakadiHackGet_metricsRequest(f)()(possibleWriters, nakadiHackGet_metricsResponseMimeType)
+                val result = processValidnakadiHackGet_metricsRequest(f)()(nakadiHackGet_metricsResponseMimeType)
                 result
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_metricsRequest[T <: Any](f: nakadiHackGet_metricsActionType)(request: nakadiHackGet_metricsActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_metrics orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidnakadiHackGet_metricsRequest[T](f: nakadiHackGet_metricsActionType[T])(request: nakadiHackGet_metricsActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type nakadiHackGet_events_from_single_partitionActionRequestType       = (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)
-    private type nakadiHackGet_events_from_single_partitionActionType              = nakadiHackGet_events_from_single_partitionActionRequestType => Try[(Int, Any)]
+    sealed trait nakadiHackGet_events_from_single_partitionType[Result] extends ResultWrapper[Result]
+    case class nakadiHackGet_events_from_single_partition500(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 500 }
+    case class nakadiHackGet_events_from_single_partition404(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 404 }
+    case class nakadiHackGet_events_from_single_partition401(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 401 }
+    case class nakadiHackGet_events_from_single_partition400(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 400 }
+    case class nakadiHackGet_events_from_single_partition200(result: SimpleStreamEvent)(implicit val writers: List[Writeable[SimpleStreamEvent]]) extends nakadiHackGet_events_from_single_partitionType[SimpleStreamEvent] { val statusCode = 200 }
+    
 
-    private val errorToStatusnakadiHackGet_events_from_single_partition: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type nakadiHackGet_events_from_single_partitionActionRequestType       = (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)
+    private type nakadiHackGet_events_from_single_partitionActionType[T]            = nakadiHackGet_events_from_single_partitionActionRequestType => nakadiHackGet_events_from_single_partitionType[T]
 
 
     val nakadiHackGet_events_from_single_partitionActionConstructor  = Action
-    def nakadiHackGet_events_from_single_partitionAction = (f: nakadiHackGet_events_from_single_partitionActionType) => (start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: Int, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) => nakadiHackGet_events_from_single_partitionActionConstructor { request =>
+    def nakadiHackGet_events_from_single_partitionAction[T] = (f: nakadiHackGet_events_from_single_partitionActionType[T]) => (start_from: String, partition: String, stream_limit: TopicsTopicEventsGetStream_timeout, topic: String, batch_limit: Int, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, stream_timeout: TopicsTopicEventsGetStream_timeout, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout) => nakadiHackGet_events_from_single_partitionActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_events_from_single_partitionResponseMimeType =>
-                val possibleWriters = Map(
-                    500 -> anyToWritable[Problem], 
-                    404 -> anyToWritable[Problem], 
-                    401 -> anyToWritable[Problem], 
-                    400 -> anyToWritable[Problem], 
-                    200 -> anyToWritable[SimpleStreamEvent]
-            )
+
             
 
                 val result =
                         new TopicsTopicPartitionsPartitionEventsGetValidator(start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit).errors match {
-                            case e if e.isEmpty => processValidnakadiHackGet_events_from_single_partitionRequest(f)((start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit))(possibleWriters, nakadiHackGet_events_from_single_partitionResponseMimeType)
+                            case e if e.isEmpty => processValidnakadiHackGet_events_from_single_partitionRequest(f)((start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit))(nakadiHackGet_events_from_single_partitionResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(nakadiHackGet_events_from_single_partitionResponseMimeType)
                                 BadRequest(l)
@@ -89,46 +73,30 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_events_from_single_partitionRequest[T <: Any](f: nakadiHackGet_events_from_single_partitionActionType)(request: nakadiHackGet_events_from_single_partitionActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_events_from_single_partition orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidnakadiHackGet_events_from_single_partitionRequest[T](f: nakadiHackGet_events_from_single_partitionActionType[T])(request: nakadiHackGet_events_from_single_partitionActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type nakadiHackGet_partitionActionRequestType       = (String, String)
-    private type nakadiHackGet_partitionActionType              = nakadiHackGet_partitionActionRequestType => Try[(Int, Any)]
+    sealed trait nakadiHackGet_partitionType[Result] extends ResultWrapper[Result]
+    case class nakadiHackGet_partition200(result: TopicPartition)(implicit val writers: List[Writeable[TopicPartition]]) extends nakadiHackGet_partitionType[TopicPartition] { val statusCode = 200 }
+    
 
-    private val errorToStatusnakadiHackGet_partition: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type nakadiHackGet_partitionActionRequestType       = (String, String)
+    private type nakadiHackGet_partitionActionType[T]            = nakadiHackGet_partitionActionRequestType => nakadiHackGet_partitionType[T]
 
 
     val nakadiHackGet_partitionActionConstructor  = Action
-    def nakadiHackGet_partitionAction = (f: nakadiHackGet_partitionActionType) => (topic: String, partition: String) => nakadiHackGet_partitionActionConstructor { request =>
+    def nakadiHackGet_partitionAction[T] = (f: nakadiHackGet_partitionActionType[T]) => (topic: String, partition: String) => nakadiHackGet_partitionActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_partitionResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[TopicPartition]
-            )
+
             
 
                 val result =
                         new TopicsTopicPartitionsPartitionGetValidator(topic, partition).errors match {
-                            case e if e.isEmpty => processValidnakadiHackGet_partitionRequest(f)((topic, partition))(possibleWriters, nakadiHackGet_partitionResponseMimeType)
+                            case e if e.isEmpty => processValidnakadiHackGet_partitionRequest(f)((topic, partition))(nakadiHackGet_partitionResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(nakadiHackGet_partitionResponseMimeType)
                                 BadRequest(l)
@@ -137,89 +105,57 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_partitionRequest[T <: Any](f: nakadiHackGet_partitionActionType)(request: nakadiHackGet_partitionActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_partition orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidnakadiHackGet_partitionRequest[T](f: nakadiHackGet_partitionActionType[T])(request: nakadiHackGet_partitionActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type nakadiHackGet_topicsActionRequestType       = (Unit)
-    private type nakadiHackGet_topicsActionType              = nakadiHackGet_topicsActionRequestType => Try[(Int, Any)]
+    sealed trait nakadiHackGet_topicsType[Result] extends ResultWrapper[Result]
+    case class nakadiHackGet_topics200(result: Seq[Topic])(implicit val writers: List[Writeable[Seq[Topic]]]) extends nakadiHackGet_topicsType[Seq[Topic]] { val statusCode = 200 }
+    case class nakadiHackGet_topics401(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_topicsType[Problem] { val statusCode = 401 }
+    case class nakadiHackGet_topics503(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_topicsType[Problem] { val statusCode = 503 }
+    
 
-    private val errorToStatusnakadiHackGet_topics: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type nakadiHackGet_topicsActionRequestType       = (Unit)
+    private type nakadiHackGet_topicsActionType[T]            = nakadiHackGet_topicsActionRequestType => nakadiHackGet_topicsType[T]
 
 
     val nakadiHackGet_topicsActionConstructor  = Action
-    def nakadiHackGet_topicsAction = (f: nakadiHackGet_topicsActionType) => nakadiHackGet_topicsActionConstructor { request =>
+    def nakadiHackGet_topicsAction[T] = (f: nakadiHackGet_topicsActionType[T]) => nakadiHackGet_topicsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_topicsResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Seq[Topic]], 
-                    401 -> anyToWritable[Problem], 
-                    503 -> anyToWritable[Problem]
-            )
+
             
 
-                val result = processValidnakadiHackGet_topicsRequest(f)()(possibleWriters, nakadiHackGet_topicsResponseMimeType)
+                val result = processValidnakadiHackGet_topicsRequest(f)()(nakadiHackGet_topicsResponseMimeType)
                 result
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_topicsRequest[T <: Any](f: nakadiHackGet_topicsActionType)(request: nakadiHackGet_topicsActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_topics orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidnakadiHackGet_topicsRequest[T](f: nakadiHackGet_topicsActionType[T])(request: nakadiHackGet_topicsActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type nakadiHackGet_events_from_multiple_partitionsActionRequestType       = (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)
-    private type nakadiHackGet_events_from_multiple_partitionsActionType              = nakadiHackGet_events_from_multiple_partitionsActionRequestType => Try[(Int, Any)]
+    sealed trait nakadiHackGet_events_from_multiple_partitionsType[Result] extends ResultWrapper[Result]
+    case class nakadiHackGet_events_from_multiple_partitions500(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 500 }
+    case class nakadiHackGet_events_from_multiple_partitions404(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 404 }
+    case class nakadiHackGet_events_from_multiple_partitions401(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 401 }
+    case class nakadiHackGet_events_from_multiple_partitions400(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 400 }
+    case class nakadiHackGet_events_from_multiple_partitions200(result: SimpleStreamEvent)(implicit val writers: List[Writeable[SimpleStreamEvent]]) extends nakadiHackGet_events_from_multiple_partitionsType[SimpleStreamEvent] { val statusCode = 200 }
+    
 
-    private val errorToStatusnakadiHackGet_events_from_multiple_partitions: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type nakadiHackGet_events_from_multiple_partitionsActionRequestType       = (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)
+    private type nakadiHackGet_events_from_multiple_partitionsActionType[T]            = nakadiHackGet_events_from_multiple_partitionsActionRequestType => nakadiHackGet_events_from_multiple_partitionsType[T]
 
 
     val nakadiHackGet_events_from_multiple_partitionsActionConstructor  = Action
-    def nakadiHackGet_events_from_multiple_partitionsAction = (f: nakadiHackGet_events_from_multiple_partitionsActionType) => (stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, batch_limit: Int, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) => nakadiHackGet_events_from_multiple_partitionsActionConstructor { request =>
+    def nakadiHackGet_events_from_multiple_partitionsAction[T] = (f: nakadiHackGet_events_from_multiple_partitionsActionType[T]) => (stream_timeout: TopicsTopicEventsGetStream_timeout, stream_limit: TopicsTopicEventsGetStream_timeout, batch_flush_timeout: TopicsTopicEventsGetStream_timeout, batch_limit: Int, batch_keep_alive_limit: TopicsTopicEventsGetStream_timeout, topic: String) => nakadiHackGet_events_from_multiple_partitionsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_events_from_multiple_partitionsResponseMimeType =>
-                val possibleWriters = Map(
-                    500 -> anyToWritable[Problem], 
-                    404 -> anyToWritable[Problem], 
-                    401 -> anyToWritable[Problem], 
-                    400 -> anyToWritable[Problem], 
-                    200 -> anyToWritable[SimpleStreamEvent]
-            )
+
             
             val x_nakadi_cursors: Either[String,String] =
                 fromHeaders[String]("x_nakadi_cursors", request.headers.toMap)
@@ -229,7 +165,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
 
                 val result =
                         new TopicsTopicEventsGetValidator(stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic).errors match {
-                            case e if e.isEmpty => processValidnakadiHackGet_events_from_multiple_partitionsRequest(f)((stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic))(possibleWriters, nakadiHackGet_events_from_multiple_partitionsResponseMimeType)
+                            case e if e.isEmpty => processValidnakadiHackGet_events_from_multiple_partitionsRequest(f)((stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic))(nakadiHackGet_events_from_multiple_partitionsResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(nakadiHackGet_events_from_multiple_partitionsResponseMimeType)
                                 BadRequest(l)
@@ -243,31 +179,21 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_events_from_multiple_partitionsRequest[T <: Any](f: nakadiHackGet_events_from_multiple_partitionsActionType)(request: nakadiHackGet_events_from_multiple_partitionsActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_events_from_multiple_partitions orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidnakadiHackGet_events_from_multiple_partitionsRequest[T](f: nakadiHackGet_events_from_multiple_partitionsActionType[T])(request: nakadiHackGet_events_from_multiple_partitionsActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type nakadiHackPost_eventActionRequestType       = (String, TopicsTopicEventsBatchPostEvent)
-    private type nakadiHackPost_eventActionType              = nakadiHackPost_eventActionRequestType => Try[(Int, Any)]
+    sealed trait nakadiHackPost_eventType[Result] extends ResultWrapper[Result]
+    case class nakadiHackPost_event201(result: Null)(implicit val writers: List[Writeable[Null]]) extends nakadiHackPost_eventType[Null] { val statusCode = 201 }
+    case class nakadiHackPost_event403(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackPost_eventType[Problem] { val statusCode = 403 }
+    case class nakadiHackPost_event503(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackPost_eventType[Problem] { val statusCode = 503 }
+    case class nakadiHackPost_event401(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackPost_eventType[Problem] { val statusCode = 401 }
+    case class nakadiHackPost_event422(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackPost_eventType[Problem] { val statusCode = 422 }
+    
 
-    private val errorToStatusnakadiHackPost_event: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type nakadiHackPost_eventActionRequestType       = (String, TopicsTopicEventsBatchPostEvent)
+    private type nakadiHackPost_eventActionType[T]            = nakadiHackPost_eventActionRequestType => nakadiHackPost_eventType[T]
 
         private def nakadiHackPost_eventParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -285,23 +211,17 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         }
 
     val nakadiHackPost_eventActionConstructor  = Action
-    def nakadiHackPost_eventAction = (f: nakadiHackPost_eventActionType) => (topic: String) => nakadiHackPost_eventActionConstructor(nakadiHackPost_eventParser(Seq[String]("application/json"))) { request =>
+    def nakadiHackPost_eventAction[T] = (f: nakadiHackPost_eventActionType[T]) => (topic: String) => nakadiHackPost_eventActionConstructor(nakadiHackPost_eventParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackPost_eventResponseMimeType =>
-                val possibleWriters = Map(
-                    201 -> anyToWritable[Null], 
-                    403 -> anyToWritable[Problem], 
-                    503 -> anyToWritable[Problem], 
-                    401 -> anyToWritable[Problem], 
-                    422 -> anyToWritable[Problem]
-            )
+
             val event = request.body
             
 
                 val result =
                         new TopicsTopicEventsPostValidator(topic, event).errors match {
-                            case e if e.isEmpty => processValidnakadiHackPost_eventRequest(f)((topic, event))(possibleWriters, nakadiHackPost_eventResponseMimeType)
+                            case e if e.isEmpty => processValidnakadiHackPost_eventRequest(f)((topic, event))(nakadiHackPost_eventResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(nakadiHackPost_eventResponseMimeType)
                                 BadRequest(l)
@@ -310,46 +230,30 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackPost_eventRequest[T <: Any](f: nakadiHackPost_eventActionType)(request: nakadiHackPost_eventActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackPost_event orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidnakadiHackPost_eventRequest[T](f: nakadiHackPost_eventActionType[T])(request: nakadiHackPost_eventActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type nakadiHackGet_partitionsActionRequestType       = (String)
-    private type nakadiHackGet_partitionsActionType              = nakadiHackGet_partitionsActionRequestType => Try[(Int, Any)]
+    sealed trait nakadiHackGet_partitionsType[Result] extends ResultWrapper[Result]
+    case class nakadiHackGet_partitions200(result: Seq[TopicPartition])(implicit val writers: List[Writeable[Seq[TopicPartition]]]) extends nakadiHackGet_partitionsType[Seq[TopicPartition]] { val statusCode = 200 }
+    
 
-    private val errorToStatusnakadiHackGet_partitions: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type nakadiHackGet_partitionsActionRequestType       = (String)
+    private type nakadiHackGet_partitionsActionType[T]            = nakadiHackGet_partitionsActionRequestType => nakadiHackGet_partitionsType[T]
 
 
     val nakadiHackGet_partitionsActionConstructor  = Action
-    def nakadiHackGet_partitionsAction = (f: nakadiHackGet_partitionsActionType) => (topic: String) => nakadiHackGet_partitionsActionConstructor { request =>
+    def nakadiHackGet_partitionsAction[T] = (f: nakadiHackGet_partitionsActionType[T]) => (topic: String) => nakadiHackGet_partitionsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackGet_partitionsResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Seq[TopicPartition]]
-            )
+
             
 
                 val result =
                         new TopicsTopicPartitionsGetValidator(topic).errors match {
-                            case e if e.isEmpty => processValidnakadiHackGet_partitionsRequest(f)((topic))(possibleWriters, nakadiHackGet_partitionsResponseMimeType)
+                            case e if e.isEmpty => processValidnakadiHackGet_partitionsRequest(f)((topic))(nakadiHackGet_partitionsResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(nakadiHackGet_partitionsResponseMimeType)
                                 BadRequest(l)
@@ -358,31 +262,21 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackGet_partitionsRequest[T <: Any](f: nakadiHackGet_partitionsActionType)(request: nakadiHackGet_partitionsActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_partitions orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidnakadiHackGet_partitionsRequest[T](f: nakadiHackGet_partitionsActionType[T])(request: nakadiHackGet_partitionsActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type nakadiHackPost_eventsActionRequestType       = (String, TopicsTopicEventsBatchPostEvent)
-    private type nakadiHackPost_eventsActionType              = nakadiHackPost_eventsActionRequestType => Try[(Int, Any)]
+    sealed trait nakadiHackPost_eventsType[Result] extends ResultWrapper[Result]
+    case class nakadiHackPost_events201(result: Null)(implicit val writers: List[Writeable[Null]]) extends nakadiHackPost_eventsType[Null] { val statusCode = 201 }
+    case class nakadiHackPost_events403(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackPost_eventsType[Problem] { val statusCode = 403 }
+    case class nakadiHackPost_events503(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackPost_eventsType[Problem] { val statusCode = 503 }
+    case class nakadiHackPost_events401(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackPost_eventsType[Problem] { val statusCode = 401 }
+    case class nakadiHackPost_events422(result: Problem)(implicit val writers: List[Writeable[Problem]]) extends nakadiHackPost_eventsType[Problem] { val statusCode = 422 }
+    
 
-    private val errorToStatusnakadiHackPost_events: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type nakadiHackPost_eventsActionRequestType       = (String, TopicsTopicEventsBatchPostEvent)
+    private type nakadiHackPost_eventsActionType[T]            = nakadiHackPost_eventsActionRequestType => nakadiHackPost_eventsType[T]
 
         private def nakadiHackPost_eventsParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -400,23 +294,17 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         }
 
     val nakadiHackPost_eventsActionConstructor  = Action
-    def nakadiHackPost_eventsAction = (f: nakadiHackPost_eventsActionType) => (topic: String) => nakadiHackPost_eventsActionConstructor(nakadiHackPost_eventsParser(Seq[String]("application/json"))) { request =>
+    def nakadiHackPost_eventsAction[T] = (f: nakadiHackPost_eventsActionType[T]) => (topic: String) => nakadiHackPost_eventsActionConstructor(nakadiHackPost_eventsParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { nakadiHackPost_eventsResponseMimeType =>
-                val possibleWriters = Map(
-                    201 -> anyToWritable[Null], 
-                    403 -> anyToWritable[Problem], 
-                    503 -> anyToWritable[Problem], 
-                    401 -> anyToWritable[Problem], 
-                    422 -> anyToWritable[Problem]
-            )
+
             val event = request.body
             
 
                 val result =
                         new TopicsTopicEventsBatchPostValidator(topic, event).errors match {
-                            case e if e.isEmpty => processValidnakadiHackPost_eventsRequest(f)((topic, event))(possibleWriters, nakadiHackPost_eventsResponseMimeType)
+                            case e if e.isEmpty => processValidnakadiHackPost_eventsRequest(f)((topic, event))(nakadiHackPost_eventsResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(nakadiHackPost_eventsResponseMimeType)
                                 BadRequest(l)
@@ -425,25 +313,11 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidnakadiHackPost_eventsRequest[T <: Any](f: nakadiHackPost_eventsActionType)(request: nakadiHackPost_eventsActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackPost_events orElse defaultErrorMapping)(error)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidnakadiHackPost_eventsRequest[T](f: nakadiHackPost_eventsActionType[T])(request: nakadiHackPost_eventsActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
+    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]                          { val statusCode = 204; val result = Results.EmptyContent(); val writers = List(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with nakadiHackGet_metricsType[Results.EmptyContent] with nakadiHackGet_events_from_single_partitionType[Results.EmptyContent] with nakadiHackGet_partitionType[Results.EmptyContent] with nakadiHackGet_topicsType[Results.EmptyContent] with nakadiHackGet_events_from_multiple_partitionsType[Results.EmptyContent] with nakadiHackPost_eventType[Results.EmptyContent] with nakadiHackGet_partitionsType[Results.EmptyContent] with nakadiHackPost_eventsType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writers = List(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

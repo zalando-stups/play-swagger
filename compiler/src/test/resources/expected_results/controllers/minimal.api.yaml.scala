@@ -18,8 +18,8 @@ package admin {
     class Dashboard extends DashboardBase {
         val index = indexAction { _ =>
             
-            
 
+            // Response: Success((200, Null))
             Failure(???)
 
             

@@ -18,8 +18,9 @@ package full.petstore.api.yaml {
     class FullPetstoreApiYaml extends FullPetstoreApiYamlBase {
         val findPetsByTags = findPetsByTagsAction { (tags: PetsFindByStatusGetStatus) =>
             
-            
 
+            // Response: Success((400, Null, ))
+            // Response: Success((200, Seq[Pet]))
             Failure(???)
 
             
@@ -27,15 +28,15 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  findPetsByTagsAction
         val placeOrder = placeOrderAction { (body: StoresOrderPostBody) =>
             
-            
 
+            // Response: Success((400, Null, ))
+            // Response: Success((200, Order))
             Failure(???)
 
             
 
         } //////// EOF ////////  placeOrderAction
         val createUser = createUserAction { (body: UsersUsernamePutBody) =>
-            
             
 
             Failure(???)
@@ -45,7 +46,6 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  createUserAction
         val createUsersWithListInput = createUsersWithListInputAction { (body: UsersCreateWithListPostBody) =>
             
-            
 
             Failure(???)
 
@@ -54,8 +54,10 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  createUsersWithListInputAction
         val getUserByName = getUserByNameAction { (username: String) =>
             
-            
 
+            // Response: Success((200, User, ))
+            // Response: Success((404, Null, ))
+            // Response: Success((400, Null))
             Failure(???)
 
             
@@ -65,6 +67,8 @@ package full.petstore.api.yaml {
             val (username, body) = input
             
 
+            // Response: Success((404, Null, ))
+            // Response: Success((400, Null))
             Failure(???)
 
             
@@ -72,8 +76,9 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  updateUserAction
         val deleteUser = deleteUserAction { (username: String) =>
             
-            
 
+            // Response: Success((404, Null, ))
+            // Response: Success((400, Null))
             Failure(???)
 
             
@@ -81,8 +86,10 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  deleteUserAction
         val updatePet = updatePetAction { (body: PetsPostBody) =>
             
-            
 
+            // Response: Success((405, Null, ))
+            // Response: Success((404, Null, ))
+            // Response: Success((400, Null))
             Failure(???)
 
             
@@ -90,15 +97,14 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  updatePetAction
         val addPet = addPetAction { (body: PetsPostBody) =>
             
-            
 
+            // Response: Success((405, Null))
             Failure(???)
 
             
 
         } //////// EOF ////////  addPetAction
         val createUsersWithArrayInput = createUsersWithArrayInputAction { (body: UsersCreateWithListPostBody) =>
-            
             
 
             Failure(???)
@@ -108,8 +114,10 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  createUsersWithArrayInputAction
         val getOrderById = getOrderByIdAction { (orderId: String) =>
             
-            
 
+            // Response: Success((404, Null, ))
+            // Response: Success((400, Null, ))
+            // Response: Success((200, Order))
             Failure(???)
 
             
@@ -117,15 +125,15 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  getOrderByIdAction
         val deleteOrder = deleteOrderAction { (orderId: String) =>
             
-            
 
+            // Response: Success((404, Null, ))
+            // Response: Success((400, Null))
             Failure(???)
 
             
 
         } //////// EOF ////////  deleteOrderAction
         val logoutUser = logoutUserAction { _ =>
-            
             
 
             Failure(???)
@@ -135,8 +143,10 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  logoutUserAction
         val getPetById = getPetByIdAction { (petId: Long) =>
             
-            
 
+            // Response: Success((404, Null, ))
+            // Response: Success((400, Null, ))
+            // Response: Success((200, Pet))
             Failure(???)
 
             
@@ -146,6 +156,7 @@ package full.petstore.api.yaml {
             val (petId, name, status) = input
             
 
+            // Response: Success((405, Null))
             Failure(???)
 
             
@@ -155,6 +166,7 @@ package full.petstore.api.yaml {
             val (api_key, petId) = input
             
 
+            // Response: Success((400, Null))
             Failure(???)
 
             
@@ -162,8 +174,9 @@ package full.petstore.api.yaml {
         } //////// EOF ////////  deletePetAction
         val findPetsByStatus = findPetsByStatusAction { (status: PetsFindByStatusGetStatus) =>
             
-            
 
+            // Response: Success((200, Seq[Pet], ))
+            // Response: Success((400, Null))
             Failure(???)
 
             
@@ -173,6 +186,8 @@ package full.petstore.api.yaml {
             val (username, password) = input
             
 
+            // Response: Success((200, String, ))
+            // Response: Success((400, Null))
             Failure(???)
 
             

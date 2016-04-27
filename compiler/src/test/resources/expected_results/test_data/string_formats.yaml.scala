@@ -2,6 +2,7 @@ package string_formats.yaml
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
+import play.api.libs.json.scalacheck.JsValueGenerators
 import Arbitrary._
 import de.zalando.play.controllers.Base64String
 import Base64String._
@@ -10,7 +11,7 @@ import BinaryString._
 import org.joda.time.DateTime
 import org.joda.time.DateMidnight
 
-object Generators {
+object Generators extends JsValueGenerators {
     
 
     

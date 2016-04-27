@@ -20,6 +20,7 @@ package string_formats.yaml {
             val (petId, base64, date, date_time) = input
             
 
+            // Response: Success((200, Null))
             Failure(???)
 
             

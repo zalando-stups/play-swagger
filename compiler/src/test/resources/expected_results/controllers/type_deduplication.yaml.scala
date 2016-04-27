@@ -20,6 +20,8 @@ package type_deduplication.yaml {
             val (plant_id, watering_id) = input
             
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Watering))
             Failure(???)
 
             
@@ -29,6 +31,9 @@ package type_deduplication.yaml {
             val (plant_id, watering_id) = input
             
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Null, ))
+            // Response: Success((201, Null))
             Failure(???)
 
             
@@ -36,8 +41,8 @@ package type_deduplication.yaml {
         } //////// EOF ////////  putplantsByPlant_idWateringsByWatering_idAction
         val getusersMe = getusersMeAction { _ =>
             
-            
 
+            // Response: Success((200, User))
             Failure(???)
 
             
@@ -45,8 +50,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  getusersMeAction
         val getplantsByPlant_idSunlight_needs = getplantsByPlant_idSunlight_needsAction { (plant_id: String) =>
             
-            
 
+            // Response: Success((404, Null, ))
+            // Response: Success((200, SunlightNeeds))
             Failure(???)
 
             
@@ -56,6 +62,8 @@ package type_deduplication.yaml {
             val (plant_id, sunlight_needs) = input
             
 
+            // Response: Success((200, Null, ))
+            // Response: Success((404, Null))
             Failure(???)
 
             
@@ -65,6 +73,7 @@ package type_deduplication.yaml {
             val (limit, offset) = input
             
 
+            // Response: Success((200, Seq[User]))
             Failure(???)
 
             
@@ -72,8 +81,8 @@ package type_deduplication.yaml {
         } //////// EOF ////////  getusersAction
         val postusers = postusersAction { (signin_data: SigninData) =>
             
-            
 
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -81,8 +90,8 @@ package type_deduplication.yaml {
         } //////// EOF ////////  postusersAction
         val getareasByArea_id = getareasByArea_idAction { (area_id: String) =>
             
-            
 
+            // Response: Success((200, Area))
             Failure(???)
 
             
@@ -90,8 +99,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  getareasByArea_idAction
         val putareasByArea_id = putareasByArea_idAction { (area_id: String) =>
             
-            
 
+            // Response: Success((200, Null, ))
+            // Response: Success((201, Null))
             Failure(???)
 
             
@@ -99,8 +109,8 @@ package type_deduplication.yaml {
         } //////// EOF ////////  putareasByArea_idAction
         val deleteareasByArea_id = deleteareasByArea_idAction { (area_id: String) =>
             
-            
 
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -110,6 +120,7 @@ package type_deduplication.yaml {
             val (limit, offset) = input
             
 
+            // Response: Success((200, Seq[Plant]))
             Failure(???)
 
             
@@ -119,6 +130,8 @@ package type_deduplication.yaml {
             val (user_id, limit, offset) = input
             
 
+            // Response: Success((404, Null, ))
+            // Response: Success((200, Seq[Plant]))
             Failure(???)
 
             
@@ -126,8 +139,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  getuserByUser_idPlantsAction
         val getusersByUser_id = getusersByUser_idAction { (user_id: String) =>
             
-            
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, User))
             Failure(???)
 
             
@@ -137,6 +151,8 @@ package type_deduplication.yaml {
             val (user_id, user) = input
             
 
+            // Response: Success((200, Null, ))
+            // Response: Success((201, Null))
             Failure(???)
 
             
@@ -146,6 +162,8 @@ package type_deduplication.yaml {
             val (user_id, user) = input
             
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -155,6 +173,7 @@ package type_deduplication.yaml {
             val (limit, offset) = input
             
 
+            // Response: Success((200, Seq[Area]))
             Failure(???)
 
             
@@ -162,8 +181,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  getareasAction
         val getplantsByPlant_idLocation = getplantsByPlant_idLocationAction { (plant_id: String) =>
             
-            
 
+            // Response: Success((404, Null, ))
+            // Response: Success((200, Location))
             Failure(???)
 
             
@@ -173,6 +193,8 @@ package type_deduplication.yaml {
             val (plant_id, location) = input
             
 
+            // Response: Success((200, Null, ))
+            // Response: Success((404, Null))
             Failure(???)
 
             
@@ -180,8 +202,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  putplantsByPlant_idLocationAction
         val deleteplantsByPlant_idLocation = deleteplantsByPlant_idLocationAction { (plant_id: String) =>
             
-            
 
+            // Response: Success((200, Null, ))
+            // Response: Success((404, Null))
             Failure(???)
 
             
@@ -189,8 +212,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  deleteplantsByPlant_idLocationAction
         val getusersByUser_idPicture = getusersByUser_idPictureAction { (user_id: String) =>
             
-            
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -198,8 +222,10 @@ package type_deduplication.yaml {
         } //////// EOF ////////  getusersByUser_idPictureAction
         val putusersByUser_idPicture = putusersByUser_idPictureAction { (user_id: String) =>
             
-            
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Null, ))
+            // Response: Success((201, Null))
             Failure(???)
 
             
@@ -207,8 +233,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  putusersByUser_idPictureAction
         val deleteusersByUser_idPicture = deleteusersByUser_idPictureAction { (user_id: String) =>
             
-            
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -218,6 +245,8 @@ package type_deduplication.yaml {
             val (plant_id, limit, offset) = input
             
 
+            // Response: Success((200, Seq[String], ))
+            // Response: Success((404, Null))
             Failure(???)
 
             
@@ -225,8 +254,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  getplantsByPlant_idPicturesAction
         val getplantsByPlant_id = getplantsByPlant_idAction { (plant_id: String) =>
             
-            
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Plant))
             Failure(???)
 
             
@@ -236,6 +266,9 @@ package type_deduplication.yaml {
             val (plant_id, plant) = input
             
 
+            // Response: Success((200, Null, ))
+            // Response: Success((201, Null, ))
+            // Response: Success((404, Null))
             Failure(???)
 
             
@@ -243,8 +276,9 @@ package type_deduplication.yaml {
         } //////// EOF ////////  putplantsByPlant_idAction
         val deleteplantsByPlant_id = deleteplantsByPlant_idAction { (plant_id: String) =>
             
-            
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -254,6 +288,8 @@ package type_deduplication.yaml {
             val (plant_id, limit, offset) = input
             
 
+            // Response: Success((200, Seq[Watering], ))
+            // Response: Success((404, Null))
             Failure(???)
 
             
@@ -263,6 +299,8 @@ package type_deduplication.yaml {
             val (plant_id, picture_id) = input
             
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -272,6 +310,9 @@ package type_deduplication.yaml {
             val (plant_id, picture_id) = input
             
 
+            // Response: Success((404, Null, ))
+            // Response: Success((200, Null, ))
+            // Response: Success((201, Null))
             Failure(???)
 
             
@@ -281,6 +322,8 @@ package type_deduplication.yaml {
             val (plant_id, picture_id) = input
             
 
+            // Response: Success((404, Error, ))
+            // Response: Success((200, Null))
             Failure(???)
 
             
@@ -288,8 +331,8 @@ package type_deduplication.yaml {
         } //////// EOF ////////  deleteplantsByPlant_idPicturesByPicture_idAction
         val getplantsByPlant_idWater_needs = getplantsByPlant_idWater_needsAction { (plant_id: String) =>
             
-            
 
+            // Response: Success((200, WaterNeeds))
             Failure(???)
 
             
@@ -299,6 +342,8 @@ package type_deduplication.yaml {
             val (plant_id, water_needs) = input
             
 
+            // Response: Success((200, Null, ))
+            // Response: Success((404, Null))
             Failure(???)
 
             

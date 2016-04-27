@@ -2,9 +2,11 @@ package heroku.petstore.api.yaml
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
+import play.api.libs.json.scalacheck.JsValueGenerators
 import Arbitrary._
 
-object Generators {
+object Generators extends JsValueGenerators {
+    
 
     
     def createPetNameGenerator = _generate(PetNameGenerator)
@@ -14,6 +16,7 @@ object Generators {
     def createIntGenerator = _generate(IntGenerator)
     def createPutPetGenerator = _generate(PutPetGenerator)
     def createGetResponses200Generator = _generate(GetResponses200Generator)
+    
 
     
     def PetNameGenerator = Gen.option(arbitrary[String])
@@ -23,10 +26,11 @@ object Generators {
     def IntGenerator = arbitrary[Int]
     def PutPetGenerator = Gen.option(PetGenerator)
     def GetResponses200Generator = Gen.containerOf[List,Pet](PetGenerator)
+    
 
-    
     def createPetGenerator = _generate(PetGenerator)
-    
+
+
     def PetGenerator = for {
         name <- PetNameGenerator
         birthday <- PetBirthdayGenerator
@@ -34,4 +38,7 @@ object Generators {
 
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 
+    
+    
+    
 }
