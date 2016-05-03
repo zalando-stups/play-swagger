@@ -103,7 +103,7 @@ paths:
           in: formData
           description: music file
           type: file
-          required: false
+          required: true
       responses:
         200:
           description: Echo POST

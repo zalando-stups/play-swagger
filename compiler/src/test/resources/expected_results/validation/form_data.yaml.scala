@@ -34,6 +34,13 @@ class BothPostNameConstraints(override val instance: String) extends ValidationB
 class BothPostNameValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new BothPostNameConstraints(instance))
 }
+class BothPostRingtoneConstraints(override val instance: File) extends ValidationBase[File] {
+    override def constraints: Seq[Constraint[File]] =
+        Seq()
+}
+class BothPostRingtoneValidator(instance: File) extends RecursiveValidator {
+    override val validators = Seq(new BothPostRingtoneConstraints(instance))
+}
 class BothPostYearOptConstraints(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
         Seq()
@@ -69,7 +76,7 @@ class MultipartPostValidator(name: String, year: BothPostYear, avatar: Multipart
     
     )
 }
-class BothPostValidator(name: String, year: BothPostYear, avatar: MultipartPostAvatar, ringtone: MultipartPostAvatar) extends RecursiveValidator {
+class BothPostValidator(name: String, year: BothPostYear, avatar: MultipartPostAvatar, ringtone: File) extends RecursiveValidator {
     override val validators = Seq(
         new BothPostNameValidator(name), 
     
@@ -77,7 +84,7 @@ class BothPostValidator(name: String, year: BothPostYear, avatar: MultipartPostA
     
         new MultipartPostAvatarValidator(avatar), 
     
-        new MultipartPostAvatarValidator(ringtone)
+        new BothPostRingtoneValidator(ringtone)
     
     )
 }

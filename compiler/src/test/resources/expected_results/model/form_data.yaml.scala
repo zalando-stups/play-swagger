@@ -13,8 +13,8 @@ package object yaml {
     type MultipartPostAvatar = Option[File]
     type BothPostResponses200Name = Option[String]
     type MultipartPostName = String
+    type BothPostRingtone = File
     type BothPostYear = Option[Int]
-    type Url_encodedPostAvatar = File
 
 
     case class MultipartPostResponses200(name: BothPostResponses200Name, year: BothPostYear, fileSize: BothPostYear, fileName: BothPostResponses200Name) 

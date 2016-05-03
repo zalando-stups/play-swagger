@@ -9,7 +9,7 @@
 ⌿paths⌿/both⌿post⌿name ->
 	Str
 ⌿paths⌿/both⌿post⌿ringtone ->
-	Opt(File)
+	File
 ⌿paths⌿/both⌿post⌿year ->
 	Opt(Intgr)
 ⌿paths⌿/multipart⌿post⌿year ->

@@ -12,16 +12,16 @@ object Generators {
     def createMultipartPostAvatarGenerator = _generate(MultipartPostAvatarGenerator)
     def createBothPostResponses200NameGenerator = _generate(BothPostResponses200NameGenerator)
     def createStringGenerator = _generate(StringGenerator)
-    def createBothPostYearGenerator = _generate(BothPostYearGenerator)
     def createFileGenerator = _generate(FileGenerator)
+    def createBothPostYearGenerator = _generate(BothPostYearGenerator)
     
 
     
     def MultipartPostAvatarGenerator = Gen.option(arbitrary[File])
     def BothPostResponses200NameGenerator = Gen.option(arbitrary[String])
     def StringGenerator = arbitrary[String]
-    def BothPostYearGenerator = Gen.option(arbitrary[Int])
     def FileGenerator = arbitrary[File]
+    def BothPostYearGenerator = Gen.option(arbitrary[Int])
     
 
     def createMultipartPostResponses200Generator = _generate(MultipartPostResponses200Generator)

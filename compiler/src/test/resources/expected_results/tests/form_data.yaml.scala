@@ -134,7 +134,7 @@ import Generators._
     }
 
     "POST /form_data/both" should {
-        def testInvalidInput(input: (String, BothPostYear, MultipartPostAvatar, MultipartPostAvatar)) = {
+        def testInvalidInput(input: (String, BothPostYear, MultipartPostAvatar, File)) = {
 
             val (name, year, avatar, ringtone) = input
 
@@ -163,7 +163,7 @@ import Generators._
             }
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (String, BothPostYear, MultipartPostAvatar, MultipartPostAvatar)) = {
+        def testValidInput(input: (String, BothPostYear, MultipartPostAvatar, File)) = {
             val (name, year, avatar, ringtone) = input
             
             val url = s"""/form_data/both"""
@@ -203,7 +203,7 @@ import Generators._
                         name <- StringGenerator
                         year <- BothPostYearGenerator
                         avatar <- MultipartPostAvatarGenerator
-                        ringtone <- MultipartPostAvatarGenerator
+                        ringtone <- FileGenerator
                     
                 } yield (name, year, avatar, ringtone)
             val inputs = genInputs suchThat { case (name, year, avatar, ringtone) =>
@@ -217,7 +217,7 @@ import Generators._
                     name <- StringGenerator
                     year <- BothPostYearGenerator
                     avatar <- MultipartPostAvatarGenerator
-                    ringtone <- MultipartPostAvatarGenerator
+                    ringtone <- FileGenerator
                 
             } yield (name, year, avatar, ringtone)
             val inputs = genInputs suchThat { case (name, year, avatar, ringtone) =>

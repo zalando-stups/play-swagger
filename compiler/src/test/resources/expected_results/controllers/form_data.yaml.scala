@@ -36,7 +36,7 @@ package form_data.yaml {
             
 
         } //////// EOF ////////  posturl_encodedAction
-        val postboth = postbothAction { input: (String, BothPostYear, MultipartPostAvatar, MultipartPostAvatar) =>
+        val postboth = postbothAction { input: (String, BothPostYear, MultipartPostAvatar, File) =>
             val (name, year, avatar, ringtone) = input
             
 

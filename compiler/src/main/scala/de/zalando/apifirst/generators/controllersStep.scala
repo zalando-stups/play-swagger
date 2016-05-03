@@ -175,7 +175,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
       "parser_type" -> parserType,
       "body_parser"  -> parser,
       "optional" -> parser.replaceAll("anyParser",""),
-      "real_name" -> param.simple
+      "real_name" -> param.simple,
+      "is_file" -> (if (parserType == "File") parserType else "")
     )
   }
 

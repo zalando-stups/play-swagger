@@ -134,7 +134,7 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
         }
         status
     }
-    private type postbothActionRequestType       = (String, BothPostYear, MultipartPostAvatar, MultipartPostAvatar)
+    private type postbothActionRequestType       = (String, BothPostYear, MultipartPostAvatar, File)
     private type postbothActionType              = postbothActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspostboth: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
