@@ -29,6 +29,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Watering]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idWateringsWatering_idGetValidator(plant_id, watering_id).errors match {
@@ -38,6 +39,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -79,6 +81,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     201 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idWateringsWatering_idPutValidator(plant_id, watering_id).errors match {
@@ -88,6 +91,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -127,9 +131,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[User]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result = processValidgetusersMeRequest(f)()(possibleWriters, getusersMeResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -170,6 +176,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[SunlightNeeds]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idSunlight_needsGetValidator(plant_id).errors match {
@@ -179,6 +186,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -234,6 +242,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             ).withDefaultValue(anyToWritable[Error])
             val sunlight_needs = request.body
             
+            
 
                 val result =
                         new PlantsPlant_idSunlight_needsPutValidator(plant_id, sunlight_needs).errors match {
@@ -243,6 +252,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -282,6 +292,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[User]]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new UsersGetValidator(limit, offset).errors match {
@@ -291,6 +302,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -345,6 +357,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             ).withDefaultValue(anyToWritable[Error])
             val signin_data = request.body
             
+            
 
                 val result =
                         new UsersPostValidator(signin_data).errors match {
@@ -354,6 +367,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -393,6 +407,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Area]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new AreasArea_idGetValidator(area_id).errors match {
@@ -402,6 +417,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -442,6 +458,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     201 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new AreasArea_idPutValidator(area_id).errors match {
@@ -451,6 +468,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -490,6 +508,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new AreasArea_idDeleteValidator(area_id).errors match {
@@ -499,6 +518,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -538,6 +558,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[Plant]]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsGetValidator(limit, offset).errors match {
@@ -547,6 +568,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -587,6 +609,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[Plant]]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new UserUser_idPlantsGetValidator(user_id, limit, offset).errors match {
@@ -596,6 +619,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -636,6 +660,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[User]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new UsersUser_idGetValidator(user_id).errors match {
@@ -645,6 +670,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -700,6 +726,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             ).withDefaultValue(anyToWritable[Error])
             val user = request.body
             
+            
 
                 val result =
                         new UsersUser_idPutValidator(user_id, user).errors match {
@@ -709,6 +736,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -764,6 +792,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             ).withDefaultValue(anyToWritable[Error])
             val user = request.body
             
+            
 
                 val result =
                         new UsersUser_idDeleteValidator(user_id, user).errors match {
@@ -773,6 +802,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -812,6 +842,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[Area]]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new AreasGetValidator(limit, offset).errors match {
@@ -821,6 +852,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -861,6 +893,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Location]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idLocationGetValidator(plant_id).errors match {
@@ -870,6 +903,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -925,6 +959,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             ).withDefaultValue(anyToWritable[Error])
             val location = request.body
             
+            
 
                 val result =
                         new PlantsPlant_idLocationPutValidator(plant_id, location).errors match {
@@ -934,6 +969,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -974,6 +1010,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     404 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idLocationDeleteValidator(plant_id).errors match {
@@ -983,6 +1020,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1023,6 +1061,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new UsersUser_idPictureGetValidator(user_id).errors match {
@@ -1032,6 +1071,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1073,6 +1113,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     201 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new UsersUser_idPicturePutValidator(user_id).errors match {
@@ -1082,6 +1123,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1122,6 +1164,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new UsersUser_idPictureDeleteValidator(user_id).errors match {
@@ -1131,6 +1174,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1171,6 +1215,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     404 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idPicturesGetValidator(plant_id, limit, offset).errors match {
@@ -1180,6 +1225,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1220,6 +1266,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Plant]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idGetValidator(plant_id).errors match {
@@ -1229,6 +1276,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1285,6 +1333,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             ).withDefaultValue(anyToWritable[Error])
             val plant = request.body
             
+            
 
                 val result =
                         new PlantsPlant_idPutValidator(plant_id, plant).errors match {
@@ -1294,6 +1343,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1334,6 +1384,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idDeleteValidator(plant_id).errors match {
@@ -1343,6 +1394,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1383,6 +1435,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     404 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idWateringsGetValidator(plant_id, limit, offset).errors match {
@@ -1392,6 +1445,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1432,6 +1486,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idPicturesPicture_idGetValidator(plant_id, picture_id).errors match {
@@ -1441,6 +1496,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1482,6 +1538,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     201 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idPicturesPicture_idPutValidator(plant_id, picture_id).errors match {
@@ -1491,6 +1548,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1531,6 +1589,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idPicturesPicture_idDeleteValidator(plant_id, picture_id).errors match {
@@ -1540,6 +1599,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1579,6 +1639,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[WaterNeeds]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new PlantsPlant_idWater_needsGetValidator(plant_id).errors match {
@@ -1588,6 +1649,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1643,6 +1705,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             ).withDefaultValue(anyToWritable[Error])
             val water_needs = request.body
             
+            
 
                 val result =
                         new PlantsPlant_idWater_needsPutValidator(plant_id, water_needs).errors match {
@@ -1652,6 +1715,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

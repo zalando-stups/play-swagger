@@ -26,6 +26,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[Pet]]
             )
             
+            
 
                 val result =
                         new GetValidator(limit).errors match {
@@ -35,6 +36,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -88,6 +90,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             )
             val pet = request.body
             
+            
 
                 val result =
                         new PutValidator(pet).errors match {
@@ -97,6 +100,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -150,6 +154,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             )
             val pet = request.body
             
+            
 
                 val result =
                         new PostValidator(pet).errors match {
@@ -159,6 +164,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -198,6 +204,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result =
                         new PetIdGetValidator(petId).errors match {
@@ -207,6 +214,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

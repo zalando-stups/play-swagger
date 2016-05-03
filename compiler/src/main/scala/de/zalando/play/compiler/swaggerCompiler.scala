@@ -36,7 +36,7 @@ object SwaggerCompiler {
 
   def compileBase(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
                   flatAst: StrictModel): SwaggerCompilationResult = {
-    val places            = Seq("/model/", "/validators/", "/security/", "/controllers_base/")
+    val places            = Seq("/model/", "/validators/", "/security/", "/controllers_base/", "/marshallers/")
     val generator         = new ScalaGenerator(flatAst).generateBase
     val swaggerFiles      = compileSwagger(task, outputDir, places, generator)(flatAst)
     SwaggerCompilationResult(swaggerFiles)
@@ -160,16 +160,16 @@ sealed trait SwaggerCompilationResult {
 }
 object SwaggerCompilationResult {
   def apply(results: Seq[Seq[File]]) = results match {
-    case model :: validators :: security :: controllers :: Nil =>
-      SwaggerBaseCompilationResult(model, validators, security, controllers)
+    case model :: validators :: security :: controllers :: formParsers :: Nil =>
+      SwaggerBaseCompilationResult(model, validators, security, controllers, formParsers)
     case testData :: tests :: Nil => SwaggerTestCompilationResult(testData, tests)
     case routes :: Nil => SwaggerRoutesCompilationResult(routes)
     case other => throw new IllegalArgumentException("Not recognized: " + other)
   }
 }
 case class SwaggerBaseCompilationResult(modelFiles: Seq[File], validatorFiles: Seq[File],
-  securityFiles: Seq[File], controllerBaseFiles: Seq[File]) extends SwaggerCompilationResult {
-  def allFiles: Set[File] = (modelFiles ++ validatorFiles ++ securityFiles ++ controllerBaseFiles).toSet
+  securityFiles: Seq[File], controllerBaseFiles: Seq[File], formParserFiles: Seq[File]) extends SwaggerCompilationResult {
+  def allFiles: Set[File] = (modelFiles ++ validatorFiles ++ securityFiles ++ controllerBaseFiles ++ formParserFiles).toSet
 }
 case class SwaggerRoutesCompilationResult(routesFiles: Seq[File]) extends SwaggerCompilationResult {
   def allFiles: Set[File] = routesFiles.toSet

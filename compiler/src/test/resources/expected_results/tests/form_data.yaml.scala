@@ -1,4 +1,4 @@
-package simple.petstore.api.yaml
+package form_data.yaml
 
 import de.zalando.play.controllers._
 import org.scalacheck._
@@ -18,12 +18,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
-import de.zalando.play.controllers.ArrayWrapper
+import java.io.File
 
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
-    class SimplePetstoreApiYamlSpec extends Specification {
+    class Form_dataYamlSpec extends Specification {
         def toPath[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
         def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = Option(binder.unbind(key, value)).getOrElse("")
         def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
@@ -43,107 +43,22 @@ import Generators._
         mapper.readValue(content, expectedType)
 
 
-    "POST /api/pets" should {
-        def testInvalidInput(pet: NewPet) = {
+    "POST /form_data/multipart" should {
+        def testInvalidInput(input: (String, BothPostYear, MultipartPostAvatar)) = {
 
+            val (name, year, avatar) = input
 
-            val url = s"""/api/pets"""
+            val url = s"""/form_data/multipart"""
             val acceptHeaders = Seq(
-               "application/json"
-            )
-            val propertyList = acceptHeaders.map { acceptHeader =>
-                val headers =
-                    Seq() :+ ("Accept" -> acceptHeader)
-
-                    val parsed_pet = PlayBodyParsing.jacksonMapper("ErrorModel").writeValueAsString(pet)
-
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
-                val errors = new PetsPostValidator(pet).errors
-
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
-
-                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
-                    requestStatusCode_(path) ?= BAD_REQUEST ,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
-                )
-            }
-            propertyList.reduce(_ && _)
-        }
-        def testValidInput(pet: NewPet) = {
-            
-            val parsed_pet = parserConstructor("ErrorModel").writeValueAsString(pet)
-            
-            val url = s"""/api/pets"""
-            val acceptHeaders = Seq(
-               "application/json"
-            )
-            val propertyList = acceptHeaders.map { acceptHeader =>
-                val headers =
-                   Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
-                val errors = new PetsPostValidator(pet).errors
-                val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
-                    200 -> classOf[Pet]
-                )
-
-                val expectedCode = requestStatusCode_(path)
-                val mimeType = requestContentType_(path)
-                val mapper = parserConstructor(mimeType.getOrElse("application/json"))
-
-                val parsedApiResponse = scala.util.Try {
-                    parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
-                }
-
-                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
-                    possibleResponseTypes.contains(expectedCode) ?= true,
-                    parsedApiResponse.isSuccess ?= true,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.isEmpty ?= true
-                )
-            }
-            propertyList.reduce(_ && _)
-        }
-        "discard invalid data" in new WithApplication {
-            val genInputs = for {
-                    pet <- NewPetGenerator
-                } yield pet
-            val inputs = genInputs suchThat { pet =>
-                new PetsPostValidator(pet).errors.nonEmpty
-            }
-            val props = forAll(inputs) { i => testInvalidInput(i) }
-            checkResult(props)
-        }
-        "do something with valid data" in new WithApplication {
-            val genInputs = for {
-                pet <- NewPetGenerator
-            } yield pet
-            val inputs = genInputs suchThat { pet =>
-                new PetsPostValidator(pet).errors.isEmpty
-            }
-            val props = forAll(inputs) { i => testValidInput(i) }
-            checkResult(props)
-        }
-
-    }
-
-    "GET /api/pets" should {
-        def testInvalidInput(input: (PetsGetTags, PetsGetLimit)) = {
-
-            val (tags, limit) = input
-
-            val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
-            val acceptHeaders = Seq(
-               "application/json"
+               "multipart/form-data"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
 
 
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsGetValidator(tags, limit).errors
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val errors = new MultipartPostValidator(name, year, avatar).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
@@ -156,20 +71,20 @@ import Generators._
             }
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (PetsGetTags, PetsGetLimit)) = {
-            val (tags, limit) = input
+        def testValidInput(input: (String, BothPostYear, MultipartPostAvatar)) = {
+            val (name, year, avatar) = input
             
-            val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
+            val url = s"""/form_data/multipart"""
             val acceptHeaders = Seq(
-               "application/json"
+               "multipart/form-data"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsGetValidator(tags, limit).errors
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val errors = new MultipartPostValidator(name, year, avatar).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
-                    200 -> classOf[Seq[Pet]]
+                    200 -> classOf[MultipartPostResponses200]
                 )
 
                 val expectedCode = requestStatusCode_(path)
@@ -191,24 +106,26 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        tags <- PetsGetTagsGenerator
-                        limit <- PetsGetLimitGenerator
+                        name <- StringGenerator
+                        year <- BothPostYearGenerator
+                        avatar <- MultipartPostAvatarGenerator
                     
-                } yield (tags, limit)
-            val inputs = genInputs suchThat { case (tags, limit) =>
-                new PetsGetValidator(tags, limit).errors.nonEmpty
+                } yield (name, year, avatar)
+            val inputs = genInputs suchThat { case (name, year, avatar) =>
+                new MultipartPostValidator(name, year, avatar).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    tags <- PetsGetTagsGenerator
-                    limit <- PetsGetLimitGenerator
+                    name <- StringGenerator
+                    year <- BothPostYearGenerator
+                    avatar <- MultipartPostAvatarGenerator
                 
-            } yield (tags, limit)
-            val inputs = genInputs suchThat { case (tags, limit) =>
-                new PetsGetValidator(tags, limit).errors.isEmpty
+            } yield (name, year, avatar)
+            val inputs = genInputs suchThat { case (name, year, avatar) =>
+                new MultipartPostValidator(name, year, avatar).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)
@@ -216,21 +133,24 @@ import Generators._
 
     }
 
-    "GET /api/pets/{id}" should {
-        def testInvalidInput(id: Long) = {
+    "POST /form_data/both" should {
+        def testInvalidInput(input: (String, BothPostYear, MultipartPostAvatar, File)) = {
 
+            val (name, year, avatar, ringtone) = input
 
-            val url = s"""/api/pets/${toPath(id)}"""
+            val url = s"""/form_data/both"""
             val acceptHeaders = Seq(
-               "application/json"
+               "application/x-www-form-urlencoded", 
+            
+               "multipart/form-data"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
 
 
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsIdGetValidator(id).errors
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val errors = new BothPostValidator(name, year, avatar, ringtone).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
@@ -243,19 +163,22 @@ import Generators._
             }
             propertyList.reduce(_ && _)
         }
-        def testValidInput(id: Long) = {
+        def testValidInput(input: (String, BothPostYear, MultipartPostAvatar, File)) = {
+            val (name, year, avatar, ringtone) = input
             
-            val url = s"""/api/pets/${toPath(id)}"""
+            val url = s"""/form_data/both"""
             val acceptHeaders = Seq(
-               "application/json"
+               "application/x-www-form-urlencoded", 
+            
+               "multipart/form-data"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
-                val errors = new PetsIdGetValidator(id).errors
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val errors = new BothPostValidator(name, year, avatar, ringtone).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
-                    200 -> classOf[Pet]
+                    200 -> classOf[BothPostResponses200]
                 )
 
                 val expectedCode = requestStatusCode_(path)
@@ -277,20 +200,28 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    id <- LongGenerator
-                } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdGetValidator(id).errors.nonEmpty
+                        name <- StringGenerator
+                        year <- BothPostYearGenerator
+                        avatar <- MultipartPostAvatarGenerator
+                        ringtone <- FileGenerator
+                    
+                } yield (name, year, avatar, ringtone)
+            val inputs = genInputs suchThat { case (name, year, avatar, ringtone) =>
+                new BothPostValidator(name, year, avatar, ringtone).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                id <- LongGenerator
-            } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdGetValidator(id).errors.isEmpty
+                    name <- StringGenerator
+                    year <- BothPostYearGenerator
+                    avatar <- MultipartPostAvatarGenerator
+                    ringtone <- FileGenerator
+                
+            } yield (name, year, avatar, ringtone)
+            val inputs = genInputs suchThat { case (name, year, avatar, ringtone) =>
+                new BothPostValidator(name, year, avatar, ringtone).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)
@@ -298,21 +229,22 @@ import Generators._
 
     }
 
-    "DELETE /api/pets/{id}" should {
-        def testInvalidInput(id: Long) = {
+    "POST /form_data/url-encoded" should {
+        def testInvalidInput(input: (String, BothPostYear, File)) = {
 
+            val (name, year, avatar) = input
 
-            val url = s"""/api/pets/${toPath(id)}"""
+            val url = s"""/form_data/url-encoded"""
             val acceptHeaders = Seq(
-               "application/json"
+               "application/x-www-form-urlencoded"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
 
 
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-                val errors = new PetsIdDeleteValidator(id).errors
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val errors = new Url_encodedPostValidator(name, year, avatar).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
@@ -325,19 +257,20 @@ import Generators._
             }
             propertyList.reduce(_ && _)
         }
-        def testValidInput(id: Long) = {
+        def testValidInput(input: (String, BothPostYear, File)) = {
+            val (name, year, avatar) = input
             
-            val url = s"""/api/pets/${toPath(id)}"""
+            val url = s"""/form_data/url-encoded"""
             val acceptHeaders = Seq(
-               "application/json"
+               "application/x-www-form-urlencoded"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
-                val errors = new PetsIdDeleteValidator(id).errors
+                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val errors = new Url_encodedPostValidator(name, year, avatar).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
-                    204 -> classOf[Null]
+                    200 -> classOf[MultipartPostResponses200]
                 )
 
                 val expectedCode = requestStatusCode_(path)
@@ -359,20 +292,26 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    id <- LongGenerator
-                } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdDeleteValidator(id).errors.nonEmpty
+                        name <- StringGenerator
+                        year <- BothPostYearGenerator
+                        avatar <- FileGenerator
+                    
+                } yield (name, year, avatar)
+            val inputs = genInputs suchThat { case (name, year, avatar) =>
+                new Url_encodedPostValidator(name, year, avatar).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                id <- LongGenerator
-            } yield id
-            val inputs = genInputs suchThat { id =>
-                new PetsIdDeleteValidator(id).errors.isEmpty
+                    name <- StringGenerator
+                    year <- BothPostYearGenerator
+                    avatar <- FileGenerator
+                
+            } yield (name, year, avatar)
+            val inputs = genInputs suchThat { case (name, year, avatar) =>
+                new Url_encodedPostValidator(name, year, avatar).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)

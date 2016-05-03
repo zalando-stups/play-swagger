@@ -31,9 +31,11 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Metrics]
             )
             
+            
 
                 val result = processValidnakadiHackGet_metricsRequest(f)()(possibleWriters, nakadiHackGet_metricsResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -77,6 +79,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[SimpleStreamEvent]
             )
             
+            
 
                 val result =
                         new TopicsTopicPartitionsPartitionEventsGetValidator(start_from, partition, stream_limit, topic, batch_limit, batch_flush_timeout, stream_timeout, batch_keep_alive_limit).errors match {
@@ -86,6 +89,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -125,6 +129,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[TopicPartition]
             )
             
+            
 
                 val result =
                         new TopicsTopicPartitionsPartitionGetValidator(topic, partition).errors match {
@@ -134,6 +139,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -175,9 +181,11 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     503 -> anyToWritable[Problem]
             )
             
+            
 
                 val result = processValidnakadiHackGet_topicsRequest(f)()(possibleWriters, nakadiHackGet_topicsResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -222,10 +230,12 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
             )
             
             val x_nakadi_cursors: Either[String,String] =
-                fromHeaders[String]("x_nakadi_cursors", request.headers.toMap)
+                fromParameters[String]("header")("x_nakadi_cursors", request.headers.toMap)
+            
             
                 (x_nakadi_cursors) match {
                     case (Right(x_nakadi_cursors)) =>
+            
 
                 val result =
                         new TopicsTopicEventsGetValidator(stream_timeout, stream_limit, batch_flush_timeout, x_nakadi_cursors, batch_limit, batch_keep_alive_limit, topic).errors match {
@@ -240,6 +250,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     val msg = problem.mkString("\n")
                     BadRequest(msg)
                 }
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -298,6 +309,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
             )
             val event = request.body
             
+            
 
                 val result =
                         new TopicsTopicEventsPostValidator(topic, event).errors match {
@@ -307,6 +319,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -346,6 +359,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[TopicPartition]]
             )
             
+            
 
                 val result =
                         new TopicsTopicPartitionsGetValidator(topic).errors match {
@@ -355,6 +369,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -413,6 +428,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
             )
             val event = request.body
             
+            
 
                 val result =
                         new TopicsTopicEventsBatchPostValidator(topic, event).errors match {
@@ -422,6 +438,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

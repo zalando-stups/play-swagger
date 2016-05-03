@@ -99,7 +99,7 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
 
   def orderedMediaTypeList(hiPriority: MediaTypeList, lowPriority: MediaTypeList): Set[MimeType] = {
     Option(hiPriority).orElse(Option(lowPriority)).toSet.flatten.map {
-      new MimeType(_)
+      MimeType(_)
     }
   }
 

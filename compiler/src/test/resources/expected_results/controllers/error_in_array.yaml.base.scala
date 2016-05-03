@@ -42,6 +42,7 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
             )
             val root = request.body
             
+            
 
                 val result =
                         new SchemaModelGetValidator(root).errors match {
@@ -51,6 +52,7 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

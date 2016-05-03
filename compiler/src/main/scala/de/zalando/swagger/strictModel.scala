@@ -430,7 +430,9 @@ object strictModel {
     enum:                   Enum[T],
     multipleOf:             MultipleOf[T],
     allowEmptyValue:        Boolean = false // unique for form
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value] {
+    assert("formData".equalsIgnoreCase(in))
+  }
 
   /**
    *

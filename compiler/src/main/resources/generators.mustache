@@ -63,4 +63,9 @@ object Generators {
         s <- arbitrary[String]
     } yield Base64String.string2base64string(s))
     {{/if}}
+    {{if file_part}}
+    implicit lazy val arbFile: Arbitrary[File] = Arbitrary(for {
+        content <- arbitrary[String]
+    } yield de.zalando.play.controllers.PlayPathBindables.tempFileFromString(content))
+    {{/if}}
 }

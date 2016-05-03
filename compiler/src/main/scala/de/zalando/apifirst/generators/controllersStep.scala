@@ -2,7 +2,8 @@ package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef}
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.Security.{OAuth2Constraint, Constraint}
+import de.zalando.apifirst.Http.{ApplicationFormUrlEncoded, MultipartFormData}
+import de.zalando.apifirst.Security.{Constraint, OAuth2Constraint}
 import de.zalando.apifirst.{Http, ParameterPlace}
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
@@ -28,7 +29,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
     "action_constructor"          -> "ActionConstructor",
     "response_mime_type_name"     -> "ResponseMimeType",
     "request"                     -> "Request",
-    "method"                      -> ""
+    "method"                      -> "",
+    "form_parser_name"            -> formParserSuffix
   )
 
   /**
@@ -37,12 +39,27 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
     * @return
     */
   protected val controllers: SingleStep = call => table =>
-    Map("controller" -> controllerProps(call._1, call._2)(table))
+    Map(
+      "controller" -> controllerProps(call._1, call._2)(table),
+      "form_data" -> formDataProps(call._1, call._2)(table)
+    )
 
+  private def formDataProps(ref: Reference, call: ApiCall)(implicit table: DenotationTable) = {
+    val formParams           = validationsByType(call, p => p.place == ParameterPlace.FORM)
+    Map(
+      "name"                        -> nameWithSuffix(call, formParserSuffix),
+      "support_url_encoded"         -> call.mimeIn.find(_ == ApplicationFormUrlEncoded),
+      "support_multipart_form_data" -> call.mimeIn.find(_ == MultipartFormData),
+      "form_parameters"             -> formParams
+    )
+
+  }
   private def controllerProps(ref: Reference, call: ApiCall)(implicit table: DenotationTable) = {
     val bodyParam           = validationsByType(call, p => p.place == ParameterPlace.BODY)
     val headerParams        = validationsByType(call, p => p.place == ParameterPlace.HEADER)
-    val nonBodyParams       = validationsByType(call, p => p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER)
+    val nonBodyParams       = validationsByType(call, p => p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER && p.place != ParameterPlace.FORM)
+    val formParams           = validationsByType(call, p => p.place == ParameterPlace.FORM)
+
     val allValidations      = callValidations(ref).asInstanceOf[Seq[_]]
 
     val actionErrorMappings = errorMappings(call)
@@ -80,7 +97,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
       "needs_custom_writers"          -> customWriters,
       "needs_custom_readers"          -> customReaders,
       "has_no_validations"            -> allValidations.isEmpty,
-      "has_no_error_mappings"         -> actionErrorMappings.isEmpty
+      "has_no_error_mappings"         -> actionErrorMappings.isEmpty,
+      "form_parameters"               -> formParams
     ) ++ nameMappings ++ nameParamPair ++ securityData(call)
   }
 
@@ -156,7 +174,9 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
       "type_name" -> commonTypeName,
       "parser_type" -> parserType,
       "body_parser"  -> parser,
-      "real_name" -> param.simple
+      "optional" -> parser.replaceAll("anyParser",""),
+      "real_name" -> param.simple,
+      "is_file" -> (if (parserType == "File") parserType else "")
     )
   }
 
@@ -176,6 +196,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
 trait ControllersCommons {
 
   val controllersSuffix = "Action"
+  val formParserSuffix = "ParseForm"
 
   val eof = "//////// EOF //////// "
 

@@ -7,6 +7,8 @@ import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
 import PlayBodyParsing._
 import scala.util._
 
+import de.zalando.play.controllers.PlayPathBindables
+
 
 
 
@@ -26,9 +28,11 @@ trait EchoHandlerBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result = processValidmethodRequest(f)()(possibleWriters, methodResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -63,13 +67,21 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val postActionConstructor  = Action
-    def postAction = (f: postActionType) => (name: PostName, year: PostName) => postActionConstructor { request =>
+    def postAction = (f: postActionType) => postActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[PostResponses200]
             )
+            
+            val eitherFormParameters = FormDataParser.postParseForm(request)
+            eitherFormParameters match {
+                case Left(problem: Seq[String]) =>
+                    val msg = problem.mkString("\n")
+                    BadRequest(msg)
+
+                case Right((name, year)) =>
             
 
                 val result =
@@ -80,6 +92,9 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
+            }
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -119,6 +134,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result =
                         new Test_pathIdGetValidator(id).errors match {
@@ -128,6 +144,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

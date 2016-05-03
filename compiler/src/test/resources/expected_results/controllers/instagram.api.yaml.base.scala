@@ -28,6 +28,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[MediaMedia_idLikesGetResponses200]
             )
             
+            
 
                 val result =
                         new MediaMedia_idLikesGetValidator(media_id).errors match {
@@ -37,6 +38,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -76,6 +78,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
             
+            
 
                 val result =
                         new MediaMedia_idLikesPostValidator(media_id).errors match {
@@ -85,6 +88,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -124,6 +128,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
             
+            
 
                 val result =
                         new MediaMedia_idLikesDeleteValidator(media_id).errors match {
@@ -133,6 +138,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -172,6 +178,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
             
+            
 
                 val result =
                         new UsersUser_idFollowsGetValidator(user_id).errors match {
@@ -181,6 +188,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -220,6 +228,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[LocationsLocation_idGetResponses200]
             )
             
+            
 
                 val result =
                         new LocationsLocation_idGetValidator(location_id).errors match {
@@ -229,6 +238,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -268,6 +278,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
             
+            
 
                 val result =
                         new UsersSearchGetValidator(q, count).errors match {
@@ -277,6 +288,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -316,6 +328,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
+            
 
                 val result =
                         new UsersSelfMediaLikedGetValidator(count, max_like_id).errors match {
@@ -325,6 +338,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -364,6 +378,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[Tag]
             )
             
+            
 
                 val result =
                         new TagsTag_nameGetValidator(tag_name).errors match {
@@ -373,6 +388,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -412,6 +428,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[TagsSearchGetResponses200]
             )
             
+            
 
                 val result =
                         new TagsSearchGetValidator(q).errors match {
@@ -421,6 +438,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -460,6 +478,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
             
+            
 
                 val result =
                         new UsersUser_idFollowed_byGetValidator(user_id).errors match {
@@ -469,6 +488,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -508,6 +528,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[MediaMedia_idCommentsGetResponses200]
             )
             
+            
 
                 val result =
                         new MediaMedia_idCommentsGetValidator(media_id).errors match {
@@ -517,6 +538,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -571,6 +593,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
             )
             val tEXT = request.body
             
+            
 
                 val result =
                         new MediaMedia_idCommentsPostValidator(media_id, tEXT).errors match {
@@ -580,6 +603,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -619,6 +643,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
             
+            
 
                 val result =
                         new MediaMedia_idCommentsDeleteValidator(media_id).errors match {
@@ -628,6 +653,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -667,6 +693,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[TagsTag_nameMediaRecentGetResponses200]
             )
             
+            
 
                 val result =
                         new TagsTag_nameMediaRecentGetValidator(tag_name).errors match {
@@ -676,6 +703,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -730,6 +758,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
             )
             val action = request.body
             
+            
 
                 val result =
                         new UsersUser_idRelationshipPostValidator(user_id, action).errors match {
@@ -739,6 +768,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -778,6 +808,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
+            
 
                 val result =
                         new UsersSelfFeedGetValidator(count, max_id, min_id).errors match {
@@ -787,6 +818,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -826,6 +858,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersUser_idGetResponses200]
             )
             
+            
 
                 val result =
                         new UsersUser_idGetValidator(user_id).errors match {
@@ -835,6 +868,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -874,6 +908,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[MediaSearchGetResponses200]
             )
             
+            
 
                 val result =
                         new MediaSearchGetValidator(mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT).errors match {
@@ -883,6 +918,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -922,6 +958,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result =
                         new GeographiesGeo_idMediaRecentGetValidator(geo_id, count, min_id).errors match {
@@ -931,6 +968,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -970,6 +1008,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[Media]
             )
             
+            
 
                 val result =
                         new MediaShortcodeGetValidator(shortcode).errors match {
@@ -979,6 +1018,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1018,6 +1058,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[LocationsSearchGetResponses200]
             )
             
+            
 
                 val result =
                         new LocationsSearchGetValidator(foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng).errors match {
@@ -1027,6 +1068,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1066,9 +1108,11 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersSelfRequested_byGetResponses200]
             )
             
+            
 
                 val result = processValidgetusersSelfRequested_byRequest(f)()(possibleWriters, getusersSelfRequested_byResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1108,6 +1152,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[Media]
             )
             
+            
 
                 val result =
                         new MediaMedia_idGetValidator(media_id).errors match {
@@ -1117,6 +1162,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1156,6 +1202,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
+            
 
                 val result =
                         new LocationsLocation_idMediaRecentGetValidator(location_id, max_timestamp, min_timestamp, min_id, max_id).errors match {
@@ -1165,6 +1212,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1204,6 +1252,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
+            
 
                 val result =
                         new UsersUser_idMediaRecentGetValidator(user_id, max_timestamp, min_id, min_timestamp, max_id, count).errors match {
@@ -1213,6 +1262,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1252,9 +1302,11 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
+            
 
                 val result = processValidgetmediaPopularRequest(f)()(possibleWriters, getmediaPopularResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
