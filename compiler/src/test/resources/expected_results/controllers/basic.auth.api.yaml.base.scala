@@ -26,9 +26,11 @@ trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing  with BasicAu
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result = processValidgetRequest(f)()(possibleWriters, getResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

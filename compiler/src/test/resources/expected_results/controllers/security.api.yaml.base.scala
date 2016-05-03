@@ -29,6 +29,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with Security
                     200 -> anyToWritable[Seq[Pet]]
             ).withDefaultValue(anyToWritable[ErrorModel])
             
+            
 
                 val result =
                         new PetsIdGetValidator(id).errors match {
@@ -38,6 +39,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with Security
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

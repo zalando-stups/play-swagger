@@ -35,6 +35,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     200 -> anyToWritable[Seq[Pet]]
             )
             
+            
 
                 val result =
                         new PetsFindByTagsGetValidator(tags).errors match {
@@ -44,6 +45,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -103,6 +105,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             )
             val body = request.body
             
+            
 
                 val result =
                         new StoresOrderPostValidator(body).errors match {
@@ -112,6 +115,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -168,6 +172,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                 val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
             val body = request.body
             
+            
 
                 val result =
                         new UsersPostValidator(body).errors match {
@@ -177,6 +182,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -233,6 +239,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                 val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
             val body = request.body
             
+            
 
                 val result =
                         new UsersCreateWithListPostValidator(body).errors match {
@@ -242,6 +249,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -287,6 +295,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     400 -> anyToWritable[Null]
             )
             
+            
 
                 val result =
                         new UsersUsernameGetValidator(username).errors match {
@@ -296,6 +305,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -355,6 +365,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             )
             val body = request.body
             
+            
 
                 val result =
                         new UsersUsernamePutValidator(username, body).errors match {
@@ -364,6 +375,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -408,6 +420,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     400 -> anyToWritable[Null]
             )
             
+            
 
                 val result =
                         new UsersUsernameDeleteValidator(username).errors match {
@@ -417,6 +430,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -476,6 +490,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             )
             val body = request.body
             
+            
 
                 val result =
                         new PetsPutValidator(body).errors match {
@@ -485,6 +500,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -542,6 +558,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             )
             val body = request.body
             
+            
 
                 val result =
                         new PetsPostValidator(body).errors match {
@@ -551,6 +568,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -607,6 +625,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                 val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
             val body = request.body
             
+            
 
                 val result =
                         new UsersCreateWithArrayPostValidator(body).errors match {
@@ -616,6 +635,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -661,6 +681,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     200 -> anyToWritable[Order]
             )
             
+            
 
                 val result =
                         new StoresOrderOrderIdGetValidator(orderId).errors match {
@@ -670,6 +691,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -714,6 +736,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     400 -> anyToWritable[Null]
             )
             
+            
 
                 val result =
                         new StoresOrderOrderIdDeleteValidator(orderId).errors match {
@@ -723,6 +746,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -764,9 +788,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         negotiateContent(request.acceptedTypes, providedTypes).map { logoutUserResponseMimeType =>
                 val possibleWriters = Map.empty[Int,String => Writeable[Any]].withDefaultValue(anyToWritable[Null])
             
+            
 
                 val result = processValidlogoutUserRequest(f)()(possibleWriters, logoutUserResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -812,6 +838,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     200 -> anyToWritable[Pet]
             )
             
+            
 
                 val result =
                         new PetsPetIdGetValidator(petId).errors match {
@@ -821,6 +848,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -856,13 +884,21 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val updatePetWithFormActionConstructor  = new updatePetWithFormSecureAction("write_pets", "read_pets")
-    def updatePetWithFormAction = (f: updatePetWithFormActionType) => (petId: String, name: String, status: String) => updatePetWithFormActionConstructor { request =>
+    def updatePetWithFormAction = (f: updatePetWithFormActionType) => (petId: String) => updatePetWithFormActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { updatePetWithFormResponseMimeType =>
                 val possibleWriters = Map(
                     405 -> anyToWritable[Null]
             )
+            
+            val eitherFormParameters = FormDataParser.updatePetWithFormParseForm(request)
+            eitherFormParameters match {
+                case Left(problem: Seq[String]) =>
+                    val msg = problem.mkString("\n")
+                    BadRequest(msg)
+
+                case Right((name, status)) =>
             
 
                 val result =
@@ -873,6 +909,9 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
+            }
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -917,10 +956,12 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             )
             
             val api_key: Either[String,String] =
-                fromHeaders[String]("api_key", request.headers.toMap)
+                fromParameters[String]("header")("api_key", request.headers.toMap)
+            
             
                 (api_key) match {
                     case (Right(api_key)) =>
+            
 
                 val result =
                         new PetsPetIdDeleteValidator(api_key, petId).errors match {
@@ -935,6 +976,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     val msg = problem.mkString("\n")
                     BadRequest(msg)
                 }
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -979,6 +1021,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     400 -> anyToWritable[Null]
             )
             
+            
 
                 val result =
                         new PetsFindByStatusGetValidator(status).errors match {
@@ -988,6 +1031,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1032,6 +1076,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     400 -> anyToWritable[Null]
             )
             
+            
 
                 val result =
                         new UsersLoginGetValidator(username, password).errors match {
@@ -1041,6 +1086,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

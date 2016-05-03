@@ -55,6 +55,7 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
             )
             val petId = request.body
             
+            
 
                 val result =
                         new GetValidator(petId, base64, date, date_time).errors match {
@@ -64,6 +65,7 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

@@ -1,11 +1,14 @@
 package de.zalando.play.controllers
 
+import java.io.File
 import java.util.Base64
 
 import com.fasterxml.jackson.databind.{MappingIterator, ObjectReader, ObjectWriter}
 import com.fasterxml.jackson.dataformat.csv.{CsvMapper, CsvParser, CsvSchema}
 import org.joda.time.{DateMidnight, DateTime}
 import play.api.mvc.{PathBindable, QueryStringBindable}
+
+import scala.io.Source
 
 /**
   * @author slasch 
@@ -69,6 +72,11 @@ object PlayPathBindables {
     (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
   )
 
+  implicit object queryBindableFile extends QueryStringBindable.Parsing[java.io.File](
+    s => new File(s), // FIXME
+    s => Source.fromFile(s).getLines().mkString("\n"),
+    (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
+  )
 
   /**
     * Factory to create PathBindable for optional values of any type

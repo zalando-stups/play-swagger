@@ -44,6 +44,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
             ).withDefaultValue(anyToWritable[ErrorModel])
             val pet = request.body
             
+            
 
                 val result =
                         new PetsPostValidator(pet).errors match {
@@ -53,6 +54,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -95,6 +97,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[Pet]]
             ).withDefaultValue(anyToWritable[ErrorModel])
             
+            
 
                 val result =
                         new PetsGetValidator(tags, limit).errors match {
@@ -104,6 +107,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -143,6 +147,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Pet]
             ).withDefaultValue(anyToWritable[ErrorModel])
             
+            
 
                 val result =
                         new PetsIdGetValidator(id).errors match {
@@ -152,6 +157,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -191,6 +197,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     204 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[ErrorModel])
             
+            
 
                 val result =
                         new PetsIdDeleteValidator(id).errors match {
@@ -200,6 +207,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

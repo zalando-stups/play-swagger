@@ -163,9 +163,9 @@ trait PlayBodyParsing extends BodyParsers {
   /**
     * Helper method to parse parameters sent as Headers
     */
-  def fromHeaders[T](key: String, headers: Map[String, Seq[String]], default: Option[T] = None)(implicit binder: QueryStringBindable[T]): Either[String,T] =
+  def fromParameters[T](place: String)(key: String, headers: Map[String, Seq[String]], default: Option[T] = None)(implicit binder: QueryStringBindable[T]): Either[String,T] =
     binder.bind(key, headers).getOrElse {
-      default.map(d => Right(d)).getOrElse(Left("Missing header parameter(s): " + key))
+      default.map(d => Right(d)).getOrElse(Left(s"Missing $place parameter(s) for '$key'"))
     }
 
   /**

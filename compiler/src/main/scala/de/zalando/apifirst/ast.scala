@@ -33,8 +33,20 @@ object Http {
 
   case object ApplicationJson extends MimeType("application/json")
 
+  case object ApplicationFormUrlEncoded extends MimeType("application/x-www-form-urlencoded")
+
+  case object MultipartFormData extends MimeType("multipart/form-data")
+
   case class Body(value: Option[String]) extends Expr
 
+  object MimeType {
+    def apply(name: String): MimeType = name.toLowerCase match {
+      case ApplicationFormUrlEncoded.name => ApplicationFormUrlEncoded
+      case MultipartFormData.name => MultipartFormData
+      case ApplicationJson.name => ApplicationJson
+      case other => new MimeType(other)
+    }
+  }
 }
 
 object Hypermedia {

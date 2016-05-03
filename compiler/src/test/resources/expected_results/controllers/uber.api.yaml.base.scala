@@ -29,9 +29,11 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Profile]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result = processValidgetmeRequest(f)()(possibleWriters, getmeResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -71,6 +73,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[Product]]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new ProductsGetValidator(latitude, longitude).errors match {
@@ -80,6 +83,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -119,6 +123,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[Product]]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new EstimatesTimeGetValidator(start_latitude, start_longitude, customer_uuid, product_id).errors match {
@@ -128,6 +133,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -167,6 +173,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Seq[PriceEstimate]]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new EstimatesPriceGetValidator(start_latitude, start_longitude, end_latitude, end_longitude).errors match {
@@ -176,6 +183,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -215,6 +223,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Activities]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result =
                         new HistoryGetValidator(offset, limit).errors match {
@@ -224,6 +233,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

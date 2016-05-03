@@ -25,12 +25,14 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   val marschallersTemplateName        = "play_scala_response_writers"
   val securityTemplateName            = "play_scala_controller_security"
   val securityExtractorsTemplateName  = "play_scala_security_extractors"
+  val formParsersTemplateName         = "play_scala_form_parser"
 
   def generateBase: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateModel(fileName, packageName),
     playValidators(fileName, packageName),
     playScalaSecurity(fileName, packageName),
-    playScalaControllerBases(fileName, packageName)
+    playScalaControllerBases(fileName, packageName),
+    playScalaFormParsers(fileName, packageName)
   )
 
   def generateTest: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
@@ -74,6 +76,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     if (modelCalls.isEmpty) ""
     else apply(fileName, packageName, controllerBaseTemplateName)
 
+  def playScalaFormParsers(fileName: String, packageName: String) =
+    if (modelCalls.isEmpty) ""
+    else apply(fileName, packageName, formParsersTemplateName)
+
   def playScalaMarshallers(fileName: String, packageName: String) =
     if (modelCalls.isEmpty) ""
     else apply(fileName, packageName, marschallersTemplateName)
@@ -110,6 +116,8 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
     val bindingsByType      = sortedBindings.toMap
 
+    val forms               = ReShaper.filterByType("form_data", denotationTable)
+
     val marshallers         = ReShaper.filterByType("marshallers", denotationTable)
     val grouppedMarshallers = ReShaper.groupByType(marshallers.toSeq).toMap
 
@@ -120,22 +128,25 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     val extractors            = ReShaper.groupByType(securityExtractors.toSeq).toMap
 
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
-      analyzeController(currentController, denotationTable)
+      analyzeController(currentController, denotationTable, modelTypes)
 
     val pckg = overridenPackageName.getOrElse(packageName)
+
+    val formParsersRequired = forms.exists(_("form_parameters").asInstanceOf[Seq[_]].nonEmpty)
 
     val packages = Map(
       "main_package" -> pckg,
       "main_package_prefix" -> pckg.split('.').init.mkString("."),
       "main_package_suffix" -> pckg.split('.').last,
-      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec")
+      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec"),
+      "form_parsers_required" -> formParsersRequired
     )
 
     val controllersList = controllers(modelCalls, unmanagedParts, pckg)(denotationTable)
 
     val controllersMap = Map(
       "controllers"         -> controllersList,
-      "controller_imports"  -> controllerImports.map(i => Map("name" -> i)),
+      "controller_imports"  -> (controllerImports.map(i => Map("name" -> i)) ++ fileImport(modelTypes)),
       "unmanaged_imports"   -> unmanagedImports.map(i => Map("name" -> i))
     )
 
@@ -149,7 +160,8 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
       "marshallers"         -> grouppedMarshallers,
       "unmarshallers"       -> grouppedunMarshallers,
       "security_extractors" -> extractors,
-      "bindings"            -> bindingsByType
+      "bindings"            -> bindingsByType,
+      "forms"               -> forms
     )
 
     val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
@@ -201,7 +213,7 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
 
   def strictModel: StrictModel
 
-  def analyzeController(currentVersion: String, table: DenotationTable): (Map[ApiCall, UnmanagedPart], Seq[String]) = {
+  def analyzeController(currentVersion: String, table: DenotationTable, modelTypes: TypeLookupTable): (Map[ApiCall, UnmanagedPart], Seq[String]) = {
     val markers = generateMarkers(strictModel.calls, table)
     val allLines = currentVersion.split("\n").filter(_.trim.nonEmpty).dropWhile(_.trim.isEmpty).toSeq
     val classPositions = allLines.zipWithIndex.filter(_._1.trim.startsWith("class")).map(_._2) :+ (allLines.length + 1)
@@ -227,8 +239,16 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
         call -> UnmanagedPart(call, relevantCode.mkString("\n"), commentedOut)
     }
     val preservedImports =
-      allLines.filter(_.trim.startsWith("import")).map(_.replace("import ", "")).filterNot(controllerImports.contains)
+      allLines.filter(_.trim.startsWith("import")).map(_.replace("import ", "")).
+        filterNot(controllerImports.contains).filterNot(fileImport(modelTypes).flatMap(_.values).contains)
     (parts.toMap, preservedImports)
+  }
+
+  def fileImport(modelTypes: TypeLookupTable): Seq[Map[String, String]] = {
+    if (modelTypes.collect { case (ref, tpe: File) => true }.nonEmpty)
+      Seq(Map("name" -> "java.io.File"))
+    else
+      Seq.empty[Map[String, String]]
   }
 
   def generateMarkers(allCalls: Seq[ApiCall], table: DenotationTable) = {

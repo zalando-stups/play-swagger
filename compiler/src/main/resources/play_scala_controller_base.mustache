@@ -58,8 +58,17 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
             {{/for}}
             {{for header in m.header_params}}
             val {{header.field_name}}: Either[String,{{header.type_name}}] =
-                fromHeaders[{{header.type_name}}]("{{header.real_name}}", request.headers.toMap)
+                fromParameters[{{header.type_name}}]("header")("{{header.real_name}}", request.headers.toMap)
             {{/for}}
+            {{if m.form_parameters}}
+            val eitherFormParameters = FormDataParser.{{m.form_parser_name}}(request)
+            eitherFormParameters match {
+                case Left(problem: Seq[String]) =>
+                    val msg = problem.mkString("\n")
+                    BadRequest(msg)
+
+                case Right(({{for param in m.form_parameters}}{{param.field_name}}{{if param.isNotLast}}, {{/if}}{{/for}})) =>
+            {{/if}}
             {{if m.header_params}}
                 ({{for header in m.header_params}}{{header.field_name}}{{if header.isNotLast}}, {{/if}}{{/for}}) match {
                     case ({{for header in m.header_params}}Right({{header.field_name}}){{if header.isNotLast}}, {{/if}}{{/for}}) =>
@@ -81,6 +90,9 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
                     val msg = problem.mkString("\n")
                     BadRequest(msg)
                 }
+            {{/if}}
+            {{if m.form_parameters}}
+            }
             {{/if}}
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }

@@ -26,9 +26,11 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result = processValidindexRequest(f)()(possibleWriters, indexResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

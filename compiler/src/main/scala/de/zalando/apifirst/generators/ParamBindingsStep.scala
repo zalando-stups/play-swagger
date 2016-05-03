@@ -32,8 +32,8 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
         // body parameters do not need bindables
         Map.empty
       case ParameterPlace.FORM =>
-        // FIXME not supported yet
-        Map.empty
+        val place = "Query"
+        bindingForPlace(paramPair, table, place)
       case ParameterPlace.HEADER =>
         // headers are handled in the same way path parameters are
         val place = "Path"
@@ -90,6 +90,14 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
         "binding_imports" -> Set(
           "de.zalando.play.controllers.PlayPathBindables",
           s"PlayPathBindables.${tpe.toLowerCase}BindableBase64String"
+        )
+      ))
+    case d: File =>
+      Seq(Map(
+        "name" -> "", "format" -> "",
+        "binding_imports" -> Set(
+          "de.zalando.play.controllers.PlayPathBindables",
+          s"PlayPathBindables.${tpe.toLowerCase}BindableFile"
         )
       ))
     case d: BinaryString =>
