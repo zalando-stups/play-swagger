@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
+import java.io.File
 
 import Generators._
 

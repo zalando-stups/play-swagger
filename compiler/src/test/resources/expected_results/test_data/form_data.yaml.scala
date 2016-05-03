@@ -46,4 +46,17 @@ object Generators {
     
     
     
+    implicit lazy val arbFile: Arbitrary[File] = Arbitrary(for {
+        prefix <- arbitrary[Int]
+        suffix <- arbitrary[Int]
+        content <- arbitrary[String]
+        file = {
+            val f = File.createTempFile(prefix.toString, suffix.toString)
+            f.deleteOnExit()
+            import java.nio.file.{Paths, Files}
+            import java.nio.charset.StandardCharsets
+            Files.write(Paths.get(f.getAbsolutePath), content.getBytes(StandardCharsets.UTF_8))
+            f
+        }
+    } yield file)
 }

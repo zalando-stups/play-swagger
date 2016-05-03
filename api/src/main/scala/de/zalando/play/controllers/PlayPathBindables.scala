@@ -1,7 +1,6 @@
 package de.zalando.play.controllers
 
 import java.io.File
-import java.util.Base64
 
 import com.fasterxml.jackson.databind.{MappingIterator, ObjectReader, ObjectWriter}
 import com.fasterxml.jackson.dataformat.csv.{CsvMapper, CsvParser, CsvSchema}

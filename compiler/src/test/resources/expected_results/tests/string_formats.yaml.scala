@@ -18,6 +18,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
+import de.zalando.play.controllers.Base64String
+import Base64String._
+import de.zalando.play.controllers.BinaryString
+import BinaryString._
+import org.joda.time.DateTime
+import org.joda.time.DateMidnight
 
 import Generators._
 

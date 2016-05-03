@@ -202,7 +202,8 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
     "date_part"           -> "DateMidnight",
     "date_time_part"      -> "DateTime",
     "binary_string_part"  -> "BinaryString",
-    "base64_string_part"  -> "Base64String"
+    "base64_string_part"  -> "Base64String",
+    "file_part"           -> "File"
   )
   private def neededParts(imports: Seq[String]): Map[String, Boolean] = partsMapping map {
     case (k,v) => k -> imports.exists(_.contains(v))
