@@ -8,16 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
-import play.api.mvc.{QueryStringBindable, PathBindable}
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.mvc._
+
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
-import play.api.http.Writeable
 import com.fasterxml.jackson.databind.ObjectMapper
 
+import play.api.http.Writeable
+import play.api.libs.Files.TemporaryFile
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
+
 import de.zalando.play.controllers.Base64String
 import Base64String._
 import de.zalando.play.controllers.BinaryString
@@ -54,14 +58,28 @@ import Generators._
             val (petId, base64, date, date_time) = input
 
             val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
-            val acceptHeaders = Seq()
+            val acceptHeaders: Seq[String] = Seq()
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
 
                     val parsed_petId = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(petId)
 
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)).get
+                val request = FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Nil
+                        val data = Map.empty[String, Seq[String]] 
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =  Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new GetValidator(petId, base64, date, date_time).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
@@ -81,11 +99,26 @@ import Generators._
             val parsed_petId = parserConstructor("application/json").writeValueAsString(petId)
             
             val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
-            val acceptHeaders = Seq()
+            val acceptHeaders: Seq[String] = Seq()
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)).get
+
+                val request = FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Nil
+                        val data = Map.empty[String, Seq[String]] 
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =  Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new GetValidator(petId, base64, date, date_time).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     200 -> classOf[Null]

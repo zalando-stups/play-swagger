@@ -1,13 +1,16 @@
 package de.zalando.play.controllers
 
 import play.api.http.Writeable
-import play.api.mvc.RequestHeader
+import play.api.mvc.{AnyContentAsMultipartFormData, RequestHeader}
 
 case class WriteableWrapper[T](w: Writeable[T], m: Manifest[T])
 
 object WriteableWrapper {
   implicit def writeable2wrapper[T](w: Writeable[T])(implicit m: Manifest[T]) =
     WriteableWrapper(w, m)
+  implicit val anyContentAsMultipartFormWritable: Writeable[AnyContentAsMultipartFormData] = {
+    MultipartFormDataWritable.singleton.map(_.mdf)
+  }
 }
 
 /**

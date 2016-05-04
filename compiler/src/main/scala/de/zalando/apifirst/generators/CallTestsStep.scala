@@ -10,7 +10,7 @@ import play.api.http.{HeaderNames, MimeTypes}
   * @author  slasch
   * @since   30.12.2015.
   */
-trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults {
+trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with ParameterData {
 
   override def steps = tests +: super.steps
 
@@ -25,7 +25,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults {
     if (apiCall._2.handler.parameters.isEmpty) empty
     else Map("tests" -> callTest(apiCall._2)(table))
 
-  def callTest(call: ApiCall)(table: DenotationTable) = {
+  def callTest(call: ApiCall)(implicit table: DenotationTable) = {
     val namespace = if (app.basePath == "/") "" else app.basePath
 
     val (allActionResults, defaultResultType) = actionResults(call)(table)
@@ -33,6 +33,8 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults {
     val acceptHeaders = acceptHeader(call)
 
     val allHeaders    = headers(call)
+
+    val formParams = validationsByType(call, p => p.place == ParameterPlace.FORM)
 
     Map(
       "accept_headers"        -> acceptHeaders,
@@ -43,6 +45,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults {
       "full_url"              -> fullUrl(namespace, call),
       "validation_name"       -> validator(call.asReference, table),
       "body_param"            -> bodyParameter(call, defaultResultType),
+      "form_parameters"       -> formParams,
       "headers"               -> allHeaders
     ) ++ parameters(call)(table)
   }

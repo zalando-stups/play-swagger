@@ -8,16 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
-import play.api.mvc.{QueryStringBindable, PathBindable}
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.mvc._
+
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
-import play.api.http.Writeable
 import com.fasterxml.jackson.databind.ObjectMapper
 
+import play.api.http.Writeable
+import play.api.libs.Files.TemporaryFile
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
+
 import java.io.File
 
 import Generators._
@@ -49,7 +53,7 @@ import Generators._
             val (name, year, avatar) = input
 
             val url = s"""/form_data/multipart"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "multipart/form-data"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
@@ -57,7 +61,21 @@ import Generators._
                     Seq() :+ ("Accept" -> acceptHeader)
 
 
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val request = FakeRequest(POST, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Nil
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::       Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new MultipartPostValidator(name, year, avatar).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
@@ -75,13 +93,28 @@ import Generators._
             val (name, year, avatar) = input
             
             val url = s"""/form_data/multipart"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "multipart/form-data"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+
+                val request = FakeRequest(POST, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Nil
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::       Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new MultipartPostValidator(name, year, avatar).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     200 -> classOf[MultipartPostResponses200]
@@ -139,7 +172,7 @@ import Generators._
             val (name, year, avatar, ringtone) = input
 
             val url = s"""/form_data/both"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/x-www-form-urlencoded", 
             
                "multipart/form-data"
@@ -149,7 +182,21 @@ import Generators._
                     Seq() :+ ("Accept" -> acceptHeader)
 
 
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val request = FakeRequest(POST, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Seq(FilePart("ringtone", ringtone.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(ringtone))) ++ Nil
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq        
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::          Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new BothPostValidator(name, year, avatar, ringtone).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
@@ -167,7 +214,7 @@ import Generators._
             val (name, year, avatar, ringtone) = input
             
             val url = s"""/form_data/both"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/x-www-form-urlencoded", 
             
                "multipart/form-data"
@@ -175,7 +222,22 @@ import Generators._
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+
+                val request = FakeRequest(POST, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Seq(FilePart("ringtone", ringtone.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(ringtone))) ++ Nil
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq        
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::          Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new BothPostValidator(name, year, avatar, ringtone).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     200 -> classOf[BothPostResponses200]
@@ -235,7 +297,7 @@ import Generators._
             val (name, year, avatar) = input
 
             val url = s"""/form_data/url-encoded"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/x-www-form-urlencoded"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
@@ -243,7 +305,21 @@ import Generators._
                     Seq() :+ ("Accept" -> acceptHeader)
 
 
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+                val request = FakeRequest(POST, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Seq(FilePart("avatar", avatar.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(avatar))) ++ Nil
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::       Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new Url_encodedPostValidator(name, year, avatar).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
@@ -261,13 +337,28 @@ import Generators._
             val (name, year, avatar) = input
             
             val url = s"""/form_data/url-encoded"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/x-www-form-urlencoded"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*)).get
+
+                val request = FakeRequest(POST, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Seq(FilePart("avatar", avatar.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(avatar))) ++ Nil
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::       Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new Url_encodedPostValidator(name, year, avatar).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     200 -> classOf[MultipartPostResponses200]

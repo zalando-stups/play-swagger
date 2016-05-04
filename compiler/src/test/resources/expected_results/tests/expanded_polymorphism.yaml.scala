@@ -8,16 +8,20 @@ import org.scalacheck.Test._
 import org.specs2.mutable._
 import play.api.test.Helpers._
 import play.api.test._
-import play.api.mvc.{QueryStringBindable, PathBindable}
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.mvc._
+
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import java.net.URLEncoder
-import play.api.http.Writeable
 import com.fasterxml.jackson.databind.ObjectMapper
 
+import play.api.http.Writeable
+import play.api.libs.Files.TemporaryFile
 import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
+
 import de.zalando.play.controllers.ArrayWrapper
 
 import Generators._
@@ -48,7 +52,7 @@ import Generators._
 
 
             val url = s"""/api/pets"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
@@ -57,7 +61,21 @@ import Generators._
 
                     val parsed_pet = PlayBodyParsing.jacksonMapper("Error").writeValueAsString(pet)
 
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
+                val request = FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Nil
+                        val data = Map.empty[String, Seq[String]] 
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =  Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new PetsPostValidator(pet).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
@@ -76,13 +94,28 @@ import Generators._
             val parsed_pet = parserConstructor("Error").writeValueAsString(pet)
             
             val url = s"""/api/pets"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)).get
+
+                val request = FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Nil
+                        val data = Map.empty[String, Seq[String]] 
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =  Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new PetsPostValidator(pet).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     200 -> classOf[Pet]
@@ -134,7 +167,7 @@ import Generators._
             val (tags, limit) = input
 
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
@@ -142,7 +175,21 @@ import Generators._
                     Seq() :+ ("Accept" -> acceptHeader)
 
 
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+                val request = FakeRequest(GET, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Nil
+                        val data = Map.empty[String, Seq[String]] 
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =  Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new PetsGetValidator(tags, limit).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
@@ -160,13 +207,28 @@ import Generators._
             val (tags, limit) = input
             
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(GET, url).withHeaders(headers:_*)).get
+
+                val request = FakeRequest(GET, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Nil
+                        val data = Map.empty[String, Seq[String]] 
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =  Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new PetsGetValidator(tags, limit).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     200 -> classOf[Seq[Pet]]
@@ -221,7 +283,7 @@ import Generators._
 
 
             val url = s"""/api/pets/${toPath(id)}"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
@@ -229,7 +291,21 @@ import Generators._
                     Seq() :+ ("Accept" -> acceptHeader)
 
 
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+                val request = FakeRequest(DELETE, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Nil
+                        val data = Map.empty[String, Seq[String]] 
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =  Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new PetsIdDeleteValidator(id).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
@@ -246,13 +322,28 @@ import Generators._
         def testValidInput(id: Long) = {
             
             val url = s"""/api/pets/${toPath(id)}"""
-            val acceptHeaders = Seq(
+            val acceptHeaders: Seq[String] = Seq(
                "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
-                val path = route(FakeRequest(DELETE, url).withHeaders(headers:_*)).get
+
+                val request = FakeRequest(DELETE, url).withHeaders(headers:_*)
+                val path =
+                    if (acceptHeader == "multipart/form-data") {
+                        import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
+
+                        val files: Seq[FilePart[TemporaryFile]] = Nil
+                        val data = Map.empty[String, Seq[String]] 
+                        val form = new MultipartFormData(data, files, Nil, Nil)
+
+                        route(request.withMultipartFormDataBody(form)).get
+                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                        val form =  Nil
+                        route(request.withFormUrlEncodedBody(form:_*)).get
+                    } else route(request).get
+
                 val errors = new PetsIdDeleteValidator(id).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     204 -> classOf[Null]
