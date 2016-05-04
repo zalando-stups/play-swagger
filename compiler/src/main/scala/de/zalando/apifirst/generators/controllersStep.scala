@@ -1,6 +1,6 @@
 package de.zalando.apifirst.generators
 
-import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef}
+import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef, StrictModel}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.Http.{ApplicationFormUrlEncoded, MultipartFormData}
 import de.zalando.apifirst.Security.{Constraint, OAuth2Constraint}
@@ -15,7 +15,7 @@ import de.zalando.play.controllers.WriterFactories
   * @since   31.12.2015.
   */
 trait CallControllersStep extends EnrichmentStep[ApiCall]
-  with ControllersCommons with SecurityCommons with ActionResults {
+  with ControllersCommons with SecurityCommons with ActionResults with ParameterData {
 
   override def steps = controllers +: super.steps
 
@@ -58,7 +58,7 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
     val bodyParam           = validationsByType(call, p => p.place == ParameterPlace.BODY)
     val headerParams        = validationsByType(call, p => p.place == ParameterPlace.HEADER)
     val nonBodyParams       = validationsByType(call, p => p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER && p.place != ParameterPlace.FORM)
-    val formParams           = validationsByType(call, p => p.place == ParameterPlace.FORM)
+    val formParams          = validationsByType(call, p => p.place == ParameterPlace.FORM)
 
     val allValidations      = callValidations(ref).asInstanceOf[Seq[_]]
 
@@ -140,12 +140,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
       Map("exception_name" -> ex.getCanonicalName, "exception_code" -> k)
     }}
 
-  private def validationsByType(call: ApiCall, filter: Parameter => Boolean)(implicit table: DenotationTable) =
-    parametersValidations(table)(parametersByPlace(call, filter))
-
-  private def parametersByPlace(call: ApiCall, filter: Parameter => Boolean): Seq[ParameterRef] =
-    call.handler.parameters.filter { p => filter(app.findParameter(p)) }
-
   private def singleOrMultipleParameters(call: ApiCall)(table: DenotationTable) = {
     val parameters = call.handler.parameters map parameterMap(table)
     val parameter = parameters.headOption
@@ -155,7 +149,23 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
     )
   }
 
-  private def parameterMap(table: DenotationTable): ParameterRef => Map[String, String] = param => {
+
+
+  def comment(action: String) = s"$eof $action"
+
+  // TODO made these names constants
+  def callValidations(ref: Reference)(implicit table: DenotationTable) =
+    table(ref)("validators").getOrElse("call_validations", Nil)
+
+  def signature(action: String, method: String): String = s"val $method = $action {"
+
+}
+
+trait ParameterData {
+
+  def app: StrictModel
+
+  def parameterMap(table: DenotationTable): ParameterRef => Map[String, String] = param => {
     val parameter = app.findParameter(param)
     val typeName = parameter.typeName
     val commonTypeName = typeNameDenotation(table, typeName.name)
@@ -179,17 +189,14 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
       "is_file" -> (if (parserType == "File") parserType else "")
     )
   }
+  def validationsByType(call: ApiCall, filter: Parameter => Boolean)(implicit table: DenotationTable) =
+    parametersValidations(table)(parametersByPlace(call, filter))
 
-  def comment(action: String) = s"$eof $action"
+  private def parametersByPlace(call: ApiCall, filter: Parameter => Boolean): Seq[ParameterRef] =
+    call.handler.parameters.filter { p => filter(app.findParameter(p)) }
 
-  def parametersValidations(table: DenotationTable)(parameters: Seq[ParameterRef]) =
+  private def parametersValidations(table: DenotationTable)(parameters: Seq[ParameterRef]) =
     parameters map parameterMap(table)
-
-  // TODO made these names constants
-  def callValidations(ref: Reference)(implicit table: DenotationTable) =
-    table(ref)("validators").getOrElse("call_validations", Nil)
-
-  def signature(action: String, method: String): String = s"val $method = $action {"
 
 }
 
