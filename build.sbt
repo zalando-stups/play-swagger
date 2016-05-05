@@ -21,7 +21,8 @@ lazy val api = (project in file("api"))
       "org.specs2" %% "specs2-scalacheck" % "3.6"
     ),
     scalaVersion :=  "2.10.5",
-    crossScalaVersions := Seq(scalaVersion.value, ScalaVersion)
+    crossScalaVersions := Seq(scalaVersion.value, ScalaVersion),
+    coverageEnabled := true
   )
 
 // This is the compiler, it does compilation of swagger definitions,
@@ -47,7 +48,8 @@ lazy val compiler = (project in file("compiler"))
       "org.scalacheck" %% "scalacheck" % "1.12.5",
       "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
       "de.zalando" %% "beard" % "0.0.6"
-    )
+    ),
+    coverageEnabled := true
   )
 
 // This is the sbt plugin
@@ -123,14 +125,17 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
 ) ++ scalariformSettings ++ addMainSourcesToLintTarget ++ addSlowScalacSwitchesToLintTarget ++ addWartRemoverToLintTarget ++
   removeWartRemoverFromCompileTarget ++ addFoursquareLinterToLintTarget ++ removeFoursquareLinterFromCompileTarget
 
-ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60
+coverageExcludedPackages := "de\\.zalando\\.play\\.swagger\\.sbt\\.PlaySwagger"
 
-ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := false
+coverageMinimum := 80
 
-ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
+coverageFailOnMinimum := true
+
+coverageHighlighting := {
   if (scalaBinaryVersion.value == "2.10") false
-  else false
+  else true
 }
+
 // Apply default Scalariform formatting.
 // Reformat at every compile.
 // c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
