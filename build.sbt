@@ -120,7 +120,7 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
     "-Xfuture"
   ),
   scalastyleFailOnError := true
-)
+) ++ scalariformSettings
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60
 
@@ -133,5 +133,5 @@ ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
 // Apply default Scalariform formatting.
 // Reformat at every compile.
 // c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
-scalariformSettings
+// scalariformSettings
 
