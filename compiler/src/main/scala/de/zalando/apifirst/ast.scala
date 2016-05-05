@@ -106,8 +106,8 @@ object Domain {
 
   case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta) with PrimitiveType
 
-  case class Date(override val meta: TypeMeta) extends ProvidedType("DateMidnight", meta)  with PrimitiveType {
-    override val imports = Set("org.joda.time.DateMidnight")
+  case class Date(override val meta: TypeMeta) extends ProvidedType("LocalDate", meta)  with PrimitiveType {
+    override val imports = Set("org.joda.time.LocalDate")
   }
 
   case class DateTime(override val meta: TypeMeta) extends ProvidedType("DateTime", meta)  with PrimitiveType {

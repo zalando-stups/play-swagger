@@ -82,7 +82,7 @@ trait BasicAuthSecurityExtractor {
     if (auth.length() < basicSt.length()) None
     else if (basicReqSt.toLowerCase() != basicSt) None
     else if (usernamePassword.length != 2) None
-    else Some(usernamePassword.head, usernamePassword.last)
+    else Some((usernamePassword.head, usernamePassword.last))
   }
 }
 

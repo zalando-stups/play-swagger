@@ -199,7 +199,7 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   private val partsMapping = Map(
     "lists_part"          -> "ArrayWrapper",
     "maps_part"           -> "Map",
-    "date_part"           -> "DateMidnight",
+    "date_part"           -> "LocalDate",
     "date_time_part"      -> "DateTime",
     "binary_string_part"  -> "BinaryString",
     "base64_string_part"  -> "Base64String",
@@ -260,7 +260,7 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
         if (controllerDenotations("multiple_parameters") != Nil) 2 // FIXME this is very error-prone
         else if (controllerDenotations("single_parameter") != None) 1  // FIXME this is very error-prone
         else 1
-      call -> (signature, markerSize)
+      (call, (signature, markerSize))
     }
     markers
   }

@@ -106,7 +106,20 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   licenses            += ("MIT", url("http://opensource.org/licenses/MIT")),
   publishMavenStyle   := false,
   repository in bintray := "sbt-plugins",
-  bintrayOrganization in bintray := Some("zalando")
+  bintrayOrganization in bintray := Some("zalando"),
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding", "UTF-8", // yes, this is 2 args
+    "-feature",
+    "-unchecked",
+    "-Xfatal-warnings",
+    "-Xlint",
+    "-Yno-adapted-args",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfuture"
+  ),
+  scalastyleFailOnError := true
 )
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60
@@ -117,3 +130,8 @@ ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
   if (scalaBinaryVersion.value == "2.10") false
   else false
 }
+// Apply default Scalariform formatting.
+// Reformat at every compile.
+// c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
+scalariformSettings
+

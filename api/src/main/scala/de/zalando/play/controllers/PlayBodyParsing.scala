@@ -69,7 +69,7 @@ object PlayBodyParsing extends PlayBodyParsing {
                       customParsers: Seq[(String, Parser[Option[T]])],
                       errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
                   (implicit oTag: ClassTag[Option[T]], tag: ClassTag[T]): BodyParser[Option[T]] =
-    tolerantBodyParser[Option[T]](maxLength, errorMsg) { (requestHeader, bytes) =>
+    tolerantBodyParser[Option[T]](maxLength.toLong, errorMsg) { (requestHeader, bytes) =>
       if (bytes.nonEmpty) {
         parserCore(mimeType, customParsers, requestHeader, bytes)
       } else
@@ -90,7 +90,7 @@ object PlayBodyParsing extends PlayBodyParsing {
                    customParsers: Seq[(String, Parser[T])],
                    errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
                   (implicit tag: ClassTag[T]): BodyParser[T] =
-    tolerantBodyParser[T](maxLength, errorMsg) { (requestHeader, bytes) =>
+    tolerantBodyParser[T](maxLength.toLong, errorMsg) { (requestHeader, bytes) =>
       parserCore(mimeType, customParsers, requestHeader, bytes)
     }
 

@@ -8,7 +8,7 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
-import org.joda.time.DateMidnight
+import org.joda.time.LocalDate
 
 object Generators {
     
@@ -25,7 +25,7 @@ object Generators {
     def GetBase64Generator = Gen.option(arbitrary[Base64String])
     def BinaryStringGenerator = arbitrary[BinaryString]
     def GetDate_timeGenerator = Gen.option(arbitrary[DateTime])
-    def GetDateGenerator = Gen.option(arbitrary[DateMidnight])
+    def GetDateGenerator = Gen.option(arbitrary[LocalDate])
     def NullGenerator = arbitrary[Null]
     
 
@@ -33,9 +33,9 @@ object Generators {
     def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 
     
-    implicit lazy val arbDateMidnight: Arbitrary[DateMidnight] = Arbitrary(for {
+    implicit lazy val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(for {
         l <- arbitrary[Long]
-    } yield new DateMidnight(System.currentTimeMillis + l))
+    } yield new LocalDate(System.currentTimeMillis + l))
     
     implicit lazy val arbDateTime: Arbitrary[DateTime] = Arbitrary(for {
         l <- arbitrary[Long]

@@ -7,7 +7,7 @@ package object yaml {
     import de.zalando.play.controllers.BinaryString
     import BinaryString._
     import org.joda.time.DateTime
-    import org.joda.time.DateMidnight
+    import org.joda.time.LocalDate
 
     import de.zalando.play.controllers.PlayPathBindables
 
@@ -15,14 +15,14 @@ package object yaml {
 
     import PlayPathBindables.queryBindableDateTime
 
-    import PlayPathBindables.queryBindableDateMidnight
+    import PlayPathBindables.queryBindableLocalDate
 
 
 
     type GetBase64 = Option[Base64String]
     type GetPetId = BinaryString
     type GetDate_time = Option[DateTime]
-    type GetDate = Option[DateMidnight]
+    type GetDate = Option[LocalDate]
     type GetResponses200 = Null
 
 
@@ -31,7 +31,7 @@ package object yaml {
     
     implicit val bindable_OptionDateTimeQuery = PlayPathBindables.createOptionQueryBindable[DateTime]
     
-    implicit val bindable_OptionDateMidnightQuery = PlayPathBindables.createOptionQueryBindable[DateMidnight]
+    implicit val bindable_OptionLocalDateQuery = PlayPathBindables.createOptionQueryBindable[LocalDate]
     
 
 }

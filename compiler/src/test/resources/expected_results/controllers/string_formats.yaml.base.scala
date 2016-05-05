@@ -11,7 +11,7 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
-import org.joda.time.DateMidnight
+import org.joda.time.LocalDate
 
 import de.zalando.play.controllers.PlayPathBindables
 
@@ -19,7 +19,7 @@ import PlayPathBindables.queryBindableBase64String
 
 import PlayPathBindables.queryBindableDateTime
 
-import PlayPathBindables.queryBindableDateMidnight
+import PlayPathBindables.queryBindableLocalDate
 
 
 

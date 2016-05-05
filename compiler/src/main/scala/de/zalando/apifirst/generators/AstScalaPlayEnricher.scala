@@ -6,6 +6,7 @@ import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
 
+import scala.language.existentials
 /**
   * @author  slasch 
   * @since   21.12.2015.

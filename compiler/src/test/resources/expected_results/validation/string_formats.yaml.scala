@@ -9,7 +9,7 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
-import org.joda.time.DateMidnight
+import org.joda.time.LocalDate
 // ----- constraints and wrapper validations -----
 class GetBase64OptConstraints(override val instance: Base64String) extends ValidationBase[Base64String] {
     override def constraints: Seq[Constraint[Base64String]] =
@@ -32,11 +32,11 @@ class GetDate_timeOptConstraints(override val instance: DateTime) extends Valida
 class GetDate_timeOptValidator(instance: DateTime) extends RecursiveValidator {
     override val validators = Seq(new GetDate_timeOptConstraints(instance))
 }
-class GetDateOptConstraints(override val instance: DateMidnight) extends ValidationBase[DateMidnight] {
-    override def constraints: Seq[Constraint[DateMidnight]] =
+class GetDateOptConstraints(override val instance: LocalDate) extends ValidationBase[LocalDate] {
+    override def constraints: Seq[Constraint[LocalDate]] =
         Seq()
 }
-class GetDateOptValidator(instance: DateMidnight) extends RecursiveValidator {
+class GetDateOptValidator(instance: LocalDate) extends RecursiveValidator {
     override val validators = Seq(new GetDateOptConstraints(instance))
 }
 // ----- complex type validators -----
