@@ -8,11 +8,11 @@ addSbtPlugin("me.lessis"        % "bintray-sbt"   % "0.2.1")
 
 addSbtPlugin("org.scalastyle"   %% "scalastyle-sbt-plugin"  % "0.7.0")
 addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform"         % "1.3.0")
+addSbtPlugin("org.brianmckenna" % "sbt-wartremover"         % "0.13")
 
 libraryDependencies <+= (sbtVersion) { sv =>
   "org.scala-sbt" % "scripted-plugin" % sv
 }
 
 
-// addSbtPlugin("org.brianmckenna" % "sbt-wartremover" % "0.13")
 
