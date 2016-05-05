@@ -1,6 +1,6 @@
 package de.zalando
 
-import java.io.{FileOutputStream, File}
+import java.io.{ FileOutputStream, File }
 
 import scala.io.Source
 
@@ -25,12 +25,15 @@ trait ExpectedResults {
 
   def asInFile(file: File, suffix: String): String = {
     val expectedFile = target(file, suffix)
-    if (expectedFile.canRead)
-      Source.fromFile(expectedFile).getLines().mkString("\n")
-    else
+    if (expectedFile.canRead) {
+      val src = Source.fromFile(expectedFile)
+      val result = src.getLines().mkString("\n")
+      src.close()
+      result
+    } else
       ""
   }
 
-  def target(file:File, suffix: String) =
+  def target(file: File, suffix: String): File =
     new File(file.getParentFile.getParent + expectationsFolder + file.getName + "." + suffix)
 }

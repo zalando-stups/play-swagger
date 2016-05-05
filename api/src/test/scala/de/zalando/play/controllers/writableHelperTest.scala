@@ -7,9 +7,9 @@ import play.api.mvc.RequestHeader
 import scala.concurrent.ExecutionContext.Implicits
 
 /**
-  * @author slasch 
-  * @since 28.02.2016.
-  */
+ * @author slasch
+ * @since 28.02.2016.
+ */
 class ResponseWritersTest extends Specification {
 
   import TestEnvironment._
@@ -45,9 +45,9 @@ class WrappedBodyParsersTest extends Specification {
     val binaryString: Parser[BinaryString] =
       (requestHeader: RequestHeader, byteArray: Array[Byte]) => BinaryString(byteArray)
     /**
-      * This collection contains all {@Writeable}s which could be used in
-      * as a marshaller for different mime types and types of response
-      */
+     * This collection contains all {@Writeable}s which could be used in
+     * as a marshaller for different mime types and types of response
+     */
     override val custom: Seq[(String, ParserWrapper[_])] = Seq(
       "text/plain" -> binaryString
     )
@@ -57,9 +57,9 @@ class WrappedBodyParsersTest extends Specification {
     val any: Parser[Any] =
       (requestHeader: RequestHeader, byteArray: Array[Byte]) => BinaryString(byteArray)
     /**
-      * This collection contains all {@Writeable}s which could be used in
-      * as a marshaller for different mime types and types of response
-      */
+     * This collection contains all {@Writeable}s which could be used in
+     * as a marshaller for different mime types and types of response
+     */
     override val custom: Seq[(String, ParserWrapper[_])] = Seq(
       "text/plain" -> any
     )
@@ -85,7 +85,7 @@ class WrappedBodyParsersTest extends Specification {
 object TestEnvironment {
   import Implicits.global
   val transformSeq: Seq[Any] => Array[Byte] = a => a.toString.getBytes("UTF-8")
-  val transformStr: String => Array[Byte] = a => a.toString.getBytes("UTF-8")
+  val transformStr: String => Array[Byte] = a => a.getBytes("UTF-8")
 
   val seqText: WriteableWrapper[Seq[Any]] = Writeable(transformSeq, Some("text/plain"))
 
