@@ -21,8 +21,7 @@ lazy val api = (project in file("api"))
       "org.specs2" %% "specs2-scalacheck" % "3.6"
     ),
     scalaVersion :=  "2.10.5",
-    crossScalaVersions := Seq(scalaVersion.value, ScalaVersion),
-    coverageEnabled := true
+    crossScalaVersions := Seq(scalaVersion.value, ScalaVersion)
   )
 
 // This is the compiler, it does compilation of swagger definitions,
@@ -48,8 +47,7 @@ lazy val compiler = (project in file("compiler"))
       "org.scalacheck" %% "scalacheck" % "1.12.5",
       "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
       "de.zalando" %% "beard" % "0.0.6"
-    ),
-    coverageEnabled := true
+    )
   )
 
 // This is the sbt plugin
