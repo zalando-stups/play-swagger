@@ -790,7 +790,6 @@ We're using the sbt scripted framework for testing. You can find the tests in `p
 ## Code quality
 
 There are some quality checks embedded into the build script:
-* the source code is (re)formatted using scalariform each time it is compiled.
-* `scalastyle` sbt command shall be used to perform code style checks before putting changes into the repository.
-* `lint:compile` sbt command shall be used to perform static code analysis before putting changes into the repository.
-* code coverage is enabled by default for api and compiler modules and executed during `test` phase. Coverage statistics can be generating using `coverageReport` sbt command. 
+* the source code is (re)formatted using scalariform each time it is compiled
+* `scalastyle` sbt command shall be used to perform code style checks before putting changes into the repository
+* `lint:compile` sbt command shall be used to perform static code analysis before putting changes into the repository
