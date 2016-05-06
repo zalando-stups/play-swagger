@@ -123,15 +123,11 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
 ) ++ scalariformSettings ++ addMainSourcesToLintTarget ++ addSlowScalacSwitchesToLintTarget ++ addWartRemoverToLintTarget ++
   removeWartRemoverFromCompileTarget ++ addFoursquareLinterToLintTarget ++ removeFoursquareLinterFromCompileTarget
 
-coverageExcludedPackages := "de\\.zalando\\.play\\.swagger\\.sbt\\.PlaySwagger"
+ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60
 
-// coverageEnabled := false
+ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := false
 
-coverageMinimum := 80
-
-coverageFailOnMinimum := false
-
-coverageHighlighting := {
+ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
   if (scalaBinaryVersion.value == "2.10") false
   else false
 }
