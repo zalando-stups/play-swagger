@@ -129,11 +129,11 @@ coverageExcludedPackages := "de\\.zalando\\.play\\.swagger\\.sbt\\.PlaySwagger"
 
 coverageMinimum := 80
 
-coverageFailOnMinimum := true
+coverageFailOnMinimum := false
 
 coverageHighlighting := {
   if (scalaBinaryVersion.value == "2.10") false
-  else true
+  else false
 }
 
 // Apply default Scalariform formatting.
