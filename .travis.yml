@@ -31,7 +31,7 @@ after_success:
 script:
   - sbt -jvm-opts travis/jvmopts compile test +publishLocal
   - sbt -jvm-opts travis/jvmopts scripted
-#  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
+  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
 
 
 # cache:
