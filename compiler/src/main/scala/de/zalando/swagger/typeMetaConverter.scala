@@ -3,6 +3,7 @@ package de.zalando.swagger
 import de.zalando.apifirst.Domain._
 import de.zalando.swagger.strictModel._
 
+import scala.language.implicitConversions
 /**
  * @author  slasch 
  * @since   15.10.2015.

@@ -2,6 +2,7 @@ package de.zalando.play.controllers
 
 import play.api.http.Writeable
 import play.api.mvc.{AnyContentAsMultipartFormData, RequestHeader}
+import scala.language.implicitConversions
 
 case class WriteableWrapper[T](w: Writeable[T], m: Manifest[T])
 

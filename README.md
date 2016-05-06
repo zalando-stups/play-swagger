@@ -786,3 +786,10 @@ sbt doesn't allow sub-projects to depend on each other as sbt plugins. To test a
 ## Plugin Testing
 
 We're using the sbt scripted framework for testing. You can find the tests in `plugin/src/sbt-test`, and run them by running `scripted` in the sbt console.
+
+## Code quality
+
+There are some quality checks embedded into the build script:
+* the source code is (re)formatted using scalariform each time it is compiled
+* `scalastyle` sbt command shall be used to perform code style checks before putting changes into the repository
+* `lint:compile` sbt command shall be used to perform static code analysis before putting changes into the repository

@@ -11,6 +11,7 @@ import de.zalando.apifirst.naming.Pointer
 import scala.collection.mutable
 import scala.util.Try
 
+import scala.language.implicitConversions
 /**
  * @author  slasch
  * @since   09.10.2015.
@@ -262,7 +263,7 @@ object strictModel {
     parameters:           ParametersList,   // parameter list which is valid for all operations (can be overridden)
     @JsonProperty("$ref") $ref: Ref         // TODO $ref is currently not supported
   ) extends VendorExtensions with API with RefChecker {
-    def param(name: String, op: Operation) = Option(op) map { name -> _.parameters } toList
+    def param(name: String, op: Operation) = Option(op).map(name -> _.parameters).toList
     val params = (("" -> parameters) :: param("get", get) :::
       param("get", get) ::: param("put", put) ::: param("post", post) :::
       param("delete", delete) ::: param("options", options) ::: param("head", head) :::
@@ -814,8 +815,8 @@ object strictModel {
     private[this] val errorMappings = new mutable.HashMap[String, Seq[Class[Exception]]]
 
     @JsonAnySetter
-    def handleUnknown(key: String, value: Any) {
-      value match {
+    def handleUnknown(key: String, value: Any): Unit = {
+      val _ = value match {
         case str: String if key.startsWith("x-") =>
           extensions += key -> str
         case mapping: Map[_, _] if key.startsWith("x-") =>

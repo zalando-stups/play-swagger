@@ -4,7 +4,7 @@ import java.io.File
 
 import com.fasterxml.jackson.databind.{MappingIterator, ObjectReader, ObjectWriter}
 import com.fasterxml.jackson.dataformat.csv.{CsvMapper, CsvParser, CsvSchema}
-import org.joda.time.{DateMidnight, DateTime}
+import org.joda.time.{LocalDate, DateTime}
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
 import scala.io.Source
@@ -42,10 +42,10 @@ object PlayPathBindables {
     (key: String, e: Exception) => "Cannot parse parameter %s as DateTime: %s".format(key, e.getMessage)
   )
 
-  implicit object pathBindableDateMidnight extends PathBindable.Parsing[DateMidnight](
+  implicit object pathBindableLocalDate extends PathBindable.Parsing[LocalDate](
     Rfc3339Util.parseDate,
     Rfc3339Util.writeDate,
-    (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
+    (key: String, e: Exception) => "Cannot parse parameter %s as LocalDate: %s".format(key, e.getMessage)
   )
   implicit object queryBindableDateTime extends QueryStringBindable.Parsing[DateTime](
     Rfc3339Util.parseDateTime,
@@ -53,28 +53,28 @@ object PlayPathBindables {
     (key: String, e: Exception) => "Cannot parse parameter %s as DateTime: %s".format(key, e.getMessage)
   )
 
-  implicit object queryBindableDateMidnight extends QueryStringBindable.Parsing[DateMidnight](
+  implicit object queryBindableLocalDate extends QueryStringBindable.Parsing[LocalDate](
     Rfc3339Util.parseDate,
     Rfc3339Util.writeDate,
-    (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
+    (key: String, e: Exception) => "Cannot parse parameter %s as LocalDate: %s".format(key, e.getMessage)
   )
 
   implicit object pathBindableBase64String extends PathBindable.Parsing[Base64String](
     s => Base64String.string2base64string(s),
     s => Base64String.base64string2string(s),
-    (key: String, e: Exception) => "Cannot parse parameter %s as DateTime: %s".format(key, e.getMessage)
+    (key: String, e: Exception) => "Cannot parse parameter %s as Base64String: %s".format(key, e.getMessage)
   )
 
   implicit object queryBindableBase64String extends QueryStringBindable.Parsing[Base64String](
     s => Base64String.string2base64string(s),
     s => Base64String.base64string2string(s),
-    (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
+    (key: String, e: Exception) => "Cannot parse parameter %s as Base64String: %s".format(key, e.getMessage)
   )
 
   implicit object queryBindableFile extends QueryStringBindable.Parsing[java.io.File](
     s => tempFileFromString(s),
     s => Source.fromFile(s).getLines().mkString("\n"),
-    (key: String, e: Exception) => "Cannot parse parameter %s as DateMidnight: %s".format(key, e.getMessage)
+    (key: String, e: Exception) => "Cannot parse parameter %s as java.io.File: %s".format(key, e.getMessage)
   )
 
   def tempFileFromString(s: String) = {

@@ -24,16 +24,16 @@ class Rfc3339UtilTest extends FunSpec with MustMatchers {
       Rfc3339Util.parseDateTime("2007-05-01T15:43:26+00:00").withZone(dtz).toString mustBe "2007-05-01T15:43:26.000Z"
     }
     it("should parse RFC3339 Date") {
-      Rfc3339Util.parseDate("2007-05-01").withZoneRetainFields(dtz).toString mustBe "2007-05-01T00:00:00.000Z"
-      Rfc3339Util.parseDate("2008-05-01").withZoneRetainFields(dtz).toString mustBe "2008-05-01T00:00:00.000Z"
-      Rfc3339Util.parseDate("2007-08-01").withZoneRetainFields(dtz).toString mustBe "2007-08-01T00:00:00.000Z"
-      Rfc3339Util.parseDate("2007-05-08").withZoneRetainFields(dtz).toString mustBe "2007-05-08T00:00:00.000Z"
+      Rfc3339Util.parseDate("2007-05-01").toString mustBe "2007-05-01"
+      Rfc3339Util.parseDate("2008-05-01").toString mustBe "2008-05-01"
+      Rfc3339Util.parseDate("2007-08-01").toString mustBe "2007-08-01"
+      Rfc3339Util.parseDate("2007-05-08").toString mustBe "2007-05-08"
     }
     it("should write DateTime") {
       Rfc3339Util.writeDateTime(date.withZone(dtz)) mustBe "2016-01-04T12:43:07.284000+0000"
     }
     it("should write Date") {
-      Rfc3339Util.writeDate(date.toDateMidnight.withZoneRetainFields(dtz)) mustBe "2016-01-04"
+      Rfc3339Util.writeDate(date.toLocalDate) mustBe "2016-01-04"
     }
   }
 }

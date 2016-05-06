@@ -118,11 +118,11 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
 
 object Constraints {
   private val byType: Map[String, (String, Boolean)] = Map(
-    "formData" ->(".+", true),
-    "path" ->("[^/]+", true),
-    "header" ->(".+", false),
-    "body" ->(".+", false),
-    "query" ->(".+", true)
+    ("formData", (".+", true)),
+    ("path", ("[^/]+", true)),
+    ("header", (".+", false)),
+    ("body", (".+", false)),
+    ("query", (".+", true))
   )
 
   def apply(in: String): (String, Boolean) = byType(in)
