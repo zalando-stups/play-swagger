@@ -73,7 +73,7 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
         "name" -> "", "format" -> "",
         "binding_imports" -> Set(
           "de.zalando.play.controllers.PlayPathBindables",
-          s"PlayPathBindables.${tpe.toLowerCase}BindableDateMidnight"
+          s"PlayPathBindables.${tpe.toLowerCase}BindableLocalDate"
         )
       ))
     case d: DateTime =>

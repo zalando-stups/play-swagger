@@ -27,7 +27,7 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
-import org.joda.time.DateMidnight
+import org.joda.time.LocalDate
 
 import Generators._
 

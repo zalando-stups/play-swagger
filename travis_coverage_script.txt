@@ -1,0 +1,8 @@
+clean
+project api
+coverage
+project compiler
+coverage
+project root
+test
+coverageReport

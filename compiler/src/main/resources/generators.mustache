@@ -44,9 +44,9 @@ object Generators {
     } yield keys.zip(values).toMap
     {{/if}}
     {{if date_part}}
-    implicit lazy val arbDateMidnight: Arbitrary[DateMidnight] = Arbitrary(for {
+    implicit lazy val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(for {
         l <- arbitrary[Long]
-    } yield new DateMidnight(System.currentTimeMillis + l))
+    } yield new LocalDate(System.currentTimeMillis + l))
     {{/if}}
     {{if date_time_part}}
     implicit lazy val arbDateTime: Arbitrary[DateTime] = Arbitrary(for {
