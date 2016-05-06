@@ -123,14 +123,19 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
 ) ++ scalariformSettings ++ addMainSourcesToLintTarget ++ addSlowScalacSwitchesToLintTarget ++ addWartRemoverToLintTarget ++
   removeWartRemoverFromCompileTarget ++ addFoursquareLinterToLintTarget ++ removeFoursquareLinterFromCompileTarget
 
-ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 60
+coverageExcludedPackages := "de\\.zalando\\.play\\.swagger\\.sbt\\.PlaySwagger"
 
-ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := false
+// coverageEnabled := false
 
-ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
+coverageMinimum := 80
+
+coverageFailOnMinimum := false
+
+coverageHighlighting := {
   if (scalaBinaryVersion.value == "2.10") false
   else false
 }
+
 // Apply default Scalariform formatting.
 // Reformat at every compile.
 // c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.

@@ -26,11 +26,13 @@ before_install:
 #  - pip install --user codecov
 
 after_success:
-#  - codecov
+#  - bash <(curl -s https://codecov.io/bash)
 
 script:
   - sbt -jvm-opts travis/jvmopts compile test +publishLocal
   - sbt -jvm-opts travis/jvmopts scripted
+#  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
+
 
 # cache:
 #  directories:
