@@ -11,12 +11,6 @@ package object yaml {
 
     import de.zalando.play.controllers.PlayPathBindables
 
-    import PlayPathBindables.queryBindableDateTime
-
-    import PlayPathBindables.queryBindableLocalDate
-
-    import PlayPathBindables.queryBindableBase64String
-
 
 
     type StringPostString_optional = Option[String]
@@ -35,8 +29,11 @@ package object yaml {
 
 
 
-    implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
+    implicit val bindable_DateTimeQuery = PlayPathBindables.queryBindableDateTime
+    implicit val bindable_LocalDateQuery = PlayPathBindables.queryBindableLocalDate
     
+    implicit val bindable_Base64Query = PlayPathBindables.queryBindableBase64String
+    implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
     implicit val bindable_OptionLocalDateQuery = PlayPathBindables.createOptionQueryBindable[LocalDate]
     implicit val bindable_OptionDateTimeQuery = PlayPathBindables.createOptionQueryBindable[DateTime]
     implicit val bindable_OptionBase64StringQuery = PlayPathBindables.createOptionQueryBindable[Base64String]

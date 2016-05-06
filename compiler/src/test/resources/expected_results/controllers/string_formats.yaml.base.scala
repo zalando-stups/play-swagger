@@ -3,7 +3,7 @@ package string_formats.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.Base64String
@@ -14,12 +14,6 @@ import org.joda.time.DateTime
 import org.joda.time.LocalDate
 
 import de.zalando.play.controllers.PlayPathBindables
-
-import PlayPathBindables.queryBindableBase64String
-
-import PlayPathBindables.queryBindableDateTime
-
-import PlayPathBindables.queryBindableLocalDate
 
 
 

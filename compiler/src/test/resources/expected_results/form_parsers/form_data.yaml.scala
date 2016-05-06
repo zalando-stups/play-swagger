@@ -10,8 +10,6 @@ import java.io.File
 
 import de.zalando.play.controllers.PlayPathBindables
 
-import PlayPathBindables.queryBindableFile
-
 
 object FormDataParser {
 
