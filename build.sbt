@@ -125,7 +125,7 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
 
 coverageExcludedPackages := "de\\.zalando\\.play\\.swagger\\.sbt\\.PlaySwagger"
 
-coverageEnabled := false
+// coverageEnabled := false
 
 coverageMinimum := 80
 
