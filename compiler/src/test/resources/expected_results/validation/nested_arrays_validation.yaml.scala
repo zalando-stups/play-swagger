@@ -21,26 +21,26 @@ class ExampleNestedArraysOptArrArrArrArrValidator(instance: String) extends Recu
     override val validators = Seq(new ExampleNestedArraysOptArrArrArrArrConstraints(instance))
 }
 // ----- complex type validators -----
-class ActivityValidator(instance: Activity) extends RecursiveValidator {
-    override val validators = Seq(
-        new ActivityActionsValidator(instance.actions)
-    )
-}
 class ExampleValidator(instance: Example) extends RecursiveValidator {
     override val validators = Seq(
         new ExampleMessagesValidator(instance.messages), 
         new ExampleNestedArraysValidator(instance.nestedArrays)
     )
 }
-// ----- option delegating validators -----
-class ActivityActionsValidator(instance: ActivityActions) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new ActivityActionsOptValidator(_) }
+class ActivityValidator(instance: Activity) extends RecursiveValidator {
+    override val validators = Seq(
+        new ActivityActionsValidator(instance.actions)
+    )
 }
-class GetExampleValidator(instance: GetExample) extends RecursiveValidator {
+// ----- option delegating validators -----
+class AnotherPostExampleValidator(instance: AnotherPostExample) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new ExampleValidator(_) }
 }
 class ExampleMessagesValidator(instance: ExampleMessages) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new ExampleMessagesOptValidator(_) }
+}
+class ActivityActionsValidator(instance: ActivityActions) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new ActivityActionsOptValidator(_) }
 }
 class ExampleNestedArraysValidator(instance: ExampleNestedArrays) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new ExampleNestedArraysOptValidator(_) }
@@ -90,11 +90,15 @@ class ExampleNestedArraysOptArrArrArrValidator(instance: ExampleNestedArraysOptA
 }
 // ----- catch all simple validators -----
 // ----- call validations -----
-class GetValidator(activity: Activity, example: GetExample) extends RecursiveValidator {
+class GetValidator(activity: Activity) extends RecursiveValidator {
     override val validators = Seq(
-        new ActivityValidator(activity), 
+        new ActivityValidator(activity)
     
-        new GetExampleValidator(example)
+    )
+}
+class AnotherPostValidator(example: AnotherPostExample) extends RecursiveValidator {
+    override val validators = Seq(
+        new AnotherPostExampleValidator(example)
     
     )
 }
