@@ -9,11 +9,11 @@ import {{import.name}}
 {{/for}}
 // ----- constraints and wrapper validations -----
 {{for v in primitive_validations}}
-class {{v.constraint_name }}(override val instance: {{v.type_name }}) extends ValidationBase[{{v.type_name }}] {
-    override def constraints: Seq[Constraint[{{v.type_name }}]] =
+class {{v.constraint_name}}(override val instance: {{v.validation_type_name}}) extends ValidationBase[{{v.validation_type_name}}] {
+    override def constraints: Seq[Constraint[{{v.validation_type_name}}]] =
         Seq({{for r in v.restrictions}}{{r.name}}{{if r.isNotLast}}, {{/if}}{{/for}})
 }
-class {{v.validation_name }}(instance: {{v.type_name }}) extends RecursiveValidator {
+class {{v.validation_name }}(instance: {{v.type_name}}) extends RecursiveValidator {
     override val validators = Seq(new {{v.constraint_name}}(instance))
 }
 {{/for}}

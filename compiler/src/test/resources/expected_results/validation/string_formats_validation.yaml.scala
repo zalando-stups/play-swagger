@@ -13,7 +13,7 @@ import Base64String._
 // ----- constraints and wrapper validations -----
 class StringPostString_optionalOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
-        Seq()
+        Seq(maxLength(10), minLength(0), pattern("""/[1-9][A-Z0-9]*/""".r))
 }
 class StringPostString_optionalOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new StringPostString_optionalOptConstraints(instance))
@@ -34,7 +34,7 @@ class StringPostDate_requiredValidator(instance: LocalDate) extends RecursiveVal
 }
 class StringPostPassword_optionalOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
-        Seq()
+        Seq(maxLength(10), minLength(0), pattern("""/[1-9][A-Z0-9]*/""".r))
 }
 class StringPostPassword_optionalOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new StringPostPassword_optionalOptConstraints(instance))
@@ -48,35 +48,35 @@ class StringPostDate_optionalOptValidator(instance: LocalDate) extends Recursive
 }
 class StringPostString_requiredConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
-        Seq()
+        Seq(maxLength(100), minLength(10), pattern("""/[1-9][A-Z0-9]*/""".r))
 }
 class StringPostString_requiredValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new StringPostString_requiredConstraints(instance))
 }
-class StringPostBinary_optionalOptConstraints(override val instance: BinaryString) extends ValidationBase[BinaryString] {
-    override def constraints: Seq[Constraint[BinaryString]] =
-        Seq()
+class StringPostBinary_optionalOptConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
+        Seq(maxLength(110), minLength(10), pattern("""/[1-9][A-Z0-9]*/""".r))
 }
 class StringPostBinary_optionalOptValidator(instance: BinaryString) extends RecursiveValidator {
     override val validators = Seq(new StringPostBinary_optionalOptConstraints(instance))
 }
 class StringPostPassword_requiredConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
-        Seq()
+        Seq(maxLength(10), minLength(0), pattern("""/[1-9][A-Z0-9]*/""".r))
 }
 class StringPostPassword_requiredValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new StringPostPassword_requiredConstraints(instance))
 }
-class String2PostBinary_requiredConstraints(override val instance: BinaryString) extends ValidationBase[BinaryString] {
-    override def constraints: Seq[Constraint[BinaryString]] =
-        Seq()
+class String2PostBinary_requiredConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
+        Seq(maxLength(10), minLength(0), pattern("""/[1-9][A-Z0-9]*/""".r))
 }
 class String2PostBinary_requiredValidator(instance: BinaryString) extends RecursiveValidator {
     override val validators = Seq(new String2PostBinary_requiredConstraints(instance))
 }
-class StringPostBase64requiredConstraints(override val instance: Base64String) extends ValidationBase[Base64String] {
-    override def constraints: Seq[Constraint[Base64String]] =
-        Seq()
+class StringPostBase64requiredConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
+        Seq(maxLength(10), minLength(0), pattern("""/[1-9][A-Z0-9]*/""".r))
 }
 class StringPostBase64requiredValidator(instance: Base64String) extends RecursiveValidator {
     override val validators = Seq(new StringPostBase64requiredConstraints(instance))
@@ -88,9 +88,9 @@ class StringPostDate_time_optionalOptConstraints(override val instance: DateTime
 class StringPostDate_time_optionalOptValidator(instance: DateTime) extends RecursiveValidator {
     override val validators = Seq(new StringPostDate_time_optionalOptConstraints(instance))
 }
-class StringPostBase64optionalOptConstraints(override val instance: Base64String) extends ValidationBase[Base64String] {
-    override def constraints: Seq[Constraint[Base64String]] =
-        Seq()
+class StringPostBase64optionalOptConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
+        Seq(maxLength(10), minLength(0), pattern("""/[1-9][A-Z0-9]*/""".r))
 }
 class StringPostBase64optionalOptValidator(instance: Base64String) extends RecursiveValidator {
     override val validators = Seq(new StringPostBase64optionalOptConstraints(instance))
