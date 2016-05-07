@@ -86,6 +86,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(body: UsersUsernamePutBody) = {
@@ -131,6 +132,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -198,6 +200,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(body: PetsPostBody) = {
@@ -249,6 +252,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -316,6 +320,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(body: PetsPostBody) = {
@@ -369,6 +374,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -431,6 +437,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(status: PetsFindByStatusGetStatus) = {
@@ -477,6 +484,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -540,6 +548,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(body: StoresOrderPostBody) = {
@@ -588,6 +597,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -651,6 +661,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(body: UsersCreateWithListPostBody) = {
@@ -696,6 +707,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -759,6 +771,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (OrderStatus, OrderStatus)) = {
@@ -806,6 +819,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -872,6 +886,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(orderId: String) = {
@@ -919,6 +934,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -981,6 +997,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(petId: Long) = {
@@ -1028,6 +1045,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -1090,6 +1108,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(username: String) = {
@@ -1137,6 +1156,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -1200,6 +1220,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(body: UsersCreateWithListPostBody) = {
@@ -1245,6 +1266,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -1310,6 +1332,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, String, String)) = {
@@ -1358,6 +1381,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -1426,6 +1450,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(username: String) = {
@@ -1472,6 +1497,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -1534,6 +1560,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(orderId: String) = {
@@ -1580,6 +1607,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -1645,6 +1673,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, Long)) = {
@@ -1693,6 +1722,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -1759,6 +1789,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(tags: PetsFindByStatusGetStatus) = {
@@ -1805,6 +1836,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -1869,6 +1901,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, UsersUsernamePutBody)) = {
@@ -1918,6 +1951,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
