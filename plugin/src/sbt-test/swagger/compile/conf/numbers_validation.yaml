@@ -39,7 +39,7 @@ paths:
           minimum: 10
           exclusiveMinimum: true
           exclusiveMaximum: true
-          multipleOf: 0
+          multipleOf: 10
         - name: long_required
           in: query
           required: true
