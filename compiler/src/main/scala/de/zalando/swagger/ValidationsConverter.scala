@@ -60,6 +60,7 @@ object ValidationsConverter {
   }
 
   private def toNumberValidations(p: NumberValidation[_]): Seq[String] = {
+    assert(p.multipleOf.forall( _ != 0), "Zero cannot be a parameter of multipleOf validation")
     val strictMax = p.exclusiveMaximum.getOrElse(false)
     val strictMin = p.exclusiveMinimum.getOrElse(false)
     val typeCoerce = p.format match {
