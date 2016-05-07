@@ -151,9 +151,10 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
     val controllersList = controllers(modelCalls, unmanagedParts, pckg)(denotationTable)
 
+    val stdImports = standardImports(modelTypes).map(i => Map("name" -> i))
     val controllersMap = Map(
       "controllers" -> controllersList,
-      "controller_imports" -> (controllerImports.map(i => Map("name" -> i)) ++ standardImports(modelTypes)),
+      "controller_imports" -> (controllerImports.map(i => Map("name" -> i)) ++ stdImports),
       "unmanaged_imports" -> unmanagedImports.map(i => Map("name" -> i))
     )
 
@@ -249,13 +250,14 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
     }
     val preservedImports =
       allLines.filter(_.trim.startsWith("import")).map(_.replace("import ", "")).
-        filterNot(controllerImports.contains).filterNot(standardImports(modelTypes).flatMap(_.values).contains)
+        filterNot(controllerImports.contains).filterNot(standardImports(modelTypes).contains)
     (parts.toMap, preservedImports)
   }
 
-  def standardImports(modelTypes: TypeLookupTable): Seq[Map[String, String]] =
+  def standardImports(modelTypes: TypeLookupTable): Seq[String] =
     modelTypes.collect {
-      case (ref, tpe: PrimitiveType) => tpe.imports.map { i => Map("name" -> i) }
+      case (ref, tpe: PrimitiveType) =>
+        tpe.imports
     }.toSeq.flatten
 
   def generateMarkers(allCalls: Seq[ApiCall], table: DenotationTable): Seq[(ApiCall, (String, Int))] = {

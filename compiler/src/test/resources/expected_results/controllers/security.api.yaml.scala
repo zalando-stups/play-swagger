@@ -11,6 +11,7 @@ import PlayValidations._
 
 import scala.util._
 
+import de.zalando.play.controllers.ArrayWrapper
 
 
 package security.api.yaml {

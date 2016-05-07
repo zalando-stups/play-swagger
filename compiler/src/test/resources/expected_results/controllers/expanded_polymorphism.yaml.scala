@@ -12,7 +12,6 @@ import PlayValidations._
 import scala.util._
 
 
-
 package expanded {
 
     class Expanded_polymorphismYaml extends Expanded_polymorphismYamlBase {
