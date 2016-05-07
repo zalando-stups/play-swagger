@@ -11,6 +11,9 @@ import PlayValidations._
 
 import scala.util._
 
+import de.zalando.play.controllers.BinaryString
+
+import BinaryString._
 
 
 package string_formats.yaml {

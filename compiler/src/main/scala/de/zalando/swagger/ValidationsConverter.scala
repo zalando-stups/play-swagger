@@ -45,12 +45,18 @@ object ValidationsConverter {
       case _ => None
     }
     val emailConstraint: Option[String] = if (format.exists(_ == "email")) Some("emailAddress") else None
-    Seq(
+    val result = Seq(
       ifDefined(p.maxLength, s"maxLength(${p.maxLength.get})"),
       ifDefined(p.minLength, s"minLength(${p.minLength.get})"),
       p.pattern map { p => "pattern(\"\"\"" + p + "\"\"\".r)"},
       emailConstraint
     ).flatten
+    if (result.nonEmpty && format.exists(s => s == "date-time" || s == "date")) {
+      println(s"WARN: Ignoring nonsense validations for ${format.get}: ${result.mkString(", ")}")
+      Seq.empty[String]
+    } else {
+      result
+    }
   }
 
   private def toNumberValidations(p: NumberValidation[_]): Seq[String] = {
@@ -68,7 +74,7 @@ object ValidationsConverter {
     Seq(
       ifDefined(p.maximum, s"max(${p.maximum.get}$converter, $strictMax)"),
       ifDefined(p.minimum, s"min(${p.minimum.get}$converter, $strictMin)"),
-      ifDefined(p.multipleOf, s"multipleOf(${p.multipleOf.get})")
+      ifDefined(p.multipleOf, s"multipleOf(${p.multipleOf.get}$converter)")
     ).flatten
   }
 

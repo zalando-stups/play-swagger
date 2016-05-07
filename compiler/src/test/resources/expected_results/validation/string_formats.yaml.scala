@@ -11,15 +11,15 @@ import BinaryString._
 import org.joda.time.DateTime
 import org.joda.time.LocalDate
 // ----- constraints and wrapper validations -----
-class GetBase64OptConstraints(override val instance: Base64String) extends ValidationBase[Base64String] {
-    override def constraints: Seq[Constraint[Base64String]] =
+class GetBase64OptConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
         Seq()
 }
 class GetBase64OptValidator(instance: Base64String) extends RecursiveValidator {
     override val validators = Seq(new GetBase64OptConstraints(instance))
 }
-class GetPetIdConstraints(override val instance: BinaryString) extends ValidationBase[BinaryString] {
-    override def constraints: Seq[Constraint[BinaryString]] =
+class GetPetIdConstraints(override val instance: String) extends ValidationBase[String] {
+    override def constraints: Seq[Constraint[String]] =
         Seq()
 }
 class GetPetIdValidator(instance: BinaryString) extends RecursiveValidator {

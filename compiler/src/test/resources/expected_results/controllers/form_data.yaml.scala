@@ -14,7 +14,6 @@ import scala.util._
 import java.io.File
 
 
-
 package form_data.yaml {
 
     class Form_dataYaml extends Form_dataYamlBase {

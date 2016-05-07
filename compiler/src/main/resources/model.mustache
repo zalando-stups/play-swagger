@@ -26,8 +26,8 @@ package object {{main_package_suffix}} {
     case class {{class.name}}({{for field in class.fields}}{{field.name}}: {{field.type_name}}{{if field.isNotLast}}, {{/if}}{{/for}}) {{for trait in class.trait}}extends I{{trait.name}}{{/for}}
 {{/for}}
 
-{{for binding in bindings.binding}}
-    {{binding.name}}{{binding.format}}
+{{for binding in model_bindings}}
+    {{binding.full_name}}
 {{/for}}
 
 }

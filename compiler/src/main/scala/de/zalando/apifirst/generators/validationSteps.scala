@@ -1,10 +1,10 @@
 package de.zalando.apifirst.generators
 
-import de.zalando.apifirst.Application.{Parameter, StrictModel, ParameterRef, ApiCall}
+import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef, StrictModel}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
-import de.zalando.apifirst.naming.Reference
+import de.zalando.apifirst.naming.{Reference, TypeName}
 
 /**
   * @author  slasch 
@@ -12,10 +12,11 @@ import de.zalando.apifirst.naming.Reference
   */
 trait CallValidatorsStep extends EnrichmentStep[ApiCall] with ValidatorsCommon {
 
-  override def steps = callValidators +: super.steps
+  override def steps: Seq[SingleStep] = callValidators +: super.steps
 
   /**
     * Puts validation related information into the denotation table
+    *
     * @return
     */
   protected val callValidators: SingleStep = call => table =>
@@ -54,10 +55,11 @@ trait CallValidatorsStep extends EnrichmentStep[ApiCall] with ValidatorsCommon {
 
 trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with ValidatorsCommon {
 
-  override def steps = callValidators +: super.steps
+  override def steps: Seq[SingleStep] = callValidators +: super.steps
 
   /**
     * Puts validation related information into the denotation table
+    *
     * @return
     */
   protected val callValidators: SingleStep = parameter => table =>
@@ -148,20 +150,34 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
       "type_name" -> typeNameDenotation(table, r)
     )
 
-  private def typeConstraints(r: Reference, t: Type)(implicit table: DenotationTable) =
+  private def typeConstraints(r: Reference, t: Type)(implicit table: DenotationTable) = {
+    val typeName = t match {
+      case p: PrimitiveType => p.name.typeAlias()
+      case _ => typeNameDenotation(table, r)
+    }
+    val validation_type_name = t match {
+      case _: Base64String => "String"
+      case _: BinaryString => "String"
+      case _ => typeName
+    }
+    val implicits = t match {
+      case f: Flt if f.meta.constraints.exists(_.contains("multipleOf")) => Seq("implicit val floatIntegral = scala.math.Numeric.FloatAsIfIntegral")
+      case f: Dbl if f.meta.constraints.exists(_.contains("multipleOf")) => Seq("implicit val doubleIntegral = scala.math.Numeric.DoubleAsIfIntegral")
+      case _ => Seq.empty[String]
+    }
     Map(
       "restrictions" -> t.meta.constraints.filterNot(_.isEmpty).map { c =>
         Map("name" -> c)
       },
       "constraint_name" -> constraint(r, table),
       "validation_name" -> validator(r, table),
-      "type_name" -> (t match {             // TODO this one is bad
-        case p: PrimitiveType => p.name.typeAlias()
-        case _ => typeNameDenotation(table, r)
-      })
+      "type_name" -> typeName,
+      "validation_type_name" -> validation_type_name,
+      "implicits" -> implicits.map { i => Map("name" -> i) }
     )
+  }
 
-  def fieldName(f: Field) = if (f.tpe.isInstanceOf[PrimitiveType]) f.name else f.tpe.name
+  def fieldName(f: Field): TypeName = if (f.tpe.isInstanceOf[PrimitiveType]) f.name else f.tpe.name
 
 }
 

@@ -1,8 +1,15 @@
 clean
 project api
 coverage
-project compiler
-coverage
-project root
 test
 coverageReport
+coverageOff
+
+project compiler
+coverage
+test
+coverageReport
+coverageOff
+
+project root
+coverageAggregate

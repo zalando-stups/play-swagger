@@ -924,8 +924,12 @@ object strictModel {
     def maxLength: MaxLength
     def minLength: MinLength
     def pattern: Pattern
-    require(maxLength.forall(_>=0))
-    require(minLength.forall(_>=0))
+    require(maxLength.forall(_>=0), "maxLength cannot be negative")
+    require(minLength.forall(_>=0), "minLength cannot be negative")
+    (minLength, maxLength) match {
+      case (Some(min), Some(max)) => require(max>=min, "maxLength cannot be less then minLength")
+      case _ =>
+    }
     require(pattern.forall(p => Try(p.r).isSuccess))
   }
 

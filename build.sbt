@@ -71,7 +71,6 @@ lazy val plugin = (project in file("plugin"))
         "-Dproject.version=" + version.value,
         "-Dscala.version=" + scalaVersion.value,
         "-Xmx512M",
-        "-XX:MaxPermSize=256M",
         "-XX:ReservedCodeCacheSize=256M"
       )
     },
@@ -120,8 +119,9 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
     "-Xfuture"
   ),
   scalastyleFailOnError := true
-) ++ scalariformSettings ++ addMainSourcesToLintTarget ++ addSlowScalacSwitchesToLintTarget ++ addWartRemoverToLintTarget ++
+) ++ addMainSourcesToLintTarget ++ addSlowScalacSwitchesToLintTarget ++ addWartRemoverToLintTarget ++
   removeWartRemoverFromCompileTarget ++ addFoursquareLinterToLintTarget ++ removeFoursquareLinterFromCompileTarget
+// ++ scalariformSettings
 
 coverageExcludedPackages := "de\\.zalando\\.play\\.swagger\\.sbt\\.PlaySwagger"
 

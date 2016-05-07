@@ -6,9 +6,9 @@ import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames.DenotationTable
 
 /**
-  * @author slasch
-  * @since 16.11.2015.
-  */
+ * @author slasch
+ * @since 16.11.2015.
+ */
 
 class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAnalyzer {
 
@@ -16,16 +16,16 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
   val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName, securityDefinitions) = strictModel
 
-  val testsTemplateName               = "play_scala_test"
-  val validatorsTemplateName          = "play_validation"
-  val generatorsTemplateName          = "generators"
-  val modelTemplateName               = "model"
-  val controllersTemplateName         = "play_scala_controller"
-  val controllerBaseTemplateName      = "play_scala_controller_base"
-  val marschallersTemplateName        = "play_scala_response_writers"
-  val securityTemplateName            = "play_scala_controller_security"
-  val securityExtractorsTemplateName  = "play_scala_security_extractors"
-  val formParsersTemplateName         = "play_scala_form_parser"
+  val testsTemplateName = "play_scala_test"
+  val validatorsTemplateName = "play_validation"
+  val generatorsTemplateName = "generators"
+  val modelTemplateName = "model"
+  val controllersTemplateName = "play_scala_controller"
+  val controllerBaseTemplateName = "play_scala_controller_base"
+  val marschallersTemplateName = "play_scala_response_writers"
+  val securityTemplateName = "play_scala_controller_security"
+  val securityExtractorsTemplateName = "play_scala_security_extractors"
+  val formParsersTemplateName = "play_scala_form_parser"
 
   def generateBase: (String, String, String) => Seq[String] = (fileName, packageName, currentController) => Seq(
     generateModel(fileName, packageName),
@@ -100,32 +100,39 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
     assert(packageName.contains('-') == packageName.contains('`'), packageName)
 
-    val validations         = ReShaper.filterByType("validators", denotationTable)
-    val validationsByType   = ReShaper.groupByType(validations.toSeq).toMap
+    val validations = ReShaper.filterByType("validators", denotationTable)
+    val validationsByType = ReShaper.groupByType(validations.toSeq).toMap
 
-    val bindings            = ReShaper.filterByType("bindings", denotationTable)
-    val grouppedBindings    = ReShaper.groupByType(bindings.toSeq)
-    val sortedBindings      = grouppedBindings.map { case (x,y: Seq[Map[String, Any] @unchecked]) =>
-      val sorted = y.sortWith { (a, b) => (a.get("dependencies"), b.get("dependencies")) match {
-        case (Some(aa: Int), Some(bb: Int)) => aa < bb
-        case _ => false
-      }
-      }
-      x -> sorted
+    val bindings = ReShaper.filterByType("bindings", denotationTable)
+    val grouppedBindings = ReShaper.groupByType(bindings.toSeq.distinct)
+    val sortedBindings = grouppedBindings.map {
+      case (x, y: Seq[Map[String, Any] @unchecked]) =>
+        val sorted = y.sortWith { (a, b) =>
+          (a.get("dependencies"), b.get("dependencies")) match {
+            case (Some(aa: Int), Some(bb: Int)) => aa < bb
+            case _ if b("format").toString.contains("[") => true
+            case _ => false
+          }
+        }
+        x -> sorted
     }
 
-    val bindingsByType      = sortedBindings.toMap
+    val bindingsByType = sortedBindings.toMap
+    val modelBindings = bindingsByType.flatMap {
+      case (k, b) =>
+        b.map(_("format"))
+    }.toSeq.distinct.map { b => Map("full_name" -> b) }
 
-    val forms               = ReShaper.filterByType("form_data", denotationTable)
+    val forms = ReShaper.filterByType("form_data", denotationTable)
 
-    val marshallers         = ReShaper.filterByType("marshallers", denotationTable)
+    val marshallers = ReShaper.filterByType("marshallers", denotationTable)
     val grouppedMarshallers = ReShaper.groupByType(marshallers.toSeq).toMap
 
-    val unmarshallers         = ReShaper.filterByType("unmarshallers", denotationTable)
+    val unmarshallers = ReShaper.filterByType("unmarshallers", denotationTable)
     val grouppedunMarshallers = ReShaper.groupByType(unmarshallers.toSeq).toMap
 
-    val securityExtractors    = ReShaper.filterByType("security_extractors", denotationTable)
-    val extractors            = ReShaper.groupByType(securityExtractors.toSeq).toMap
+    val securityExtractors = ReShaper.filterByType("security_extractors", denotationTable)
+    val extractors = ReShaper.groupByType(securityExtractors.toSeq).toMap
 
     val (unmanagedParts: Map[ApiCall, UnmanagedPart], unmanagedImports: Seq[String]) =
       analyzeController(currentController, denotationTable, modelTypes)
@@ -144,28 +151,30 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
 
     val controllersList = controllers(modelCalls, unmanagedParts, pckg)(denotationTable)
 
+    val stdImports = standardImports(modelTypes).map(i => Map("name" -> i))
     val controllersMap = Map(
-      "controllers"         -> controllersList,
-      "controller_imports"  -> (controllerImports.map(i => Map("name" -> i)) ++ fileImport(modelTypes)),
-      "unmanaged_imports"   -> unmanagedImports.map(i => Map("name" -> i))
+      "controllers" -> controllersList,
+      "controller_imports" -> (controllerImports.map(i => Map("name" -> i)) ++ stdImports),
+      "unmanaged_imports" -> unmanagedImports.map(i => Map("name" -> i))
     )
 
-    val singlePackage = Map(
-      "classes"             -> ReShaper.filterByType("classes", denotationTable),
-      "aliases"             -> ReShaper.filterByType("aliases", denotationTable),
-      "traits"              -> ReShaper.filterByType("traits", denotationTable),
-      "test_data_classes"   -> ReShaper.filterByType("test_data_classes", denotationTable),
-      "test_data_aliases"   -> ReShaper.filterByType("test_data_aliases", denotationTable),
-      "tests"               -> ReShaper.filterByType("tests", denotationTable),
-      "marshallers"         -> grouppedMarshallers,
-      "unmarshallers"       -> grouppedunMarshallers,
+    val singlePackage: Map[String, Iterable[Any]] = Map(
+      "classes" -> ReShaper.filterByType("classes", denotationTable),
+      "aliases" -> ReShaper.filterByType("aliases", denotationTable),
+      "traits" -> ReShaper.filterByType("traits", denotationTable),
+      "test_data_classes" -> ReShaper.filterByType("test_data_classes", denotationTable),
+      "test_data_aliases" -> ReShaper.filterByType("test_data_aliases", denotationTable),
+      "tests" -> ReShaper.filterByType("tests", denotationTable),
+      "marshallers" -> grouppedMarshallers,
+      "unmarshallers" -> grouppedunMarshallers,
       "security_extractors" -> extractors,
-      "bindings"            -> bindingsByType,
-      "forms"               -> forms
+      "bindings" -> bindingsByType,
+      "forms" -> forms,
+      "model_bindings" -> modelBindings
     )
 
-    val rawAllPackages      = singlePackage ++ validationsByType ++ controllersMap
-    val allPackages         = enrichWithStructuralInfo(rawAllPackages)
+    val rawAllPackages = singlePackage ++ validationsByType ++ controllersMap
+    val allPackages = enrichWithStructuralInfo(rawAllPackages)
 
     renderTemplate(packages, templateName, allPackages)
 
@@ -197,16 +206,16 @@ class ScalaGenerator(val strictModel: StrictModel) extends PlayScalaControllerAn
   }
 
   private val partsMapping = Map(
-    "lists_part"          -> "ArrayWrapper",
-    "maps_part"           -> "Map",
-    "date_part"           -> "LocalDate",
-    "date_time_part"      -> "DateTime",
-    "binary_string_part"  -> "BinaryString",
-    "base64_string_part"  -> "Base64String",
-    "file_part"           -> "File"
+    "lists_part" -> "ArrayWrapper",
+    "maps_part" -> "Map",
+    "date_part" -> "LocalDate",
+    "date_time_part" -> "DateTime",
+    "binary_string_part" -> "BinaryString",
+    "base64_string_part" -> "Base64String",
+    "file_part" -> "File"
   )
   private def neededParts(imports: Seq[String]): Map[String, Boolean] = partsMapping map {
-    case (k,v) => k -> imports.exists(_.contains(v))
+    case (k, v) => k -> imports.exists(_.contains(v))
   }
 }
 
@@ -241,24 +250,23 @@ trait PlayScalaControllerAnalyzer extends PlayScalaControllersGenerator with Con
     }
     val preservedImports =
       allLines.filter(_.trim.startsWith("import")).map(_.replace("import ", "")).
-        filterNot(controllerImports.contains).filterNot(fileImport(modelTypes).flatMap(_.values).contains)
+        filterNot(controllerImports.contains).filterNot(standardImports(modelTypes).contains)
     (parts.toMap, preservedImports)
   }
 
-  def fileImport(modelTypes: TypeLookupTable): Seq[Map[String, String]] = {
-    if (modelTypes.collect { case (ref, tpe: File) => true }.nonEmpty)
-      Seq(Map("name" -> "java.io.File"))
-    else
-      Seq.empty[Map[String, String]]
-  }
+  def standardImports(modelTypes: TypeLookupTable): Seq[String] =
+    modelTypes.collect {
+      case (ref, tpe: PrimitiveType) =>
+        tpe.imports
+    }.toSeq.flatten
 
-  def generateMarkers(allCalls: Seq[ApiCall], table: DenotationTable) = {
+  def generateMarkers(allCalls: Seq[ApiCall], table: DenotationTable): Seq[(ApiCall, (String, Int))] = {
     val markers = allCalls map { call =>
       val controllerDenotations = table(call.asReference)("controller")
       val signature = controllerDenotations("signature").toString
       val markerSize = // FIXME this will fail if parameter types will change
         if (controllerDenotations("multiple_parameters") != Nil) 2 // FIXME this is very error-prone
-        else if (controllerDenotations("single_parameter") != None) 1  // FIXME this is very error-prone
+        else if (controllerDenotations("single_parameter") != None) 1 // FIXME this is very error-prone
         else 1
       (call, (signature, markerSize))
     }
@@ -285,21 +293,22 @@ trait PlayScalaControllersGenerator {
   def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart], packageName: String)(table: DenotationTable) = {
     allCalls groupBy { c =>
       (c.handler.packageName, c.handler.controller)
-    } map { case (controller, calls) =>
-      val methods = calls map { singleMethod(unmanagedParts, table) }
-      if (packageName != controller._1) {
-        println(s"WARN: Ignoring package part of the handler name '${controller._1}', using '$packageName' instead. \n\t" +
-          "Current plugin version only supports single package definition per specification.\n\t" +
-          "Play's route files will fail to compile.")
-      }
-      val securityTrait = calls.find(_.security.nonEmpty).map(_ => escape(controller._2 + securityTraitSuffix))
-      Map(
-        "effective_package"   -> packageName,
-        "controller"          -> escape(controller._2),
-        "base"                -> escape(controller._2 + baseControllersSuffix),
-        "methods"             -> methods,
-        "security_trait"      -> securityTrait
-      )
+    } map {
+      case (controller, calls) =>
+        val methods = calls map { singleMethod(unmanagedParts, table) }
+        if (packageName != controller._1) {
+          println(s"WARN: Ignoring package part of the handler name '${controller._1}', using '$packageName' instead. \n\t" +
+            "Current plugin version only supports single package definition per specification.\n\t" +
+            "Play's route files will fail to compile.")
+        }
+        val securityTrait = calls.find(_.security.nonEmpty).map(_ => escape(controller._2 + securityTraitSuffix))
+        Map(
+          "effective_package" -> packageName,
+          "controller" -> escape(controller._2),
+          "base" -> escape(controller._2 + baseControllersSuffix),
+          "methods" -> methods,
+          "security_trait" -> securityTrait
+        )
     }
   }
 
@@ -307,9 +316,9 @@ trait PlayScalaControllersGenerator {
     call => {
       val method = table(call.asReference)("controller")
       val methodWithCode = method + (
-        "dead_code"       -> unmanagedParts.get(call).map(_.deadCode).getOrElse(""),
-        "implementation"  -> unmanagedParts.get(call).map(_.relevantCode.trim).getOrElse("Failure(???)")
-        )
+        "dead_code" -> unmanagedParts.get(call).map(_.deadCode).getOrElse(""),
+        "implementation" -> unmanagedParts.get(call).map(_.relevantCode.trim).getOrElse("Failure(???)")
+      )
       methodWithCode
     }
 }

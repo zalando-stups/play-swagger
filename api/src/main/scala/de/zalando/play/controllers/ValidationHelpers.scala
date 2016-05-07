@@ -150,4 +150,6 @@ object PlayValidations extends Constraints {
     if (o == null) Invalid(ValidationError("error.required"))
     else if (o.size < minProperties) Invalid(ValidationError("error.minProperties")) else Valid
   }
+
+
 }

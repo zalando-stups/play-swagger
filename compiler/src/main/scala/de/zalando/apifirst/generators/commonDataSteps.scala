@@ -15,7 +15,7 @@ import de.zalando.apifirst.generators.DenotationNames._
   */
 trait CommonParamDataStep extends EnrichmentStep[Parameter] with CommonData {
 
-  override def steps = types +: super.steps
+  override def steps: Seq[SingleStep] = types +: super.steps
 
   /**
     * Puts type information into the denotation table
@@ -34,7 +34,7 @@ trait CommonParamDataStep extends EnrichmentStep[Parameter] with CommonData {
 
 trait CommonCallDataStep extends EnrichmentStep[ApiCall] with CommonData {
 
-  override def steps = types +: super.steps
+  override def steps: Seq[SingleStep] = types +: super.steps
 
   /**
     * Puts type information into the denotation table
@@ -53,7 +53,7 @@ trait CommonCallDataStep extends EnrichmentStep[ApiCall] with CommonData {
 
 trait CommonDataStep extends EnrichmentStep[Type] with CommonData {
 
-  override def steps = types +: super.steps
+  override def steps: Seq[SingleStep] = types +: super.steps
 
   @tailrec
   private def avoidClashes(table: DenotationTable, name: String)
