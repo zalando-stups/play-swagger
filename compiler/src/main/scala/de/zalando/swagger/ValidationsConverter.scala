@@ -74,7 +74,7 @@ object ValidationsConverter {
     Seq(
       ifDefined(p.maximum, s"max(${p.maximum.get}$converter, $strictMax)"),
       ifDefined(p.minimum, s"min(${p.minimum.get}$converter, $strictMin)"),
-      ifDefined(p.multipleOf, s"multipleOf(${p.multipleOf.get})")
+      ifDefined(p.multipleOf, s"multipleOf(${p.multipleOf.get}$converter)")
     ).flatten
   }
 

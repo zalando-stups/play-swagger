@@ -12,7 +12,7 @@ import de.zalando.apifirst.naming.{Reference, TypeName}
   */
 trait CallValidatorsStep extends EnrichmentStep[ApiCall] with ValidatorsCommon {
 
-  override def steps = callValidators +: super.steps
+  override def steps: Seq[SingleStep] = callValidators +: super.steps
 
   /**
     * Puts validation related information into the denotation table
@@ -160,6 +160,11 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
       case _: BinaryString => "String"
       case _ => typeName
     }
+    val implicits = t match {
+      case f: Flt if f.meta.constraints.exists(_.contains("multipleOf")) => Seq("implicit val floatIntegral = scala.math.Numeric.FloatAsIfIntegral")
+      case f: Dbl if f.meta.constraints.exists(_.contains("multipleOf")) => Seq("implicit val doubleIntegral = scala.math.Numeric.DoubleAsIfIntegral")
+      case _ => Seq.empty[String]
+    }
     Map(
       "restrictions" -> t.meta.constraints.filterNot(_.isEmpty).map { c =>
         Map("name" -> c)
@@ -167,7 +172,8 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
       "constraint_name" -> constraint(r, table),
       "validation_name" -> validator(r, table),
       "type_name" -> typeName,
-      "validation_type_name" -> validation_type_name
+      "validation_type_name" -> validation_type_name,
+      "implicits" -> implicits.map { i => Map("name" -> i) }
     )
   }
 

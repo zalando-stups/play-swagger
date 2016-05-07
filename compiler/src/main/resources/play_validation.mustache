@@ -4,12 +4,16 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 {{for import in imports}}
 import {{import.name}}
 {{/for}}
 // ----- constraints and wrapper validations -----
 {{for v in primitive_validations}}
 class {{v.constraint_name}}(override val instance: {{v.validation_type_name}}) extends ValidationBase[{{v.validation_type_name}}] {
+    {{for implicit in  v.implicits}}
+        {{implicit.name}}
+    {{/for}}
     override def constraints: Seq[Constraint[{{v.validation_type_name}}]] =
         Seq({{for r in v.restrictions}}{{r.name}}{{if r.isNotLast}}, {{/if}}{{/for}})
 }

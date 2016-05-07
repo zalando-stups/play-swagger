@@ -4,59 +4,64 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 // ----- constraints and wrapper validations -----
 class GetDouble_optionalOptConstraints(override val instance: Double) extends ValidationBase[Double] {
+        implicit val doubleIntegral = scala.math.Numeric.DoubleAsIfIntegral
     override def constraints: Seq[Constraint[Double]] =
-        Seq()
+        Seq(max(10.toDouble, true), min(0.toDouble, true), multipleOf(5.toDouble))
 }
 class GetDouble_optionalOptValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new GetDouble_optionalOptConstraints(instance))
 }
 class GetInteger_requiredConstraints(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
-        Seq()
+        Seq(max(10.toInt, false), min(0.toInt, false), multipleOf(5.toInt))
 }
 class GetInteger_requiredValidator(instance: Int) extends RecursiveValidator {
     override val validators = Seq(new GetInteger_requiredConstraints(instance))
 }
 class GetInteger_optionalOptConstraints(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
-        Seq()
+        Seq(max(10.toInt, true), min(-10.toInt, true), multipleOf(5.toInt))
 }
 class GetInteger_optionalOptValidator(instance: Int) extends RecursiveValidator {
     override val validators = Seq(new GetInteger_optionalOptConstraints(instance))
 }
 class GetDouble_requiredConstraints(override val instance: Double) extends ValidationBase[Double] {
+        implicit val doubleIntegral = scala.math.Numeric.DoubleAsIfIntegral
     override def constraints: Seq[Constraint[Double]] =
-        Seq()
+        Seq(max(10.toDouble, false), min(2.toDouble, false), multipleOf(5.toDouble))
 }
 class GetDouble_requiredValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new GetDouble_requiredConstraints(instance))
 }
 class GetLong_optionalOptConstraints(override val instance: Long) extends ValidationBase[Long] {
     override def constraints: Seq[Constraint[Long]] =
-        Seq()
+        Seq(max(10.toLong, true), min(10.toLong, true), multipleOf(0.toLong))
 }
 class GetLong_optionalOptValidator(instance: Long) extends RecursiveValidator {
     override val validators = Seq(new GetLong_optionalOptConstraints(instance))
 }
 class GetFloat_requiredConstraints(override val instance: Float) extends ValidationBase[Float] {
+        implicit val floatIntegral = scala.math.Numeric.FloatAsIfIntegral
     override def constraints: Seq[Constraint[Float]] =
-        Seq()
+        Seq(max(10.toFloat, true), min(10.toFloat, true), multipleOf(5.toFloat))
 }
 class GetFloat_requiredValidator(instance: Float) extends RecursiveValidator {
     override val validators = Seq(new GetFloat_requiredConstraints(instance))
 }
 class GetFloat_optionalOptConstraints(override val instance: Float) extends ValidationBase[Float] {
+        implicit val floatIntegral = scala.math.Numeric.FloatAsIfIntegral
     override def constraints: Seq[Constraint[Float]] =
-        Seq()
+        Seq(max(10.toFloat, false), min(1.toFloat, false), multipleOf(5.toFloat))
 }
 class GetFloat_optionalOptValidator(instance: Float) extends RecursiveValidator {
     override val validators = Seq(new GetFloat_optionalOptConstraints(instance))
 }
 class GetLong_requiredConstraints(override val instance: Long) extends ValidationBase[Long] {
     override def constraints: Seq[Constraint[Long]] =
-        Seq()
+        Seq(max(10.toLong, true), min(0.toLong, true), multipleOf(5.toLong))
 }
 class GetLong_requiredValidator(instance: Long) extends RecursiveValidator {
     override val validators = Seq(new GetLong_requiredConstraints(instance))
