@@ -87,6 +87,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, String)) = {
@@ -135,6 +136,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -206,6 +208,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)) = {
@@ -260,6 +263,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -339,6 +343,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)) = {
@@ -391,6 +396,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -473,6 +479,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, TopicsTopicEventsBatchPostEvent)) = {
@@ -527,6 +534,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -595,6 +603,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(topic: String) = {
@@ -642,6 +651,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -708,6 +718,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, TopicsTopicEventsBatchPostEvent)) = {
@@ -762,6 +773,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {

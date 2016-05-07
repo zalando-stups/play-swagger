@@ -87,6 +87,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, BothPostYear, MultipartPostAvatar)) = {
@@ -135,6 +136,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -208,6 +210,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, BothPostYear, MultipartPostAvatar, File)) = {
@@ -258,6 +261,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {
@@ -331,6 +335,7 @@ import Generators._
                     all(validations:_*)
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         def testValidInput(input: (String, BothPostYear, File)) = {
@@ -379,6 +384,7 @@ import Generators._
                     errors.isEmpty ?= true
                 )
             }
+            if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
         "discard invalid data" in new WithApplication {

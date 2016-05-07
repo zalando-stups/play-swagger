@@ -38,7 +38,7 @@ class GetDouble_requiredValidator(instance: Double) extends RecursiveValidator {
 }
 class GetLong_optionalOptConstraints(override val instance: Long) extends ValidationBase[Long] {
     override def constraints: Seq[Constraint[Long]] =
-        Seq(max(10.toLong, true), min(10.toLong, true), multipleOf(0.toLong))
+        Seq(max(10.toLong, true), min(10.toLong, true), multipleOf(10.toLong))
 }
 class GetLong_optionalOptValidator(instance: Long) extends RecursiveValidator {
     override val validators = Seq(new GetLong_optionalOptConstraints(instance))
