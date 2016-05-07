@@ -13,6 +13,8 @@ import play.sbt.routes.RoutesCompiler
 
 import scala.util._
 
+// $COVERAGE-OFF$
+
 /**
  * @since 28.07.2015
  */
@@ -242,3 +244,4 @@ object PlaySwagger extends AutoPlugin {
         products.to[Seq]
     }
 }
+// $COVERAGE-ON$
