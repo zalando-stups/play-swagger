@@ -1,0 +1,68 @@
+⌿definitions⌿Meta⌿copyright -> 
+	Opt(Str)
+⌿definitions⌿ModelSchema⌿keywords -> 
+	Opt(Str)
+⌿definitions⌿ModelSchema⌿specialDescriptions -> 
+	Opt(TypeRef(⌿definitions⌿ModelSchema⌿specialDescriptions⌿Opt))
+⌿definitions⌿ModelSchemaRoot⌿data -> 
+	Opt(TypeRef(⌿definitions⌿ModelSchemaRoot⌿data⌿Opt))
+⌿definitions⌿Pet⌿id -> 
+	Opt(Lng)
+⌿definitions⌿ModelSchemaRoot⌿links -> 
+	Opt(TypeRef(⌿definitions⌿ModelSchemaRoot⌿links⌿Opt))
+⌿definitions⌿Pet⌿tags -> 
+	Opt(TypeRef(⌿definitions⌿Pet⌿tags⌿Opt))
+⌿definitions⌿Pet⌿photoUrls -> 
+	ArrResult(Str)
+⌿definitions⌿ModelSchema⌿lengthRegister -> 
+	Opt(Str)
+⌿definitions⌿ModelSchema⌿ageGroups -> 
+	Arr(Str)
+⌿definitions⌿Pet⌿category -> 
+	Opt(TypeRef(⌿definitions⌿Pet⌿category⌿Opt))
+⌿definitions⌿ModelSchemaRoot⌿meta -> 
+	Opt(TypeRef(⌿definitions⌿ModelSchemaRoot⌿meta⌿Opt))
+⌿definitions⌿ModelSchema⌿specialDescriptions⌿Opt -> 
+	Arr(Str)
+⌿definitions⌿Pet⌿category⌿Opt -> 
+	TypeDef(⌿definitions⌿Category, Seq(
+		Field(⌿definitions⌿Category⌿id, TypeRef(⌿definitions⌿Pet⌿id)), 
+		Field(⌿definitions⌿Category⌿name, TypeRef(⌿definitions⌿Meta⌿copyright))))
+⌿definitions⌿ModelSchemaRoot⌿data⌿Opt -> 
+	TypeDef(⌿definitions⌿ModelSchema, Seq(
+		Field(⌿definitions⌿ModelSchema⌿name, Str), 
+		Field(⌿definitions⌿ModelSchema⌿sizeRegister, Str), 
+		Field(⌿definitions⌿ModelSchema⌿brand, Str), 
+		Field(⌿definitions⌿ModelSchema⌿partnerArticleModelId, Intgr), 
+		Field(⌿definitions⌿ModelSchema⌿silhouetteId, Str), 
+		Field(⌿definitions⌿ModelSchema⌿description, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿ModelSchema⌿ageGroups, TypeRef(⌿definitions⌿ModelSchema⌿ageGroups)), 
+		Field(⌿definitions⌿ModelSchema⌿keywords, TypeRef(⌿definitions⌿ModelSchema⌿keywords)), 
+		Field(⌿definitions⌿ModelSchema⌿lengthRegister, TypeRef(⌿definitions⌿ModelSchema⌿lengthRegister)), 
+		Field(⌿definitions⌿ModelSchema⌿specialDescriptions, TypeRef(⌿definitions⌿ModelSchema⌿specialDescriptions)), 
+		Field(⌿definitions⌿ModelSchema⌿articleModelAttributes, TypeRef(⌿definitions⌿ModelSchema⌿specialDescriptions))))
+⌿definitions⌿ModelSchemaRoot⌿meta⌿Opt -> 
+	TypeDef(⌿definitions⌿Meta, Seq(
+		Field(⌿definitions⌿Meta⌿copyright, TypeRef(⌿definitions⌿Meta⌿copyright))))
+⌿paths⌿/⌿post⌿root -> 
+	TypeDef(⌿definitions⌿ModelSchemaRoot, Seq(
+		Field(⌿definitions⌿ModelSchemaRoot⌿data, TypeRef(⌿definitions⌿ModelSchemaRoot⌿data)), 
+		Field(⌿definitions⌿ModelSchemaRoot⌿meta, TypeRef(⌿definitions⌿ModelSchemaRoot⌿meta)), 
+		Field(⌿definitions⌿ModelSchemaRoot⌿links, TypeRef(⌿definitions⌿ModelSchemaRoot⌿links))))
+⌿definitions⌿ModelSchemaRoot⌿links⌿Opt -> 
+	TypeDef(⌿definitions⌿Links, Seq(
+		Field(⌿definitions⌿Links⌿self, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿Links⌿related, TypeRef(⌿definitions⌿Meta⌿copyright))))
+⌿definitions⌿Pet⌿tags⌿Opt -> 
+	ArrResult(TypeRef(⌿definitions⌿Pet⌿category⌿Opt))
+⌿paths⌿/⌿post⌿responses⌿200 -> 
+	TypeDef(⌿definitions⌿Pet, Seq(
+		Field(⌿definitions⌿Pet⌿name, Str), 
+		Field(⌿definitions⌿Pet⌿tags, TypeRef(⌿definitions⌿Pet⌿tags)), 
+		Field(⌿definitions⌿Pet⌿photoUrls, TypeRef(⌿definitions⌿Pet⌿photoUrls)), 
+		Field(⌿definitions⌿Pet⌿id, TypeRef(⌿definitions⌿Pet⌿id)), 
+		Field(⌿definitions⌿Pet⌿status, TypeRef(⌿definitions⌿Meta⌿copyright)), 
+		Field(⌿definitions⌿Pet⌿category, TypeRef(⌿definitions⌿Pet⌿category))))
+-- params --
+
+⌿paths⌿/⌿post⌿root -> Parameter(root,TypeRef(⌿paths⌿/⌿post⌿root),None,None,.+,false,body)

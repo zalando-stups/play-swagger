@@ -34,7 +34,7 @@ trait ClassesStep extends EnrichmentStep[Type] {
       "fields" -> typeFields(table, k).map { f =>
         Map(
           "name" -> escape(f.name.simple),
-          "type_name" -> typeNameDenotation(table, f.tpe.name)
+          TYPE_NAME -> typeNameDenotation(table, f.tpe.name)
         )
       },
       "imports" -> t.imports

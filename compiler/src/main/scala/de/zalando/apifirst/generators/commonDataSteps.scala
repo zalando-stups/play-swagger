@@ -81,6 +81,7 @@ trait CommonData {
     case TypeRef(ref) =>
       app.findType(ref) match {
         case p: PrimitiveType => useType(p.name, suffix, "")
+        case d: TypeDef => useType(d.name, suffix, "")
         case _ => useType(ref, suffix, "")
       }
     case p: PrimitiveType => useType(t.name, suffix, "")
