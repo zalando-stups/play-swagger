@@ -12,18 +12,19 @@ import PlayValidations._
 import scala.util._
 
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package basic.auth.api.yaml {
 
     class BasicAuthApiYaml extends BasicAuthApiYamlBase {
-        val get = getAction { _ =>
-            
-            
-
+        val get = getAction {  _ =>  
+            // ----- Start of unmanaged code area for action  BasicAuthApiYaml.get
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getAction
+            // ----- End of unmanaged code area for action  BasicAuthApiYaml.get
+        }
+    
     }
 }
