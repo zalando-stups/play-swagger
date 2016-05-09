@@ -12,19 +12,20 @@ import PlayValidations._
 import scala.util._
 
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package echo {
 
     class EchoHandler extends EchoHandlerBase {
-        val method = methodAction { _ =>
-            
-            
-
+        val method = methodAction {  _ =>  
+            // ----- Start of unmanaged code area for action  EchoHandler.method
             Failure(???)
-
-            
-
-        } //////// EOF ////////  methodAction
+            // ----- End of unmanaged code area for action  EchoHandler.method
+        }
+    
     }
 }
 package echo {
@@ -32,21 +33,15 @@ package echo {
     class EchoApiYaml extends EchoApiYamlBase {
         val post = postAction { input: (PostName, PostName) =>
             val (name, year) = input
-            
-
+            // ----- Start of unmanaged code area for action  EchoApiYaml.post
             Failure(???)
-
-            
-
-        } //////// EOF ////////  postAction
-        val gettest_pathById = gettest_pathByIdAction { (id: String) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  EchoApiYaml.post
+        }
+        val gettest_pathById = gettest_pathByIdAction { (id: String) =>  
+            // ----- Start of unmanaged code area for action  EchoApiYaml.gettest_pathById
             Failure(???)
-
-            
-
-        } //////// EOF ////////  gettest_pathByIdAction
+            // ----- End of unmanaged code area for action  EchoApiYaml.gettest_pathById
+        }
+    
     }
 }

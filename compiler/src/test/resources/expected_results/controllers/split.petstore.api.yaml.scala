@@ -11,174 +11,109 @@ import PlayValidations._
 
 import scala.util._
 
-import de.zalando.play.controllers.ArrayWrapper
-import org.joda.time.DateTime
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package split.petstore.api.yaml {
 
     class SplitPetstoreApiYaml extends SplitPetstoreApiYamlBase {
-        val findPetsByTags = findPetsByTagsAction { (tags: PetsFindByStatusGetStatus) =>
-            
-            
-
+        val findPetsByTags = findPetsByTagsAction { (tags: PetsFindByStatusGetStatus) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.findPetsByTags
             Failure(???)
-
-            
-
-        } //////// EOF ////////  findPetsByTagsAction
-        val placeOrder = placeOrderAction { (body: StoresOrderPostBody) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.findPetsByTags
+        }
+        val placeOrder = placeOrderAction { (body: StoresOrderPostBody) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.placeOrder
             Failure(???)
-
-            
-
-        } //////// EOF ////////  placeOrderAction
-        val createUser = createUserAction { (body: UsersUsernamePutBody) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.placeOrder
+        }
+        val createUser = createUserAction { (body: UsersUsernamePutBody) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.createUser
             Failure(???)
-
-            
-
-        } //////// EOF ////////  createUserAction
-        val createUsersWithListInput = createUsersWithListInputAction { (body: UsersCreateWithListPostBody) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.createUser
+        }
+        val createUsersWithListInput = createUsersWithListInputAction { (body: UsersCreateWithListPostBody) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.createUsersWithListInput
             Failure(???)
-
-            
-
-        } //////// EOF ////////  createUsersWithListInputAction
-        val getUserByName = getUserByNameAction { (username: String) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.createUsersWithListInput
+        }
+        val getUserByName = getUserByNameAction { (username: String) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.getUserByName
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getUserByNameAction
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.getUserByName
+        }
         val updateUser = updateUserAction { input: (String, UsersUsernamePutBody) =>
             val (username, body) = input
-            
-
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.updateUser
             Failure(???)
-
-            
-
-        } //////// EOF ////////  updateUserAction
-        val deleteUser = deleteUserAction { (username: String) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.updateUser
+        }
+        val deleteUser = deleteUserAction { (username: String) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.deleteUser
             Failure(???)
-
-            
-
-        } //////// EOF ////////  deleteUserAction
-        val updatePet = updatePetAction { (body: PetsPostBody) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.deleteUser
+        }
+        val updatePet = updatePetAction { (body: PetsPostBody) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.updatePet
             Failure(???)
-
-            
-
-        } //////// EOF ////////  updatePetAction
-        val addPet = addPetAction { (body: PetsPostBody) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.updatePet
+        }
+        val addPet = addPetAction { (body: PetsPostBody) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.addPet
             Failure(???)
-
-            
-
-        } //////// EOF ////////  addPetAction
-        val createUsersWithArrayInput = createUsersWithArrayInputAction { (body: UsersCreateWithListPostBody) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.addPet
+        }
+        val createUsersWithArrayInput = createUsersWithArrayInputAction { (body: UsersCreateWithListPostBody) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.createUsersWithArrayInput
             Failure(???)
-
-            
-
-        } //////// EOF ////////  createUsersWithArrayInputAction
-        val getOrderById = getOrderByIdAction { (orderId: String) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.createUsersWithArrayInput
+        }
+        val getOrderById = getOrderByIdAction { (orderId: String) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.getOrderById
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getOrderByIdAction
-        val deleteOrder = deleteOrderAction { (orderId: String) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.getOrderById
+        }
+        val deleteOrder = deleteOrderAction { (orderId: String) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.deleteOrder
             Failure(???)
-
-            
-
-        } //////// EOF ////////  deleteOrderAction
-        val logoutUser = logoutUserAction { _ =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.deleteOrder
+        }
+        val logoutUser = logoutUserAction {  _ =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.logoutUser
             Failure(???)
-
-            
-
-        } //////// EOF ////////  logoutUserAction
-        val getPetById = getPetByIdAction { (petId: Long) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.logoutUser
+        }
+        val getPetById = getPetByIdAction { (petId: Long) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.getPetById
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getPetByIdAction
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.getPetById
+        }
         val updatePetWithForm = updatePetWithFormAction { input: (String, String, String) =>
             val (petId, name, status) = input
-            
-
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.updatePetWithForm
             Failure(???)
-
-            
-
-        } //////// EOF ////////  updatePetWithFormAction
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.updatePetWithForm
+        }
         val deletePet = deletePetAction { input: (String, Long) =>
             val (api_key, petId) = input
-            
-
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.deletePet
             Failure(???)
-
-            
-
-        } //////// EOF ////////  deletePetAction
-        val findPetsByStatus = findPetsByStatusAction { (status: PetsFindByStatusGetStatus) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.deletePet
+        }
+        val findPetsByStatus = findPetsByStatusAction { (status: PetsFindByStatusGetStatus) =>  
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.findPetsByStatus
             Failure(???)
-
-            
-
-        } //////// EOF ////////  findPetsByStatusAction
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.findPetsByStatus
+        }
         val loginUser = loginUserAction { input: (OrderStatus, OrderStatus) =>
             val (username, password) = input
-            
-
+            // ----- Start of unmanaged code area for action  SplitPetstoreApiYaml.loginUser
             Failure(???)
-
-            
-
-        } //////// EOF ////////  loginUserAction
+            // ----- End of unmanaged code area for action  SplitPetstoreApiYaml.loginUser
+        }
+    
     }
 }

@@ -12,18 +12,19 @@ import PlayValidations._
 import scala.util._
 
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package admin {
 
     class Dashboard extends DashboardBase {
-        val index = indexAction { _ =>
-            
-            
-
+        val index = indexAction {  _ =>  
+            // ----- Start of unmanaged code area for action  Dashboard.index
             Failure(???)
-
-            
-
-        } //////// EOF ////////  indexAction
+            // ----- End of unmanaged code area for action  Dashboard.index
+        }
+    
     }
 }

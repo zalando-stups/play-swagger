@@ -11,20 +11,20 @@ import PlayValidations._
 
 import scala.util._
 
-import de.zalando.play.controllers.ArrayWrapper
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package error_in_array.yaml {
 
     class Error_in_arrayYaml extends Error_in_arrayYamlBase {
-        val getschemaModel = getschemaModelAction { (root: ModelSchemaRoot) =>
-            
-            
-
+        val getschemaModel = getschemaModelAction { (root: ModelSchemaRoot) =>  
+            // ----- Start of unmanaged code area for action  Error_in_arrayYaml.getschemaModel
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getschemaModelAction
+            // ----- End of unmanaged code area for action  Error_in_arrayYaml.getschemaModel
+        }
+    
     }
 }

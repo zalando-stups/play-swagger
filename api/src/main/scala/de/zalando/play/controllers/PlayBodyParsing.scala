@@ -32,10 +32,10 @@ object WriterFactories {
     * Contains proper Jackson Factories for different mime types
     * JsonFactory is a default
     */
-  val factories = Map(
+  val factories: Map[String, JsonFactory] = Map(
     "application/json" -> jsonFactory,
     "text/x-yaml" -> new YAMLFactory() // TODO implement workaround for bug in yaml parser
-  )
+  ).withDefaultValue(jsonFactory)
 }
 object PlayBodyParsing extends PlayBodyParsing {
 
