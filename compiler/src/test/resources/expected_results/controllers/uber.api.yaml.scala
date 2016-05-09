@@ -11,56 +11,44 @@ import PlayValidations._
 
 import scala.util._
 
-import de.zalando.play.controllers.ArrayWrapper
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package uber.api.yaml {
 
     class UberApiYaml extends UberApiYamlBase {
-        val getme = getmeAction { _ =>
-            
-            
-
+        val getme = getmeAction {  _ =>  
+            // ----- Start of unmanaged code area for action  UberApiYaml.getme
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getmeAction
+            // ----- End of unmanaged code area for action  UberApiYaml.getme
+        }
         val getproducts = getproductsAction { input: (Double, Double) =>
             val (latitude, longitude) = input
-            
-
+            // ----- Start of unmanaged code area for action  UberApiYaml.getproducts
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getproductsAction
+            // ----- End of unmanaged code area for action  UberApiYaml.getproducts
+        }
         val getestimatesTime = getestimatesTimeAction { input: (Double, Double, ProfilePicture, ProfilePicture) =>
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
-            
-
+            // ----- Start of unmanaged code area for action  UberApiYaml.getestimatesTime
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getestimatesTimeAction
+            // ----- End of unmanaged code area for action  UberApiYaml.getestimatesTime
+        }
         val getestimatesPrice = getestimatesPriceAction { input: (Double, Double, Double, Double) =>
             val (start_latitude, start_longitude, end_latitude, end_longitude) = input
-            
-
+            // ----- Start of unmanaged code area for action  UberApiYaml.getestimatesPrice
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getestimatesPriceAction
+            // ----- End of unmanaged code area for action  UberApiYaml.getestimatesPrice
+        }
         val gethistory = gethistoryAction { input: (ErrorCode, ErrorCode) =>
             val (offset, limit) = input
-            
-
+            // ----- Start of unmanaged code area for action  UberApiYaml.gethistory
             Failure(???)
-
-            
-
-        } //////// EOF ////////  gethistoryAction
+            // ----- End of unmanaged code area for action  UberApiYaml.gethistory
+        }
+    
     }
 }

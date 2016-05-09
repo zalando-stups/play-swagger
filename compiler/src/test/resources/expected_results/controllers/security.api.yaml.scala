@@ -11,20 +11,20 @@ import PlayValidations._
 
 import scala.util._
 
-import de.zalando.play.controllers.ArrayWrapper
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package security.api.yaml {
 
     class SecurityApiYaml extends SecurityApiYamlBase {
-        val getPetsById = getPetsByIdAction { (id: PetsIdGetId) =>
-            
-            
-
+        val getPetsById = getPetsByIdAction { (id: PetsIdGetId) =>  
+            // ----- Start of unmanaged code area for action  SecurityApiYaml.getPetsById
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getPetsByIdAction
+            // ----- End of unmanaged code area for action  SecurityApiYaml.getPetsById
+        }
+    
     }
 }

@@ -12,35 +12,30 @@ import PlayValidations._
 import scala.util._
 
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
+
 package expanded {
 
     class Expanded_polymorphismYaml extends Expanded_polymorphismYamlBase {
         val findPets = findPetsAction { input: (PetsGetTags, PetsGetLimit) =>
             val (tags, limit) = input
-            
-
+            // ----- Start of unmanaged code area for action  Expanded_polymorphismYaml.findPets
             Failure(???)
-
-            
-
-        } //////// EOF ////////  findPetsAction
-        val addPet = addPetAction { (pet: NewPet) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  Expanded_polymorphismYaml.findPets
+        }
+        val addPet = addPetAction { (pet: NewPet) =>  
+            // ----- Start of unmanaged code area for action  Expanded_polymorphismYaml.addPet
             Failure(???)
-
-            
-
-        } //////// EOF ////////  addPetAction
-        val deletePet = deletePetAction { (id: Long) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  Expanded_polymorphismYaml.addPet
+        }
+        val deletePet = deletePetAction { (id: Long) =>  
+            // ----- Start of unmanaged code area for action  Expanded_polymorphismYaml.deletePet
             Failure(???)
-
-            
-
-        } //////// EOF ////////  deletePetAction
+            // ----- End of unmanaged code area for action  Expanded_polymorphismYaml.deletePet
+        }
+    
     }
 }

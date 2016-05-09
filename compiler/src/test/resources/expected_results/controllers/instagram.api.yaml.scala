@@ -12,243 +12,154 @@ import PlayValidations._
 import scala.util._
 
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package instagram.api.yaml {
 
     class InstagramApiYaml extends InstagramApiYamlBase {
-        val getmediaByMedia_idLikes = getmediaByMedia_idLikesAction { (media_id: Int) =>
-            
-            
-
+        val getmediaByMedia_idLikes = getmediaByMedia_idLikesAction { (media_id: Int) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getmediaByMedia_idLikes
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getmediaByMedia_idLikesAction
-        val postmediaByMedia_idLikes = postmediaByMedia_idLikesAction { (media_id: Int) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getmediaByMedia_idLikes
+        }
+        val postmediaByMedia_idLikes = postmediaByMedia_idLikesAction { (media_id: Int) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.postmediaByMedia_idLikes
             Failure(???)
-
-            
-
-        } //////// EOF ////////  postmediaByMedia_idLikesAction
-        val deletemediaByMedia_idLikes = deletemediaByMedia_idLikesAction { (media_id: Int) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.postmediaByMedia_idLikes
+        }
+        val deletemediaByMedia_idLikes = deletemediaByMedia_idLikesAction { (media_id: Int) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.deletemediaByMedia_idLikes
             Failure(???)
-
-            
-
-        } //////// EOF ////////  deletemediaByMedia_idLikesAction
-        val getusersByUser_idFollows = getusersByUser_idFollowsAction { (user_id: Double) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.deletemediaByMedia_idLikes
+        }
+        val getusersByUser_idFollows = getusersByUser_idFollowsAction { (user_id: Double) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getusersByUser_idFollows
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getusersByUser_idFollowsAction
-        val getlocationsByLocation_id = getlocationsByLocation_idAction { (location_id: Int) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getusersByUser_idFollows
+        }
+        val getlocationsByLocation_id = getlocationsByLocation_idAction { (location_id: Int) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getlocationsByLocation_id
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getlocationsByLocation_idAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getlocationsByLocation_id
+        }
         val getusersSearch = getusersSearchAction { input: (String, MediaFilter) =>
             val (q, count) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getusersSearch
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getusersSearchAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getusersSearch
+        }
         val getusersSelfMediaLiked = getusersSelfMediaLikedAction { input: (MediaId, MediaId) =>
             val (count, max_like_id) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getusersSelfMediaLiked
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getusersSelfMediaLikedAction
-        val gettagsByTag_name = gettagsByTag_nameAction { (tag_name: String) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getusersSelfMediaLiked
+        }
+        val gettagsByTag_name = gettagsByTag_nameAction { (tag_name: String) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.gettagsByTag_name
             Failure(???)
-
-            
-
-        } //////// EOF ////////  gettagsByTag_nameAction
-        val gettagsSearch = gettagsSearchAction { (q: MediaFilter) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.gettagsByTag_name
+        }
+        val gettagsSearch = gettagsSearchAction { (q: MediaFilter) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.gettagsSearch
             Failure(???)
-
-            
-
-        } //////// EOF ////////  gettagsSearchAction
-        val getusersByUser_idFollowed_by = getusersByUser_idFollowed_byAction { (user_id: Double) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.gettagsSearch
+        }
+        val getusersByUser_idFollowed_by = getusersByUser_idFollowed_byAction { (user_id: Double) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getusersByUser_idFollowed_by
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getusersByUser_idFollowed_byAction
-        val getmediaByMedia_idComments = getmediaByMedia_idCommentsAction { (media_id: Int) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getusersByUser_idFollowed_by
+        }
+        val getmediaByMedia_idComments = getmediaByMedia_idCommentsAction { (media_id: Int) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getmediaByMedia_idComments
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getmediaByMedia_idCommentsAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getmediaByMedia_idComments
+        }
         val postmediaByMedia_idComments = postmediaByMedia_idCommentsAction { input: (Int, LocationLatitude) =>
             val (media_id, tEXT) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.postmediaByMedia_idComments
             Failure(???)
-
-            
-
-        } //////// EOF ////////  postmediaByMedia_idCommentsAction
-        val deletemediaByMedia_idComments = deletemediaByMedia_idCommentsAction { (media_id: Int) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.postmediaByMedia_idComments
+        }
+        val deletemediaByMedia_idComments = deletemediaByMedia_idCommentsAction { (media_id: Int) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.deletemediaByMedia_idComments
             Failure(???)
-
-            
-
-        } //////// EOF ////////  deletemediaByMedia_idCommentsAction
-        val gettagsByTag_nameMediaRecent = gettagsByTag_nameMediaRecentAction { (tag_name: String) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.deletemediaByMedia_idComments
+        }
+        val gettagsByTag_nameMediaRecent = gettagsByTag_nameMediaRecentAction { (tag_name: String) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.gettagsByTag_nameMediaRecent
             Failure(???)
-
-            
-
-        } //////// EOF ////////  gettagsByTag_nameMediaRecentAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.gettagsByTag_nameMediaRecent
+        }
         val postusersByUser_idRelationship = postusersByUser_idRelationshipAction { input: (Double, UsersUser_idRelationshipPostAction) =>
             val (user_id, action) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.postusersByUser_idRelationship
             Failure(???)
-
-            
-
-        } //////// EOF ////////  postusersByUser_idRelationshipAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.postusersByUser_idRelationship
+        }
         val getusersSelfFeed = getusersSelfFeedAction { input: (MediaId, MediaId, MediaId) =>
             val (count, max_id, min_id) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getusersSelfFeed
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getusersSelfFeedAction
-        val getusersByUser_id = getusersByUser_idAction { (user_id: Double) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getusersSelfFeed
+        }
+        val getusersByUser_id = getusersByUser_idAction { (user_id: Double) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getusersByUser_id
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getusersByUser_idAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getusersByUser_id
+        }
         val getmediaSearch = getmediaSearchAction { input: (MediaId, Int, LocationLatitude, MediaId, LocationLatitude) =>
             val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getmediaSearch
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getmediaSearchAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getmediaSearch
+        }
         val getgeographiesByGeo_idMediaRecent = getgeographiesByGeo_idMediaRecentAction { input: (Int, MediaId, MediaId) =>
             val (geo_id, count, min_id) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getgeographiesByGeo_idMediaRecent
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getgeographiesByGeo_idMediaRecentAction
-        val getmediaByShortcode = getmediaByShortcodeAction { (shortcode: String) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getgeographiesByGeo_idMediaRecent
+        }
+        val getmediaByShortcode = getmediaByShortcodeAction { (shortcode: String) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getmediaByShortcode
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getmediaByShortcodeAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getmediaByShortcode
+        }
         val getlocationsSearch = getlocationsSearchAction { input: (MediaId, MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude) =>
             val (foursquare_v2_id, facebook_places_id, distance, lat, foursquare_id, lng) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getlocationsSearch
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getlocationsSearchAction
-        val getusersSelfRequested_by = getusersSelfRequested_byAction { _ =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getlocationsSearch
+        }
+        val getusersSelfRequested_by = getusersSelfRequested_byAction {  _ =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getusersSelfRequested_by
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getusersSelfRequested_byAction
-        val getmediaByMedia_id = getmediaByMedia_idAction { (media_id: Int) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getusersSelfRequested_by
+        }
+        val getmediaByMedia_id = getmediaByMedia_idAction { (media_id: Int) =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getmediaByMedia_id
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getmediaByMedia_idAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getmediaByMedia_id
+        }
         val getlocationsByLocation_idMediaRecent = getlocationsByLocation_idMediaRecentAction { input: (Int, MediaId, MediaId, MediaFilter, MediaFilter) =>
             val (location_id, max_timestamp, min_timestamp, min_id, max_id) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getlocationsByLocation_idMediaRecent
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getlocationsByLocation_idMediaRecentAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getlocationsByLocation_idMediaRecent
+        }
         val getusersByUser_idMediaRecent = getusersByUser_idMediaRecentAction { input: (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId) =>
             val (user_id, max_timestamp, min_id, min_timestamp, max_id, count) = input
-            
-
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getusersByUser_idMediaRecent
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getusersByUser_idMediaRecentAction
-        val getmediaPopular = getmediaPopularAction { _ =>
-            
-            
-
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getusersByUser_idMediaRecent
+        }
+        val getmediaPopular = getmediaPopularAction {  _ =>  
+            // ----- Start of unmanaged code area for action  InstagramApiYaml.getmediaPopular
             Failure(???)
-
-            
-
-        } //////// EOF ////////  getmediaPopularAction
+            // ----- End of unmanaged code area for action  InstagramApiYaml.getmediaPopular
+        }
+    
     }
 }
