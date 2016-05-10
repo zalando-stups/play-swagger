@@ -16,7 +16,7 @@ import scala.language.implicitConversions
 class AstScalaPlayEnricherTest extends FunSpec with MustMatchers {
 
   implicit def types2model(types: TypeLookupTable): StrictModel =
-    StrictModel.apply(Nil, types, Map.empty, Map.empty, "", None, Map.empty)
+    StrictModel.apply(Nil, types, Map.empty, Map.empty, "", None, Map.empty, Map.empty)
 
   describe("AstScalaPlayEnricher") {
     it("should generate nothing for empty model") {
@@ -58,7 +58,7 @@ class AstScalaPlayEnricherTest extends FunSpec with MustMatchers {
       val discriminators: DiscriminatorLookupTable = Map(
         "definitions" / "Pet" -> "definitions" / "Pet" / "petType"
       )
-      val strictModel = StrictModel(Nil, model, Map.empty, discriminators, "", None, Map.empty)
+      val strictModel = StrictModel(Nil, model, Map.empty, discriminators, "", None, Map.empty, Map.empty)
 
       val result = AstScalaPlayEnricher(strictModel)
 

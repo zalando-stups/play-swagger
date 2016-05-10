@@ -28,6 +28,14 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/Activity"
+      responses:
+        200:
+          description: |
+            Schema representing sales channel and merchant
+            specific structure and valid values for models to create articles with.
+  /another:
+    post:
+      parameters:
         - name: example
           in: body
           required: false
@@ -38,7 +46,6 @@ paths:
           description: |
             Schema representing sales channel and merchant
             specific structure and valid values for models to create articles with.
-
 definitions:
   Activity:
     type: object

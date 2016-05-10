@@ -44,9 +44,9 @@ object Generators {
     } yield keys.zip(values).toMap
     {{/if}}
     {{if date_part}}
-    implicit lazy val arbDateMidnight: Arbitrary[DateMidnight] = Arbitrary(for {
+    implicit lazy val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(for {
         l <- arbitrary[Long]
-    } yield new DateMidnight(System.currentTimeMillis + l))
+    } yield new LocalDate(System.currentTimeMillis + l))
     {{/if}}
     {{if date_time_part}}
     implicit lazy val arbDateTime: Arbitrary[DateTime] = Arbitrary(for {
@@ -62,5 +62,10 @@ object Generators {
     implicit lazy val arbBase64String: Arbitrary[Base64String] = Arbitrary(for {
         s <- arbitrary[String]
     } yield Base64String.string2base64string(s))
+    {{/if}}
+    {{if file_part}}
+    implicit lazy val arbFile: Arbitrary[File] = Arbitrary(for {
+        content <- arbitrary[String]
+    } yield de.zalando.play.controllers.PlayPathBindables.tempFileFromString(content))
     {{/if}}
 }

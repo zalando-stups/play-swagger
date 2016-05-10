@@ -3,7 +3,7 @@ package simple.petstore.api.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -34,7 +34,8 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
             anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength)
         }
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser(Seq[String]("application/json"))) { request =>
+    val addPetActionConstructor  = Action
+    def addPetAction = (f: addPetActionType) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
@@ -42,6 +43,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Pet]
             ).withDefaultValue(anyToWritable[ErrorModel])
             val pet = request.body
+            
             
 
                 val result =
@@ -52,6 +54,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -85,13 +88,15 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val errorToStatusmethodLevel: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def methodLevelAction = (f: methodLevelActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action { request =>
+    val methodLevelActionConstructor  = Action
+    def methodLevelAction = (f: methodLevelActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => methodLevelActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml", "text/xml", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { methodLevelResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Pet]]
             ).withDefaultValue(anyToWritable[ErrorModel])
+            
             
 
                 val result =
@@ -102,6 +107,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -132,13 +138,15 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val errorToStatuspathLevelGet: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def pathLevelGetAction = (f: pathLevelGetActionType) => (id: Long) => Action { request =>
+    val pathLevelGetActionConstructor  = Action
+    def pathLevelGetAction = (f: pathLevelGetActionType) => (id: Long) => pathLevelGetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml", "text/xml", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { pathLevelGetResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Pet]
             ).withDefaultValue(anyToWritable[ErrorModel])
+            
             
 
                 val result =
@@ -149,6 +157,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -179,13 +188,15 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val errorToStatuspathLevelDelete: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def pathLevelDeleteAction = (f: pathLevelDeleteActionType) => (id: Long) => Action { request =>
+    val pathLevelDeleteActionConstructor  = Action
+    def pathLevelDeleteAction = (f: pathLevelDeleteActionType) => (id: Long) => pathLevelDeleteActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { pathLevelDeleteResponseMimeType =>
                 val possibleWriters = Map(
                     204 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[ErrorModel])
+            
             
 
                 val result =
@@ -196,6 +207,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

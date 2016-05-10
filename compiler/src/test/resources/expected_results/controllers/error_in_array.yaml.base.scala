@@ -3,7 +3,7 @@ package error_in_array.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -32,7 +32,8 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
             anyParser[ModelSchemaRoot](bodyMimeType, customParsers, "Invalid ModelSchemaRoot", maxLength)
         }
 
-    def getschemaModelAction = (f: getschemaModelActionType) => Action(getschemaModelParser(Seq[String]())) { request =>
+    val getschemaModelActionConstructor  = Action
+    def getschemaModelAction = (f: getschemaModelActionType) => getschemaModelActionConstructor(getschemaModelParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getschemaModelResponseMimeType =>
@@ -40,6 +41,7 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[ModelSchemaRoot]
             )
             val root = request.body
+            
             
 
                 val result =
@@ -50,6 +52,7 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

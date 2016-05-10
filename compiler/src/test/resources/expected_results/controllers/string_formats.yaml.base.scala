@@ -3,7 +3,7 @@ package string_formats.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.Base64String
@@ -11,15 +11,9 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
-import org.joda.time.DateMidnight
+import org.joda.time.LocalDate
 
 import de.zalando.play.controllers.PlayPathBindables
-
-import PlayPathBindables.queryBindableBase64String
-
-import PlayPathBindables.queryBindableDateTime
-
-import PlayPathBindables.queryBindableDateMidnight
 
 
 
@@ -45,7 +39,8 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
             anyParser[BinaryString](bodyMimeType, customParsers, "Invalid BinaryString", maxLength)
         }
 
-    def getAction = (f: getActionType) => (base64: GetBase64, date: GetDate, date_time: GetDate_time) => Action(getParser(Seq[String]())) { request =>
+    val getActionConstructor  = Action
+    def getAction = (f: getActionType) => (base64: GetBase64, date: GetDate, date_time: GetDate_time) => getActionConstructor(getParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/yaml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
@@ -53,6 +48,7 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             val petId = request.body
+            
             
 
                 val result =
@@ -63,6 +59,7 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

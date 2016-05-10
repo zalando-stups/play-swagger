@@ -1,10 +1,14 @@
 package de.zalando.apifirst
 
+import java.net.URL
+
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.apifirst.Hypermedia.{State, StateTransitionsTable}
 import de.zalando.apifirst.naming.{Path, Reference, TypeName}
+import de.zalando.apifirst.ParameterPlace.ParameterPlace
+import de.zalando.apifirst.naming.{ Path, Reference, TypeName }
 
-import scala.language.{implicitConversions, postfixOps}
+import scala.language.{ implicitConversions, postfixOps }
 import scala.util.parsing.input.Positional
 
 sealed trait Expr
@@ -38,8 +42,20 @@ object Http {
 
   case object LdJson extends MimeType("application/ld+json")
 
+  case object ApplicationFormUrlEncoded extends MimeType("application/x-www-form-urlencoded")
+
+  case object MultipartFormData extends MimeType("multipart/form-data")
+
   case class Body(value: Option[String]) extends Expr
 
+  object MimeType {
+    def apply(name: String): MimeType = name.toLowerCase match {
+      case ApplicationFormUrlEncoded.name => ApplicationFormUrlEncoded
+      case MultipartFormData.name => MultipartFormData
+      case ApplicationJson.name => ApplicationJson
+      case other => new MimeType(other)
+    }
+  }
 }
 
 object Hypermedia {
@@ -93,7 +109,7 @@ object Domain {
   type ModelDefinition = Iterable[Domain.Type]
 
   case class TypeMeta(comment: Option[String], constraints: Seq[String]) {
-    override def toString = s"""TypeMeta($escapedComment, $constraints)"""
+    override def toString: String = s"""TypeMeta($escapedComment, $constraints)"""
 
     val escapedComment = comment match {
       case None => "None"
@@ -138,8 +154,8 @@ object Domain {
 
   case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta) with PrimitiveType
 
-  case class Date(override val meta: TypeMeta) extends ProvidedType("DateMidnight", meta)  with PrimitiveType {
-    override val imports = Set("org.joda.time.DateMidnight")
+  case class Date(override val meta: TypeMeta) extends ProvidedType("LocalDate", meta) with PrimitiveType {
+    override val imports = Set("org.joda.time.LocalDate")
   }
 
   case class DateTime(override val meta: TypeMeta) extends ProvidedType("DateTime", meta)  with PrimitiveType {
@@ -256,11 +272,44 @@ object Domain {
 
 case object ParameterPlace extends Enumeration {
   type ParameterPlace = Value
-  val PATH    = Value("path")
-  val BODY    = Value("body")
-  val FORM    = Value("formData")
-  val QUERY   = Value("query")
-  val HEADER  = Value("header")
+  val PATH = Value("path")
+  val BODY = Value("body")
+  val FORM = Value("formData")
+  val QUERY = Value("query")
+  val HEADER = Value("header")
+}
+
+object Security {
+  type OAuth2Scopes = Map[String, String]
+  sealed trait Definition {
+    def description: Option[String]
+  }
+  case class Basic(description: Option[String]) extends Definition
+  case class ApiKey(description: Option[String], name: String, in: ParameterPlace) extends Definition {
+    require(in == ParameterPlace.QUERY || in == ParameterPlace.HEADER)
+    require(name.nonEmpty)
+  }
+  case class OAuth2Definition(description: Option[String], validationURL: Option[URL],
+      scopes: OAuth2Scopes) extends Definition {
+    require(validationURL != null)
+  }
+
+  sealed trait Constraint {
+    def name: String
+    def definition: Definition
+  }
+  case class BasicConstraint(name: String, definition: Definition) extends Constraint
+  case class ApiKeyConstraint(name: String, definition: Definition) extends Constraint
+  case class OAuth2Constraint(name: String, definition: OAuth2Definition, scopes: Set[String]) extends Constraint {
+    require(scopes.forall(definition.scopes.keySet.contains))
+  }
+  object Constraint {
+    def fromDefinition(name: String, definition: Definition, scopes: Set[String]): Constraint = definition match {
+      case b: Basic => BasicConstraint(name, b)
+      case a: ApiKey => ApiKeyConstraint(name, a)
+      case o: OAuth2Definition => OAuth2Constraint(name, o, scopes)
+    }
+  }
 }
 
 object Application {
@@ -270,22 +319,20 @@ object Application {
   }
 
   case class Parameter(
-    name:             String,
-    typeName:         Domain.Type,
-    fixed:            Option[String],
-    default:          Option[String],
-    constraint:       String,
-    encode:           Boolean,
-    place:            ParameterPlace.Value
-  ) extends Expr with Positional
+    name: String,
+    typeName: Domain.Type,
+    fixed: Option[String],
+    default: Option[String],
+    constraint: String,
+    encode: Boolean,
+    place: ParameterPlace.Value) extends Expr with Positional
 
   case class HandlerCall(
-    packageName:      String,
-    controller:       String,
-    instantiate:      Boolean,
-    method:           String,
-    parameters:       Seq[ParameterRef]
-  )
+    packageName: String,
+    controller: String,
+    instantiate: Boolean,
+    method: String,
+    parameters: Seq[ParameterRef])
 
   abstract class ResponseInfo[T] {
     def results: Map[Int, T]
@@ -303,22 +350,25 @@ object Application {
     mimeOut:          Set[MimeType],  // can be empty for swagger specification
     errorMapping:     Map[String, Seq[Class[Exception]]], // can be empty for swagger specification
     resultTypes:      TypesResponseInfo,
-    targetStates:     StateResponseInfo
-  ) {
+    targetStates:     StateResponseInfo,
+    security: Set[Security.Constraint] = Set.empty) {
     def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
 
-  type ParameterLookupTable     = Map[ParameterRef, Parameter]
-  type TypeLookupTable          = Map[Reference, Domain.Type]
+  type ParameterLookupTable = Map[ParameterRef, Parameter]
+  type TypeLookupTable = Map[Reference, Domain.Type]
   type DiscriminatorLookupTable = Map[Reference, Reference]
 
+  type SecurityDefinitionsTable = Map[String, Security.Definition]
+
   case class StrictModel(calls: Seq[ApiCall],
-                         typeDefs: TypeLookupTable,
-                         params: ParameterLookupTable,
-                         discriminators: DiscriminatorLookupTable,
-                         basePath: String,
-                         packageName: Option[String],
-                         stateTransitions: StateTransitionsTable) {
+       typeDefs: TypeLookupTable,
+       params: ParameterLookupTable,
+       discriminators: DiscriminatorLookupTable,
+       basePath: String,
+       packageName: Option[String],
+       stateTransitions: StateTransitionsTable,
+       securityDefinitionsTable: SecurityDefinitionsTable) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
     def findType(ref: Reference) = typeDefs(ref)

@@ -3,7 +3,7 @@ package security.api.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -13,20 +13,22 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
-trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
+trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with SecurityApiYamlSecurity {
     private type getPetsByIdActionRequestType       = (PetsIdGetId)
     private type getPetsByIdActionType              = getPetsByIdActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetPetsById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => Action { request =>
+    val getPetsByIdActionConstructor  = new getPetsByIdSecureAction("user")
+    def getPetsByIdAction = (f: getPetsByIdActionType) => (id: PetsIdGetId) => getPetsByIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getPetsByIdResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Pet]]
             ).withDefaultValue(anyToWritable[ErrorModel])
+            
             
 
                 val result =
@@ -37,6 +39,7 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

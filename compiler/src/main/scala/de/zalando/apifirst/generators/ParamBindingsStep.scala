@@ -7,22 +7,22 @@ import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
 
 /**
-  * @author slasch 
-  * @since 06.01.2016.
-  */
+ * @author slasch
+ * @since 06.01.2016.
+ */
 /**
-  * @author slasch
-  * @since 30.12.2015.
-  */
+ * @author slasch
+ * @since 30.12.2015.
+ */
 trait ParamBindingsStep extends EnrichmentStep[Parameter] {
 
-  override def steps = bindings +: super.steps
+  override def steps: Seq[SingleStep] = bindings +: super.steps
 
   /**
-    * Puts type information into the denotation table
-    *
-    * @return
-    */
+   * Puts type information into the denotation table
+   *
+   * @return
+   */
   protected def bindings: SingleStep = parameter => table =>
     Map("bindings" -> singleParameter(parameter, table))
 
@@ -32,13 +32,13 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
         // body parameters do not need bindables
         Map.empty
       case ParameterPlace.FORM =>
-        // FIXME not supported yet
-        Map.empty
+        val place = "Query"
+        bindingForPlace(paramPair, table, place)
       case ParameterPlace.HEADER =>
         // headers are handled in the same way path parameters are
         val place = "Path"
         bindingForPlace(paramPair, table, place)
-      case other    =>
+      case other =>
         val place = other.toString.capitalize
         bindingForPlace(paramPair, table, place)
     }
@@ -51,49 +51,71 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
 
   def forType(tpe: String, k: Reference, typeName: Type, table: DenotationTable): Seq[Map[String, Any]] = typeName match {
     case i if providedBindings.contains(i.getClass) => Nil
-    case someTpe if someTpe.nestedTypes.nonEmpty =>
-      val alias =  someTpe.name.simple
-      val underlyingType = someTpe.nestedTypes.map { t => typeNameDenotation(table, t.name) }.mkString(", ")
-      val bindable = s"""implicit val bindable_$alias$underlyingType$tpe = PlayPathBindables.create$alias${tpe}Bindable[$underlyingType]"""
-      val format = someTpe match {
-        case arr: Arr => "(\"" + arr.format + "\")"
-        case _ => ""
-      }
-      val mainType = Seq(Map(
-        "name" -> bindable,
-        "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables"),
-        "format" -> format,
-        "dependencies" -> someTpe.nestedTypes.filterNot(c => providedBindings.contains(c.getClass)).length
-      ))
-      val nestedTypes = someTpe.nestedTypes.flatMap { nt => forType(tpe, nt.name, nt, table) }
-      mainType ++ nestedTypes
+    case someTpe if someTpe.nestedTypes.nonEmpty => forNestedTypes(tpe, table, someTpe)
     case TypeRef(ref) => forType(tpe, ref, app.findType(ref), table)
-    case d: Date =>
-      Seq(Map(
-        "name" -> "", "format" -> "",
-        "binding_imports" -> Set(
-          "de.zalando.play.controllers.PlayPathBindables",
-          s"PlayPathBindables.${tpe.toLowerCase}BindableDateMidnight"
-        )
-      ))
-    case d: DateTime =>
-      Seq(Map(
-        "name" -> "", "format" -> "",
-        "binding_imports" -> Set(
-          "de.zalando.play.controllers.PlayPathBindables",
-          s"PlayPathBindables.${tpe.toLowerCase}BindableDateTime"
-        )
-      ))
-    case d: Base64String =>
-      Seq(Map(
-        "name" -> "", "format" -> "",
-        "binding_imports" -> Set(
-          "de.zalando.play.controllers.PlayPathBindables",
-          s"PlayPathBindables.${tpe.toLowerCase}BindableBase64String"
-        )
-      ))
+    case d: Date => forDateType(tpe)
+    case d: DateTime => forDateTimeType(tpe)
+    case d: Base64String => forBase64Type(tpe)
+    case d: File => forFileType(tpe)
+    case d: Password => forPasswordType
     case d: BinaryString =>
       throw new IllegalArgumentException("'type: string, format: binary' can only be used with body parameters")
   }
 
+  def forNestedTypes(tpe: String, table: DenotationTable, someTpe: Type): Seq[Map[String, Any]] = {
+    val alias = someTpe.name.simple
+    val underlyingType = someTpe.nestedTypes.map { t => typeNameDenotation(table, t.name) }.mkString(", ")
+    val bindable = s"""implicit val bindable_$alias$underlyingType$tpe = PlayPathBindables.create$alias${tpe}Bindable[$underlyingType]"""
+    val format = someTpe match {
+      case arr: Arr => "(\"" + arr.format + "\")"
+      case _ => ""
+    }
+    val mainType = Seq(Map(
+      "name" -> bindable,
+      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables"),
+      "format" -> (bindable + format),
+      "dependencies" -> someTpe.nestedTypes.filterNot(c => providedBindings.contains(c.getClass)).length
+    ))
+    val nestedTypes = someTpe.nestedTypes.flatMap { nt => forType(tpe, nt.name, nt, table) }
+    mainType ++ nestedTypes
+  }
+
+  def forPasswordType: Seq[Map[String, Object]] = {
+    Seq(Map(
+      "name" -> "", "format" -> "",
+      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
+    ))
+  }
+
+  def forFileType(tpe: String): Seq[Map[String, Object]] = {
+    Seq(Map(
+      "name" -> "",
+      "format" -> s"""implicit val bindable_File$tpe = PlayPathBindables.${tpe.toLowerCase}BindableFile""",
+      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
+    ))
+  }
+
+  def forBase64Type(tpe: String): Seq[Map[String, Object]] = {
+    Seq(Map(
+      "name" -> "",
+      "format" -> s"""implicit val bindable_Base64$tpe = PlayPathBindables.${tpe.toLowerCase}BindableBase64String""",
+      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
+    ))
+  }
+
+  def forDateTimeType(tpe: String): Seq[Map[String, Object]] = {
+    Seq(Map(
+      "name" -> "",
+      "format" -> s"""implicit val bindable_DateTime$tpe = PlayPathBindables.${tpe.toLowerCase}BindableDateTime""",
+      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
+    ))
+  }
+
+  def forDateType(tpe: String): Seq[Map[String, Object]] = {
+    Seq(Map(
+      "name" -> "",
+      "format" -> s"""implicit val bindable_LocalDate$tpe = PlayPathBindables.${tpe.toLowerCase}BindableLocalDate""",
+      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
+    ))
+  }
 }

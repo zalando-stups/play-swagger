@@ -3,7 +3,7 @@ package instagram.api.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 
@@ -12,20 +12,22 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
-trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
+trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with InstagramApiYamlSecurity {
     private type getmediaByMedia_idLikesActionRequestType       = (Int)
     private type getmediaByMedia_idLikesActionType              = getmediaByMedia_idLikesActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaByMedia_idLikesAction = (f: getmediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
+    val getmediaByMedia_idLikesActionConstructor  = new getmediaByMedia_idLikesSecureAction("basic", "comments", "relationships", "likes")
+    def getmediaByMedia_idLikesAction = (f: getmediaByMedia_idLikesActionType) => (media_id: Int) => getmediaByMedia_idLikesActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idLikesResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idLikesGetResponses200]
             )
+            
             
 
                 val result =
@@ -36,6 +38,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -66,13 +69,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatuspostmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def postmediaByMedia_idLikesAction = (f: postmediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
+    val postmediaByMedia_idLikesActionConstructor  = new postmediaByMedia_idLikesSecureAction("comments")
+    def postmediaByMedia_idLikesAction = (f: postmediaByMedia_idLikesActionType) => (media_id: Int) => postmediaByMedia_idLikesActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idLikesResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
+            
             
 
                 val result =
@@ -83,6 +88,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -113,13 +119,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusdeletemediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def deletemediaByMedia_idLikesAction = (f: deletemediaByMedia_idLikesActionType) => (media_id: Int) => Action { request =>
+    val deletemediaByMedia_idLikesActionConstructor  = new deletemediaByMedia_idLikesSecureAction("basic", "comments", "relationships", "likes")
+    def deletemediaByMedia_idLikesAction = (f: deletemediaByMedia_idLikesActionType) => (media_id: Int) => deletemediaByMedia_idLikesActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletemediaByMedia_idLikesResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
+            
             
 
                 val result =
@@ -130,6 +138,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -160,13 +169,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersByUser_idFollows: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersByUser_idFollowsAction = (f: getusersByUser_idFollowsActionType) => (user_id: Double) => Action { request =>
+    val getusersByUser_idFollowsActionConstructor  = new getusersByUser_idFollowsSecureAction("basic", "comments", "relationships", "likes")
+    def getusersByUser_idFollowsAction = (f: getusersByUser_idFollowsActionType) => (user_id: Double) => getusersByUser_idFollowsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idFollowsResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
+            
             
 
                 val result =
@@ -177,6 +188,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -207,13 +219,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetlocationsByLocation_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getlocationsByLocation_idAction = (f: getlocationsByLocation_idActionType) => (location_id: Int) => Action { request =>
+    val getlocationsByLocation_idActionConstructor  = new getlocationsByLocation_idSecureAction("basic", "comments", "relationships", "likes")
+    def getlocationsByLocation_idAction = (f: getlocationsByLocation_idActionType) => (location_id: Int) => getlocationsByLocation_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsByLocation_idResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[LocationsLocation_idGetResponses200]
             )
+            
             
 
                 val result =
@@ -224,6 +238,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -254,13 +269,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersSearchAction = (f: getusersSearchActionType) => (q: String, count: MediaFilter) => Action { request =>
+    val getusersSearchActionConstructor  = new getusersSearchSecureAction("basic", "comments", "relationships", "likes")
+    def getusersSearchAction = (f: getusersSearchActionType) => (q: String, count: MediaFilter) => getusersSearchActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSearchResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
+            
             
 
                 val result =
@@ -271,6 +288,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -301,13 +319,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersSelfMediaLiked: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersSelfMediaLikedAction = (f: getusersSelfMediaLikedActionType) => (count: MediaId, max_like_id: MediaId) => Action { request =>
+    val getusersSelfMediaLikedActionConstructor  = new getusersSelfMediaLikedSecureAction("basic", "comments", "relationships", "likes")
+    def getusersSelfMediaLikedAction = (f: getusersSelfMediaLikedActionType) => (count: MediaId, max_like_id: MediaId) => getusersSelfMediaLikedActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfMediaLikedResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
+            
             
 
                 val result =
@@ -318,6 +338,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -348,13 +369,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgettagsByTag_name: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gettagsByTag_nameAction = (f: gettagsByTag_nameActionType) => (tag_name: String) => Action { request =>
+    val gettagsByTag_nameActionConstructor  = new gettagsByTag_nameSecureAction("basic", "comments", "relationships", "likes")
+    def gettagsByTag_nameAction = (f: gettagsByTag_nameActionType) => (tag_name: String) => gettagsByTag_nameActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsByTag_nameResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Tag]
             )
+            
             
 
                 val result =
@@ -365,6 +388,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -395,13 +419,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgettagsSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gettagsSearchAction = (f: gettagsSearchActionType) => (q: MediaFilter) => Action { request =>
+    val gettagsSearchActionConstructor  = new gettagsSearchSecureAction("basic", "comments", "relationships", "likes")
+    def gettagsSearchAction = (f: gettagsSearchActionType) => (q: MediaFilter) => gettagsSearchActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsSearchResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[TagsSearchGetResponses200]
             )
+            
             
 
                 val result =
@@ -412,6 +438,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -442,13 +469,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersByUser_idFollowed_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersByUser_idFollowed_byAction = (f: getusersByUser_idFollowed_byActionType) => (user_id: Double) => Action { request =>
+    val getusersByUser_idFollowed_byActionConstructor  = new getusersByUser_idFollowed_bySecureAction("basic", "comments", "relationships", "likes")
+    def getusersByUser_idFollowed_byAction = (f: getusersByUser_idFollowed_byActionType) => (user_id: Double) => getusersByUser_idFollowed_byActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idFollowed_byResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
+            
             
 
                 val result =
@@ -459,6 +488,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -489,13 +519,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaByMedia_idCommentsAction = (f: getmediaByMedia_idCommentsActionType) => (media_id: Int) => Action { request =>
+    val getmediaByMedia_idCommentsActionConstructor  = new getmediaByMedia_idCommentsSecureAction("basic", "comments", "relationships", "likes")
+    def getmediaByMedia_idCommentsAction = (f: getmediaByMedia_idCommentsActionType) => (media_id: Int) => getmediaByMedia_idCommentsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idCommentsResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsGetResponses200]
             )
+            
             
 
                 val result =
@@ -506,6 +538,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -550,7 +583,8 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             optionParser[Double](bodyMimeType, customParsers, "Invalid LocationLatitude", maxLength)
         }
 
-    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => Action(postmediaByMedia_idCommentsParser(Seq[String]("application/json"))) { request =>
+    val postmediaByMedia_idCommentsActionConstructor  = new postmediaByMedia_idCommentsSecureAction("comments")
+    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => postmediaByMedia_idCommentsActionConstructor(postmediaByMedia_idCommentsParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idCommentsResponseMimeType =>
@@ -558,6 +592,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
             val tEXT = request.body
+            
             
 
                 val result =
@@ -568,6 +603,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -598,13 +634,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusdeletemediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def deletemediaByMedia_idCommentsAction = (f: deletemediaByMedia_idCommentsActionType) => (media_id: Int) => Action { request =>
+    val deletemediaByMedia_idCommentsActionConstructor  = new deletemediaByMedia_idCommentsSecureAction("basic", "comments", "relationships", "likes")
+    def deletemediaByMedia_idCommentsAction = (f: deletemediaByMedia_idCommentsActionType) => (media_id: Int) => deletemediaByMedia_idCommentsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletemediaByMedia_idCommentsResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[MediaMedia_idCommentsDeleteResponses200]
             )
+            
             
 
                 val result =
@@ -615,6 +653,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -645,13 +684,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgettagsByTag_nameMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gettagsByTag_nameMediaRecentAction = (f: gettagsByTag_nameMediaRecentActionType) => (tag_name: String) => Action { request =>
+    val gettagsByTag_nameMediaRecentActionConstructor  = new gettagsByTag_nameMediaRecentSecureAction("basic", "comments", "relationships", "likes")
+    def gettagsByTag_nameMediaRecentAction = (f: gettagsByTag_nameMediaRecentActionType) => (tag_name: String) => gettagsByTag_nameMediaRecentActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettagsByTag_nameMediaRecentResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[TagsTag_nameMediaRecentGetResponses200]
             )
+            
             
 
                 val result =
@@ -662,6 +703,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -706,7 +748,8 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
             optionParser[String](bodyMimeType, customParsers, "Invalid UsersUser_idRelationshipPostAction", maxLength)
         }
 
-    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => Action(postusersByUser_idRelationshipParser(Seq[String]("application/json"))) { request =>
+    val postusersByUser_idRelationshipActionConstructor  = new postusersByUser_idRelationshipSecureAction("relationships")
+    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => postusersByUser_idRelationshipActionConstructor(postusersByUser_idRelationshipParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postusersByUser_idRelationshipResponseMimeType =>
@@ -714,6 +757,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[UsersUser_idFollowsGetResponses200]
             )
             val action = request.body
+            
             
 
                 val result =
@@ -724,6 +768,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -754,13 +799,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersSelfFeed: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersSelfFeedAction = (f: getusersSelfFeedActionType) => (count: MediaId, max_id: MediaId, min_id: MediaId) => Action { request =>
+    val getusersSelfFeedActionConstructor  = new getusersSelfFeedSecureAction("basic", "comments", "relationships", "likes")
+    def getusersSelfFeedAction = (f: getusersSelfFeedActionType) => (count: MediaId, max_id: MediaId, min_id: MediaId) => getusersSelfFeedActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfFeedResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
+            
             
 
                 val result =
@@ -771,6 +818,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -801,13 +849,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersByUser_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersByUser_idAction = (f: getusersByUser_idActionType) => (user_id: Double) => Action { request =>
+    val getusersByUser_idActionConstructor  = new getusersByUser_idSecureAction("basic")
+    def getusersByUser_idAction = (f: getusersByUser_idActionType) => (user_id: Double) => getusersByUser_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[UsersUser_idGetResponses200]
             )
+            
             
 
                 val result =
@@ -818,6 +868,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -848,13 +899,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => Action { request =>
+    val getmediaSearchActionConstructor  = new getmediaSearchSecureAction("basic", "comments", "relationships", "likes")
+    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => getmediaSearchActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaSearchResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[MediaSearchGetResponses200]
             )
+            
             
 
                 val result =
@@ -865,6 +918,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -895,13 +949,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetgeographiesByGeo_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (geo_id: Int, count: MediaId, min_id: MediaId) => Action { request =>
+    val getgeographiesByGeo_idMediaRecentActionConstructor  = new getgeographiesByGeo_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
+    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (geo_id: Int, count: MediaId, min_id: MediaId) => getgeographiesByGeo_idMediaRecentActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getgeographiesByGeo_idMediaRecentResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Null]
             )
+            
             
 
                 val result =
@@ -912,6 +968,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -942,13 +999,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaByShortcode: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaByShortcodeAction = (f: getmediaByShortcodeActionType) => (shortcode: String) => Action { request =>
+    val getmediaByShortcodeActionConstructor  = new getmediaByShortcodeSecureAction("basic", "comments", "relationships", "likes")
+    def getmediaByShortcodeAction = (f: getmediaByShortcodeActionType) => (shortcode: String) => getmediaByShortcodeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByShortcodeResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Media]
             )
+            
             
 
                 val result =
@@ -959,6 +1018,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -989,13 +1049,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetlocationsSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getlocationsSearchAction = (f: getlocationsSearchActionType) => (foursquare_v2_id: MediaId, facebook_places_id: MediaId, distance: MediaId, lat: LocationLatitude, foursquare_id: MediaId, lng: LocationLatitude) => Action { request =>
+    val getlocationsSearchActionConstructor  = new getlocationsSearchSecureAction("basic", "comments", "relationships", "likes")
+    def getlocationsSearchAction = (f: getlocationsSearchActionType) => (foursquare_v2_id: MediaId, facebook_places_id: MediaId, distance: MediaId, lat: LocationLatitude, foursquare_id: MediaId, lng: LocationLatitude) => getlocationsSearchActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsSearchResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[LocationsSearchGetResponses200]
             )
+            
             
 
                 val result =
@@ -1006,6 +1068,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1036,7 +1099,8 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersSelfRequested_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersSelfRequested_byAction = (f: getusersSelfRequested_byActionType) => Action { request =>
+    val getusersSelfRequested_byActionConstructor  = new getusersSelfRequested_bySecureAction("basic", "comments", "relationships", "likes")
+    def getusersSelfRequested_byAction = (f: getusersSelfRequested_byActionType) => getusersSelfRequested_byActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersSelfRequested_byResponseMimeType =>
@@ -1044,9 +1108,11 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[UsersSelfRequested_byGetResponses200]
             )
             
+            
 
                 val result = processValidgetusersSelfRequested_byRequest(f)()(possibleWriters, getusersSelfRequested_byResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1077,13 +1143,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaByMedia_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaByMedia_idAction = (f: getmediaByMedia_idActionType) => (media_id: Int) => Action { request =>
+    val getmediaByMedia_idActionConstructor  = new getmediaByMedia_idSecureAction("basic", "comments", "relationships", "likes")
+    def getmediaByMedia_idAction = (f: getmediaByMedia_idActionType) => (media_id: Int) => getmediaByMedia_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Media]
             )
+            
             
 
                 val result =
@@ -1094,6 +1162,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1124,13 +1193,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetlocationsByLocation_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (location_id: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => Action { request =>
+    val getlocationsByLocation_idMediaRecentActionConstructor  = new getlocationsByLocation_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
+    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (location_id: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => getlocationsByLocation_idMediaRecentActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsByLocation_idMediaRecentResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
+            
             
 
                 val result =
@@ -1141,6 +1212,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1171,13 +1243,15 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetusersByUser_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (user_id: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => Action { request =>
+    val getusersByUser_idMediaRecentActionConstructor  = new getusersByUser_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
+    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (user_id: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => getusersByUser_idMediaRecentActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idMediaRecentResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
+            
             
 
                 val result =
@@ -1188,6 +1262,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -1218,7 +1293,8 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetmediaPopular: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmediaPopularAction = (f: getmediaPopularActionType) => Action { request =>
+    val getmediaPopularActionConstructor  = new getmediaPopularSecureAction("basic", "comments", "relationships", "likes")
+    def getmediaPopularAction = (f: getmediaPopularActionType) => getmediaPopularActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaPopularResponseMimeType =>
@@ -1226,9 +1302,11 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[UsersSelfFeedGetResponses200]
             )
             
+            
 
                 val result = processValidgetmediaPopularRequest(f)()(possibleWriters, getmediaPopularResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

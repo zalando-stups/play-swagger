@@ -15,13 +15,13 @@
 	Arr(TypeRef(⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr))
 ⌿definitions⌿Example⌿messages⌿Opt -> 
 	Arr(TypeRef(⌿definitions⌿Example⌿messages⌿Opt⌿Arr))
-⌿paths⌿/⌿get⌿example -> 
+⌿paths⌿/another⌿post⌿example -> 
 	Opt(TypeRef(⌿definitions⌿Example))
 ⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr -> 
 	Arr(TypeRef(⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr⌿Arr))
 ⌿definitions⌿Example⌿messages⌿Opt⌿Arr -> 
 	Arr(TypeRef(⌿definitions⌿Activity))
-⌿paths⌿/⌿get⌿responses⌿200 -> 
+⌿paths⌿/another⌿post⌿responses⌿200 -> 
 	Null
 ⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr⌿Arr -> 
 	Arr(TypeRef(⌿definitions⌿Example⌿nestedArrays⌿Opt⌿Arr⌿Arr⌿Arr))
@@ -30,4 +30,4 @@
 -- params --
 
 ⌿paths⌿/⌿get⌿activity -> Parameter(activity,TypeRef(⌿definitions⌿Activity),None,None,.+,false,body)
-⌿paths⌿/⌿get⌿example -> Parameter(example,TypeRef(⌿paths⌿/⌿get⌿example),None,None,.+,false,body)
+⌿paths⌿/another⌿post⌿example -> Parameter(example,TypeRef(⌿paths⌿/another⌿post⌿example),None,None,.+,false,body)

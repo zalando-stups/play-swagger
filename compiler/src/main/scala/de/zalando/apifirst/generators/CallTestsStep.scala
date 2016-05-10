@@ -4,12 +4,13 @@ import de.zalando.apifirst.Application.{ApiCall, ParameterRef}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.{ParameterPlace, ScalaName}
+import play.api.http.{HeaderNames, MimeTypes}
 
 /**
   * @author  slasch
   * @since   30.12.2015.
   */
-trait CallTestsStep extends EnrichmentStep[ApiCall] {
+trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with ParameterData {
 
   override def steps = tests +: super.steps
 
@@ -24,43 +25,57 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     if (apiCall._2.handler.parameters.isEmpty) empty
     else Map("tests" -> callTest(apiCall._2)(table))
 
-  def callTest(call: ApiCall)(table: DenotationTable) = {
+  def callTest(call: ApiCall)(implicit table: DenotationTable) = {
     val namespace = if (app.basePath == "/") "" else app.basePath
+
+    val (allActionResults, defaultResultType) = actionResults(call)(table)
+
+    val acceptHeaders = acceptHeader(call)
+
+    val allHeaders    = headers(call)
+
+    val formParams = validationsByType(call, p => p.place == ParameterPlace.FORM)
+
     Map(
-      "verb_name" -> call.verb.name,
-      "full_path" -> call.path.prepend(namespace).asSwagger,
-      "full_url" -> fullUrl(namespace, call),
-      "validation_name" -> validator(call.asReference, table),
-      "body_param" -> bodyParameter(call),
-      expectedSuccessCode(call),
-      expectedResultType(call),
-      "headers" -> headers(call)
+      "accept_headers"        -> acceptHeaders,
+      "result_types"          -> allActionResults,
+      "default_result_type"   -> defaultResultType,
+      "verb_name"             -> call.verb.name,
+      "full_path"             -> call.path.prepend(namespace).asSwagger,
+      "full_url"              -> fullUrl(namespace, call),
+      "validation_name"       -> validator(call.asReference, table),
+      "body_param"            -> bodyParameter(call, defaultResultType),
+      "form_parameters"       -> formParams,
+      "headers"               -> allHeaders
     ) ++ parameters(call)(table)
   }
 
-  // FIXME extend ApiCall to hold needed information
-  def expectedSuccessCode(call: ApiCall) =
-    "expected_code" -> "200"
+  def acceptHeader(call: ApiCall): Set[Map[String, String]] =
+    call.mimeIn.map(_.name).map { header =>
+      Map("name" -> header)
+    }
 
-  // TODO should be capable of handling any of expected results
-  def expectedResultType(call: ApiCall) =
-    "expected_result_type" -> call.mimeOut.headOption.map(_.name.toLowerCase).getOrElse("application/json")
 
-  def bodyParameter(call: ApiCall) = {
+  // TODO should try all possible marshallers
+  def bodyParameter(call: ApiCall, resultType: Option[String]) = {
     call.handler.parameters.map {
       app.findParameter
     }.find {
       _.place == ParameterPlace.BODY
     }.map { p =>
-      Map("body_parameter_name" -> p.name, expectedResultType(call))
+      Map("body_parameter_name" -> p.name,
+        "expected_result_type" -> resultType.getOrElse("application/json"))
     }
   }
 
-  def headers(call: ApiCall) = {
+  def headers(call: ApiCall): Seq[Map[String, String]] = {
     call.handler.parameters.filter { p =>
       app.findParameter(p).place == ParameterPlace.HEADER
     }.map { p =>
-      Map("name" -> p.name.simple, "parameter_name" -> ScalaName.escape(ScalaName.camelize("\\.", p.simple)))
+      Map(
+        "name" -> p.name.simple,
+        "parameter_name" -> ScalaName.escape(ScalaName.camelize("\\.", p.simple))
+      )
     }
   }
 
@@ -94,5 +109,34 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] {
     "s\"\"\"" + url + fullQuery + "\"\"\""
   }
 
-  private def singleQueryParam(name: String, typeName: Type): String = "$" + s"""{toQuery("${ScalaName.escape(name)}", $name)}"""
+  private def singleQueryParam(name: String, typeName: Type): String =
+    "$" + s"""{toQuery("${ScalaName.escape(name)}", $name)}"""
+}
+
+trait ActionResults extends EnrichmentStep[ApiCall] {
+
+  import de.zalando.apifirst.ScalaName._
+
+  def actionResults(call: ApiCall)(table: DenotationTable): (Seq[Map[String, Any]], Option[String]) = {
+    val resultTypes = call.resultTypes.results.toSeq map { case(code, ref) =>
+      Map("code" -> code, "type" -> singleResultType(table)(ref))
+    }
+    val default = call.resultTypes.default.map(singleResultType(table))
+    if (default.isEmpty && resultTypes.isEmpty)
+      println("Could not found any response code definition. It's not possible to define any marshallers. This will lead to the error at runtime.")
+    (resultTypes, default)
+  }
+
+  def singleResultType(table: DenotationTable)(ref: ParameterRef): String = {
+    val tpe = app.findType(ref.name)
+    tpe match {
+      case c: Container =>
+        // TODO this should be readable from model
+        c.name.simple + c.nestedTypes.map{ t => typeNameDenotation(table, t.name)}.mkString("[", ", ", "]")
+      case p: ProvidedType => typeNameDenotation(table, p.name)
+      case p: TypeDef => typeNameDenotation(table, p.name)
+      case o => o.name.className
+    }
+  }
+
 }

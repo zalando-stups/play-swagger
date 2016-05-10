@@ -23,14 +23,16 @@ addons:
       - oracle-java8-installer
 
 before_install:
-#  - pip install --user codecov
+  - pip install --user codecov
 
 after_success:
-#  - codecov
+  - codecov
 
 script:
   - sbt -jvm-opts travis/jvmopts compile test +publishLocal
   - sbt -jvm-opts travis/jvmopts scripted
+  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
+
 
 # cache:
 #  directories:

@@ -11,6 +11,7 @@ import de.zalando.apifirst.naming.Pointer
 import scala.collection.mutable
 import scala.util.Try
 
+import scala.language.implicitConversions
 /**
  * @author  slasch
  * @since   09.10.2015.
@@ -262,7 +263,7 @@ object strictModel {
     parameters:           ParametersList,   // parameter list which is valid for all operations (can be overridden)
     @JsonProperty("$ref") $ref: Ref         // TODO $ref is currently not supported
   ) extends VendorExtensions with API with RefChecker {
-    def param(name: String, op: Operation) = Option(op) map { name -> _.parameters } toList
+    def param(name: String, op: Operation) = Option(op).map(name -> _.parameters).toList
     val params = (("" -> parameters) :: param("get", get) :::
       param("get", get) ::: param("put", put) ::: param("post", post) :::
       param("delete", delete) ::: param("options", options) ::: param("head", head) :::
@@ -430,7 +431,9 @@ object strictModel {
     enum:                   Enum[T],
     multipleOf:             MultipleOf[T],
     allowEmptyValue:        Boolean = false // unique for form
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value]
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value] {
+    assert("formData".equalsIgnoreCase(in))
+  }
 
   /**
    *
@@ -750,6 +753,12 @@ object strictModel {
   /********* security definitions *********/
   sealed trait SecurityDefinition extends VendorExtensions
 
+  sealed trait Oauth2SecurityDefinition extends SecurityDefinition {
+    lazy val validationUrl: Option[Uri] = vendorExtensions.get("x-token-validation-url")
+    def description: String
+    def scopes: Oauth2Scopes
+  }
+
   case class BasicAuthenticationSecurity(
     @JsonProperty(required = true) `type`: String, // "enum": basic
     description: Description
@@ -768,7 +777,7 @@ object strictModel {
     @JsonProperty(required = true) authorizationUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with UriChecker {
+  ) extends Oauth2SecurityDefinition with UriChecker {
     val url = authorizationUrl
   }
 
@@ -778,7 +787,7 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with UriChecker {
+  ) extends Oauth2SecurityDefinition with UriChecker {
     val url = tokenUrl
   }
 
@@ -788,7 +797,7 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with UriChecker {
+  ) extends Oauth2SecurityDefinition with UriChecker {
     val url = tokenUrl
   }
 
@@ -799,7 +808,7 @@ object strictModel {
     @JsonProperty(required = true) tokenUrl: Uri,
     scopes: Oauth2Scopes,
     description: Description
-  ) extends SecurityDefinition with UriChecker {
+  ) extends Oauth2SecurityDefinition with UriChecker {
     val url = tokenUrl
   }
 
@@ -808,11 +817,11 @@ object strictModel {
     private[this] val errorMappings = new mutable.HashMap[String, Seq[Class[Exception]]]
     private[this] val transitionDefinitions = new mutable.HashMap[String, Map[String, Map[String, Any]]]
     @JsonAnySetter
-    def handleUnknown(key: String, value: Any) {
-      value match {
+    def handleUnknown(key: String, value: Any): Unit = {
+      val _ = value match {
         case str: String if key.startsWith("x-") =>
           extensions += key -> str
-        case trans: Map[String, Map[String, Map[String, Any]]]
+        case trans: Map[String @unchecked, Map[String, Map[String, Any]] @unchecked]
           if key.equalsIgnoreCase("x-api-first-transitions") =>
           transitionDefinitions ++= trans
         case trans if key.equalsIgnoreCase("x-api-first-transitions") =>
@@ -926,8 +935,12 @@ object strictModel {
     def maxLength: MaxLength
     def minLength: MinLength
     def pattern: Pattern
-    require(maxLength.forall(_>=0))
-    require(minLength.forall(_>=0))
+    require(maxLength.forall(_>=0), "maxLength cannot be negative")
+    require(minLength.forall(_>=0), "minLength cannot be negative")
+    (minLength, maxLength) match {
+      case (Some(min), Some(max)) => require(max>=min, "maxLength cannot be less then minLength")
+      case _ =>
+    }
     require(pattern.forall(p => Try(p.r).isSuccess))
   }
 

@@ -5,6 +5,7 @@ import java.net.URI
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Http.{MimeType, Verb}
 import de.zalando.apifirst.Hypermedia.{NamedState, Self, State}
+import de.zalando.apifirst.Security.Constraint
 import de.zalando.apifirst._
 import de.zalando.apifirst.naming.{Path, Reference}
 import de.zalando.swagger.strictModel._
@@ -13,7 +14,8 @@ import de.zalando.swagger.strictModel._
   * @author  slasch 
   * @since   20.10.2015.
   */
-class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String, params: ParameterLookupTable,
+class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String,
+                     params: ParameterLookupTable, securityDefinitions: SecurityDefinitionsTable,
                      val definitionFileName: Option[String] = None, val useFileNameAsPackage: Boolean = true)
   extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
@@ -31,11 +33,26 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
       astPath             = uriFragmentToReference(url)
       params              = parameters(path, operation, namePrefix)
       handlerCall         <- handler(operation, path, params, operationName, astPath).toSeq
-      (types, states)  = resultTypes(namePrefix, operation)
+      (types, states)     = resultTypes(namePrefix, operation)
       (mimeIn, mimeOut)   = mimeTypes(operation)
       errMappings         = errorMappings(path, operation)
-    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, types, states)
+      security            = securityRequirements(operation)
+    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, types, states, security.toSet)
   }
+
+  private def securityRequirements(operation: Operation) = {
+    val security = Option(operation.security) orElse Option(model.security)
+    for {
+      requirement <- security.toSeq.flatten
+      (name, scopes) <- requirement
+      definition = securityDefinitionByName(name)
+    } yield Constraint.fromDefinition(name, definition, scopes)
+  }
+
+  private def securityDefinitionByName(name: String): Security.Definition =
+    securityDefinitions.getOrElse(name,
+      throw new scala.IllegalArgumentException(s"Could not find security definition with name $name")
+    )
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
@@ -46,7 +63,7 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
     }
     val responses = operation.responses collect {
       case (code, definition) if code.forall(_.isDigit) =>
-        Some(code.toInt -> (ParameterRef(prefix / Reference.responses / code), targetState(definition)))
+        Some((code.toInt, (ParameterRef(prefix / Reference.responses / code), targetState(definition))))
       case ("default", definition)  => None
       case (other, _) =>
         println(s"Expected numeric error code or 'default' for response, but was $other")
@@ -88,7 +105,7 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
 
   def orderedMediaTypeList(hiPriority: MediaTypeList, lowPriority: MediaTypeList): Set[MimeType] = {
     Option(hiPriority).orElse(Option(lowPriority)).toSet.flatten.map {
-      new MimeType(_)
+      MimeType(_)
     }
   }
 

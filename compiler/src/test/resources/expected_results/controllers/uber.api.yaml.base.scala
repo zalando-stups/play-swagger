@@ -3,7 +3,7 @@ package uber.api.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -20,7 +20,8 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetme: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getmeAction = (f: getmeActionType) => Action { request =>
+    val getmeActionConstructor  = Action
+    def getmeAction = (f: getmeActionType) => getmeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmeResponseMimeType =>
@@ -28,9 +29,11 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Profile]
             ).withDefaultValue(anyToWritable[Error])
             
+            
 
                 val result = processValidgetmeRequest(f)()(possibleWriters, getmeResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -61,13 +64,15 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetproducts: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getproductsAction = (f: getproductsActionType) => (latitude: Double, longitude: Double) => Action { request =>
+    val getproductsActionConstructor  = Action
+    def getproductsAction = (f: getproductsActionType) => (latitude: Double, longitude: Double) => getproductsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getproductsResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Product]]
             ).withDefaultValue(anyToWritable[Error])
+            
             
 
                 val result =
@@ -78,6 +83,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -108,13 +114,15 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetestimatesTime: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getestimatesTimeAction = (f: getestimatesTimeActionType) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) => Action { request =>
+    val getestimatesTimeActionConstructor  = Action
+    def getestimatesTimeAction = (f: getestimatesTimeActionType) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) => getestimatesTimeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesTimeResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Product]]
             ).withDefaultValue(anyToWritable[Error])
+            
             
 
                 val result =
@@ -125,6 +133,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -155,13 +164,15 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetestimatesPrice: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getestimatesPriceAction = (f: getestimatesPriceActionType) => (start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) => Action { request =>
+    val getestimatesPriceActionConstructor  = Action
+    def getestimatesPriceAction = (f: getestimatesPriceActionType) => (start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) => getestimatesPriceActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesPriceResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Seq[PriceEstimate]]
             ).withDefaultValue(anyToWritable[Error])
+            
             
 
                 val result =
@@ -172,6 +183,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -202,13 +214,15 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgethistory: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gethistoryAction = (f: gethistoryActionType) => (offset: ErrorCode, limit: ErrorCode) => Action { request =>
+    val gethistoryActionConstructor  = Action
+    def gethistoryAction = (f: gethistoryActionType) => (offset: ErrorCode, limit: ErrorCode) => gethistoryActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gethistoryResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Activities]
             ).withDefaultValue(anyToWritable[Error])
+            
             
 
                 val result =
@@ -219,6 +233,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

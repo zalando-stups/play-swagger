@@ -1,9 +1,7 @@
 package de.zalando.play.controllers
 
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateMidnight, DateTime}
-
-import scala.util.Try
+import org.joda.time.{DateTime, LocalDate}
 
 /**
   * An utility class for parsing date and date-time inputs as required by RFC3339
@@ -12,7 +10,7 @@ import scala.util.Try
   * which is not completely interchangeable with RFC3339
   *
   * As we need different types for Dates and DateTimes for implicit conversions to work,
-  * deliberately using deprecated DateMidnight here. Not sure if it is a problem or not.
+  * deliberately using LocalDate here.
   *
   * @author slasch 
   * @since 04.01.2016.
@@ -29,18 +27,18 @@ object Rfc3339Util {
     if(datestring.endsWith("Z") || datestring.endsWith("z")) parseFull(datestring)
     else parseParts(datestring)
 
-  def parseDate(datestring: String): DateMidnight =
-    fullDate.parseDateTime(datestring).toDateMidnight
+  def parseDate(datestring: String): LocalDate =
+    fullDate.parseDateTime(datestring).toLocalDate
 
-  def writeDate(date: DateMidnight): String = fullDate.print(date)
+  def writeDate(date: LocalDate): String = fullDate.print(date)
 
   def writeDateTime(date: DateTime): String = dateTime.print(date)
 
   private def parseParts(datestring: String): DateTime = {
     //step one, split off the timezone.
     val sepChar = if (datestring.indexOf('+')>0) '+' else '-'
-    val firstpart = datestring.substring(0, datestring.lastIndexOf(sepChar))
-    val secondpart = datestring.substring(datestring.lastIndexOf(sepChar))
+    val firstpart = datestring.substring(0, datestring.lastIndexOf(sepChar.toInt))
+    val secondpart = datestring.substring(datestring.lastIndexOf(sepChar.toInt))
     //step two, remove the colon from the timezone offset
     val thirdpart = secondpart.substring(0, secondpart.indexOf(':')) + secondpart.substring(secondpart.indexOf(':') + 1)
     val dstring = firstpart + thirdpart

@@ -3,7 +3,7 @@ package heroku.petstore.api.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 
@@ -17,13 +17,15 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getAction = (f: getActionType) => (limit: Int) => Action { request =>
+    val getActionConstructor  = Action
+    def getAction = (f: getActionType) => (limit: Int) => getActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Pet]]
             )
+            
             
 
                 val result =
@@ -34,6 +36,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -77,7 +80,8 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             optionParser[Pet](bodyMimeType, customParsers, "Invalid PutPet", maxLength)
         }
 
-    def putAction = (f: putActionType) => Action(putParser(Seq[String]("application/json", "text/xml"))) { request =>
+    val putActionConstructor  = Action
+    def putAction = (f: putActionType) => putActionConstructor(putParser(Seq[String]("application/json", "text/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putResponseMimeType =>
@@ -85,6 +89,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             val pet = request.body
+            
             
 
                 val result =
@@ -95,6 +100,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -138,7 +144,8 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             anyParser[Pet](bodyMimeType, customParsers, "Invalid Pet", maxLength)
         }
 
-    def postAction = (f: postActionType) => Action(postParser(Seq[String]("application/json", "text/xml"))) { request =>
+    val postActionConstructor  = Action
+    def postAction = (f: postActionType) => postActionConstructor(postParser(Seq[String]("application/json", "text/xml"))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
@@ -146,6 +153,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             val pet = request.body
+            
             
 
                 val result =
@@ -156,6 +164,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -186,13 +195,15 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgetbyPetId: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getbyPetIdAction = (f: getbyPetIdActionType) => (petId: String) => Action { request =>
+    val getbyPetIdActionConstructor  = Action
+    def getbyPetIdAction = (f: getbyPetIdActionType) => (petId: String) => getbyPetIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getbyPetIdResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Null]
             )
+            
             
 
                 val result =
@@ -203,6 +214,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

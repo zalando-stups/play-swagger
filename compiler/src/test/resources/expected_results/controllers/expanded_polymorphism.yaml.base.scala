@@ -3,7 +3,7 @@ package expanded
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -22,13 +22,15 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def findPetsAction = (f: findPetsActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => Action { request =>
+    val findPetsActionConstructor  = Action
+    def findPetsAction = (f: findPetsActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => findPetsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Seq[Pet]]
             ).withDefaultValue(anyToWritable[Error])
+            
             
 
                 val result =
@@ -39,6 +41,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -85,7 +88,8 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
             anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength)
         }
 
-    def addPetAction = (f: addPetActionType) => Action(addPetParser(Seq[String]("application/json"))) { request =>
+    val addPetActionConstructor  = Action
+    def addPetAction = (f: addPetActionType) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
@@ -93,6 +97,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Pet]
             ).withDefaultValue(anyToWritable[Error])
             val pet = request.body
+            
             
 
                 val result =
@@ -103,6 +108,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -135,13 +141,15 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
      } 
 
 
-    def deletePetAction = (f: deletePetActionType) => (id: Long) => Action { request =>
+    val deletePetActionConstructor  = Action
+    def deletePetAction = (f: deletePetActionType) => (id: Long) => deletePetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>
                 val possibleWriters = Map(
                     204 -> anyToWritable[Null]
             ).withDefaultValue(anyToWritable[Error])
+            
             
 
                 val result =
@@ -152,6 +160,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

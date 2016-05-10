@@ -3,21 +3,22 @@ package basic.auth.api.yaml
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 
 
 
 
-trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
+trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing  with BasicAuthApiYamlSecurity {
     private type getActionRequestType       = (Unit)
     private type getActionType              = getActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def getAction = (f: getActionType) => Action { request =>
+    val getActionConstructor  = getSecureAction
+    def getAction = (f: getActionType) => getActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
@@ -25,9 +26,11 @@ trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result = processValidgetRequest(f)()(possibleWriters, getResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

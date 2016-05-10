@@ -19,7 +19,8 @@ object Base64String {
 case class BinaryString(value: Array[Byte])
 
 object BinaryString {
-  def fromString(s: String) = BinaryString(s.getBytes)
+  def fromString(s: String): BinaryString = BinaryString(s.getBytes)
+  implicit def binaryString2String(s: BinaryString): String = new String(s.value)
   implicit def byteArray2binaryString(s: Array[Byte]): BinaryString = BinaryString(s)
   implicit def binaryString2byteArray(s: BinaryString): Array[Byte] = s.value
 }

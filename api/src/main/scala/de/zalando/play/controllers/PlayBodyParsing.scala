@@ -1,5 +1,7 @@
 package de.zalando.play.controllers
 
+import java.io.File
+
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -8,14 +10,16 @@ import de.zalando.play.controllers.WrappedBodyParsers.Parser
 import play.api.Logger
 import play.api.http.Status._
 import play.api.http._
+import play.api.libs.Files.TemporaryFile
 import play.api.libs.iteratee._
+import play.api.mvc.MultipartFormData.FilePart
 import play.api.mvc.Results.Status
 import play.api.mvc._
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
-import scala.util.{Left, Right, Either}
+import scala.util.{Either, Left, Right}
 import scala.util.control.NonFatal
 
 /**
@@ -28,10 +32,10 @@ object WriterFactories {
     * Contains proper Jackson Factories for different mime types
     * JsonFactory is a default
     */
-  val factories = Map(
+  val factories: Map[String, JsonFactory] = Map(
     "application/json" -> jsonFactory,
     "text/x-yaml" -> new YAMLFactory() // TODO implement workaround for bug in yaml parser
-  )
+  ).withDefaultValue(jsonFactory)
 }
 object PlayBodyParsing extends PlayBodyParsing {
 
@@ -65,7 +69,7 @@ object PlayBodyParsing extends PlayBodyParsing {
                       customParsers: Seq[(String, Parser[Option[T]])],
                       errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
                   (implicit oTag: ClassTag[Option[T]], tag: ClassTag[T]): BodyParser[Option[T]] =
-    tolerantBodyParser[Option[T]](maxLength, errorMsg) { (requestHeader, bytes) =>
+    tolerantBodyParser[Option[T]](maxLength.toLong, errorMsg) { (requestHeader, bytes) =>
       if (bytes.nonEmpty) {
         parserCore(mimeType, customParsers, requestHeader, bytes)
       } else
@@ -86,7 +90,7 @@ object PlayBodyParsing extends PlayBodyParsing {
                    customParsers: Seq[(String, Parser[T])],
                    errorMsg: String, maxLength: Int = parse.DefaultMaxTextLength)
                   (implicit tag: ClassTag[T]): BodyParser[T] =
-    tolerantBodyParser[T](maxLength, errorMsg) { (requestHeader, bytes) =>
+    tolerantBodyParser[T](maxLength.toLong, errorMsg) { (requestHeader, bytes) =>
       parserCore(mimeType, customParsers, requestHeader, bytes)
     }
 
@@ -163,10 +167,20 @@ trait PlayBodyParsing extends BodyParsers {
   /**
     * Helper method to parse parameters sent as Headers
     */
-  def fromHeaders[T](key: String, headers: Map[String, Seq[String]], default: Option[T] = None)(implicit binder: QueryStringBindable[T]): Either[String,T] =
+  def fromParameters[T](place: String)(key: String, headers: Map[String, Seq[String]], default: Option[T] = None)(implicit binder: QueryStringBindable[T]): Either[String,T] =
     binder.bind(key, headers).getOrElse {
-      default.map(d => Right(d)).getOrElse(Left("Missing header parameter(s): " + key))
+      default.map(d => Right(d)).getOrElse(Left(s"Missing $place parameter(s) for '$key'"))
     }
+
+  /**
+    * Helper methods to parse files
+    */
+  def fromFileOptional[T <: Option[File]](name: String, file: Option[FilePart[TemporaryFile]]) = Right(file.map(_.ref.file))
+
+  def fromFileRequired[T <: File](name: String, file: Option[FilePart[TemporaryFile]]) = file match {
+    case Some(filePart) => Right(filePart.ref.file)
+    case None => Left(s"Missing file parameter for '$name'")
+  }
 
   /**
    * This is private in play codebase. Copy-pasted it.

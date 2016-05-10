@@ -12,19 +12,20 @@ import PlayValidations._
 import scala.util._
 
 
+/**
+ * This controller is re-generated after each change in the specification.
+ * Please only place your hand-written code between appropriate comments in the body of the controller.
+ */
 
 package simple.petstore.api.yaml {
 
     class SimplePetstoreApiYaml extends SimplePetstoreApiYamlBase {
-        val addPet = addPetAction { (pet: NewPet) =>
-            
-            
-
+        val addPet = addPetAction { (pet: NewPet) =>  
+            // ----- Start of unmanaged code area for action  SimplePetstoreApiYaml.addPet
             Failure(???)
-
-            
-
-        } //////// EOF ////////  addPetAction
+            // ----- End of unmanaged code area for action  SimplePetstoreApiYaml.addPet
+        }
+    
     }
 }
 package simple.petstore.api.yaml {
@@ -32,30 +33,20 @@ package simple.petstore.api.yaml {
     class Dashboard extends DashboardBase {
         val methodLevel = methodLevelAction { input: (PetsGetTags, PetsGetLimit) =>
             val (tags, limit) = input
-            
-
+            // ----- Start of unmanaged code area for action  Dashboard.methodLevel
             Failure(???)
-
-            
-
-        } //////// EOF ////////  methodLevelAction
-        val pathLevelGet = pathLevelGetAction { (id: Long) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  Dashboard.methodLevel
+        }
+        val pathLevelGet = pathLevelGetAction { (id: Long) =>  
+            // ----- Start of unmanaged code area for action  Dashboard.pathLevelGet
             Failure(???)
-
-            
-
-        } //////// EOF ////////  pathLevelGetAction
-        val pathLevelDelete = pathLevelDeleteAction { (id: Long) =>
-            
-            
-
+            // ----- End of unmanaged code area for action  Dashboard.pathLevelGet
+        }
+        val pathLevelDelete = pathLevelDeleteAction { (id: Long) =>  
+            // ----- Start of unmanaged code area for action  Dashboard.pathLevelDelete
             Failure(???)
-
-            
-
-        } //////// EOF ////////  pathLevelDeleteAction
+            // ----- End of unmanaged code area for action  Dashboard.pathLevelDelete
+        }
+    
     }
 }

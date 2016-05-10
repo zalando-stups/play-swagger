@@ -6,6 +6,7 @@ import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
 
+import scala.language.existentials
 /**
   * @author  slasch 
   * @since   21.12.2015.
@@ -66,7 +67,8 @@ class ScalaPlayTypeEnricher(val app: StrictModel) extends Transformation[Type] w
 /**
   * Enriches AST with information related to the specification as whole
   */
-class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictModel] with MarshallersStep {
+class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictModel]
+  with MarshallersStep with SecurityStep {
 
   override def data = Seq(Reference.root -> app)
 

@@ -3,7 +3,7 @@ package admin
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
 
@@ -17,7 +17,8 @@ trait DashboardBase extends Controller with PlayBodyParsing {
     private val errorToStatusindex: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def indexAction = (f: indexActionType) => Action { request =>
+    val indexActionConstructor  = Action
+    def indexAction = (f: indexActionType) => indexActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { indexResponseMimeType =>
@@ -25,9 +26,11 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result = processValidindexRequest(f)()(possibleWriters, indexResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

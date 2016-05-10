@@ -3,9 +3,11 @@ package echo
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
+
+import de.zalando.play.controllers.PlayPathBindables
 
 
 
@@ -17,7 +19,8 @@ trait EchoHandlerBase extends Controller with PlayBodyParsing {
     private val errorToStatusmethod: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def methodAction = (f: methodActionType) => Action { request =>
+    val methodActionConstructor  = Action
+    def methodAction = (f: methodActionType) => methodActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { methodResponseMimeType =>
@@ -25,9 +28,11 @@ trait EchoHandlerBase extends Controller with PlayBodyParsing {
                     200 -> anyToWritable[Null]
             )
             
+            
 
                 val result = processValidmethodRequest(f)()(possibleWriters, methodResponseMimeType)
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -61,13 +66,22 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def postAction = (f: postActionType) => (name: PostName, year: PostName) => Action { request =>
+    val postActionConstructor  = Action
+    def postAction = (f: postActionType) => postActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[PostResponses200]
             )
+            
+            val eitherFormParameters = FormDataParser.postParseForm(request)
+            eitherFormParameters match {
+                case Left(problem: Seq[String]) =>
+                    val msg = problem.mkString("\n")
+                    BadRequest(msg)
+
+                case Right((name, year)) =>
             
 
                 val result =
@@ -78,6 +92,9 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
+            }
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
@@ -108,13 +125,15 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
     private val errorToStatusgettest_pathById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
-    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => Action { request =>
+    val gettest_pathByIdActionConstructor  = Action
+    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => gettest_pathByIdActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettest_pathByIdResponseMimeType =>
                 val possibleWriters = Map(
                     200 -> anyToWritable[Null]
             )
+            
             
 
                 val result =
@@ -125,6 +144,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                                 BadRequest(l)
                         }
                 result
+            
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 

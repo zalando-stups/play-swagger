@@ -17,17 +17,17 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
   describe("The swagger parser") {
     it("should read valid vendor extensions") {
       implicit val (uri, swagger) = StrictYamlParser.parse(ok)
-      swagger.info.vendorExtensions contains "x-info-extension"
-      swagger.paths("/").vendorExtensions contains "x-path-extension"
-      swagger.paths("/").get.vendorExtensions contains "x-operation-extension"
-      swagger.paths("/").get.responses("200").vendorExtensions contains "x-response-extension"
-      swagger.tags.head.vendorExtensions contains "x-tag-extension"
-      swagger.securityDefinitions("internalApiKey").vendorExtensions contains "x-security-extension"
+      swagger.info.vendorExtensions contains "x-info-extension" mustBe true
+      swagger.paths("/").vendorExtensions contains "x-path-extension" mustBe true
+      swagger.paths("/").get.vendorExtensions contains "x-operation-extension" mustBe true
+      swagger.paths("/").get.responses("200").vendorExtensions contains "x-response-extension" mustBe true
+      swagger.tags.head.vendorExtensions contains "x-tag-extension" mustBe true
+      swagger.securityDefinitions("internalApiKey").vendorExtensions contains "x-security-extension" mustBe true
     }
     it("should reject invalid vendor extensions") {
       intercept[JsonMappingException] {
         StrictYamlParser.parse(nok)
-      }
+      }.getClass mustBe classOf[JsonMappingException]
     }
     it("should read hypermedia definitions") {
       implicit val (uri, swagger) = StrictYamlParser.parse(hypermediaOk)
@@ -50,7 +50,7 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
     it("should reject hypermedia definitions with incorrect initial state") {
       intercept[ParserException] {
         StrictYamlParser.parse(hypermediaNOk2)
-      }
+      }.getClass mustBe classOf[ParserException]
     }
   }
 }
