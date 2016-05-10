@@ -30,7 +30,7 @@ trait MarshallersStep extends EnrichmentStep[StrictModel] {
     val requiredPairs = for {
       call <- spec.calls
       mime <- call.mimeOut.map(_.name).diff(WriterFactories.factories.keys.toSet)
-      resultTypeRef <- call.resultTypes.values ++ call.defaultResult.toSeq
+      resultTypeRef <- call.resultTypes.results.values ++ call.resultTypes.default.toSeq
       resultType = typeNameDenotation(table, resultTypeRef.name)
     } yield (mime, resultType)
     requiredPairs map { p =>

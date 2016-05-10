@@ -1,6 +1,7 @@
 package de.zalando.play.swagger.sbt
 
 import de.zalando.apifirst.Application.StrictModel
+import de.zalando.apifirst.Hypermedia
 import de.zalando.play.compiler.SwaggerCompilationTask
 
 /**
@@ -18,6 +19,11 @@ object SwaggerPrettyPrinter {
     val params      = ast.params
     val lines       = params.toSeq.sortBy(_._1.name.parts.size).map(p => formatText(p._1.name.toString)(dyellow,black) + " → " + p._2)
     withFileName("Parameters:\t", task, lines)
+  }
+
+  def states(task: SwaggerCompilationTask, ast: StrictModel): Seq[String] = {
+    val lines       = Hypermedia.State.toDot(ast.stateTransitions)
+    withFileName("State Diagram:\t", task, lines)
   }
 
   def withFileName(prefix: String, task: SwaggerCompilationTask, lines: Seq[String]): Seq[String] =

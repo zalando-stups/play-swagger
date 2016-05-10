@@ -4,6 +4,7 @@ import java.net.URI
 
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Http.{MimeType, Verb}
+import de.zalando.apifirst.Hypermedia.{NamedState, Self, State}
 import de.zalando.apifirst.Security.Constraint
 import de.zalando.apifirst._
 import de.zalando.apifirst.naming.{Path, Reference}
@@ -32,11 +33,11 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
       astPath             = uriFragmentToReference(url)
       params              = parameters(path, operation, namePrefix)
       handlerCall         <- handler(operation, path, params, operationName, astPath).toSeq
-      (results, default)  = resultTypes(namePrefix, operation)
+      (types, states)     = resultTypes(namePrefix, operation)
       (mimeIn, mimeOut)   = mimeTypes(operation)
       errMappings         = errorMappings(path, operation)
       security            = securityRequirements(operation)
-    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, results, default, security.toSet)
+    } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, types, states, security.toSet)
   }
 
   private def securityRequirements(operation: Operation) = {
@@ -55,21 +56,26 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
 
   private def fromPaths(paths: Paths, basePath: BasePath) = Option(paths).toSeq.flatten flatMap fromPath(basePath)
 
-  private def resultTypes(prefix: Reference, operation: Operation): (Map[Int,ParameterRef], Option[ParameterRef]) = {
+  private def resultTypes(prefix: Reference, operation: Operation): (TypesResponseInfo, StateResponseInfo) = {
     val default = operation.responses collectFirst {
       case ("default", definition)  =>
-        ParameterRef(prefix / Reference.responses / "default")
+        ParameterRef(prefix / Reference.responses / "default") -> targetState(definition)
     }
     val responses = operation.responses collect {
       case (code, definition) if code.forall(_.isDigit) =>
-        Some(code.toInt -> ParameterRef(prefix / Reference.responses / code))
+        Some((code.toInt, (ParameterRef(prefix / Reference.responses / code), targetState(definition))))
       case ("default", definition)  => None
       case (other, _) =>
         println(s"Expected numeric error code or 'default' for response, but was $other")
         None
     }
-    (responses.flatten.toMap, default)
+    val resultMap = responses.flatten.toMap
+    val types = resultMap.map { case (code, (ref, state)) => code -> ref }
+    val states = resultMap.map { case (code, (ref, state)) => code -> state }
+    (TypesResponseInfo(types, default.map(_._1)), StateResponseInfo(states, default.map(_._2)))
   }
+
+  def targetState(definition: Response[_]): State = definition.targetState.map(NamedState.apply).getOrElse(Self)
 
   private def parameters(path: PathItem, operation: Operation, namePrefix: Reference) = {
     val pathParams        = fromParameterList(path.parameters, namePrefix)

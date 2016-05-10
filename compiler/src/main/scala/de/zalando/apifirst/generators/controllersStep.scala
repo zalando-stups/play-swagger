@@ -116,6 +116,16 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
   private def securityChecks(security: Seq[Constraint]) =
     security.map(s => Map("name" -> securityCheck(s.name), "params" -> securityParamValue(s)))
 
+  override def actionResults(call: ApiCall)(table: DenotationTable): (Seq[Map[String, Any]], Option[String]) = {
+    val resultTypes = call.resultTypes.results.toSeq map { case(code, ref) =>
+        Map("code" -> code, "type" -> singleResultType(table)(ref))
+    }
+    val default = call.resultTypes.default.map(singleResultType(table))
+    if (default.isEmpty && resultTypes.isEmpty)
+      println("Could not found any response code definition. It's not possible to define any marshallers. This will lead to the error at runtime.")
+    (resultTypes, default)
+  }
+
   private def securityParams(security: Set[Constraint]) = security collect {
     case OAuth2Constraint(_, _, scopes) => Map("name" -> "scopes", "type" -> "String*")
   }

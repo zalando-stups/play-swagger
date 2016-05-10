@@ -118,16 +118,16 @@ trait ActionResults extends EnrichmentStep[ApiCall] {
   import de.zalando.apifirst.ScalaName._
 
   def actionResults(call: ApiCall)(table: DenotationTable): (Seq[Map[String, Any]], Option[String]) = {
-    val resultTypes = call.resultTypes.toSeq map { case(code, ref) =>
+    val resultTypes = call.resultTypes.results.toSeq map { case(code, ref) =>
       Map("code" -> code, "type" -> singleResultType(table)(ref))
     }
-    val default = call.defaultResult.map(singleResultType(table))
+    val default = call.resultTypes.default.map(singleResultType(table))
     if (default.isEmpty && resultTypes.isEmpty)
       println("Could not found any response code definition. It's not possible to define any marshallers. This will lead to the error at runtime.")
     (resultTypes, default)
   }
 
-  private def singleResultType(table: DenotationTable)(ref: ParameterRef): String = {
+  def singleResultType(table: DenotationTable)(ref: ParameterRef): String = {
     val tpe = app.findType(ref.name)
     tpe match {
       case c: Container =>

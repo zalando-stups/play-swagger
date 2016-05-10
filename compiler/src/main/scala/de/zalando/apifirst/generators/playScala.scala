@@ -17,7 +17,7 @@ class ScalaGenerator(val strictModel: StrictModel) {
 
   val denotationTable = AstScalaPlayEnricher(strictModel)
 
-  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName, securityDefinitions) = strictModel
+  val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName, stateTransitions, securityDefinitions) = strictModel
 
   val testsTemplateName = "play_scala_test"
   val validatorsTemplateName = "play_validation"

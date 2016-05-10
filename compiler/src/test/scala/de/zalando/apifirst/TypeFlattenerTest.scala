@@ -16,7 +16,7 @@ import scala.language.implicitConversions
 class TypeFlattenerTest extends FunSpec with MustMatchers with ExpectedResults {
 
   implicit def types2model(types: TypeLookupTable): StrictModel =
-    StrictModel.apply(Nil, types, Map.empty, Map.empty, "", None, Map.empty)
+    StrictModel.apply(Nil, types, Map.empty, Map.empty, "", None, Map.empty, Map.empty)
 
   private val noMeta = TypeMeta(None)
 

@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import java.net.URL
 
-import com.fasterxml.jackson.annotation.{JsonProperty, JsonAnySetter}
+import com.fasterxml.jackson.annotation.{JsonAnySetter, JsonProperty}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
@@ -540,7 +540,9 @@ object strictModel {
     schema: SchemaOrFileSchema[T],
     headers: Headers,
     examples: Examples
-  ) extends ResponseValue with VendorExtensions
+  ) extends ResponseValue with VendorExtensions {
+    def targetState = vendorExtensions.get("x-api-first-target-state")
+  }
 
 
   /**
@@ -813,12 +815,17 @@ object strictModel {
   trait VendorExtensions { self =>
     private[this] val extensions = new mutable.HashMap[String, String]
     private[this] val errorMappings = new mutable.HashMap[String, Seq[Class[Exception]]]
-
+    private[this] val transitionDefinitions = new mutable.HashMap[String, Map[String, Map[String, Any]]]
     @JsonAnySetter
     def handleUnknown(key: String, value: Any): Unit = {
       val _ = value match {
         case str: String if key.startsWith("x-") =>
           extensions += key -> str
+        case trans: Map[String @unchecked, Map[String, Map[String, Any]] @unchecked]
+          if key.equalsIgnoreCase("x-api-first-transitions") =>
+          transitionDefinitions ++= trans
+        case trans if key.equalsIgnoreCase("x-api-first-transitions") =>
+          throw new IllegalArgumentException("Malformed transition definitions")
         case mapping: Map[_, _] if key.startsWith("x-") =>
           import scala.util.control.Exception._
           handling(classOf[ClassNotFoundException]) by { e =>
@@ -831,7 +838,7 @@ object strictModel {
             }
             errorMappings ++= errors
           }
-        case _ =>
+        case other =>
           throw new UnrecognizedPropertyException(
             s"Unknown property: $key",
             null,
@@ -843,6 +850,7 @@ object strictModel {
     }
     lazy val vendorExtensions = extensions.toMap
     lazy val vendorErrorMappings = errorMappings.toMap
+    lazy val transitions: Map[String, Map[String, Map[String, Any]]] = transitionDefinitions.toMap
   }
 
   type Many[T]                = List[T]
@@ -882,6 +890,9 @@ object strictModel {
   type SchemaProperties       = AdditionalProperties[SchemaOrFileSchema[_]]
   type Paths                  = AdditionalProperties[PathItem] with VendorExtensions
   type Oauth2Scopes           = AdditionalProperties[String]
+  type Transitions            = AdditionalProperties[TargetStates]
+  type TargetStates           = AdditionalProperties[TransitionProp]
+  type TransitionProp         = AdditionalProperties[Any]
 
   type SchemaOrReference[T]   = Either[Schema[T], JsonReference]
   type SchemaOrBoolean[T]     = Either[SchemaOrReference[T], Boolean]
