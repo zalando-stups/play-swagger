@@ -74,9 +74,9 @@ package object yaml {
     case class LocationsSearchGetResponses200(data: LocationsSearchGetResponses200Data) 
     case class MediaImagesOpt(low_resolution: MediaMedia_idGetResponses200VideosStandard_resolution, thumbnail: MediaMedia_idGetResponses200VideosStandard_resolution, standard_resolution: MediaMedia_idGetResponses200VideosStandard_resolution) 
 
-    implicit val bindable_BigIntegerQuery = PlayPathBindables.queryBindableBigInteger
+    implicit val bindable_BigIntQuery = PlayPathBindables.queryBindableBigInt
     implicit val bindable_BigDecimalPath = PlayPathBindables.pathBindableBigDecimal
-    implicit val bindable_BigIntegerPath = PlayPathBindables.pathBindableBigInteger
+    implicit val bindable_BigIntPath = PlayPathBindables.pathBindableBigInt
     implicit val bindable_BigDecimalQuery = PlayPathBindables.queryBindableBigDecimal
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
     implicit val bindable_OptionBigIntQuery = PlayPathBindables.createOptionQueryBindable[BigInt]

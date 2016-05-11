@@ -19,6 +19,6 @@ package object yaml {
 
     case class Pet(name: PetName, birthday: PetBirthday) 
 
-    implicit val bindable_BigIntegerQuery = PlayPathBindables.queryBindableBigInteger
+    implicit val bindable_BigIntQuery = PlayPathBindables.queryBindableBigInt
 
 }

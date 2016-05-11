@@ -32,7 +32,7 @@ package object yaml {
     case class Error(code: ErrorCode, message: PlantPlant_id, fields: PlantPlant_id) 
     case class WaterNeeds(amount: PlantPlant_id, period: PlantPlant_id) 
 
-    implicit val bindable_BigIntegerQuery = PlayPathBindables.queryBindableBigInteger
+    implicit val bindable_BigIntQuery = PlayPathBindables.queryBindableBigInt
     implicit val bindable_OptionBigIntQuery = PlayPathBindables.createOptionQueryBindable[BigInt]
 
 }

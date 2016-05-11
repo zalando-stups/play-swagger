@@ -20,7 +20,7 @@ package object yaml {
     case class BothPostResponses200(name: BothPostResponses200Name, year: BothPostYear, avatarSize: BothPostYear, ringtoneSize: BothPostYear) 
 
     implicit val bindable_FileQuery = PlayPathBindables.queryBindableFile
-    implicit val bindable_BigIntegerQuery = PlayPathBindables.queryBindableBigInteger
+    implicit val bindable_BigIntQuery = PlayPathBindables.queryBindableBigInt
     implicit val bindable_OptionFileQuery = PlayPathBindables.createOptionQueryBindable[File]
     implicit val bindable_OptionBigIntQuery = PlayPathBindables.createOptionQueryBindable[BigInt]
 
