@@ -1,4 +1,4 @@
-package string_formats.yaml
+package nested_objects_validation.yaml
 
 import de.zalando.play.controllers._
 import org.scalacheck._
@@ -22,17 +22,11 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
-import de.zalando.play.controllers.Base64String
-import Base64String._
-import de.zalando.play.controllers.BinaryString
-import BinaryString._
-import org.joda.time.DateTime
-import org.joda.time.LocalDate
 
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
-    class String_formatsYamlSpec extends Specification {
+    class Nested_objects_validationYamlSpec extends Specification {
         def toPath[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
         def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = Option(binder.unbind(key, value)).getOrElse("")
         def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
@@ -52,24 +46,21 @@ import Generators._
         mapper.readValue(content, expectedType)
 
 
-    "GET /" should {
-        def testInvalidInput(input: (BinaryString, GetBase64, GetDate, GetDate_time)) = {
+    "GET /api/" should {
+        def testInvalidInput(nestedObject: NestedObjects) = {
 
-            val (petId, base64, date, date_time) = input
 
-            val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
+            val url = s"""/api/"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/json", 
-            
-               "application/yaml"
+               "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
 
-                    val parsed_petId = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(petId)
+                    val parsed_nestedObject = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(nestedObject)
 
-                val request = FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)
+                val request = FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_nestedObject)
                 val path =
                     if (acceptHeader == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
@@ -84,11 +75,11 @@ import Generators._
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
-                val errors = new GetValidator(petId, base64, date, date_time).errors
+                val errors = new GetValidator(nestedObject).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_petId + "]") |: all(
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_nestedObject + "]") |: all(
                     requestStatusCode_(path) ?= BAD_REQUEST ,
                     requestContentType_(path) ?= Some(acceptHeader),
                     errors.nonEmpty ?= true,
@@ -98,22 +89,19 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (BinaryString, GetBase64, GetDate, GetDate_time)) = {
-            val (petId, base64, date, date_time) = input
+        def testValidInput(nestedObject: NestedObjects) = {
             
-            val parsed_petId = parserConstructor("application/json").writeValueAsString(petId)
+            val parsed_nestedObject = parserConstructor("application/json").writeValueAsString(nestedObject)
             
-            val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
+            val url = s"""/api/"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/json", 
-            
-               "application/yaml"
+               "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
 
-                val request = FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_petId)
+                val request = FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_nestedObject)
                 val path =
                     if (acceptHeader == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
@@ -128,7 +116,7 @@ import Generators._
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
-                val errors = new GetValidator(petId, base64, date, date_time).errors
+                val errors = new GetValidator(nestedObject).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     200 -> classOf[Null]
                 )
@@ -141,7 +129,7 @@ import Generators._
                     parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
                 }
 
-                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_petId + "]") |: all(
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_nestedObject + "]") |: all(
                     possibleResponseTypes.contains(expectedCode) ?= true,
                     parsedApiResponse.isSuccess ?= true,
                     requestContentType_(path) ?= Some(acceptHeader),
@@ -153,28 +141,20 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        petId <- BinaryStringGenerator
-                        base64 <- GetBase64Generator
-                        date <- GetDateGenerator
-                        date_time <- GetDate_timeGenerator
-                    
-                } yield (petId, base64, date, date_time)
-            val inputs = genInputs suchThat { case (petId, base64, date, date_time) =>
-                new GetValidator(petId, base64, date, date_time).errors.nonEmpty
+                    nestedObject <- NestedObjectsGenerator
+                } yield nestedObject
+            val inputs = genInputs suchThat { nestedObject =>
+                new GetValidator(nestedObject).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    petId <- BinaryStringGenerator
-                    base64 <- GetBase64Generator
-                    date <- GetDateGenerator
-                    date_time <- GetDate_timeGenerator
-                
-            } yield (petId, base64, date, date_time)
-            val inputs = genInputs suchThat { case (petId, base64, date, date_time) =>
-                new GetValidator(petId, base64, date, date_time).errors.isEmpty
+                nestedObject <- NestedObjectsGenerator
+            } yield nestedObject
+            val inputs = genInputs suchThat { nestedObject =>
+                new GetValidator(nestedObject).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)

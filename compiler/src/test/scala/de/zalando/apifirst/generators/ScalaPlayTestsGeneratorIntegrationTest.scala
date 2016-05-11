@@ -15,10 +15,12 @@ class ScalaPlayTestsGeneratorIntegrationTest extends FunSpec with MustMatchers w
 
   val exampleFixtures = new File("compiler/src/test/resources/examples").listFiles
 
+  val validationFixtures = new File("compiler/src/test/resources/validations").listFiles
+
   def toTest: File => Boolean = f => f.getName.endsWith(".yaml")
 
   describe("ScalaTestGenerator should generate test files") {
-    (modelFixtures ++ exampleFixtures ).filter(toTest).foreach { file =>
+    (modelFixtures ++ exampleFixtures ++ validationFixtures).filter(toTest).foreach { file =>
       testScalaTestsGenerator(file)
     }
   }

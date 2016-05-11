@@ -7,6 +7,11 @@ import de.zalando.play.controllers.SwaggerSecurityExtractors._
 import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
 
+object SecurityExtractorsExecutionContext {
+    // TODO override with proper ExecutionContext instance
+    implicit val ec = scala.concurrent.ExecutionContext.global
+}
+
 trait SecurityExtractors {
     def api_key_Extractor[User >: Any](): RequestHeader => Future[Option[User]] =
         header => headerApiKey("api_key")(header) { (apiKey: String) =>
@@ -19,3 +24,4 @@ trait SecurityExtractors {
     implicit val unauthorizedContentWriter = ???
     def unauthorizedContent(req: RequestHeader) = Results.Unauthorized(???)
 }
+

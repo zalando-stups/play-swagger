@@ -53,7 +53,9 @@ import Generators._
 
             val url = s"""/v1/pets/${toPath(id)}"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/json"
+               "application/json", 
+            
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -93,7 +95,9 @@ import Generators._
             
             val url = s"""/v1/pets/${toPath(id)}"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/json"
+               "application/json", 
+            
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =

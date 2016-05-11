@@ -6,6 +6,7 @@ import de.zalando.play.controllers.{FutureAuthenticatedBuilder,PlayBodyParsing}
 
 
 trait BasicAuthApiYamlSecurity extends SecurityExtractors {
+    import SecurityExtractorsExecutionContext.ec
     
     object getSecureAction
  extends FutureAuthenticatedBuilder(

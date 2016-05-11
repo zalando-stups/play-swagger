@@ -7,6 +7,7 @@ import de.zalando.play.controllers.ArrayWrapper
 
 
 trait SecurityApiYamlSecurity extends SecurityExtractors {
+    import SecurityExtractorsExecutionContext.ec
     
     class getPetsByIdSecureAction(scopes: String*)
  extends FutureAuthenticatedBuilder(

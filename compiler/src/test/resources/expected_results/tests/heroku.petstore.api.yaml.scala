@@ -54,7 +54,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -99,7 +99,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -174,7 +174,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -216,7 +216,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -291,7 +291,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -333,7 +333,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -408,7 +408,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -453,7 +453,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =

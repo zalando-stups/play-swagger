@@ -170,7 +170,13 @@ import Generators._
 
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/json"
+               "application/json", 
+            
+               "application/xml", 
+            
+               "text/xml", 
+            
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -211,7 +217,13 @@ import Generators._
             
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/json"
+               "application/json", 
+            
+               "application/xml", 
+            
+               "text/xml", 
+            
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -288,7 +300,13 @@ import Generators._
 
             val url = s"""/api/pets/${toPath(id)}"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/json"
+               "application/json", 
+            
+               "application/xml", 
+            
+               "text/xml", 
+            
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -328,7 +346,13 @@ import Generators._
             
             val url = s"""/api/pets/${toPath(id)}"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/json"
+               "application/json", 
+            
+               "application/xml", 
+            
+               "text/xml", 
+            
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =

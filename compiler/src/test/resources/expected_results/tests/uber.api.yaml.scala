@@ -53,7 +53,9 @@ import Generators._
             val (offset, limit) = input
 
             val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -92,7 +94,9 @@ import Generators._
             val (offset, limit) = input
             
             val url = s"""/v1/history?${toQuery("offset", offset)}&${toQuery("limit", limit)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -168,7 +172,9 @@ import Generators._
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
 
             val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -207,7 +213,9 @@ import Generators._
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
             
             val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -287,7 +295,9 @@ import Generators._
             val (latitude, longitude) = input
 
             val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -326,7 +336,9 @@ import Generators._
             val (latitude, longitude) = input
             
             val url = s"""/v1/products?${toQuery("latitude", latitude)}&${toQuery("longitude", longitude)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -402,7 +414,9 @@ import Generators._
             val (start_latitude, start_longitude, end_latitude, end_longitude) = input
 
             val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -441,7 +455,9 @@ import Generators._
             val (start_latitude, start_longitude, end_latitude, end_longitude) = input
             
             val url = s"""/v1/estimates/price?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("end_latitude", end_latitude)}&${toQuery("end_longitude", end_longitude)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)

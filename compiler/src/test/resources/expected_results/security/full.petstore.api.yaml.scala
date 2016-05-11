@@ -8,6 +8,7 @@ import org.joda.time.DateTime
 
 
 trait FullPetstoreApiYamlSecurity extends SecurityExtractors {
+    import SecurityExtractorsExecutionContext.ec
     
     class findPetsByTagsSecureAction(scopes: String*)
  extends FutureAuthenticatedBuilder(

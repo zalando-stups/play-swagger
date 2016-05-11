@@ -13,7 +13,8 @@ trait ArrayWrapper[T] {
   def items: Seq[T]
   def separator: Char
   def copy(newItems: Seq[T]): ArrayWrapper[T]
-  def map[B](f: T => B) = items map f
+  def map[B](f: T => B): Seq[B] = items map f
+  def find(f: T => Boolean): Option[T] = items find f
 }
 
 case class CsvArrayWrapper[T](items: Seq[T]) extends ArrayWrapper[T] {

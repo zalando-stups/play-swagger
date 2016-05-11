@@ -5,6 +5,11 @@ import scala.concurrent.Future
 import play.api.mvc._
 import de.zalando.play.controllers.SwaggerSecurityExtractors._
 
+object SecurityExtractorsExecutionContext {
+    // TODO override with proper ExecutionContext instance
+    implicit val ec = scala.concurrent.ExecutionContext.global
+}
+
 trait SecurityExtractors {
     def basicAuth_Extractor[User >: Any](): RequestHeader => Future[Option[User]] =
         header => basicAuth(header) { (username: String, password: String) =>
@@ -13,3 +18,4 @@ trait SecurityExtractors {
     implicit val unauthorizedContentWriter = ???
     def unauthorizedContent(req: RequestHeader) = Results.Unauthorized(???)
 }
+

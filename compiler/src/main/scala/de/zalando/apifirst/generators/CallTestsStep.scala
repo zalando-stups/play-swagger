@@ -51,7 +51,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
   }
 
   def acceptHeader(call: ApiCall): Set[Map[String, String]] =
-    call.mimeIn.map(_.name).map { header =>
+    call.mimeOut.map(_.name).map { header =>
       Map("name" -> header)
     }
 

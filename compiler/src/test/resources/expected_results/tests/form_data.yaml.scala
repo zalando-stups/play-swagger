@@ -54,7 +54,7 @@ import Generators._
 
             val url = s"""/form_data/multipart"""
             val acceptHeaders: Seq[String] = Seq(
-               "multipart/form-data"
+               "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -95,7 +95,7 @@ import Generators._
             
             val url = s"""/form_data/multipart"""
             val acceptHeaders: Seq[String] = Seq(
-               "multipart/form-data"
+               "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -175,9 +175,7 @@ import Generators._
 
             val url = s"""/form_data/both"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/x-www-form-urlencoded", 
-            
-               "multipart/form-data"
+               "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -218,9 +216,7 @@ import Generators._
             
             val url = s"""/form_data/both"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/x-www-form-urlencoded", 
-            
-               "multipart/form-data"
+               "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -302,7 +298,7 @@ import Generators._
 
             val url = s"""/form_data/url-encoded"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/x-www-form-urlencoded"
+               "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -343,7 +339,7 @@ import Generators._
             
             val url = s"""/form_data/url-encoded"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/x-www-form-urlencoded"
+               "application/json"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =

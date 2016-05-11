@@ -6,6 +6,7 @@ import de.zalando.play.controllers.{FutureAuthenticatedBuilder,PlayBodyParsing}
 
 
 trait InstagramApiYamlSecurity extends SecurityExtractors {
+    import SecurityExtractorsExecutionContext.ec
     
     class getmediaByMedia_idLikesSecureAction(scopes: String*)
  extends FutureAuthenticatedBuilder(

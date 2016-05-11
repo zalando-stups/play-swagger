@@ -53,7 +53,11 @@ import Generators._
 
 
             val url = s"""/v2/users"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -94,7 +98,11 @@ import Generators._
             val parsed_body = parserConstructor("Null").writeValueAsString(body)
             
             val url = s"""/v2/users"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -405,7 +413,11 @@ import Generators._
 
 
             val url = s"""/v2/pets/findByStatus?${toQuery("status", status)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -443,7 +455,11 @@ import Generators._
         def testValidInput(status: PetsFindByStatusGetStatus) = {
             
             val url = s"""/v2/pets/findByStatus?${toQuery("status", status)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -515,7 +531,11 @@ import Generators._
 
 
             val url = s"""/v2/stores/order"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -556,7 +576,11 @@ import Generators._
             val parsed_body = parserConstructor("application/json").writeValueAsString(body)
             
             val url = s"""/v2/stores/order"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -628,7 +652,11 @@ import Generators._
 
 
             val url = s"""/v2/users/createWithArray"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -669,7 +697,11 @@ import Generators._
             val parsed_body = parserConstructor("Null").writeValueAsString(body)
             
             val url = s"""/v2/users/createWithArray"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -739,7 +771,11 @@ import Generators._
             val (username, password) = input
 
             val url = s"""/v2/users/login?${toQuery("username", username)}&${toQuery("password", password)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -778,7 +814,11 @@ import Generators._
             val (username, password) = input
             
             val url = s"""/v2/users/login?${toQuery("username", username)}&${toQuery("password", password)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -854,7 +894,11 @@ import Generators._
 
 
             val url = s"""/v2/stores/order/${toPath(orderId)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -892,7 +936,11 @@ import Generators._
         def testValidInput(orderId: String) = {
             
             val url = s"""/v2/stores/order/${toPath(orderId)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -965,7 +1013,11 @@ import Generators._
 
 
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1003,7 +1055,11 @@ import Generators._
         def testValidInput(petId: Long) = {
             
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1076,7 +1132,11 @@ import Generators._
 
 
             val url = s"""/v2/users/${toPath(username)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1114,7 +1174,11 @@ import Generators._
         def testValidInput(username: String) = {
             
             val url = s"""/v2/users/${toPath(username)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1187,7 +1251,11 @@ import Generators._
 
 
             val url = s"""/v2/users/createWithList"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1228,7 +1296,11 @@ import Generators._
             val parsed_body = parserConstructor("Null").writeValueAsString(body)
             
             val url = s"""/v2/users/createWithList"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1299,7 +1371,9 @@ import Generators._
 
             val url = s"""/v2/pets/${toPath(petId)}"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/x-www-form-urlencoded"
+               "application/json", 
+            
+               "application/xml"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -1340,7 +1414,9 @@ import Generators._
             
             val url = s"""/v2/pets/${toPath(petId)}"""
             val acceptHeaders: Seq[String] = Seq(
-               "application/x-www-form-urlencoded"
+               "application/json", 
+            
+               "application/xml"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -1418,7 +1494,11 @@ import Generators._
 
 
             val url = s"""/v2/users/${toPath(username)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1456,7 +1536,11 @@ import Generators._
         def testValidInput(username: String) = {
             
             val url = s"""/v2/users/${toPath(username)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1528,7 +1612,11 @@ import Generators._
 
 
             val url = s"""/v2/stores/order/${toPath(orderId)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1566,7 +1654,11 @@ import Generators._
         def testValidInput(orderId: String) = {
             
             val url = s"""/v2/stores/order/${toPath(orderId)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1639,7 +1731,11 @@ import Generators._
             val (api_key, petId) = input
 
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq(
@@ -1680,7 +1776,11 @@ import Generators._
             val (api_key, petId) = input
             
             val url = s"""/v2/pets/${toPath(petId)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq(
@@ -1757,7 +1857,11 @@ import Generators._
 
 
             val url = s"""/v2/pets/findByTags?${toQuery("tags", tags)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1795,7 +1899,11 @@ import Generators._
         def testValidInput(tags: PetsFindByStatusGetStatus) = {
             
             val url = s"""/v2/pets/findByTags?${toQuery("tags", tags)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1868,7 +1976,11 @@ import Generators._
             val (username, body) = input
 
             val url = s"""/v2/users/${toPath(username)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1910,7 +2022,11 @@ import Generators._
             val parsed_body = parserConstructor("application/json").writeValueAsString(body)
             
             val url = s"""/v2/users/${toPath(username)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/xml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)

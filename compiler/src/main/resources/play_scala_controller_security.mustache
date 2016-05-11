@@ -10,6 +10,7 @@ import {{import.name}}
 {{for controller in controllers}}
 {{if controller.security_trait}}
 trait {{controller.security_trait}} extends SecurityExtractors {
+    import SecurityExtractorsExecutionContext.ec
     {{for m in controller.methods}}{{if m.needs_security}}
     {{if m.security_params}}
     class {{m.secure_action}}({{for param in m.security_params}}{{param.name}}: {{param.type}}{{if param.isNotLast}}, {{/if}}{{/for}})
