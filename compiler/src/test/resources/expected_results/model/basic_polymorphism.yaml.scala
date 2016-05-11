@@ -1,26 +1,21 @@
 package basic_polymorphism
+
 package object yaml {
-trait IPet {
 
-    def name: String
 
-    def petType: String
 
+
+
+    trait IPet {
+        def name: String
+        def petType: String
     }
 
-    case class Cat(name: String, petType: String, huntingSkill: String) extends IPet 
-
-    case class Dog(name: String, petType: String, packSize: Int) extends IPet 
-
-    case class CatNDog(name: String, petType: String, packSize: Int, huntingSkill: String) extends IPet 
-
-    case class Pet(name: String, petType: String) extends IPet 
-
-    case class Labrador(name: String, petType: String, packSize: Int, cuteness: Int) extends IPet 
-
-    
+    case class Cat(name: String, petType: String, huntingSkill: String) extends IPet
+    case class Dog(name: String, petType: String, packSize: Int) extends IPet
+    case class CatNDog(name: String, petType: String, packSize: Int, huntingSkill: String) extends IPet
+    case class Pet(name: String, petType: String) extends IPet
+    case class Labrador(name: String, petType: String, packSize: Int, cuteness: Int) extends IPet
 
 
-    
-    
-    }
+}

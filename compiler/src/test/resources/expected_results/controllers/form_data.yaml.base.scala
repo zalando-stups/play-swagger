@@ -7,6 +7,7 @@ import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWrite
 import PlayBodyParsing._
 import scala.util._
 import java.io.File
+import scala.math.BigInt
 
 import de.zalando.play.controllers.PlayPathBindables
 

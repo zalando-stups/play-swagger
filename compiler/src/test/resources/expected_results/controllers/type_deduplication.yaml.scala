@@ -48,7 +48,7 @@ package type_deduplication.yaml {
             Failure(???)
             // ----- End of unmanaged code area for action  Type_deduplicationYaml.putplantsByPlant_idSunlight_needs
         }
-        val getusers = getusersAction { input: (ErrorCode, ErrorCode) =>
+        val getusers = getusersAction { input: (UsersGetLimit, UsersGetLimit) =>
             val (limit, offset) = input
             // ----- Start of unmanaged code area for action  Type_deduplicationYaml.getusers
             Failure(???)
@@ -80,7 +80,7 @@ package type_deduplication.yaml {
             Failure(???)
             // ----- End of unmanaged code area for action  Type_deduplicationYaml.getplants
         }
-        val getuserByUser_idPlants = getuserByUser_idPlantsAction { input: (String, ErrorCode, ErrorCode) =>
+        val getuserByUser_idPlants = getuserByUser_idPlantsAction { input: (String, UsersGetLimit, UsersGetLimit) =>
             val (user_id, limit, offset) = input
             // ----- Start of unmanaged code area for action  Type_deduplicationYaml.getuserByUser_idPlants
             Failure(???)
@@ -103,7 +103,7 @@ package type_deduplication.yaml {
             Failure(???)
             // ----- End of unmanaged code area for action  Type_deduplicationYaml.deleteusersByUser_id
         }
-        val getareas = getareasAction { input: (ErrorCode, ErrorCode) =>
+        val getareas = getareasAction { input: (UsersGetLimit, UsersGetLimit) =>
             val (limit, offset) = input
             // ----- Start of unmanaged code area for action  Type_deduplicationYaml.getareas
             Failure(???)
@@ -140,7 +140,7 @@ package type_deduplication.yaml {
             Failure(???)
             // ----- End of unmanaged code area for action  Type_deduplicationYaml.deleteusersByUser_idPicture
         }
-        val getplantsByPlant_idPictures = getplantsByPlant_idPicturesAction { input: (String, ErrorCode, ErrorCode) =>
+        val getplantsByPlant_idPictures = getplantsByPlant_idPicturesAction { input: (String, UsersGetLimit, UsersGetLimit) =>
             val (plant_id, limit, offset) = input
             // ----- Start of unmanaged code area for action  Type_deduplicationYaml.getplantsByPlant_idPictures
             Failure(???)
@@ -162,7 +162,7 @@ package type_deduplication.yaml {
             Failure(???)
             // ----- End of unmanaged code area for action  Type_deduplicationYaml.deleteplantsByPlant_id
         }
-        val getplantsByPlant_idWaterings = getplantsByPlant_idWateringsAction { input: (String, ErrorCode, ErrorCode) =>
+        val getplantsByPlant_idWaterings = getplantsByPlant_idWateringsAction { input: (String, UsersGetLimit, UsersGetLimit) =>
             val (plant_id, limit, offset) = input
             // ----- Start of unmanaged code area for action  Type_deduplicationYaml.getplantsByPlant_idWaterings
             Failure(???)

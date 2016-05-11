@@ -3,6 +3,7 @@ package cross_spec_references
 package object yaml {
 
     import de.zalando.play.controllers.ArrayWrapper
+    import scala.math.BigInt
 
 
 
@@ -23,7 +24,7 @@ package object yaml {
 
 
     case class PetCategoryOpt(id: PetId, name: MetaCopyright) 
-    case class ModelSchemaRootDataOpt(name: String, sizeRegister: String, brand: String, partnerArticleModelId: Int, silhouetteId: String, description: MetaCopyright, ageGroups: ModelSchemaAgeGroups, keywords: ModelSchemaKeywords, lengthRegister: ModelSchemaLengthRegister, specialDescriptions: ModelSchemaSpecialDescriptions, articleModelAttributes: ModelSchemaSpecialDescriptions) 
+    case class ModelSchemaRootDataOpt(name: String, sizeRegister: String, brand: String, partnerArticleModelId: BigInt, silhouetteId: String, description: MetaCopyright, ageGroups: ModelSchemaAgeGroups, keywords: ModelSchemaKeywords, lengthRegister: ModelSchemaLengthRegister, specialDescriptions: ModelSchemaSpecialDescriptions, articleModelAttributes: ModelSchemaSpecialDescriptions) 
     case class ModelSchemaRootMetaOpt(copyright: MetaCopyright) 
     case class ModelSchemaRoot(data: ModelSchemaRootData, meta: ModelSchemaRootMeta, links: ModelSchemaRootLinks) 
     case class Pet(name: String, tags: PetTags, photoUrls: PetPhotoUrls, id: PetId, status: MetaCopyright, category: PetCategory) 

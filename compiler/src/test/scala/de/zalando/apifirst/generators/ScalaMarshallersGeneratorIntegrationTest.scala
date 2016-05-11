@@ -35,5 +35,5 @@ class ScalaMarshallersGeneratorIntegrationTest extends FunSpec with MustMatchers
     }
   }
 
-  def clean(str: String) = str.split("\n").map(_.trim).filterNot(_.isEmpty).mkString("\n")
+  def clean(str: String): String = str.split("\n").map(_.trim).filterNot(_.isEmpty).mkString("\n")
 }

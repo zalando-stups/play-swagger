@@ -42,7 +42,7 @@
 ⌿definitions⌿Error⌿code -> 
 	Opt(Intgr)
 ⌿definitions⌿PriceEstimate⌿high_estimate -> 
-	Opt(Dbl)
+	Opt(BDcml)
 ⌿paths⌿/estimates/price⌿get⌿end_latitude -> 
 	Dbl
 ⌿definitions⌿Activities⌿history⌿Opt -> 

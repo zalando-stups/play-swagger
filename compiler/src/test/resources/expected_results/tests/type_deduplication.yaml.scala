@@ -22,6 +22,7 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
+import scala.math.BigInt
 
 import Generators._
 
@@ -52,7 +53,9 @@ import Generators._
             val (user_id, user) = input
 
             val url = s"""/api/users/${toPath(user_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -94,7 +97,9 @@ import Generators._
             val parsed_user = parserConstructor("Error").writeValueAsString(user)
             
             val url = s"""/api/users/${toPath(user_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -170,7 +175,9 @@ import Generators._
 
 
             val url = s"""/api/users"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -211,7 +218,9 @@ import Generators._
             val parsed_signin_data = parserConstructor("Error").writeValueAsString(signin_data)
             
             val url = s"""/api/users"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -282,7 +291,9 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}/water_needs"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -320,7 +331,9 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}/water_needs"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -392,7 +405,9 @@ import Generators._
             val (plant_id, sunlight_needs) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/sunlight_needs"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -434,7 +449,9 @@ import Generators._
             val parsed_sunlight_needs = parserConstructor("Error").writeValueAsString(sunlight_needs)
             
             val url = s"""/api/plants/${toPath(plant_id)}/sunlight_needs"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -510,7 +527,9 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -548,7 +567,9 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -621,7 +642,9 @@ import Generators._
             val (plant_id, watering_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/waterings/${toPath(watering_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -660,7 +683,9 @@ import Generators._
             val (plant_id, watering_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/waterings/${toPath(watering_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -737,7 +762,9 @@ import Generators._
             val (plant_id, water_needs) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/water_needs"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -779,7 +806,9 @@ import Generators._
             val parsed_water_needs = parserConstructor("Error").writeValueAsString(water_needs)
             
             val url = s"""/api/plants/${toPath(plant_id)}/water_needs"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -855,7 +884,9 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -893,7 +924,9 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -961,12 +994,14 @@ import Generators._
     }
 
     "GET /api/user/{user_id}/plants" should {
-        def testInvalidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
 
             val (user_id, limit, offset) = input
 
             val url = s"""/api/user/${toPath(user_id)}/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1001,11 +1036,13 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
             val (user_id, limit, offset) = input
             
             val url = s"""/api/user/${toPath(user_id)}/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1052,8 +1089,8 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                         user_id <- StringGenerator
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (user_id, limit, offset)
             val inputs = genInputs suchThat { case (user_id, limit, offset) =>
@@ -1065,8 +1102,8 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                     user_id <- StringGenerator
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (user_id, limit, offset)
             val inputs = genInputs suchThat { case (user_id, limit, offset) =>
@@ -1083,7 +1120,9 @@ import Generators._
 
 
             val url = s"""/api/users/${toPath(user_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1121,7 +1160,9 @@ import Generators._
         def testValidInput(user_id: String) = {
             
             val url = s"""/api/users/${toPath(user_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1194,7 +1235,9 @@ import Generators._
             val (plant_id, location) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1236,7 +1279,9 @@ import Generators._
             val parsed_location = parserConstructor("Error").writeValueAsString(location)
             
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1308,12 +1353,14 @@ import Generators._
     }
 
     "GET /api/plants/{plant_id}/waterings" should {
-        def testInvalidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
 
             val (plant_id, limit, offset) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/waterings?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1348,11 +1395,13 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
             val (plant_id, limit, offset) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/waterings?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1399,8 +1448,8 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                         plant_id <- StringGenerator
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (plant_id, limit, offset)
             val inputs = genInputs suchThat { case (plant_id, limit, offset) =>
@@ -1412,8 +1461,8 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                     plant_id <- StringGenerator
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (plant_id, limit, offset)
             val inputs = genInputs suchThat { case (plant_id, limit, offset) =>
@@ -1431,7 +1480,9 @@ import Generators._
             val (plant_id, watering_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/waterings/${toPath(watering_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1470,7 +1521,9 @@ import Generators._
             val (plant_id, watering_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/waterings/${toPath(watering_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1543,12 +1596,14 @@ import Generators._
     }
 
     "GET /api/users" should {
-        def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (UsersGetLimit, UsersGetLimit)) = {
 
             val (limit, offset) = input
 
             val url = s"""/api/users?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1583,11 +1638,13 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (UsersGetLimit, UsersGetLimit)) = {
             val (limit, offset) = input
             
             val url = s"""/api/users?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1632,8 +1689,8 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (limit, offset)
             val inputs = genInputs suchThat { case (limit, offset) =>
@@ -1644,8 +1701,8 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (limit, offset)
             val inputs = genInputs suchThat { case (limit, offset) =>
@@ -1662,7 +1719,9 @@ import Generators._
 
 
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1700,7 +1759,9 @@ import Generators._
         def testValidInput(user_id: String) = {
             
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1773,7 +1834,9 @@ import Generators._
             val (user_id, user) = input
 
             val url = s"""/api/users/${toPath(user_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1815,7 +1878,9 @@ import Generators._
             val parsed_user = parserConstructor("Error").writeValueAsString(user)
             
             val url = s"""/api/users/${toPath(user_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -1892,7 +1957,9 @@ import Generators._
             val (plant_id, picture_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -1931,7 +1998,9 @@ import Generators._
             val (plant_id, picture_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2007,7 +2076,9 @@ import Generators._
 
 
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2045,7 +2116,9 @@ import Generators._
         def testValidInput(area_id: String) = {
             
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2118,7 +2191,9 @@ import Generators._
             val (limit, offset) = input
 
             val url = s"""/api/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2157,7 +2232,9 @@ import Generators._
             val (limit, offset) = input
             
             val url = s"""/api/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2232,7 +2309,9 @@ import Generators._
 
 
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2270,7 +2349,9 @@ import Generators._
         def testValidInput(user_id: String) = {
             
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2343,7 +2424,9 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2381,7 +2464,9 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}/location"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2453,7 +2538,9 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2491,7 +2578,9 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2564,7 +2653,9 @@ import Generators._
             val (plant_id, plant) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2606,7 +2697,9 @@ import Generators._
             val parsed_plant = parserConstructor("Error").writeValueAsString(plant)
             
             val url = s"""/api/plants/${toPath(plant_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2679,12 +2772,14 @@ import Generators._
     }
 
     "GET /api/areas" should {
-        def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (UsersGetLimit, UsersGetLimit)) = {
 
             val (limit, offset) = input
 
             val url = s"""/api/areas?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2719,11 +2814,13 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (UsersGetLimit, UsersGetLimit)) = {
             val (limit, offset) = input
             
             val url = s"""/api/areas?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2768,8 +2865,8 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (limit, offset)
             val inputs = genInputs suchThat { case (limit, offset) =>
@@ -2780,8 +2877,8 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (limit, offset)
             val inputs = genInputs suchThat { case (limit, offset) =>
@@ -2799,7 +2896,9 @@ import Generators._
             val (plant_id, picture_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2838,7 +2937,9 @@ import Generators._
             val (plant_id, picture_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -2915,7 +3016,9 @@ import Generators._
 
 
             val url = s"""/api/plants/${toPath(plant_id)}/sunlight_needs"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -2953,7 +3056,9 @@ import Generators._
         def testValidInput(plant_id: String) = {
             
             val url = s"""/api/plants/${toPath(plant_id)}/sunlight_needs"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -3025,7 +3130,9 @@ import Generators._
 
 
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -3063,7 +3170,9 @@ import Generators._
         def testValidInput(area_id: String) = {
             
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -3134,7 +3243,9 @@ import Generators._
 
 
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -3172,7 +3283,9 @@ import Generators._
         def testValidInput(user_id: String) = {
             
             val url = s"""/api/users/${toPath(user_id)}/picture"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -3245,7 +3358,9 @@ import Generators._
             val (plant_id, picture_id) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -3284,7 +3399,9 @@ import Generators._
             val (plant_id, picture_id) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures/${toPath(picture_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -3360,7 +3477,9 @@ import Generators._
 
 
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -3398,7 +3517,9 @@ import Generators._
         def testValidInput(area_id: String) = {
             
             val url = s"""/api/areas/${toPath(area_id)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -3465,12 +3586,14 @@ import Generators._
     }
 
     "GET /api/plants/{plant_id}/pictures" should {
-        def testInvalidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
 
             val (plant_id, limit, offset) = input
 
             val url = s"""/api/plants/${toPath(plant_id)}/pictures?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -3505,11 +3628,13 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
             val (plant_id, limit, offset) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
@@ -3556,8 +3681,8 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                         plant_id <- StringGenerator
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (plant_id, limit, offset)
             val inputs = genInputs suchThat { case (plant_id, limit, offset) =>
@@ -3569,8 +3694,8 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                     plant_id <- StringGenerator
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (plant_id, limit, offset)
             val inputs = genInputs suchThat { case (plant_id, limit, offset) =>

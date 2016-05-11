@@ -5,7 +5,7 @@
 ⌿paths⌿/both⌿post⌿ringtone -> 
 	File
 ⌿paths⌿/both⌿post⌿year -> 
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/multipart⌿post⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/multipart⌿post⌿responses⌿200, Seq(
 		Field(⌿paths⌿/multipart⌿post⌿responses⌿200⌿name, TypeRef(⌿paths⌿/both⌿post⌿responses⌿200⌿name)), 

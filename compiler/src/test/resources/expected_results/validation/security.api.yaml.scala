@@ -4,6 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class PetsIdGetIdArrConstraints(override val instance: String) extends ValidationBase[String] {
@@ -12,7 +13,6 @@ class PetsIdGetIdArrConstraints(override val instance: String) extends Validatio
 }
 class PetsIdGetIdArrValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new PetsIdGetIdArrConstraints(instance))
-
 }
 // ----- complex type validators -----
 // ----- option delegating validators -----
@@ -29,5 +29,6 @@ class PetsIdGetIdValidator(instance: PetsIdGetId) extends RecursiveValidator {
 class PetsIdGetValidator(id: PetsIdGetId) extends RecursiveValidator {
     override val validators = Seq(
         new PetsIdGetIdValidator(id)
+    
     )
 }

@@ -1,4 +1,4 @@
-package error_in_array.yaml
+package numbers_validation.yaml
 
 import de.zalando.play.controllers._
 import org.scalacheck._
@@ -22,13 +22,11 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
-import de.zalando.play.controllers.ArrayWrapper
-import scala.math.BigInt
 
 import Generators._
 
     @RunWith(classOf[JUnitRunner])
-    class Error_in_arrayYamlSpec extends Specification {
+    class Numbers_validationYamlSpec extends Specification {
         def toPath[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
         def toQuery[T](key: String, value: T)(implicit binder: QueryStringBindable[T]): String = Option(binder.unbind(key, value)).getOrElse("")
         def toHeader[T](value: T)(implicit binder: PathBindable[T]): String = Option(binder.unbind("", value)).getOrElse("")
@@ -48,19 +46,23 @@ import Generators._
         mapper.readValue(content, expectedType)
 
 
-    "GET /schema/model" should {
-        def testInvalidInput(root: ModelSchemaRoot) = {
+    "GET /" should {
+        def testInvalidInput(input: (Float, Double, GetInteger_optional, Long, Int, GetFloat_optional, GetDouble_optional, GetLong_optional)) = {
 
+            val (float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional) = input
 
-            val url = s"""/schema/model"""
-            val acceptHeaders: Seq[String] = Seq()
+            val url = s"""/?${toQuery("float_required", float_required)}&${toQuery("double_required", double_required)}&${toQuery("integer_optional", integer_optional)}&${toQuery("long_required", long_required)}&${toQuery("integer_required", integer_required)}&${toQuery("float_optional", float_optional)}&${toQuery("double_optional", double_optional)}&${toQuery("long_optional", long_optional)}"""
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/yaml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
 
-                    val parsed_root = PlayBodyParsing.jacksonMapper("application/json").writeValueAsString(root)
 
-                val request = FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)
+                val request = FakeRequest(GET, url).withHeaders(headers:_*)
                 val path =
                     if (acceptHeader == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
@@ -75,11 +77,11 @@ import Generators._
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
-                val errors = new SchemaModelGetValidator(root).errors
+                val errors = new GetValidator(float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
 
-                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
+                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
                     requestStatusCode_(path) ?= BAD_REQUEST ,
                     requestContentType_(path) ?= Some(acceptHeader),
                     errors.nonEmpty ?= true,
@@ -89,17 +91,20 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(root: ModelSchemaRoot) = {
+        def testValidInput(input: (Float, Double, GetInteger_optional, Long, Int, GetFloat_optional, GetDouble_optional, GetLong_optional)) = {
+            val (float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional) = input
             
-            val parsed_root = parserConstructor("application/json").writeValueAsString(root)
+            val url = s"""/?${toQuery("float_required", float_required)}&${toQuery("double_required", double_required)}&${toQuery("integer_optional", integer_optional)}&${toQuery("long_required", long_required)}&${toQuery("integer_required", integer_required)}&${toQuery("float_optional", float_optional)}&${toQuery("double_optional", double_optional)}&${toQuery("long_optional", long_optional)}"""
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
             
-            val url = s"""/schema/model"""
-            val acceptHeaders: Seq[String] = Seq()
+               "application/yaml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)
 
-                val request = FakeRequest(GET, url).withHeaders(headers:_*).withBody(parsed_root)
+                val request = FakeRequest(GET, url).withHeaders(headers:_*)
                 val path =
                     if (acceptHeader == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
@@ -114,9 +119,9 @@ import Generators._
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
-                val errors = new SchemaModelGetValidator(root).errors
+                val errors = new GetValidator(float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
-                    200 -> classOf[ModelSchemaRoot]
+                    200 -> classOf[Null]
                 )
 
                 val expectedCode = requestStatusCode_(path)
@@ -127,7 +132,7 @@ import Generators._
                     parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
                 }
 
-                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_root + "]") |: all(
+                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
                     possibleResponseTypes.contains(expectedCode) ?= true,
                     parsedApiResponse.isSuccess ?= true,
                     requestContentType_(path) ?= Some(acceptHeader),
@@ -139,20 +144,36 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    root <- ModelSchemaRootGenerator
-                } yield root
-            val inputs = genInputs suchThat { root =>
-                new SchemaModelGetValidator(root).errors.nonEmpty
+                        float_required <- FloatGenerator
+                        double_required <- DoubleGenerator
+                        integer_optional <- GetInteger_optionalGenerator
+                        long_required <- LongGenerator
+                        integer_required <- IntGenerator
+                        float_optional <- GetFloat_optionalGenerator
+                        double_optional <- GetDouble_optionalGenerator
+                        long_optional <- GetLong_optionalGenerator
+                    
+                } yield (float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional)
+            val inputs = genInputs suchThat { case (float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional) =>
+                new GetValidator(float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                root <- ModelSchemaRootGenerator
-            } yield root
-            val inputs = genInputs suchThat { root =>
-                new SchemaModelGetValidator(root).errors.isEmpty
+                    float_required <- FloatGenerator
+                    double_required <- DoubleGenerator
+                    integer_optional <- GetInteger_optionalGenerator
+                    long_required <- LongGenerator
+                    integer_required <- IntGenerator
+                    float_optional <- GetFloat_optionalGenerator
+                    double_optional <- GetDouble_optionalGenerator
+                    long_optional <- GetLong_optionalGenerator
+                
+            } yield (float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional)
+            val inputs = genInputs suchThat { case (float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional) =>
+                new GetValidator(float_required, double_required, integer_optional, long_required, integer_required, float_optional, double_optional, long_optional).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)

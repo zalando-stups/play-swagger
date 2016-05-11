@@ -58,6 +58,8 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
     case d: Base64String => forBase64Type(tpe)
     case d: File => forFileType(tpe)
     case d: Password => forPasswordType
+    case d: BInt => forBigIntegerType(tpe)
+    case d: BDcml => forBigDecimalType(tpe)
     case d: BinaryString =>
       throw new IllegalArgumentException("'type: string, format: binary' can only be used with body parameters")
   }
@@ -87,35 +89,25 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
     ))
   }
 
-  def forFileType(tpe: String): Seq[Map[String, Object]] = {
+  private def withName(name: String): String => Seq[Map[String, Object]] = tpe => {
     Seq(Map(
       "name" -> "",
-      "format" -> s"""implicit val bindable_File$tpe = PlayPathBindables.${tpe.toLowerCase}BindableFile""",
+      "format" -> s"""implicit val bindable_$name$tpe = PlayPathBindables.${tpe.toLowerCase}Bindable$name""",
       "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
     ))
   }
 
-  def forBase64Type(tpe: String): Seq[Map[String, Object]] = {
-    Seq(Map(
-      "name" -> "",
-      "format" -> s"""implicit val bindable_Base64$tpe = PlayPathBindables.${tpe.toLowerCase}BindableBase64String""",
-      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
-    ))
-  }
+  type TypeNameToDescription = (String) => Seq[Map[String, Object]]
 
-  def forDateTimeType(tpe: String): Seq[Map[String, Object]] = {
-    Seq(Map(
-      "name" -> "",
-      "format" -> s"""implicit val bindable_DateTime$tpe = PlayPathBindables.${tpe.toLowerCase}BindableDateTime""",
-      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
-    ))
-  }
+  def forFileType: TypeNameToDescription = withName("File")
 
-  def forDateType(tpe: String): Seq[Map[String, Object]] = {
-    Seq(Map(
-      "name" -> "",
-      "format" -> s"""implicit val bindable_LocalDate$tpe = PlayPathBindables.${tpe.toLowerCase}BindableLocalDate""",
-      "binding_imports" -> Set("de.zalando.play.controllers.PlayPathBindables")
-    ))
-  }
+  def forBase64Type: TypeNameToDescription = withName("Base64String")
+
+  def forDateTimeType: TypeNameToDescription = withName("DateTime")
+
+  def forDateType: TypeNameToDescription = withName("LocalDate")
+
+  def forBigIntegerType: TypeNameToDescription = withName("BigInt")
+
+  def forBigDecimalType: TypeNameToDescription = withName("BigDecimal")
 }

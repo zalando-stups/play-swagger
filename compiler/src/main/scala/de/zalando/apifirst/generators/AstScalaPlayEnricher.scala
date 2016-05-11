@@ -70,7 +70,7 @@ class ScalaPlayTypeEnricher(val app: StrictModel) extends Transformation[Type] w
 class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictModel]
   with MarshallersStep with SecurityStep {
 
-  override def data = Seq(Reference.root -> app)
+  override def data: Seq[(Reference, StrictModel)] = Seq(Reference.root -> app)
 
 }
 /**
@@ -79,7 +79,7 @@ class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictM
 class ScalaPlayCallEnricher(val app: StrictModel) extends Transformation[ApiCall]
   with CallControllersStep with CallTestsStep with CallValidatorsStep with CommonCallDataStep {
 
-  override def data = app.calls map { c => c.asReference -> c }
+  override def data: Seq[(Reference, ApiCall)] = app.calls map { c => c.asReference -> c }
 
 }
 
@@ -89,7 +89,7 @@ class ScalaPlayCallEnricher(val app: StrictModel) extends Transformation[ApiCall
 class ScalaPlayParameterEnricher(val app: StrictModel) extends Transformation[Parameter]
   with ParamBindingsStep with ParametersValidatorsStep with CommonParamDataStep {
 
-  override def data = app.params.toSeq.map { case (r, p) => r.name -> p }
+  override def data: Seq[(Reference, Parameter)] = app.params.toSeq.map { case (r, p) => r.name -> p }
 
 }
 

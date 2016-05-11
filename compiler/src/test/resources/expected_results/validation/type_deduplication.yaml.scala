@@ -4,6 +4,8 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
+import scala.math.BigInt
 // ----- constraints and wrapper validations -----
 class PlantsPlant_idWateringsGetPlant_idConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -12,12 +14,12 @@ class PlantsPlant_idWateringsGetPlant_idConstraints(override val instance: Strin
 class PlantsPlant_idWateringsGetPlant_idValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new PlantsPlant_idWateringsGetPlant_idConstraints(instance))
 }
-class ErrorCodeOptConstraints(override val instance: Int) extends ValidationBase[Int] {
-    override def constraints: Seq[Constraint[Int]] =
+class UsersGetLimitOptConstraints(override val instance: BigInt) extends ValidationBase[BigInt] {
+    override def constraints: Seq[Constraint[BigInt]] =
         Seq()
 }
-class ErrorCodeOptValidator(instance: Int) extends RecursiveValidator {
-    override val validators = Seq(new ErrorCodeOptConstraints(instance))
+class UsersGetLimitOptValidator(instance: BigInt) extends RecursiveValidator {
+    override val validators = Seq(new UsersGetLimitOptConstraints(instance))
 }
 class PlantsPlant_idPicturesPicture_idGetPlant_idConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -54,11 +56,11 @@ class PlantsPlant_idLocationDeletePlant_idConstraints(override val instance: Str
 class PlantsPlant_idLocationDeletePlant_idValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new PlantsPlant_idLocationDeletePlant_idConstraints(instance))
 }
-class PlantsGetLimitOptConstraints(override val instance: Int) extends ValidationBase[Int] {
-    override def constraints: Seq[Constraint[Int]] =
-        Seq(min(10, false))
+class PlantsGetLimitOptConstraints(override val instance: BigInt) extends ValidationBase[BigInt] {
+    override def constraints: Seq[Constraint[BigInt]] =
+        Seq(min(BigInt("10"), false))
 }
-class PlantsGetLimitOptValidator(instance: Int) extends RecursiveValidator {
+class PlantsGetLimitOptValidator(instance: BigInt) extends RecursiveValidator {
     override val validators = Seq(new PlantsGetLimitOptConstraints(instance))
 }
 class PlantPlant_idOptConstraints(override val instance: String) extends ValidationBase[String] {
@@ -138,11 +140,11 @@ class PlantsPlant_idWater_needsPutPlant_idConstraints(override val instance: Str
 class PlantsPlant_idWater_needsPutPlant_idValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new PlantsPlant_idWater_needsPutPlant_idConstraints(instance))
 }
-class PlantsGetOffsetOptConstraints(override val instance: Int) extends ValidationBase[Int] {
-    override def constraints: Seq[Constraint[Int]] =
-        Seq(max(100, false))
+class PlantsGetOffsetOptConstraints(override val instance: BigInt) extends ValidationBase[BigInt] {
+    override def constraints: Seq[Constraint[BigInt]] =
+        Seq(max(BigInt("100"), false))
 }
-class PlantsGetOffsetOptValidator(instance: Int) extends RecursiveValidator {
+class PlantsGetOffsetOptValidator(instance: BigInt) extends RecursiveValidator {
     override val validators = Seq(new PlantsGetOffsetOptConstraints(instance))
 }
 class UserUser_idPlantsGetUser_idConstraints(override val instance: String) extends ValidationBase[String] {
@@ -300,8 +302,8 @@ class SunlightNeedsValidator(instance: SunlightNeeds) extends RecursiveValidator
     )
 }
 // ----- option delegating validators -----
-class ErrorCodeValidator(instance: ErrorCode) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new ErrorCodeOptValidator(_) }
+class UsersGetLimitValidator(instance: UsersGetLimit) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new UsersGetLimitOptValidator(_) }
 }
 class PlantsGetLimitValidator(instance: PlantsGetLimit) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new PlantsGetLimitOptValidator(_) }
@@ -371,13 +373,13 @@ class PlantsPlant_idLocationGetValidator(plant_id: String) extends RecursiveVali
     
     )
 }
-class UserUser_idPlantsGetValidator(user_id: String, limit: ErrorCode, offset: ErrorCode) extends RecursiveValidator {
+class UserUser_idPlantsGetValidator(user_id: String, limit: UsersGetLimit, offset: UsersGetLimit) extends RecursiveValidator {
     override val validators = Seq(
         new UserUser_idPlantsGetUser_idValidator(user_id), 
     
-        new ErrorCodeValidator(limit), 
+        new UsersGetLimitValidator(limit), 
     
-        new ErrorCodeValidator(offset)
+        new UsersGetLimitValidator(offset)
     
     )
 }
@@ -395,13 +397,13 @@ class PlantsPlant_idLocationPutValidator(plant_id: String, location: Location) e
     
     )
 }
-class PlantsPlant_idWateringsGetValidator(plant_id: String, limit: ErrorCode, offset: ErrorCode) extends RecursiveValidator {
+class PlantsPlant_idWateringsGetValidator(plant_id: String, limit: UsersGetLimit, offset: UsersGetLimit) extends RecursiveValidator {
     override val validators = Seq(
         new PlantsPlant_idWateringsGetPlant_idValidator(plant_id), 
     
-        new ErrorCodeValidator(limit), 
+        new UsersGetLimitValidator(limit), 
     
-        new ErrorCodeValidator(offset)
+        new UsersGetLimitValidator(offset)
     
     )
 }
@@ -413,11 +415,11 @@ class PlantsPlant_idWateringsWatering_idPutValidator(plant_id: String, watering_
     
     )
 }
-class UsersGetValidator(limit: ErrorCode, offset: ErrorCode) extends RecursiveValidator {
+class UsersGetValidator(limit: UsersGetLimit, offset: UsersGetLimit) extends RecursiveValidator {
     override val validators = Seq(
-        new ErrorCodeValidator(limit), 
+        new UsersGetLimitValidator(limit), 
     
-        new ErrorCodeValidator(offset)
+        new UsersGetLimitValidator(offset)
     
     )
 }
@@ -483,11 +485,11 @@ class PlantsPlant_idPutValidator(plant_id: String, plant: Plant) extends Recursi
     
     )
 }
-class AreasGetValidator(limit: ErrorCode, offset: ErrorCode) extends RecursiveValidator {
+class AreasGetValidator(limit: UsersGetLimit, offset: UsersGetLimit) extends RecursiveValidator {
     override val validators = Seq(
-        new ErrorCodeValidator(limit), 
+        new UsersGetLimitValidator(limit), 
     
-        new ErrorCodeValidator(offset)
+        new UsersGetLimitValidator(offset)
     
     )
 }
@@ -531,13 +533,13 @@ class AreasArea_idGetValidator(area_id: String) extends RecursiveValidator {
     
     )
 }
-class PlantsPlant_idPicturesGetValidator(plant_id: String, limit: ErrorCode, offset: ErrorCode) extends RecursiveValidator {
+class PlantsPlant_idPicturesGetValidator(plant_id: String, limit: UsersGetLimit, offset: UsersGetLimit) extends RecursiveValidator {
     override val validators = Seq(
         new PlantsPlant_idPicturesGetPlant_idValidator(plant_id), 
     
-        new ErrorCodeValidator(limit), 
+        new UsersGetLimitValidator(limit), 
     
-        new ErrorCodeValidator(offset)
+        new UsersGetLimitValidator(offset)
     
     )
 }

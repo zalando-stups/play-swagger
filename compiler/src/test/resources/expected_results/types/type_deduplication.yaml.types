@@ -46,11 +46,11 @@
 ⌿paths⌿/plants/{plant_id}/waterings⌿get⌿plant_id ->
 	Str
 ⌿paths⌿/users⌿get⌿limit ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/plants/{plant_id}/pictures/{picture_id}⌿get⌿plant_id ->
 	Str
 ⌿paths⌿/plants/{plant_id}/pictures⌿get⌿limit ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/areas/{area_id}⌿delete⌿area_id ->
 	Str
 ⌿paths⌿/users/{user_id}/picture⌿get⌿user_id ->
@@ -60,7 +60,7 @@
 ⌿paths⌿/plants/{plant_id}/location⌿delete⌿plant_id ->
 	Str
 ⌿paths⌿/plants⌿get⌿limit ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/users⌿post⌿signin_data ->
 	TypeDef(⌿definitions⌿SigninData, Seq(
 		Field(⌿definitions⌿SigninData⌿username, Opt(Str)), 
@@ -77,7 +77,7 @@
 		Field(⌿definitions⌿WaterNeeds⌿amount, Opt(Str)), 
 		Field(⌿definitions⌿WaterNeeds⌿period, Opt(Str))))
 ⌿paths⌿/users⌿get⌿offset ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/plants/{plant_id}/sunlight_needs⌿get⌿plant_id ->
 	Str
 ⌿paths⌿/plants/{plant_id}⌿put⌿plant ->
@@ -98,13 +98,13 @@
 		Field(⌿definitions⌿User⌿name, Opt(Str)), 
 		Field(⌿definitions⌿User⌿area_id, Opt(Str))))
 ⌿paths⌿/user/{user_id}/plants⌿get⌿offset ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/areas/{area_id}⌿get⌿area_id ->
 	Str
 ⌿paths⌿/user/{user_id}/plants⌿get⌿limit ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/areas⌿get⌿offset ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/plants/{plant_id}/waterings/{watering_id}⌿get⌿plant_id ->
 	Str
 ⌿paths⌿/plants/{plant_id}/waterings/{watering_id}⌿put⌿watering_id ->
@@ -112,7 +112,7 @@
 ⌿paths⌿/plants/{plant_id}/water_needs⌿put⌿plant_id ->
 	Str
 ⌿paths⌿/plants⌿get⌿offset ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/user/{user_id}/plants⌿get⌿user_id ->
 	Str
 ⌿paths⌿/plants/{plant_id}⌿put⌿plant_id ->
@@ -131,11 +131,11 @@
 		Field(⌿definitions⌿User⌿name, Opt(Str)), 
 		Field(⌿definitions⌿User⌿area_id, Opt(Str))))
 ⌿paths⌿/plants/{plant_id}/waterings⌿get⌿limit ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/users/{user_id}/picture⌿put⌿user_id ->
 	Str
 ⌿paths⌿/plants/{plant_id}/waterings⌿get⌿offset ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/plants/{plant_id}/location⌿put⌿location ->
 	TypeDef(⌿definitions⌿Location, Seq(
 		Field(⌿definitions⌿Location⌿area_id, Opt(Str)), 
@@ -156,9 +156,9 @@
 	TypeDef(⌿definitions⌿SunlightNeeds, Seq(
 		Field(⌿definitions⌿SunlightNeeds⌿amount, Opt(Str))))
 ⌿paths⌿/plants/{plant_id}/pictures⌿get⌿offset ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/areas⌿get⌿limit ->
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/plants/{plant_id}/water_needs⌿get⌿plant_id ->
 	Str
 ⌿paths⌿/users/{user_id}/picture⌿delete⌿user_id ->

@@ -6,6 +6,11 @@ import play.api.mvc._
 import de.zalando.play.controllers.SwaggerSecurityExtractors._
 import de.zalando.play.controllers.ArrayWrapper
 
+object SecurityExtractorsExecutionContext {
+    // TODO override with proper ExecutionContext instance
+    implicit val ec = scala.concurrent.ExecutionContext.global
+}
+
 trait SecurityExtractors {
     def petstoreImplicit_Extractor[User >: Any](scopes: String*): RequestHeader => Future[Option[User]] =
         header => oAuth(scopes)("http://petstore.swagger.wordnik.com/oauth/dialog")(header) { (token: play.api.libs.json.JsValue) =>

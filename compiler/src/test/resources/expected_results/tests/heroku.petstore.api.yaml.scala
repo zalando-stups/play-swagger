@@ -22,6 +22,7 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
+import scala.math.BigInt
 
 import Generators._
 
@@ -54,7 +55,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -99,7 +100,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -167,14 +168,14 @@ import Generators._
     }
 
     "GET /pet/" should {
-        def testInvalidInput(limit: Int) = {
+        def testInvalidInput(limit: BigInt) = {
 
 
             val url = s"""/pet/?${toQuery("limit", limit)}"""
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -210,13 +211,13 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(limit: Int) = {
+        def testValidInput(limit: BigInt) = {
             
             val url = s"""/pet/?${toQuery("limit", limit)}"""
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -262,7 +263,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    limit <- IntGenerator
+                    limit <- BigIntGenerator
                 } yield limit
             val inputs = genInputs suchThat { limit =>
                 new GetValidator(limit).errors.nonEmpty
@@ -272,7 +273,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                limit <- IntGenerator
+                limit <- BigIntGenerator
             } yield limit
             val inputs = genInputs suchThat { limit =>
                 new GetValidator(limit).errors.isEmpty
@@ -291,7 +292,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -333,7 +334,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -408,7 +409,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
@@ -453,7 +454,7 @@ import Generators._
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
-               "text/xml"
+               "text/html"
             )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =

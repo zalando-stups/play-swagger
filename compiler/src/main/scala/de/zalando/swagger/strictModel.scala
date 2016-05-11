@@ -914,6 +914,7 @@ object strictModel {
   }
   trait NumberValidation[T] extends ValidationBase {
     import NumberValidation._
+    def `type`: Any
     def multipleOf:             MultipleOf[T]
     def maximum:                Maximum[T]
     def exclusiveMaximum:       ExclusiveMaximum

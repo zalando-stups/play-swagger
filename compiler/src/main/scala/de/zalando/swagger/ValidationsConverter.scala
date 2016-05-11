@@ -64,18 +64,21 @@ object ValidationsConverter {
     val strictMax = p.exclusiveMaximum.getOrElse(false)
     val strictMin = p.exclusiveMinimum.getOrElse(false)
     val typeCoerce = p.format match {
-      case "int32" => "Int"
-      case "int64" => "Long"
-      case "float" => "Float"
-      case "double" => "Double"
-      case "byte" => "Byte"
-      case _ => ""
+      case "int32" => s: BigDecimal => s"$s.toInt"
+      case "int64" => s: BigDecimal => s"$s.toLong"
+      case "float" => s: BigDecimal => s"$s.toFloat"
+      case "double" => s: BigDecimal => s"$s.toDouble"
+      case null if p.`type` == ParameterType.INTEGER || p.`type` == PrimitiveType.INTEGER =>
+        s: BigDecimal => s"""BigInt("$s")"""
+      case null if p.`type` == ParameterType.NUMBER || p.`type` == PrimitiveType.NUMBER =>
+        s: BigDecimal => s"""BigDecimal("$s")"""
+      case _ =>
+        s: BigDecimal => s.toString()
     }
-    val converter = if (typeCoerce.nonEmpty) ".to" + typeCoerce else ""
     Seq(
-      ifDefined(p.maximum, s"max(${p.maximum.get}$converter, $strictMax)"),
-      ifDefined(p.minimum, s"min(${p.minimum.get}$converter, $strictMin)"),
-      ifDefined(p.multipleOf, s"multipleOf(${p.multipleOf.get}$converter)")
+      ifDefined(p.maximum, s"max(${typeCoerce(p.maximum.get)}, $strictMax)"),
+      ifDefined(p.minimum, s"min(${typeCoerce(p.minimum.get)}, $strictMin)"),
+      ifDefined(p.multipleOf, s"multipleOf(${typeCoerce(p.multipleOf.get)})")
     ).flatten
   }
 

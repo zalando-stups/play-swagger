@@ -7,6 +7,7 @@ import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWrite
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
+import scala.math.BigInt
 
 
 

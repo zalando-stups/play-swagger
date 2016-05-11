@@ -7,6 +7,7 @@ import play.api.mvc.{AnyContent, Request}
 import de.zalando.play.controllers.PlayBodyParsing
 
 import java.io.File
+import scala.math.BigInt
 
 import de.zalando.play.controllers.PlayPathBindables
 

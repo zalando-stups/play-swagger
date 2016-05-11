@@ -11,6 +11,8 @@ import PlayValidations._
 
 import scala.util._
 
+import scala.math.BigInt
+
 
 /**
  * This controller is re-generated after each change in the specification.
@@ -20,7 +22,7 @@ import scala.util._
 package heroku.petstore.api.yaml {
 
     class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
-        val get = getAction { (limit: Int) =>  
+        val get = getAction { (limit: BigInt) =>  
             // ----- Start of unmanaged code area for action  HerokuPetstoreApiYaml.get
             Failure(???)
             // ----- End of unmanaged code area for action  HerokuPetstoreApiYaml.get

@@ -6,6 +6,8 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
+import scala.math.BigInt
+import scala.math.BigDecimal
 
 import de.zalando.play.controllers.PlayPathBindables
 
@@ -13,14 +15,14 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with InstagramApiYamlSecurity {
-    private type getmediaByMedia_idLikesActionRequestType       = (Int)
+    private type getmediaByMedia_idLikesActionRequestType       = (BigInt)
     private type getmediaByMedia_idLikesActionType              = getmediaByMedia_idLikesActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getmediaByMedia_idLikesActionConstructor  = new getmediaByMedia_idLikesSecureAction("basic", "comments", "relationships", "likes")
-    def getmediaByMedia_idLikesAction = (f: getmediaByMedia_idLikesActionType) => (media_id: Int) => getmediaByMedia_idLikesActionConstructor { request =>
+    def getmediaByMedia_idLikesAction = (f: getmediaByMedia_idLikesActionType) => (media_id: BigInt) => getmediaByMedia_idLikesActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idLikesResponseMimeType =>
@@ -63,14 +65,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type postmediaByMedia_idLikesActionRequestType       = (Int)
+    private type postmediaByMedia_idLikesActionRequestType       = (BigInt)
     private type postmediaByMedia_idLikesActionType              = postmediaByMedia_idLikesActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspostmediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val postmediaByMedia_idLikesActionConstructor  = new postmediaByMedia_idLikesSecureAction("comments")
-    def postmediaByMedia_idLikesAction = (f: postmediaByMedia_idLikesActionType) => (media_id: Int) => postmediaByMedia_idLikesActionConstructor { request =>
+    def postmediaByMedia_idLikesAction = (f: postmediaByMedia_idLikesActionType) => (media_id: BigInt) => postmediaByMedia_idLikesActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idLikesResponseMimeType =>
@@ -113,14 +115,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type deletemediaByMedia_idLikesActionRequestType       = (Int)
+    private type deletemediaByMedia_idLikesActionRequestType       = (BigInt)
     private type deletemediaByMedia_idLikesActionType              = deletemediaByMedia_idLikesActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusdeletemediaByMedia_idLikes: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val deletemediaByMedia_idLikesActionConstructor  = new deletemediaByMedia_idLikesSecureAction("basic", "comments", "relationships", "likes")
-    def deletemediaByMedia_idLikesAction = (f: deletemediaByMedia_idLikesActionType) => (media_id: Int) => deletemediaByMedia_idLikesActionConstructor { request =>
+    def deletemediaByMedia_idLikesAction = (f: deletemediaByMedia_idLikesActionType) => (media_id: BigInt) => deletemediaByMedia_idLikesActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletemediaByMedia_idLikesResponseMimeType =>
@@ -163,14 +165,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getusersByUser_idFollowsActionRequestType       = (Double)
+    private type getusersByUser_idFollowsActionRequestType       = (BigDecimal)
     private type getusersByUser_idFollowsActionType              = getusersByUser_idFollowsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusersByUser_idFollows: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getusersByUser_idFollowsActionConstructor  = new getusersByUser_idFollowsSecureAction("basic", "comments", "relationships", "likes")
-    def getusersByUser_idFollowsAction = (f: getusersByUser_idFollowsActionType) => (user_id: Double) => getusersByUser_idFollowsActionConstructor { request =>
+    def getusersByUser_idFollowsAction = (f: getusersByUser_idFollowsActionType) => (user_id: BigDecimal) => getusersByUser_idFollowsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idFollowsResponseMimeType =>
@@ -213,14 +215,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getlocationsByLocation_idActionRequestType       = (Int)
+    private type getlocationsByLocation_idActionRequestType       = (BigInt)
     private type getlocationsByLocation_idActionType              = getlocationsByLocation_idActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetlocationsByLocation_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getlocationsByLocation_idActionConstructor  = new getlocationsByLocation_idSecureAction("basic", "comments", "relationships", "likes")
-    def getlocationsByLocation_idAction = (f: getlocationsByLocation_idActionType) => (location_id: Int) => getlocationsByLocation_idActionConstructor { request =>
+    def getlocationsByLocation_idAction = (f: getlocationsByLocation_idActionType) => (location_id: BigInt) => getlocationsByLocation_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsByLocation_idResponseMimeType =>
@@ -463,14 +465,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getusersByUser_idFollowed_byActionRequestType       = (Double)
+    private type getusersByUser_idFollowed_byActionRequestType       = (BigDecimal)
     private type getusersByUser_idFollowed_byActionType              = getusersByUser_idFollowed_byActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusersByUser_idFollowed_by: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getusersByUser_idFollowed_byActionConstructor  = new getusersByUser_idFollowed_bySecureAction("basic", "comments", "relationships", "likes")
-    def getusersByUser_idFollowed_byAction = (f: getusersByUser_idFollowed_byActionType) => (user_id: Double) => getusersByUser_idFollowed_byActionConstructor { request =>
+    def getusersByUser_idFollowed_byAction = (f: getusersByUser_idFollowed_byActionType) => (user_id: BigDecimal) => getusersByUser_idFollowed_byActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idFollowed_byResponseMimeType =>
@@ -513,14 +515,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getmediaByMedia_idCommentsActionRequestType       = (Int)
+    private type getmediaByMedia_idCommentsActionRequestType       = (BigInt)
     private type getmediaByMedia_idCommentsActionType              = getmediaByMedia_idCommentsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getmediaByMedia_idCommentsActionConstructor  = new getmediaByMedia_idCommentsSecureAction("basic", "comments", "relationships", "likes")
-    def getmediaByMedia_idCommentsAction = (f: getmediaByMedia_idCommentsActionType) => (media_id: Int) => getmediaByMedia_idCommentsActionConstructor { request =>
+    def getmediaByMedia_idCommentsAction = (f: getmediaByMedia_idCommentsActionType) => (media_id: BigInt) => getmediaByMedia_idCommentsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idCommentsResponseMimeType =>
@@ -563,7 +565,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type postmediaByMedia_idCommentsActionRequestType       = (Int, LocationLatitude)
+    private type postmediaByMedia_idCommentsActionRequestType       = (BigInt, LocationLatitude)
     private type postmediaByMedia_idCommentsActionType              = postmediaByMedia_idCommentsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspostmediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -579,12 +581,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
             
             import de.zalando.play.controllers.WrappedBodyParsers
             
-            val customParsers = WrappedBodyParsers.optionParser[Double]
-            optionParser[Double](bodyMimeType, customParsers, "Invalid LocationLatitude", maxLength)
+            val customParsers = WrappedBodyParsers.optionParser[BigDecimal]
+            optionParser[BigDecimal](bodyMimeType, customParsers, "Invalid LocationLatitude", maxLength)
         }
 
     val postmediaByMedia_idCommentsActionConstructor  = new postmediaByMedia_idCommentsSecureAction("comments")
-    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: Int) => postmediaByMedia_idCommentsActionConstructor(postmediaByMedia_idCommentsParser(Seq[String]("application/json"))) { request =>
+    def postmediaByMedia_idCommentsAction = (f: postmediaByMedia_idCommentsActionType) => (media_id: BigInt) => postmediaByMedia_idCommentsActionConstructor(postmediaByMedia_idCommentsParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmediaByMedia_idCommentsResponseMimeType =>
@@ -628,14 +630,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type deletemediaByMedia_idCommentsActionRequestType       = (Int)
+    private type deletemediaByMedia_idCommentsActionRequestType       = (BigInt)
     private type deletemediaByMedia_idCommentsActionType              = deletemediaByMedia_idCommentsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusdeletemediaByMedia_idComments: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val deletemediaByMedia_idCommentsActionConstructor  = new deletemediaByMedia_idCommentsSecureAction("basic", "comments", "relationships", "likes")
-    def deletemediaByMedia_idCommentsAction = (f: deletemediaByMedia_idCommentsActionType) => (media_id: Int) => deletemediaByMedia_idCommentsActionConstructor { request =>
+    def deletemediaByMedia_idCommentsAction = (f: deletemediaByMedia_idCommentsActionType) => (media_id: BigInt) => deletemediaByMedia_idCommentsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletemediaByMedia_idCommentsResponseMimeType =>
@@ -728,7 +730,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type postusersByUser_idRelationshipActionRequestType       = (Double, UsersUser_idRelationshipPostAction)
+    private type postusersByUser_idRelationshipActionRequestType       = (BigDecimal, UsersUser_idRelationshipPostAction)
     private type postusersByUser_idRelationshipActionType              = postusersByUser_idRelationshipActionRequestType => Try[(Int, Any)]
 
     private val errorToStatuspostusersByUser_idRelationship: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
@@ -749,7 +751,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
 
     val postusersByUser_idRelationshipActionConstructor  = new postusersByUser_idRelationshipSecureAction("relationships")
-    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: Double) => postusersByUser_idRelationshipActionConstructor(postusersByUser_idRelationshipParser(Seq[String]("application/json"))) { request =>
+    def postusersByUser_idRelationshipAction = (f: postusersByUser_idRelationshipActionType) => (user_id: BigDecimal) => postusersByUser_idRelationshipActionConstructor(postusersByUser_idRelationshipParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postusersByUser_idRelationshipResponseMimeType =>
@@ -843,14 +845,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getusersByUser_idActionRequestType       = (Double)
+    private type getusersByUser_idActionRequestType       = (BigDecimal)
     private type getusersByUser_idActionType              = getusersByUser_idActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusersByUser_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getusersByUser_idActionConstructor  = new getusersByUser_idSecureAction("basic")
-    def getusersByUser_idAction = (f: getusersByUser_idActionType) => (user_id: Double) => getusersByUser_idActionConstructor { request =>
+    def getusersByUser_idAction = (f: getusersByUser_idActionType) => (user_id: BigDecimal) => getusersByUser_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idResponseMimeType =>
@@ -893,14 +895,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getmediaSearchActionRequestType       = (MediaId, Int, LocationLatitude, MediaId, LocationLatitude)
+    private type getmediaSearchActionRequestType       = (MediaId, BigInt, LocationLatitude, MediaId, LocationLatitude)
     private type getmediaSearchActionType              = getmediaSearchActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetmediaSearch: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getmediaSearchActionConstructor  = new getmediaSearchSecureAction("basic", "comments", "relationships", "likes")
-    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: Int, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => getmediaSearchActionConstructor { request =>
+    def getmediaSearchAction = (f: getmediaSearchActionType) => (mAX_TIMESTAMP: MediaId, dISTANCE: BigInt, lNG: LocationLatitude, mIN_TIMESTAMP: MediaId, lAT: LocationLatitude) => getmediaSearchActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaSearchResponseMimeType =>
@@ -943,14 +945,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getgeographiesByGeo_idMediaRecentActionRequestType       = (Int, MediaId, MediaId)
+    private type getgeographiesByGeo_idMediaRecentActionRequestType       = (BigInt, MediaId, MediaId)
     private type getgeographiesByGeo_idMediaRecentActionType              = getgeographiesByGeo_idMediaRecentActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetgeographiesByGeo_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getgeographiesByGeo_idMediaRecentActionConstructor  = new getgeographiesByGeo_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
-    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (geo_id: Int, count: MediaId, min_id: MediaId) => getgeographiesByGeo_idMediaRecentActionConstructor { request =>
+    def getgeographiesByGeo_idMediaRecentAction = (f: getgeographiesByGeo_idMediaRecentActionType) => (geo_id: BigInt, count: MediaId, min_id: MediaId) => getgeographiesByGeo_idMediaRecentActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getgeographiesByGeo_idMediaRecentResponseMimeType =>
@@ -1137,14 +1139,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getmediaByMedia_idActionRequestType       = (Int)
+    private type getmediaByMedia_idActionRequestType       = (BigInt)
     private type getmediaByMedia_idActionType              = getmediaByMedia_idActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetmediaByMedia_id: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getmediaByMedia_idActionConstructor  = new getmediaByMedia_idSecureAction("basic", "comments", "relationships", "likes")
-    def getmediaByMedia_idAction = (f: getmediaByMedia_idActionType) => (media_id: Int) => getmediaByMedia_idActionConstructor { request =>
+    def getmediaByMedia_idAction = (f: getmediaByMedia_idActionType) => (media_id: BigInt) => getmediaByMedia_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmediaByMedia_idResponseMimeType =>
@@ -1187,14 +1189,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getlocationsByLocation_idMediaRecentActionRequestType       = (Int, MediaId, MediaId, MediaFilter, MediaFilter)
+    private type getlocationsByLocation_idMediaRecentActionRequestType       = (BigInt, MediaId, MediaId, MediaFilter, MediaFilter)
     private type getlocationsByLocation_idMediaRecentActionType              = getlocationsByLocation_idMediaRecentActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetlocationsByLocation_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getlocationsByLocation_idMediaRecentActionConstructor  = new getlocationsByLocation_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
-    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (location_id: Int, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => getlocationsByLocation_idMediaRecentActionConstructor { request =>
+    def getlocationsByLocation_idMediaRecentAction = (f: getlocationsByLocation_idMediaRecentActionType) => (location_id: BigInt, max_timestamp: MediaId, min_timestamp: MediaId, min_id: MediaFilter, max_id: MediaFilter) => getlocationsByLocation_idMediaRecentActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getlocationsByLocation_idMediaRecentResponseMimeType =>
@@ -1237,14 +1239,14 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         }
         status
     }
-    private type getusersByUser_idMediaRecentActionRequestType       = (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)
+    private type getusersByUser_idMediaRecentActionRequestType       = (BigDecimal, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)
     private type getusersByUser_idMediaRecentActionType              = getusersByUser_idMediaRecentActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusersByUser_idMediaRecent: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getusersByUser_idMediaRecentActionConstructor  = new getusersByUser_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
-    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (user_id: Double, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => getusersByUser_idMediaRecentActionConstructor { request =>
+    def getusersByUser_idMediaRecentAction = (f: getusersByUser_idMediaRecentActionType) => (user_id: BigDecimal, max_timestamp: MediaId, min_id: MediaFilter, min_timestamp: MediaId, max_id: MediaFilter, count: MediaId) => getusersByUser_idMediaRecentActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idMediaRecentResponseMimeType =>

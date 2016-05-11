@@ -58,7 +58,11 @@ import Generators._
             val (petId, base64, date, date_time) = input
 
             val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/yaml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                     Seq() :+ ("Accept" -> acceptHeader)
@@ -100,7 +104,11 @@ import Generators._
             val parsed_petId = parserConstructor("application/json").writeValueAsString(petId)
             
             val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
-            val acceptHeaders: Seq[String] = Seq()
+            val acceptHeaders: Seq[String] = Seq(
+               "application/json", 
+            
+               "application/yaml"
+            )
             val propertyList = acceptHeaders.map { acceptHeader =>
                 val headers =
                    Seq() :+ ("Accept" -> acceptHeader)

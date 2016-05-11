@@ -32,7 +32,7 @@ package object yaml {
     implicit val bindable_DateTimeQuery = PlayPathBindables.queryBindableDateTime
     implicit val bindable_LocalDateQuery = PlayPathBindables.queryBindableLocalDate
     
-    implicit val bindable_Base64Query = PlayPathBindables.queryBindableBase64String
+    implicit val bindable_Base64StringQuery = PlayPathBindables.queryBindableBase64String
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
     implicit val bindable_OptionLocalDateQuery = PlayPathBindables.createOptionQueryBindable[LocalDate]
     implicit val bindable_OptionDateTimeQuery = PlayPathBindables.createOptionQueryBindable[DateTime]

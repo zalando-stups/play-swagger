@@ -4,6 +4,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
 import Arbitrary._
 import de.zalando.play.controllers.ArrayWrapper
+import scala.math.BigInt
 
 object Generators {
     
@@ -58,7 +59,7 @@ object Generators {
         name <- arbitrary[String]
         sizeRegister <- arbitrary[String]
         brand <- arbitrary[String]
-        partnerArticleModelId <- arbitrary[Int]
+        partnerArticleModelId <- arbitrary[BigInt]
         silhouetteId <- arbitrary[String]
         description <- MetaCopyrightGenerator
         ageGroups <- ModelSchemaAgeGroupsGenerator

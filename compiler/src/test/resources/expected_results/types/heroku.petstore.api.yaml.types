@@ -9,7 +9,7 @@
 		Field(⌿definitions⌿Pet⌿name, Opt(Str)), 
 		Field(⌿definitions⌿Pet⌿birthday, Opt(Intgr))))
 ⌿paths⌿/⌿get⌿limit ->
-	Intgr
+	BInt
 ⌿paths⌿/⌿put⌿pet ->
 	Opt(TypeDef(⌿definitions⌿Pet, Seq(
 		Field(⌿definitions⌿Pet⌿name, Opt(Str)), 

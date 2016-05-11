@@ -4,6 +4,13 @@ package instagram.api.yaml
 import scala.concurrent.Future
 import play.api.mvc._
 import de.zalando.play.controllers.SwaggerSecurityExtractors._
+import scala.math.BigInt
+import scala.math.BigDecimal
+
+object SecurityExtractorsExecutionContext {
+    // TODO override with proper ExecutionContext instance
+    implicit val ec = scala.concurrent.ExecutionContext.global
+}
 
 trait SecurityExtractors {
     def oauth_Extractor[User >: Any](scopes: String*): RequestHeader => Future[Option[User]] =

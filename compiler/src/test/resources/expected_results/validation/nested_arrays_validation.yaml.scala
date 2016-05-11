@@ -4,6 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class ActivityActionsOptConstraints(override val instance: String) extends ValidationBase[String] {

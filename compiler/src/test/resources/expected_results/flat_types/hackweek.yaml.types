@@ -18,7 +18,7 @@
 		Field(⌿definitions⌿ModelSchema⌿name, Str), 
 		Field(⌿definitions⌿ModelSchema⌿sizeRegister, Str), 
 		Field(⌿definitions⌿ModelSchema⌿brand, Str), 
-		Field(⌿definitions⌿ModelSchema⌿partnerArticleModelId, Intgr), 
+		Field(⌿definitions⌿ModelSchema⌿partnerArticleModelId, BInt), 
 		Field(⌿definitions⌿ModelSchema⌿silhouetteId, Str), 
 		Field(⌿definitions⌿ModelSchema⌿description, TypeRef(⌿definitions⌿Meta⌿copyright)), 
 		Field(⌿definitions⌿ModelSchema⌿ageGroups, TypeRef(⌿definitions⌿ModelSchema⌿ageGroups)), 

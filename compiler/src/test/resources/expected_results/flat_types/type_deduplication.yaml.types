@@ -49,10 +49,12 @@
 	Opt(Intgr)
 ⌿paths⌿/plants/{plant_id}/waterings⌿get⌿plant_id -> 
 	Str
+⌿paths⌿/users⌿get⌿limit -> 
+	Opt(BInt)
 ⌿paths⌿/plants⌿get⌿limit -> 
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/plants⌿get⌿offset -> 
-	Opt(Intgr)
+	Opt(BInt)
 ⌿paths⌿/plants/{plant_id}/pictures/{picture_id}⌿put⌿responses⌿404 -> 
 	Null
 ⌿paths⌿/users⌿get⌿responses⌿200 -> 
@@ -69,8 +71,8 @@
 
 ⌿paths⌿/plants/{plant_id}/waterings/{watering_id}⌿put⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user_id}/picture⌿put⌿user_id -> Parameter(user_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/areas⌿get⌿offset -> Parameter(offset,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
-⌿paths⌿/user/{user_id}/plants⌿get⌿limit -> Parameter(limit,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
+⌿paths⌿/areas⌿get⌿offset -> Parameter(offset,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
+⌿paths⌿/user/{user_id}/plants⌿get⌿limit -> Parameter(limit,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/users⌿post⌿signin_data -> Parameter(signin_data,TypeRef(⌿definitions⌿SigninData),None,None,.+,false,body)
 ⌿paths⌿/plants/{plant_id}/water_needs⌿put⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user_id}/picture⌿get⌿user_id -> Parameter(user_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
@@ -84,26 +86,26 @@
 ⌿paths⌿/plants/{plant_id}/sunlight_needs⌿put⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/plants/{plant_id}/location⌿put⌿location -> Parameter(location,TypeRef(⌿definitions⌿Location),None,None,.+,false,body)
 ⌿paths⌿/plants/{plant_id}/location⌿delete⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/plants/{plant_id}/pictures⌿get⌿offset -> Parameter(offset,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
+⌿paths⌿/plants/{plant_id}/pictures⌿get⌿offset -> Parameter(offset,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/plants/{plant_id}/waterings/{watering_id}⌿put⌿watering_id -> Parameter(watering_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/plants/{plant_id}⌿put⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/areas/{area_id}⌿put⌿area_id -> Parameter(area_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/user/{user_id}/plants⌿get⌿offset -> Parameter(offset,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
+⌿paths⌿/user/{user_id}/plants⌿get⌿offset -> Parameter(offset,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/plants/{plant_id}/pictures/{picture_id}⌿delete⌿picture_id -> Parameter(picture_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/plants/{plant_id}/pictures/{picture_id}⌿get⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/plants/{plant_id}⌿delete⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/plants/{plant_id}/waterings⌿get⌿limit -> Parameter(limit,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
+⌿paths⌿/plants/{plant_id}/waterings⌿get⌿limit -> Parameter(limit,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/areas/{area_id}⌿get⌿area_id -> Parameter(area_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user_id}⌿put⌿user_id -> Parameter(user_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/plants/{plant_id}/sunlight_needs⌿get⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/plants/{plant_id}/pictures⌿get⌿limit -> Parameter(limit,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
+⌿paths⌿/plants/{plant_id}/pictures⌿get⌿limit -> Parameter(limit,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/users/{user_id}⌿delete⌿user_id -> Parameter(user_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users⌿get⌿offset -> Parameter(offset,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
+⌿paths⌿/users⌿get⌿offset -> Parameter(offset,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/plants/{plant_id}/pictures/{picture_id}⌿get⌿picture_id -> Parameter(picture_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user_id}⌿put⌿user -> Parameter(user,TypeRef(⌿definitions⌿User),None,None,.+,false,body)
 ⌿paths⌿/plants/{plant_id}/pictures/{picture_id}⌿delete⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/areas⌿get⌿limit -> Parameter(limit,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
-⌿paths⌿/users⌿get⌿limit -> Parameter(limit,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
+⌿paths⌿/areas⌿get⌿limit -> Parameter(limit,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
+⌿paths⌿/users⌿get⌿limit -> Parameter(limit,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/plants/{plant_id}/pictures/{picture_id}⌿put⌿picture_id -> Parameter(picture_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/plants/{plant_id}/sunlight_needs⌿put⌿sunlight_needs -> Parameter(sunlight_needs,TypeRef(⌿definitions⌿SunlightNeeds),None,None,.+,false,body)
 ⌿paths⌿/plants/{plant_id}⌿put⌿plant -> Parameter(plant,TypeRef(⌿definitions⌿Plant),None,None,.+,false,body)
@@ -114,7 +116,7 @@
 ⌿paths⌿/user/{user_id}/plants⌿get⌿user_id -> Parameter(user_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user_id}⌿delete⌿user -> Parameter(user,TypeRef(⌿definitions⌿User),None,None,.+,false,body)
 ⌿paths⌿/plants/{plant_id}⌿get⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/plants/{plant_id}/waterings⌿get⌿offset -> Parameter(offset,TypeRef(⌿definitions⌿Error⌿code),None,None,.+,true,query)
+⌿paths⌿/plants/{plant_id}/waterings⌿get⌿offset -> Parameter(offset,TypeRef(⌿paths⌿/users⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/plants/{plant_id}/pictures⌿get⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/plants⌿get⌿limit -> Parameter(limit,TypeRef(⌿paths⌿/plants⌿get⌿limit),None,None,.+,true,query)
 ⌿paths⌿/plants/{plant_id}/waterings⌿get⌿plant_id -> Parameter(plant_id,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)

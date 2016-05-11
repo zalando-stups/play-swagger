@@ -4,6 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class PetsIdDeleteIdConstraints(override val instance: Long) extends ValidationBase[Long] {
@@ -77,17 +78,21 @@ class PetsGetTagsOptValidator(instance: PetsGetTagsOpt) extends RecursiveValidat
 // ----- call validations -----
 class PetsPostValidator(pet: NewPet) extends RecursiveValidator {
     override val validators = Seq(
-        new NewPetValidator(pet)    
+        new NewPetValidator(pet)
+    
     )
 }
 class PetsGetValidator(tags: PetsGetTags, limit: PetsGetLimit) extends RecursiveValidator {
     override val validators = Seq(
-        new PetsGetTagsValidator(tags),     
-        new PetsGetLimitValidator(limit)    
+        new PetsGetTagsValidator(tags), 
+    
+        new PetsGetLimitValidator(limit)
+    
     )
 }
 class PetsIdDeleteValidator(id: Long) extends RecursiveValidator {
     override val validators = Seq(
-        new PetsIdDeleteIdValidator(id)    
+        new PetsIdDeleteIdValidator(id)
+    
     )
 }
