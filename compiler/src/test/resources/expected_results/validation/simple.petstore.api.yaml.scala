@@ -4,6 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class PetsIdDeleteIdConstraints(override val instance: Long) extends ValidationBase[Long] {
@@ -12,7 +13,6 @@ class PetsIdDeleteIdConstraints(override val instance: Long) extends ValidationB
 }
 class PetsIdDeleteIdValidator(instance: Long) extends RecursiveValidator {
     override val validators = Seq(new PetsIdDeleteIdConstraints(instance))
-
 }
 class PetsGetLimitOptConstraints(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
@@ -20,7 +20,6 @@ class PetsGetLimitOptConstraints(override val instance: Int) extends ValidationB
 }
 class PetsGetLimitOptValidator(instance: Int) extends RecursiveValidator {
     override val validators = Seq(new PetsGetLimitOptConstraints(instance))
-
 }
 class PetsIdGetIdConstraints(override val instance: Long) extends ValidationBase[Long] {
     override def constraints: Seq[Constraint[Long]] =
@@ -28,7 +27,6 @@ class PetsIdGetIdConstraints(override val instance: Long) extends ValidationBase
 }
 class PetsIdGetIdValidator(instance: Long) extends RecursiveValidator {
     override val validators = Seq(new PetsIdGetIdConstraints(instance))
-
 }
 class PetsGetTagsOptArrConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -36,7 +34,6 @@ class PetsGetTagsOptArrConstraints(override val instance: String) extends Valida
 }
 class PetsGetTagsOptArrValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new PetsGetTagsOptArrConstraints(instance))
-
 }
 class NewPetNameConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -44,7 +41,6 @@ class NewPetNameConstraints(override val instance: String) extends ValidationBas
 }
 class NewPetNameValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new NewPetNameConstraints(instance))
-
 }
 class NewPetIdOptConstraints(override val instance: Long) extends ValidationBase[Long] {
     override def constraints: Seq[Constraint[Long]] =
@@ -52,7 +48,6 @@ class NewPetIdOptConstraints(override val instance: Long) extends ValidationBase
 }
 class NewPetIdOptValidator(instance: Long) extends RecursiveValidator {
     override val validators = Seq(new NewPetIdOptConstraints(instance))
-
 }
 class NewPetTagOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -60,17 +55,13 @@ class NewPetTagOptConstraints(override val instance: String) extends ValidationB
 }
 class NewPetTagOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new NewPetTagOptConstraints(instance))
-
 }
 // ----- complex type validators -----
 class NewPetValidator(instance: NewPet) extends RecursiveValidator {
     override val validators = Seq(
-    new NewPetNameValidator(instance.name), 
-
-    new NewPetIdValidator(instance.id), 
-
-    new NewPetTagValidator(instance.tag)
-
+        new NewPetNameValidator(instance.name), 
+        new NewPetIdValidator(instance.id), 
+        new NewPetTagValidator(instance.tag)
     )
 }
 // ----- option delegating validators -----
@@ -99,21 +90,26 @@ class PetsGetTagsOptValidator(instance: PetsGetTagsOpt) extends RecursiveValidat
 class PetsPostValidator(pet: NewPet) extends RecursiveValidator {
     override val validators = Seq(
         new NewPetValidator(pet)
+    
     )
 }
 class PetsGetValidator(tags: PetsGetTags, limit: PetsGetLimit) extends RecursiveValidator {
     override val validators = Seq(
-        new PetsGetTagsValidator(tags),
+        new PetsGetTagsValidator(tags), 
+    
         new PetsGetLimitValidator(limit)
+    
     )
 }
 class PetsIdGetValidator(id: Long) extends RecursiveValidator {
     override val validators = Seq(
         new PetsIdGetIdValidator(id)
+    
     )
 }
 class PetsIdDeleteValidator(id: Long) extends RecursiveValidator {
     override val validators = Seq(
         new PetsIdDeleteIdValidator(id)
+    
     )
 }

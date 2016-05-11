@@ -39,4 +39,3 @@ trait SecurityExtractors {
     implicit val unauthorizedContentWriter = ???
     def unauthorizedContent(req: RequestHeader) = Results.Unauthorized(???)
 }
-

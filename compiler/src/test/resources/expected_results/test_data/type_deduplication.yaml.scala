@@ -3,12 +3,14 @@ package type_deduplication.yaml
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
 import Arbitrary._
+import scala.math.BigInt
 
 object Generators {
     
 
     
     def createStringGenerator = _generate(StringGenerator)
+    def createUsersGetLimitGenerator = _generate(UsersGetLimitGenerator)
     def createNullGenerator = _generate(NullGenerator)
     def createPlantPlant_idGenerator = _generate(PlantPlant_idGenerator)
     def createPlantsGetLimitGenerator = _generate(PlantsGetLimitGenerator)
@@ -23,14 +25,15 @@ object Generators {
 
     
     def StringGenerator = arbitrary[String]
+    def UsersGetLimitGenerator = Gen.option(arbitrary[BigInt])
     def NullGenerator = arbitrary[Null]
     def PlantPlant_idGenerator = Gen.option(arbitrary[String])
-    def PlantsGetLimitGenerator = Gen.option(arbitrary[Int])
+    def PlantsGetLimitGenerator = Gen.option(arbitrary[BigInt])
     def UsersGetResponses200Generator = Gen.containerOf[List,User](UserGenerator)
     def ErrorCodeGenerator = Gen.option(arbitrary[Int])
     def PlantsGetResponses200Generator = Gen.containerOf[List,Plant](PlantGenerator)
     def AreasGetResponses200Generator = Gen.containerOf[List,Area](AreaGenerator)
-    def PlantsGetOffsetGenerator = Gen.option(arbitrary[Int])
+    def PlantsGetOffsetGenerator = Gen.option(arbitrary[BigInt])
     def PlantsPlant_idPicturesGetResponses200Generator = Gen.containerOf[List,String](arbitrary[String])
     def PlantsPlant_idWateringsGetResponses200Generator = Gen.containerOf[List,Watering](WateringGenerator)
     

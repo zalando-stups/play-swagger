@@ -4,6 +4,8 @@ package instagram.api.yaml
 import scala.concurrent.Future
 import play.api.mvc._
 import de.zalando.play.controllers.SwaggerSecurityExtractors._
+import scala.math.BigInt
+import scala.math.BigDecimal
 
 object SecurityExtractorsExecutionContext {
     // TODO override with proper ExecutionContext instance
@@ -22,4 +24,3 @@ trait SecurityExtractors {
     implicit val unauthorizedContentWriter = ???
     def unauthorizedContent(req: RequestHeader) = Results.Unauthorized(???)
 }
-

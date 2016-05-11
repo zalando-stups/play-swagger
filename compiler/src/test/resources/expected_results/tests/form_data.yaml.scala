@@ -23,6 +23,7 @@ import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
 import java.io.File
+import scala.math.BigInt
 
 import Generators._
 

@@ -3,13 +3,15 @@ package instagram.api.yaml
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
 import Arbitrary._
+import scala.math.BigInt
+import scala.math.BigDecimal
 
 object Generators {
     
 
     
     def createTagsSearchGetResponses200MetaGenerator = _generate(TagsSearchGetResponses200MetaGenerator)
-    def createIntGenerator = _generate(IntGenerator)
+    def createBigIntGenerator = _generate(BigIntGenerator)
     def createMediaMedia_idGetResponses200VideosStandard_resolutionGenerator = _generate(MediaMedia_idGetResponses200VideosStandard_resolutionGenerator)
     def createMediaFilterGenerator = _generate(MediaFilterGenerator)
     def createMediaMedia_idCommentsDeleteResponses200MetaGenerator = _generate(MediaMedia_idCommentsDeleteResponses200MetaGenerator)
@@ -21,7 +23,7 @@ object Generators {
     def createMediaTagsOptGenerator = _generate(MediaTagsOptGenerator)
     def createMediaImagesGenerator = _generate(MediaImagesGenerator)
     def createMediaLikesGenerator = _generate(MediaLikesGenerator)
-    def createIntNameClashGenerator = _generate(IntNameClashGenerator)
+    def createBigIntNameClashGenerator = _generate(BigIntNameClashGenerator)
     def createMediaMedia_idCommentsGetResponses200DataOptGenerator = _generate(MediaMedia_idCommentsGetResponses200DataOptGenerator)
     def createMediaUsers_in_photoOptGenerator = _generate(MediaUsers_in_photoOptGenerator)
     def createMediaMedia_idLikesGetResponses200DataOptGenerator = _generate(MediaMedia_idLikesGetResponses200DataOptGenerator)
@@ -39,26 +41,26 @@ object Generators {
     def createMediaUsers_in_photoGenerator = _generate(MediaUsers_in_photoGenerator)
     def createLocationLatitudeGenerator = _generate(LocationLatitudeGenerator)
     def createMediaMedia_idCommentsGetResponses200DataGenerator = _generate(MediaMedia_idCommentsGetResponses200DataGenerator)
-    def createDoubleGenerator = _generate(DoubleGenerator)
+    def createBigDecimalGenerator = _generate(BigDecimalGenerator)
     def createUserCountsGenerator = _generate(UserCountsGenerator)
     def createStringGenerator = _generate(StringGenerator)
     
 
     
     def TagsSearchGetResponses200MetaGenerator = Gen.option(UsersSelfRequested_byGetResponses200MetaOptGenerator)
-    def IntGenerator = arbitrary[Int]
+    def BigIntGenerator = arbitrary[BigInt]
     def MediaMedia_idGetResponses200VideosStandard_resolutionGenerator = Gen.option(ImageGenerator)
     def MediaFilterGenerator = Gen.option(arbitrary[String])
     def MediaMedia_idCommentsDeleteResponses200MetaGenerator = Gen.option(MediaMedia_idLikesGetResponses200MetaOptGenerator)
     def UsersSelfFeedGetResponses200DataGenerator = Gen.option(UsersSelfFeedGetResponses200DataOptGenerator)
     def MediaTagsGenerator = Gen.option(MediaTagsOptGenerator)
     def MediaMedia_idLikesGetResponses200DataGenerator = Gen.option(MediaMedia_idLikesGetResponses200DataOptGenerator)
-    def MediaIdGenerator = Gen.option(arbitrary[Int])
+    def MediaIdGenerator = Gen.option(arbitrary[BigInt])
     def UsersUser_idRelationshipPostActionGenerator = Gen.option(arbitrary[String])
     def MediaTagsOptGenerator = Gen.containerOf[List,Tag](TagGenerator)
     def MediaImagesGenerator = Gen.option(MediaImagesOptGenerator)
     def MediaLikesGenerator = Gen.option(MediaLikesOptGenerator)
-    def IntNameClashGenerator = arbitrary[Int]
+    def BigIntNameClashGenerator = arbitrary[BigInt]
     def MediaMedia_idCommentsGetResponses200DataOptGenerator = Gen.containerOf[List,Comment](CommentGenerator)
     def MediaUsers_in_photoOptGenerator = Gen.containerOf[List,MiniProfile](MiniProfileGenerator)
     def MediaMedia_idLikesGetResponses200DataOptGenerator = Gen.containerOf[List,Like](LikeGenerator)
@@ -74,9 +76,9 @@ object Generators {
     def MediaLocationGenerator = Gen.option(LocationGenerator)
     def NullGenerator = arbitrary[Null]
     def MediaUsers_in_photoGenerator = Gen.option(MediaUsers_in_photoOptGenerator)
-    def LocationLatitudeGenerator = Gen.option(arbitrary[Double])
+    def LocationLatitudeGenerator = Gen.option(arbitrary[BigDecimal])
     def MediaMedia_idCommentsGetResponses200DataGenerator = Gen.option(MediaMedia_idCommentsGetResponses200DataOptGenerator)
-    def DoubleGenerator = arbitrary[Double]
+    def BigDecimalGenerator = arbitrary[BigDecimal]
     def UserCountsGenerator = Gen.option(UserCountsOptGenerator)
     def StringGenerator = arbitrary[String]
     

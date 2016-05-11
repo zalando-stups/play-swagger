@@ -1,7 +1,7 @@
 ⌿definitions⌿ErrorModel -> 
 	TypeDef(⌿definitions⌿ErrorModel, Seq(
 		Field(⌿definitions⌿ErrorModel⌿message, Str), 
-		Field(⌿definitions⌿ErrorModel⌿code, Intgr)))
+		Field(⌿definitions⌿ErrorModel⌿code, BInt)))
 ⌿definitions⌿ExtendedErrorModel -> 
 	AllOf(
 		TypeRef(⌿definitions⌿ErrorModel)

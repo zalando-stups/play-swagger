@@ -60,7 +60,7 @@
 ⌿definitions⌿Media⌿tags -> 
 	Opt(TypeRef(⌿definitions⌿Media⌿tags⌿Opt))
 ⌿definitions⌿Media⌿id -> 
-	Opt(Intgr)
+	Opt(BInt)
 ⌿definitions⌿Media⌿images -> 
 	Opt(TypeRef(⌿definitions⌿Media⌿images⌿Opt))
 ⌿definitions⌿Media⌿likes -> 
@@ -76,15 +76,15 @@
 ⌿definitions⌿Media⌿users_in_photo -> 
 	Opt(TypeRef(⌿definitions⌿Media⌿users_in_photo⌿Opt))
 ⌿definitions⌿Location⌿latitude -> 
-	Opt(Dbl)
+	Opt(BDcml)
 ⌿parameters⌿user-id-param⌿user-id -> 
-	Dbl
+	BDcml
 ⌿definitions⌿User⌿counts -> 
 	Opt(TypeRef(⌿definitions⌿User⌿counts⌿Opt))
 ⌿parameters⌿tag-name⌿tag-name -> 
 	Str
 ⌿paths⌿/locations/{location-id}⌿⌿location-id -> 
-	Intgr
+	BInt
 ⌿paths⌿/users/{user-id}/relationship⌿post⌿action -> 
 	Opt(Str)
 ⌿definitions⌿Media⌿tags⌿Opt -> 
@@ -95,7 +95,7 @@
 		Field(⌿definitions⌿User⌿counts⌿follows, TypeRef(⌿definitions⌿Media⌿id)), 
 		Field(⌿definitions⌿User⌿counts⌿follwed_by, TypeRef(⌿definitions⌿Media⌿id))))
 ⌿paths⌿/media/search⌿get⌿DISTANCE -> 
-	Intgr
+	BInt
 ⌿definitions⌿Media⌿users_in_photo⌿Opt -> 
 	ArrResult(TypeRef(⌿definitions⌿MiniProfile))
 ⌿definitions⌿Media⌿comments:⌿Opt -> 
@@ -202,13 +202,13 @@
 -- params --
 
 ⌿paths⌿/locations/{location-id}/media/recent⌿get⌿min_timestamp -> Parameter(min_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
-⌿paths⌿/media/{media-id}/likes⌿delete⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/locations/{location-id}⌿get⌿location-id -> Parameter(location-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/media/{media-id}/likes⌿delete⌿media-id -> Parameter(media-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/locations/{location-id}⌿get⌿location-id -> Parameter(location-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/media/search⌿get⌿MAX_TIMESTAMP -> Parameter(MAX_TIMESTAMP,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
-⌿paths⌿/media/{media-id}/likes⌿post⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/media/{media-id}/likes⌿post⌿media-id -> Parameter(media-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user-id}/relationship⌿post⌿action -> Parameter(action,TypeRef(⌿paths⌿/users/{user-id}/relationship⌿post⌿action),None,None,.+,false,body)
-⌿paths⌿/users/{user-id}⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/{user-id}/followed-by⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/users/{user-id}⌿get⌿user-id -> Parameter(user-id,BDcml(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/users/{user-id}/followed-by⌿get⌿user-id -> Parameter(user-id,BDcml(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/self/feed⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/users/self/feed⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/locations/{location-id}/media/recent⌿get⌿max_timestamp -> Parameter(max_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
@@ -216,19 +216,19 @@
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿max_timestamp -> Parameter(max_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
 ⌿paths⌿/tags/{tag-name}⌿get⌿tag-name -> Parameter(tag-name,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/media/search⌿get⌿DISTANCE -> Parameter(DISTANCE,Intgr(TypeMeta(None, List(max(5000, false)))),None,Some(1000),.+,true,query)
+⌿paths⌿/media/search⌿get⌿DISTANCE -> Parameter(DISTANCE,BInt(TypeMeta(None, List(max(BigInt("5000"), false)))),None,Some(1000),.+,true,query)
 ⌿paths⌿/tags/{tag-name}/media/recent⌿get⌿tag-name -> Parameter(tag-name,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿min_timestamp -> Parameter(min_timestamp,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/media/{media-id}/comments⌿post⌿TEXT -> Parameter(TEXT,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,false,body)
-⌿paths⌿/users/{user-id}/follows⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/locations/{location-id}/media/recent⌿get⌿location-id -> Parameter(location-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/users/{user-id}/follows⌿get⌿user-id -> Parameter(user-id,BDcml(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/locations/{location-id}/media/recent⌿get⌿location-id -> Parameter(location-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/self/feed⌿get⌿max_id -> Parameter(max_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/users/self/media/liked⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/media/search⌿get⌿LNG -> Parameter(LNG,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,true,query)
 ⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/locations/search⌿get⌿facebook_places_id -> Parameter(facebook_places_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
-⌿paths⌿/media/{media-id}/comments⌿post⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/media/{media-id}⌿get⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/media/{media-id}/comments⌿post⌿media-id -> Parameter(media-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/media/{media-id}⌿get⌿media-id -> Parameter(media-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/self/media/liked⌿get⌿max_like_id -> Parameter(max_like_id,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/media/search⌿get⌿MIN_TIMESTAMP -> Parameter(MIN_TIMESTAMP,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/locations/search⌿get⌿distance -> Parameter(distance,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
@@ -240,14 +240,14 @@
 ⌿paths⌿/locations/{location-id}/media/recent⌿get⌿min_id -> Parameter(min_id,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
 ⌿paths⌿/tags/search⌿get⌿q -> Parameter(q,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿max_id -> Parameter(max_id,TypeRef(⌿definitions⌿Media⌿filter),None,None,.+,true,query)
-⌿paths⌿/media/{media-id}/likes⌿get⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/users/{user-id}/relationship⌿post⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/media/{media-id}/comments⌿delete⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/media/{media-id}/comments⌿get⌿media-id -> Parameter(media-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/media/{media-id}/likes⌿get⌿media-id -> Parameter(media-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/users/{user-id}/relationship⌿post⌿user-id -> Parameter(user-id,BDcml(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/media/{media-id}/comments⌿delete⌿media-id -> Parameter(media-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/media/{media-id}/comments⌿get⌿media-id -> Parameter(media-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/search⌿get⌿q -> Parameter(q,Str(None,TypeMeta(None, List())),None,None,.+,true,query)
 ⌿paths⌿/media/{shortcode}⌿get⌿shortcode -> Parameter(shortcode,Str(None,TypeMeta(None, List())),None,None,[^/]+,true,path)
 ⌿paths⌿/users/{user-id}/media/recent⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿count -> Parameter(count,TypeRef(⌿definitions⌿Media⌿id),None,None,.+,true,query)
 ⌿paths⌿/locations/search⌿get⌿lng -> Parameter(lng,TypeRef(⌿definitions⌿Location⌿latitude),None,None,.+,true,query)
-⌿paths⌿/users/{user-id}/media/recent⌿get⌿user-id -> Parameter(user-id,Dbl(TypeMeta(None, List())),None,None,[^/]+,true,path)
-⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿geo-id -> Parameter(geo-id,Intgr(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/users/{user-id}/media/recent⌿get⌿user-id -> Parameter(user-id,BDcml(TypeMeta(None, List())),None,None,[^/]+,true,path)
+⌿paths⌿/geographies/{geo-id}/media/recent⌿get⌿geo-id -> Parameter(geo-id,BInt(TypeMeta(None, List())),None,None,[^/]+,true,path)

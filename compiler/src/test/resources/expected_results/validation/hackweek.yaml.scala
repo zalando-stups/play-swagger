@@ -4,7 +4,9 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 import de.zalando.play.controllers.ArrayWrapper
+import scala.math.BigInt
 // ----- constraints and wrapper validations -----
 class ModelSchemaNameConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -27,11 +29,11 @@ class ModelSchemaBrandConstraints(override val instance: String) extends Validat
 class ModelSchemaBrandValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new ModelSchemaBrandConstraints(instance))
 }
-class ModelSchemaPartnerArticleModelIdConstraints(override val instance: Int) extends ValidationBase[Int] {
-    override def constraints: Seq[Constraint[Int]] =
+class ModelSchemaPartnerArticleModelIdConstraints(override val instance: BigInt) extends ValidationBase[BigInt] {
+    override def constraints: Seq[Constraint[BigInt]] =
         Seq()
 }
-class ModelSchemaPartnerArticleModelIdValidator(instance: Int) extends RecursiveValidator {
+class ModelSchemaPartnerArticleModelIdValidator(instance: BigInt) extends RecursiveValidator {
     override val validators = Seq(new ModelSchemaPartnerArticleModelIdConstraints(instance))
 }
 class ModelSchemaSilhouetteIdConstraints(override val instance: String) extends ValidationBase[String] {

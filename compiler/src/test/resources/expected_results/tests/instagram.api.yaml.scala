@@ -22,6 +22,8 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
+import scala.math.BigInt
+import scala.math.BigDecimal
 
 import Generators._
 
@@ -47,7 +49,7 @@ import Generators._
 
 
     "GET /v1/users/{user-id}" should {
-        def testInvalidInput(user_id: Double) = {
+        def testInvalidInput(user_id: BigDecimal) = {
 
 
             val url = s"""/v1/users/${toPath(user_id)}"""
@@ -88,7 +90,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(user_id: Double) = {
+        def testValidInput(user_id: BigDecimal) = {
             
             val url = s"""/v1/users/${toPath(user_id)}"""
             val acceptHeaders: Seq[String] = Seq(
@@ -138,7 +140,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    user_id <- DoubleGenerator
+                    user_id <- BigDecimalGenerator
                 } yield user_id
             val inputs = genInputs suchThat { user_id =>
                 new UsersUser_idGetValidator(user_id).errors.nonEmpty
@@ -148,7 +150,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                user_id <- DoubleGenerator
+                user_id <- BigDecimalGenerator
             } yield user_id
             val inputs = genInputs suchThat { user_id =>
                 new UsersUser_idGetValidator(user_id).errors.isEmpty
@@ -160,7 +162,7 @@ import Generators._
     }
 
     "GET /v1/users/{user-id}/followed-by" should {
-        def testInvalidInput(user_id: Double) = {
+        def testInvalidInput(user_id: BigDecimal) = {
 
 
             val url = s"""/v1/users/${toPath(user_id)}/followed-by"""
@@ -201,7 +203,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(user_id: Double) = {
+        def testValidInput(user_id: BigDecimal) = {
             
             val url = s"""/v1/users/${toPath(user_id)}/followed-by"""
             val acceptHeaders: Seq[String] = Seq(
@@ -251,7 +253,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    user_id <- DoubleGenerator
+                    user_id <- BigDecimalGenerator
                 } yield user_id
             val inputs = genInputs suchThat { user_id =>
                 new UsersUser_idFollowed_byGetValidator(user_id).errors.nonEmpty
@@ -261,7 +263,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                user_id <- DoubleGenerator
+                user_id <- BigDecimalGenerator
             } yield user_id
             val inputs = genInputs suchThat { user_id =>
                 new UsersUser_idFollowed_byGetValidator(user_id).errors.isEmpty
@@ -273,7 +275,7 @@ import Generators._
     }
 
     "GET /v1/media/{media-id}/likes" should {
-        def testInvalidInput(media_id: Int) = {
+        def testInvalidInput(media_id: BigInt) = {
 
 
             val url = s"""/v1/media/${toPath(media_id)}/likes"""
@@ -314,7 +316,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(media_id: Int) = {
+        def testValidInput(media_id: BigInt) = {
             
             val url = s"""/v1/media/${toPath(media_id)}/likes"""
             val acceptHeaders: Seq[String] = Seq(
@@ -364,7 +366,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    media_id <- IntGenerator
+                    media_id <- BigIntGenerator
                 } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idLikesGetValidator(media_id).errors.nonEmpty
@@ -374,7 +376,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                media_id <- IntGenerator
+                media_id <- BigIntGenerator
             } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idLikesGetValidator(media_id).errors.isEmpty
@@ -513,7 +515,7 @@ import Generators._
     }
 
     "DELETE /v1/media/{media-id}/comments" should {
-        def testInvalidInput(media_id: Int) = {
+        def testInvalidInput(media_id: BigInt) = {
 
 
             val url = s"""/v1/media/${toPath(media_id)}/comments"""
@@ -554,7 +556,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(media_id: Int) = {
+        def testValidInput(media_id: BigInt) = {
             
             val url = s"""/v1/media/${toPath(media_id)}/comments"""
             val acceptHeaders: Seq[String] = Seq(
@@ -604,7 +606,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    media_id <- IntGenerator
+                    media_id <- BigIntGenerator
                 } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idCommentsDeleteValidator(media_id).errors.nonEmpty
@@ -614,7 +616,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                media_id <- IntGenerator
+                media_id <- BigIntGenerator
             } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idCommentsDeleteValidator(media_id).errors.isEmpty
@@ -858,7 +860,7 @@ import Generators._
     }
 
     "GET /v1/media/{media-id}/comments" should {
-        def testInvalidInput(media_id: Int) = {
+        def testInvalidInput(media_id: BigInt) = {
 
 
             val url = s"""/v1/media/${toPath(media_id)}/comments"""
@@ -899,7 +901,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(media_id: Int) = {
+        def testValidInput(media_id: BigInt) = {
             
             val url = s"""/v1/media/${toPath(media_id)}/comments"""
             val acceptHeaders: Seq[String] = Seq(
@@ -949,7 +951,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    media_id <- IntGenerator
+                    media_id <- BigIntGenerator
                 } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idCommentsGetValidator(media_id).errors.nonEmpty
@@ -959,7 +961,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                media_id <- IntGenerator
+                media_id <- BigIntGenerator
             } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idCommentsGetValidator(media_id).errors.isEmpty
@@ -971,7 +973,7 @@ import Generators._
     }
 
     "DELETE /v1/media/{media-id}/likes" should {
-        def testInvalidInput(media_id: Int) = {
+        def testInvalidInput(media_id: BigInt) = {
 
 
             val url = s"""/v1/media/${toPath(media_id)}/likes"""
@@ -1012,7 +1014,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(media_id: Int) = {
+        def testValidInput(media_id: BigInt) = {
             
             val url = s"""/v1/media/${toPath(media_id)}/likes"""
             val acceptHeaders: Seq[String] = Seq(
@@ -1062,7 +1064,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    media_id <- IntGenerator
+                    media_id <- BigIntGenerator
                 } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idLikesDeleteValidator(media_id).errors.nonEmpty
@@ -1072,7 +1074,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                media_id <- IntGenerator
+                media_id <- BigIntGenerator
             } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idLikesDeleteValidator(media_id).errors.isEmpty
@@ -1084,7 +1086,7 @@ import Generators._
     }
 
     "GET /v1/media/{media-id}" should {
-        def testInvalidInput(media_id: Int) = {
+        def testInvalidInput(media_id: BigInt) = {
 
 
             val url = s"""/v1/media/${toPath(media_id)}"""
@@ -1125,7 +1127,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(media_id: Int) = {
+        def testValidInput(media_id: BigInt) = {
             
             val url = s"""/v1/media/${toPath(media_id)}"""
             val acceptHeaders: Seq[String] = Seq(
@@ -1175,7 +1177,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    media_id <- IntGenerator
+                    media_id <- BigIntGenerator
                 } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idGetValidator(media_id).errors.nonEmpty
@@ -1185,7 +1187,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                media_id <- IntGenerator
+                media_id <- BigIntGenerator
             } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idGetValidator(media_id).errors.isEmpty
@@ -1429,7 +1431,7 @@ import Generators._
     }
 
     "POST /v1/media/{media-id}/comments" should {
-        def testInvalidInput(input: (Int, LocationLatitude)) = {
+        def testInvalidInput(input: (BigInt, LocationLatitude)) = {
 
             val (media_id, tEXT) = input
 
@@ -1472,7 +1474,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (Int, LocationLatitude)) = {
+        def testValidInput(input: (BigInt, LocationLatitude)) = {
             val (media_id, tEXT) = input
             
             val parsed_TEXT = parserConstructor("application/json").writeValueAsString(TEXT)
@@ -1525,7 +1527,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        media_id <- IntGenerator
+                        media_id <- BigIntGenerator
                         tEXT <- LocationLatitudeGenerator
                     
                 } yield (media_id, tEXT)
@@ -1537,7 +1539,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    media_id <- IntGenerator
+                    media_id <- BigIntGenerator
                     tEXT <- LocationLatitudeGenerator
                 
             } yield (media_id, tEXT)
@@ -1551,7 +1553,7 @@ import Generators._
     }
 
     "POST /v1/media/{media-id}/likes" should {
-        def testInvalidInput(media_id: Int) = {
+        def testInvalidInput(media_id: BigInt) = {
 
 
             val url = s"""/v1/media/${toPath(media_id)}/likes"""
@@ -1592,7 +1594,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(media_id: Int) = {
+        def testValidInput(media_id: BigInt) = {
             
             val url = s"""/v1/media/${toPath(media_id)}/likes"""
             val acceptHeaders: Seq[String] = Seq(
@@ -1642,7 +1644,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    media_id <- IntGenerator
+                    media_id <- BigIntGenerator
                 } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idLikesPostValidator(media_id).errors.nonEmpty
@@ -1652,7 +1654,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                media_id <- IntGenerator
+                media_id <- BigIntGenerator
             } yield media_id
             val inputs = genInputs suchThat { media_id =>
                 new MediaMedia_idLikesPostValidator(media_id).errors.isEmpty
@@ -1664,7 +1666,7 @@ import Generators._
     }
 
     "POST /v1/users/{user-id}/relationship" should {
-        def testInvalidInput(input: (Double, UsersUser_idRelationshipPostAction)) = {
+        def testInvalidInput(input: (BigDecimal, UsersUser_idRelationshipPostAction)) = {
 
             val (user_id, action) = input
 
@@ -1707,7 +1709,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (Double, UsersUser_idRelationshipPostAction)) = {
+        def testValidInput(input: (BigDecimal, UsersUser_idRelationshipPostAction)) = {
             val (user_id, action) = input
             
             val parsed_action = parserConstructor("application/json").writeValueAsString(action)
@@ -1760,7 +1762,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        user_id <- DoubleGenerator
+                        user_id <- BigDecimalGenerator
                         action <- UsersUser_idRelationshipPostActionGenerator
                     
                 } yield (user_id, action)
@@ -1772,7 +1774,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    user_id <- DoubleGenerator
+                    user_id <- BigDecimalGenerator
                     action <- UsersUser_idRelationshipPostActionGenerator
                 
             } yield (user_id, action)
@@ -1899,7 +1901,7 @@ import Generators._
     }
 
     "GET /v1/locations/{location-id}" should {
-        def testInvalidInput(location_id: Int) = {
+        def testInvalidInput(location_id: BigInt) = {
 
 
             val url = s"""/v1/locations/${toPath(location_id)}"""
@@ -1940,7 +1942,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(location_id: Int) = {
+        def testValidInput(location_id: BigInt) = {
             
             val url = s"""/v1/locations/${toPath(location_id)}"""
             val acceptHeaders: Seq[String] = Seq(
@@ -1990,7 +1992,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    location_id <- IntGenerator
+                    location_id <- BigIntGenerator
                 } yield location_id
             val inputs = genInputs suchThat { location_id =>
                 new LocationsLocation_idGetValidator(location_id).errors.nonEmpty
@@ -2000,7 +2002,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                location_id <- IntGenerator
+                location_id <- BigIntGenerator
             } yield location_id
             val inputs = genInputs suchThat { location_id =>
                 new LocationsLocation_idGetValidator(location_id).errors.isEmpty
@@ -2012,7 +2014,7 @@ import Generators._
     }
 
     "GET /v1/locations/{location-id}/media/recent" should {
-        def testInvalidInput(input: (Int, MediaId, MediaId, MediaFilter, MediaFilter)) = {
+        def testInvalidInput(input: (BigInt, MediaId, MediaId, MediaFilter, MediaFilter)) = {
 
             val (location_id, max_timestamp, min_timestamp, min_id, max_id) = input
 
@@ -2054,7 +2056,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (Int, MediaId, MediaId, MediaFilter, MediaFilter)) = {
+        def testValidInput(input: (BigInt, MediaId, MediaId, MediaFilter, MediaFilter)) = {
             val (location_id, max_timestamp, min_timestamp, min_id, max_id) = input
             
             val url = s"""/v1/locations/${toPath(location_id)}/media/recent?${toQuery("max_timestamp", max_timestamp)}&${toQuery("min_timestamp", min_timestamp)}&${toQuery("min_id", min_id)}&${toQuery("max_id", max_id)}"""
@@ -2105,7 +2107,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        location_id <- IntGenerator
+                        location_id <- BigIntGenerator
                         max_timestamp <- MediaIdGenerator
                         min_timestamp <- MediaIdGenerator
                         min_id <- MediaFilterGenerator
@@ -2120,7 +2122,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    location_id <- IntGenerator
+                    location_id <- BigIntGenerator
                     max_timestamp <- MediaIdGenerator
                     min_timestamp <- MediaIdGenerator
                     min_id <- MediaFilterGenerator
@@ -2137,7 +2139,7 @@ import Generators._
     }
 
     "GET /v1/media/search" should {
-        def testInvalidInput(input: (MediaId, Int, LocationLatitude, MediaId, LocationLatitude)) = {
+        def testInvalidInput(input: (MediaId, BigInt, LocationLatitude, MediaId, LocationLatitude)) = {
 
             val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
 
@@ -2179,7 +2181,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (MediaId, Int, LocationLatitude, MediaId, LocationLatitude)) = {
+        def testValidInput(input: (MediaId, BigInt, LocationLatitude, MediaId, LocationLatitude)) = {
             val (mAX_TIMESTAMP, dISTANCE, lNG, mIN_TIMESTAMP, lAT) = input
             
             val url = s"""/v1/media/search?${toQuery("MAX_TIMESTAMP", MAX_TIMESTAMP)}&${toQuery("DISTANCE", DISTANCE)}&${toQuery("LNG", LNG)}&${toQuery("MIN_TIMESTAMP", MIN_TIMESTAMP)}&${toQuery("LAT", LAT)}"""
@@ -2231,7 +2233,7 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                         mAX_TIMESTAMP <- MediaIdGenerator
-                        dISTANCE <- IntGenerator
+                        dISTANCE <- BigIntGenerator
                         lNG <- LocationLatitudeGenerator
                         mIN_TIMESTAMP <- MediaIdGenerator
                         lAT <- LocationLatitudeGenerator
@@ -2246,7 +2248,7 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                     mAX_TIMESTAMP <- MediaIdGenerator
-                    dISTANCE <- IntGenerator
+                    dISTANCE <- BigIntGenerator
                     lNG <- LocationLatitudeGenerator
                     mIN_TIMESTAMP <- MediaIdGenerator
                     lAT <- LocationLatitudeGenerator
@@ -2375,7 +2377,7 @@ import Generators._
     }
 
     "GET /v1/users/{user-id}/follows" should {
-        def testInvalidInput(user_id: Double) = {
+        def testInvalidInput(user_id: BigDecimal) = {
 
 
             val url = s"""/v1/users/${toPath(user_id)}/follows"""
@@ -2416,7 +2418,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(user_id: Double) = {
+        def testValidInput(user_id: BigDecimal) = {
             
             val url = s"""/v1/users/${toPath(user_id)}/follows"""
             val acceptHeaders: Seq[String] = Seq(
@@ -2466,7 +2468,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                    user_id <- DoubleGenerator
+                    user_id <- BigDecimalGenerator
                 } yield user_id
             val inputs = genInputs suchThat { user_id =>
                 new UsersUser_idFollowsGetValidator(user_id).errors.nonEmpty
@@ -2476,7 +2478,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                user_id <- DoubleGenerator
+                user_id <- BigDecimalGenerator
             } yield user_id
             val inputs = genInputs suchThat { user_id =>
                 new UsersUser_idFollowsGetValidator(user_id).errors.isEmpty
@@ -2488,7 +2490,7 @@ import Generators._
     }
 
     "GET /v1/users/{user-id}/media/recent" should {
-        def testInvalidInput(input: (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)) = {
+        def testInvalidInput(input: (BigDecimal, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)) = {
 
             val (user_id, max_timestamp, min_id, min_timestamp, max_id, count) = input
 
@@ -2530,7 +2532,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (Double, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)) = {
+        def testValidInput(input: (BigDecimal, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)) = {
             val (user_id, max_timestamp, min_id, min_timestamp, max_id, count) = input
             
             val url = s"""/v1/users/${toPath(user_id)}/media/recent?${toQuery("max_timestamp", max_timestamp)}&${toQuery("min_id", min_id)}&${toQuery("min_timestamp", min_timestamp)}&${toQuery("max_id", max_id)}&${toQuery("count", count)}"""
@@ -2581,7 +2583,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        user_id <- DoubleGenerator
+                        user_id <- BigDecimalGenerator
                         max_timestamp <- MediaIdGenerator
                         min_id <- MediaFilterGenerator
                         min_timestamp <- MediaIdGenerator
@@ -2597,7 +2599,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    user_id <- DoubleGenerator
+                    user_id <- BigDecimalGenerator
                     max_timestamp <- MediaIdGenerator
                     min_id <- MediaFilterGenerator
                     min_timestamp <- MediaIdGenerator
@@ -2736,7 +2738,7 @@ import Generators._
     }
 
     "GET /v1/geographies/{geo-id}/media/recent" should {
-        def testInvalidInput(input: (Int, MediaId, MediaId)) = {
+        def testInvalidInput(input: (BigInt, MediaId, MediaId)) = {
 
             val (geo_id, count, min_id) = input
 
@@ -2778,7 +2780,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (Int, MediaId, MediaId)) = {
+        def testValidInput(input: (BigInt, MediaId, MediaId)) = {
             val (geo_id, count, min_id) = input
             
             val url = s"""/v1/geographies/${toPath(geo_id)}/media/recent?${toQuery("count", count)}&${toQuery("min_id", min_id)}"""
@@ -2829,7 +2831,7 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        geo_id <- IntGenerator
+                        geo_id <- BigIntGenerator
                         count <- MediaIdGenerator
                         min_id <- MediaIdGenerator
                     
@@ -2842,7 +2844,7 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    geo_id <- IntGenerator
+                    geo_id <- BigIntGenerator
                     count <- MediaIdGenerator
                     min_id <- MediaIdGenerator
                 

@@ -22,6 +22,7 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
+import scala.math.BigDecimal
 import de.zalando.play.controllers.ArrayWrapper
 
 import Generators._

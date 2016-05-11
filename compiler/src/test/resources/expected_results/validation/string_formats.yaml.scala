@@ -4,6 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 import de.zalando.play.controllers.Base64String
 import Base64String._
 import de.zalando.play.controllers.BinaryString

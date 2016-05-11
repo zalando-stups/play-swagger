@@ -4,6 +4,8 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
+import scala.math.BigDecimal
 import de.zalando.play.controllers.ArrayWrapper
 // ----- constraints and wrapper validations -----
 class EstimatesPriceGetEnd_latitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
@@ -12,7 +14,6 @@ class EstimatesPriceGetEnd_latitudeConstraints(override val instance: Double) ex
 }
 class EstimatesPriceGetEnd_latitudeValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new EstimatesPriceGetEnd_latitudeConstraints(instance))
-
 }
 class EstimatesTimeGetStart_latitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =
@@ -20,7 +21,6 @@ class EstimatesTimeGetStart_latitudeConstraints(override val instance: Double) e
 }
 class EstimatesTimeGetStart_latitudeValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new EstimatesTimeGetStart_latitudeConstraints(instance))
-
 }
 class ProductsGetLongitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =
@@ -28,7 +28,6 @@ class ProductsGetLongitudeConstraints(override val instance: Double) extends Val
 }
 class ProductsGetLongitudeValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new ProductsGetLongitudeConstraints(instance))
-
 }
 class EstimatesTimeGetStart_longitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =
@@ -36,7 +35,6 @@ class EstimatesTimeGetStart_longitudeConstraints(override val instance: Double) 
 }
 class EstimatesTimeGetStart_longitudeValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new EstimatesTimeGetStart_longitudeConstraints(instance))
-
 }
 class ErrorCodeOptConstraints(override val instance: Int) extends ValidationBase[Int] {
     override def constraints: Seq[Constraint[Int]] =
@@ -44,7 +42,6 @@ class ErrorCodeOptConstraints(override val instance: Int) extends ValidationBase
 }
 class ErrorCodeOptValidator(instance: Int) extends RecursiveValidator {
     override val validators = Seq(new ErrorCodeOptConstraints(instance))
-
 }
 class ProfilePictureOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -52,7 +49,6 @@ class ProfilePictureOptConstraints(override val instance: String) extends Valida
 }
 class ProfilePictureOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new ProfilePictureOptConstraints(instance))
-
 }
 class ProductsGetLatitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =
@@ -60,7 +56,6 @@ class ProductsGetLatitudeConstraints(override val instance: Double) extends Vali
 }
 class ProductsGetLatitudeValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new ProductsGetLatitudeConstraints(instance))
-
 }
 class EstimatesPriceGetStart_latitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =
@@ -68,7 +63,6 @@ class EstimatesPriceGetStart_latitudeConstraints(override val instance: Double) 
 }
 class EstimatesPriceGetStart_latitudeValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new EstimatesPriceGetStart_latitudeConstraints(instance))
-
 }
 class EstimatesPriceGetEnd_longitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =
@@ -76,7 +70,6 @@ class EstimatesPriceGetEnd_longitudeConstraints(override val instance: Double) e
 }
 class EstimatesPriceGetEnd_longitudeValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new EstimatesPriceGetEnd_longitudeConstraints(instance))
-
 }
 class EstimatesPriceGetStart_longitudeConstraints(override val instance: Double) extends ValidationBase[Double] {
     override def constraints: Seq[Constraint[Double]] =
@@ -84,7 +77,6 @@ class EstimatesPriceGetStart_longitudeConstraints(override val instance: Double)
 }
 class EstimatesPriceGetStart_longitudeValidator(instance: Double) extends RecursiveValidator {
     override val validators = Seq(new EstimatesPriceGetStart_longitudeConstraints(instance))
-
 }
 // ----- complex type validators -----
 // ----- option delegating validators -----
@@ -99,29 +91,41 @@ class ProfilePictureValidator(instance: ProfilePicture) extends RecursiveValidat
 // ----- call validations -----
 class HistoryGetValidator(offset: ErrorCode, limit: ErrorCode) extends RecursiveValidator {
     override val validators = Seq(
-        new ErrorCodeValidator(offset),
+        new ErrorCodeValidator(offset), 
+    
         new ErrorCodeValidator(limit)
+    
     )
 }
 class EstimatesTimeGetValidator(start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) extends RecursiveValidator {
     override val validators = Seq(
-        new EstimatesTimeGetStart_latitudeValidator(start_latitude),
-        new EstimatesTimeGetStart_longitudeValidator(start_longitude),
-        new ProfilePictureValidator(customer_uuid),
+        new EstimatesTimeGetStart_latitudeValidator(start_latitude), 
+    
+        new EstimatesTimeGetStart_longitudeValidator(start_longitude), 
+    
+        new ProfilePictureValidator(customer_uuid), 
+    
         new ProfilePictureValidator(product_id)
+    
     )
 }
 class ProductsGetValidator(latitude: Double, longitude: Double) extends RecursiveValidator {
     override val validators = Seq(
-        new ProductsGetLatitudeValidator(latitude),
+        new ProductsGetLatitudeValidator(latitude), 
+    
         new ProductsGetLongitudeValidator(longitude)
+    
     )
 }
 class EstimatesPriceGetValidator(start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) extends RecursiveValidator {
     override val validators = Seq(
-        new EstimatesPriceGetStart_latitudeValidator(start_latitude),
-        new EstimatesPriceGetStart_longitudeValidator(start_longitude),
-        new EstimatesPriceGetEnd_latitudeValidator(end_latitude),
+        new EstimatesPriceGetStart_latitudeValidator(start_latitude), 
+    
+        new EstimatesPriceGetStart_longitudeValidator(start_longitude), 
+    
+        new EstimatesPriceGetEnd_latitudeValidator(end_latitude), 
+    
         new EstimatesPriceGetEnd_longitudeValidator(end_longitude)
+    
     )
 }

@@ -150,6 +150,14 @@ object Domain {
 
   case class Dbl(override val meta: TypeMeta) extends Nmbr("Double", meta)
 
+  case class BDcml(override val meta: TypeMeta) extends Nmbr("BigDecimal", meta) {
+    override val imports = Set("scala.math.BigDecimal")
+  }
+
+  case class BInt(override val meta: TypeMeta) extends Nmbr("BigInt", meta) {
+    override val imports = Set("scala.math.BigInt")
+  }
+
   case class Str(format: Option[String] = None, override val meta: TypeMeta) extends ProvidedType("String", meta) with PrimitiveType
 
   case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta) with PrimitiveType

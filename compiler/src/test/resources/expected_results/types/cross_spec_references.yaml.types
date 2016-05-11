@@ -6,7 +6,7 @@
 			Field(⌿definitions⌿ModelSchema⌿sizeRegister, Str), 
 			Field(⌿definitions⌿ModelSchema⌿brand, Str), 
 			Field(⌿definitions⌿ModelSchema⌿ageGroups, Arr(Str)), 
-			Field(⌿definitions⌿ModelSchema⌿partnerArticleModelId, Intgr), 
+			Field(⌿definitions⌿ModelSchema⌿partnerArticleModelId, BInt), 
 			Field(⌿definitions⌿ModelSchema⌿keywords, Opt(Str)), 
 			Field(⌿definitions⌿ModelSchema⌿lengthRegister, Opt(Str)), 
 			Field(⌿definitions⌿ModelSchema⌿silhouetteId, Str), 

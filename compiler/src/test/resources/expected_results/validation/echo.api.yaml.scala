@@ -4,6 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 // ----- constraints and wrapper validations -----
 class PostNameOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -29,12 +30,15 @@ class PostNameValidator(instance: PostName) extends RecursiveValidator {
 // ----- call validations -----
 class Test_pathIdGetValidator(id: String) extends RecursiveValidator {
     override val validators = Seq(
-        new Test_pathIdGetIdValidator(id)    
+        new Test_pathIdGetIdValidator(id)
+    
     )
 }
 class PostValidator(name: PostName, year: PostName) extends RecursiveValidator {
     override val validators = Seq(
-        new PostNameValidator(name),     
-        new PostNameValidator(year)    
+        new PostNameValidator(name), 
+    
+        new PostNameValidator(year)
+    
     )
 }

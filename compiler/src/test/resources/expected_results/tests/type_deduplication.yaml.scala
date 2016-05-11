@@ -22,6 +22,7 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
+import scala.math.BigInt
 
 import Generators._
 
@@ -993,7 +994,7 @@ import Generators._
     }
 
     "GET /api/user/{user_id}/plants" should {
-        def testInvalidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
 
             val (user_id, limit, offset) = input
 
@@ -1035,7 +1036,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
             val (user_id, limit, offset) = input
             
             val url = s"""/api/user/${toPath(user_id)}/plants?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
@@ -1088,8 +1089,8 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                         user_id <- StringGenerator
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (user_id, limit, offset)
             val inputs = genInputs suchThat { case (user_id, limit, offset) =>
@@ -1101,8 +1102,8 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                     user_id <- StringGenerator
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (user_id, limit, offset)
             val inputs = genInputs suchThat { case (user_id, limit, offset) =>
@@ -1352,7 +1353,7 @@ import Generators._
     }
 
     "GET /api/plants/{plant_id}/waterings" should {
-        def testInvalidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
 
             val (plant_id, limit, offset) = input
 
@@ -1394,7 +1395,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
             val (plant_id, limit, offset) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/waterings?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
@@ -1447,8 +1448,8 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                         plant_id <- StringGenerator
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (plant_id, limit, offset)
             val inputs = genInputs suchThat { case (plant_id, limit, offset) =>
@@ -1460,8 +1461,8 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                     plant_id <- StringGenerator
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (plant_id, limit, offset)
             val inputs = genInputs suchThat { case (plant_id, limit, offset) =>
@@ -1595,7 +1596,7 @@ import Generators._
     }
 
     "GET /api/users" should {
-        def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (UsersGetLimit, UsersGetLimit)) = {
 
             val (limit, offset) = input
 
@@ -1637,7 +1638,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (UsersGetLimit, UsersGetLimit)) = {
             val (limit, offset) = input
             
             val url = s"""/api/users?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
@@ -1688,8 +1689,8 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (limit, offset)
             val inputs = genInputs suchThat { case (limit, offset) =>
@@ -1700,8 +1701,8 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (limit, offset)
             val inputs = genInputs suchThat { case (limit, offset) =>
@@ -2771,7 +2772,7 @@ import Generators._
     }
 
     "GET /api/areas" should {
-        def testInvalidInput(input: (ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (UsersGetLimit, UsersGetLimit)) = {
 
             val (limit, offset) = input
 
@@ -2813,7 +2814,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (UsersGetLimit, UsersGetLimit)) = {
             val (limit, offset) = input
             
             val url = s"""/api/areas?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
@@ -2864,8 +2865,8 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (limit, offset)
             val inputs = genInputs suchThat { case (limit, offset) =>
@@ -2876,8 +2877,8 @@ import Generators._
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (limit, offset)
             val inputs = genInputs suchThat { case (limit, offset) =>
@@ -3585,7 +3586,7 @@ import Generators._
     }
 
     "GET /api/plants/{plant_id}/pictures" should {
-        def testInvalidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testInvalidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
 
             val (plant_id, limit, offset) = input
 
@@ -3627,7 +3628,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (String, ErrorCode, ErrorCode)) = {
+        def testValidInput(input: (String, UsersGetLimit, UsersGetLimit)) = {
             val (plant_id, limit, offset) = input
             
             val url = s"""/api/plants/${toPath(plant_id)}/pictures?${toQuery("limit", limit)}&${toQuery("offset", offset)}"""
@@ -3680,8 +3681,8 @@ import Generators._
         "discard invalid data" in new WithApplication {
             val genInputs = for {
                         plant_id <- StringGenerator
-                        limit <- ErrorCodeGenerator
-                        offset <- ErrorCodeGenerator
+                        limit <- UsersGetLimitGenerator
+                        offset <- UsersGetLimitGenerator
                     
                 } yield (plant_id, limit, offset)
             val inputs = genInputs suchThat { case (plant_id, limit, offset) =>
@@ -3693,8 +3694,8 @@ import Generators._
         "do something with valid data" in new WithApplication {
             val genInputs = for {
                     plant_id <- StringGenerator
-                    limit <- ErrorCodeGenerator
-                    offset <- ErrorCodeGenerator
+                    limit <- UsersGetLimitGenerator
+                    offset <- UsersGetLimitGenerator
                 
             } yield (plant_id, limit, offset)
             val inputs = genInputs suchThat { case (plant_id, limit, offset) =>

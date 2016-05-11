@@ -2,20 +2,22 @@ package type_deduplication
 
 package object yaml {
 
+    import scala.math.BigInt
 
     import de.zalando.play.controllers.PlayPathBindables
 
 
 
     type PlantsPlant_idWateringsGetPlant_id = String
+    type UsersGetLimit = Option[BigInt]
     type PlantsPlant_idPicturesPicture_idPutResponses404 = Null
     type PlantPlant_id = Option[String]
-    type PlantsGetLimit = Option[Int]
+    type PlantsGetLimit = Option[BigInt]
     type UsersGetResponses200 = Seq[User]
     type ErrorCode = Option[Int]
     type PlantsGetResponses200 = Seq[Plant]
     type AreasGetResponses200 = Seq[Area]
-    type PlantsGetOffset = Option[Int]
+    type PlantsGetOffset = Option[BigInt]
     type PlantsPlant_idPicturesGetResponses200 = Seq[String]
     type PlantsPlant_idWateringsGetResponses200 = Seq[Watering]
 
@@ -30,6 +32,7 @@ package object yaml {
     case class Error(code: ErrorCode, message: PlantPlant_id, fields: PlantPlant_id) 
     case class WaterNeeds(amount: PlantPlant_id, period: PlantPlant_id) 
 
-    implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
+    implicit val bindable_BigIntegerQuery = PlayPathBindables.queryBindableBigInteger
+    implicit val bindable_OptionBigIntQuery = PlayPathBindables.createOptionQueryBindable[BigInt]
 
 }

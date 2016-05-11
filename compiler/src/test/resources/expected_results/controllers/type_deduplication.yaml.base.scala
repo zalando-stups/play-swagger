@@ -6,6 +6,7 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
+import scala.math.BigInt
 
 import de.zalando.play.controllers.PlayPathBindables
 
@@ -277,14 +278,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         }
         status
     }
-    private type getusersActionRequestType       = (ErrorCode, ErrorCode)
+    private type getusersActionRequestType       = (UsersGetLimit, UsersGetLimit)
     private type getusersActionType              = getusersActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetusers: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getusersActionConstructor  = Action
-    def getusersAction = (f: getusersActionType) => (limit: ErrorCode, offset: ErrorCode) => getusersActionConstructor { request =>
+    def getusersAction = (f: getusersActionType) => (limit: UsersGetLimit, offset: UsersGetLimit) => getusersActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersResponseMimeType =>
@@ -593,14 +594,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         }
         status
     }
-    private type getuserByUser_idPlantsActionRequestType       = (String, ErrorCode, ErrorCode)
+    private type getuserByUser_idPlantsActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
     private type getuserByUser_idPlantsActionType              = getuserByUser_idPlantsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetuserByUser_idPlants: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getuserByUser_idPlantsActionConstructor  = Action
-    def getuserByUser_idPlantsAction = (f: getuserByUser_idPlantsActionType) => (user_id: String, limit: ErrorCode, offset: ErrorCode) => getuserByUser_idPlantsActionConstructor { request =>
+    def getuserByUser_idPlantsAction = (f: getuserByUser_idPlantsActionType) => (user_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getuserByUser_idPlantsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getuserByUser_idPlantsResponseMimeType =>
@@ -827,14 +828,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         }
         status
     }
-    private type getareasActionRequestType       = (ErrorCode, ErrorCode)
+    private type getareasActionRequestType       = (UsersGetLimit, UsersGetLimit)
     private type getareasActionType              = getareasActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetareas: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getareasActionConstructor  = Action
-    def getareasAction = (f: getareasActionType) => (limit: ErrorCode, offset: ErrorCode) => getareasActionConstructor { request =>
+    def getareasAction = (f: getareasActionType) => (limit: UsersGetLimit, offset: UsersGetLimit) => getareasActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getareasResponseMimeType =>
@@ -1199,14 +1200,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         }
         status
     }
-    private type getplantsByPlant_idPicturesActionRequestType       = (String, ErrorCode, ErrorCode)
+    private type getplantsByPlant_idPicturesActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
     private type getplantsByPlant_idPicturesActionType              = getplantsByPlant_idPicturesActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetplantsByPlant_idPictures: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getplantsByPlant_idPicturesActionConstructor  = Action
-    def getplantsByPlant_idPicturesAction = (f: getplantsByPlant_idPicturesActionType) => (plant_id: String, limit: ErrorCode, offset: ErrorCode) => getplantsByPlant_idPicturesActionConstructor { request =>
+    def getplantsByPlant_idPicturesAction = (f: getplantsByPlant_idPicturesActionType) => (plant_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getplantsByPlant_idPicturesActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idPicturesResponseMimeType =>
@@ -1419,14 +1420,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         }
         status
     }
-    private type getplantsByPlant_idWateringsActionRequestType       = (String, ErrorCode, ErrorCode)
+    private type getplantsByPlant_idWateringsActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
     private type getplantsByPlant_idWateringsActionType              = getplantsByPlant_idWateringsActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusgetplantsByPlant_idWaterings: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getplantsByPlant_idWateringsActionConstructor  = Action
-    def getplantsByPlant_idWateringsAction = (f: getplantsByPlant_idWateringsActionType) => (plant_id: String, limit: ErrorCode, offset: ErrorCode) => getplantsByPlant_idWateringsActionConstructor { request =>
+    def getplantsByPlant_idWateringsAction = (f: getplantsByPlant_idWateringsActionType) => (plant_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getplantsByPlant_idWateringsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idWateringsResponseMimeType =>

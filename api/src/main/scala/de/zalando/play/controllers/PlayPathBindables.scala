@@ -47,6 +47,7 @@ object PlayPathBindables {
     Rfc3339Util.writeDate,
     (key: String, e: Exception) => "Cannot parse parameter %s as LocalDate: %s".format(key, e.getMessage)
   )
+
   implicit object queryBindableDateTime extends QueryStringBindable.Parsing[DateTime](
     Rfc3339Util.parseDateTime,
     Rfc3339Util.writeDateTime,
@@ -75,6 +76,30 @@ object PlayPathBindables {
     s => tempFileFromString(s),
     s => Source.fromFile(s).getLines().mkString("\n"),
     (key: String, e: Exception) => "Cannot parse parameter %s as java.io.File: %s".format(key, e.getMessage)
+  )
+
+  implicit object pathBindableBigInt extends PathBindable.Parsing[BigInt](
+    str => BigInt(str),
+    bInt => bInt.toString,
+    (key: String, e: Exception) => "Cannot parse parameter %s as BigInt: %s".format(key, e.getMessage)
+  )
+
+  implicit object pathBindableBigDecimal extends PathBindable.Parsing[BigDecimal](
+    str => BigDecimal(str),
+    bDcml => bDcml.toString,
+    (key: String, e: Exception) => "Cannot parse parameter %s as BigDecimal: %s".format(key, e.getMessage)
+  )
+
+  implicit object queryBindableBigInt extends QueryStringBindable.Parsing[BigInt](
+    str => BigInt(str),
+    bInt => bInt.toString,
+    (key: String, e: Exception) => "Cannot parse parameter %s as BigInt: %s".format(key, e.getMessage)
+  )
+
+  implicit object queryBindableBigDecimal extends QueryStringBindable.Parsing[BigDecimal](
+    str => BigDecimal(str),
+    bDcml => bDcml.toString,
+    (key: String, e: Exception) => "Cannot parse parameter %s as BigDecimal: %s".format(key, e.getMessage)
   )
 
   def tempFileFromString(s: String) = {

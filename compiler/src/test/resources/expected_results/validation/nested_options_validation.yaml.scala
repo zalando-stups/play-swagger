@@ -4,6 +4,7 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 // ----- constraints and wrapper validations -----
 class BasicOptionalNested_optionalOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -11,19 +12,16 @@ class BasicOptionalNested_optionalOptConstraints(override val instance: String) 
 }
 class BasicOptionalNested_optionalOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new BasicOptionalNested_optionalOptConstraints(instance))
-
 }
 // ----- complex type validators -----
 class BasicValidator(instance: Basic) extends RecursiveValidator {
     override val validators = Seq(
-    new BasicOptionalValidator(instance.optional)
-
+        new BasicOptionalValidator(instance.optional)
     )
 }
 class BasicOptionalOptValidator(instance: BasicOptionalOpt) extends RecursiveValidator {
     override val validators = Seq(
-    new BasicOptionalNested_optionalValidator(instance.nested_optional)
-
+        new BasicOptionalNested_optionalValidator(instance.nested_optional)
     )
 }
 // ----- option delegating validators -----
@@ -39,5 +37,6 @@ class BasicOptionalNested_optionalValidator(instance: BasicOptionalNested_option
 class GetValidator(basic: Basic) extends RecursiveValidator {
     override val validators = Seq(
         new BasicValidator(basic)
+    
     )
 }

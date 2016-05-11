@@ -18,7 +18,7 @@ object MultipartFormDataWritable {
 
   val boundary = "--------ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
-  def formatDataParts(data: Map[String, Seq[String]]) = {
+  def formatDataParts(data: Map[String, Seq[String]]): Array[Byte] = {
     val dataParts = data.flatMap { case (key, values) =>
       values.map { value =>
         val name = s""""$key""""
@@ -28,7 +28,7 @@ object MultipartFormDataWritable {
     Codec.utf_8.encode(dataParts)
   }
 
-  def filePartHeader(file: FilePart[TemporaryFile]) = {
+  def filePartHeader(file: FilePart[TemporaryFile]): Array[Byte] = {
     val name = s""""${file.key}""""
     val filename = s""""${file.filename}""""
     val contentType = file.contentType.map { ct =>

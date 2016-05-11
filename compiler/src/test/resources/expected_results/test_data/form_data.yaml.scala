@@ -4,6 +4,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
 import Arbitrary._
 import java.io.File
+import scala.math.BigInt
 
 object Generators {
     
@@ -21,7 +22,7 @@ object Generators {
     def BothPostResponses200NameGenerator = Gen.option(arbitrary[String])
     def StringGenerator = arbitrary[String]
     def FileGenerator = arbitrary[File]
-    def BothPostYearGenerator = Gen.option(arbitrary[Int])
+    def BothPostYearGenerator = Gen.option(arbitrary[BigInt])
     
 
     def createMultipartPostResponses200Generator = _generate(MultipartPostResponses200Generator)

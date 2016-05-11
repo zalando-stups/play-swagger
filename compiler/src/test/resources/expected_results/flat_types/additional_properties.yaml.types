@@ -4,6 +4,6 @@
 ⌿definitions⌿KeyedArrays⌿additionalProperties -> 
 	CatchAll(TypeRef(⌿definitions⌿KeyedArrays⌿additionalProperties⌿CatchAll))
 ⌿definitions⌿KeyedArrays⌿additionalProperties⌿CatchAll -> 
-	Arr(Intgr)
+	Arr(BInt)
 -- params --
 

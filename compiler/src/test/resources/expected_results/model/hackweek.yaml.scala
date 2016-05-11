@@ -3,6 +3,7 @@ package hackweek
 package object yaml {
 
     import de.zalando.play.controllers.ArrayWrapper
+    import scala.math.BigInt
 
 
 
@@ -26,7 +27,7 @@ package object yaml {
     case class Errors(errors: ErrorsErrors) 
     case class ErrorSourceNameClash(pointer: MetaCopyright, parameter: MetaCopyright) 
     case class Meta(copyright: MetaCopyright) 
-    case class ModelSchema(name: String, sizeRegister: String, brand: String, partnerArticleModelId: Int, silhouetteId: String, description: MetaCopyright, ageGroups: ModelSchemaAgeGroups, keywords: ModelSchemaKeywords, lengthRegister: ModelSchemaLengthRegister, specialDescriptions: ModelSchemaSpecialDescriptions, articleModelAttributes: ModelSchemaArticleModelAttributes) 
+    case class ModelSchema(name: String, sizeRegister: String, brand: String, partnerArticleModelId: BigInt, silhouetteId: String, description: MetaCopyright, ageGroups: ModelSchemaAgeGroups, keywords: ModelSchemaKeywords, lengthRegister: ModelSchemaLengthRegister, specialDescriptions: ModelSchemaSpecialDescriptions, articleModelAttributes: ModelSchemaArticleModelAttributes) 
     case class Error(source: ErrorSource, code: MetaCopyright, status: MetaCopyright, detail: MetaCopyright, title: MetaCopyright) 
     case class Links(self: MetaCopyright, related: MetaCopyright) 
 

@@ -3,6 +3,8 @@ package instagram.api.yaml
 import scala.concurrent.Future
 import play.api.mvc._
 import de.zalando.play.controllers.{FutureAuthenticatedBuilder,PlayBodyParsing}
+import scala.math.BigInt
+import scala.math.BigDecimal
 
 
 trait InstagramApiYamlSecurity extends SecurityExtractors {

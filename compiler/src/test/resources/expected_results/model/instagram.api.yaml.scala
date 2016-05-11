@@ -2,25 +2,27 @@ package instagram.api
 
 package object yaml {
 
+    import scala.math.BigInt
+    import scala.math.BigDecimal
 
     import de.zalando.play.controllers.PlayPathBindables
 
 
 
     type TagsSearchGetResponses200Meta = Option[UsersSelfRequested_byGetResponses200MetaOpt]
-    type LocationsLocation_idLocation_id = Int
+    type LocationsLocation_idLocation_id = BigInt
     type MediaMedia_idGetResponses200VideosStandard_resolution = Option[Image]
     type MediaFilter = Option[String]
     type MediaMedia_idCommentsDeleteResponses200Meta = Option[MediaMedia_idLikesGetResponses200MetaOpt]
     type UsersSelfFeedGetResponses200Data = Option[UsersSelfFeedGetResponses200DataOpt]
     type MediaTags = Option[MediaTagsOpt]
     type MediaMedia_idLikesGetResponses200Data = Option[MediaMedia_idLikesGetResponses200DataOpt]
-    type MediaId = Option[Int]
+    type MediaId = Option[BigInt]
     type UsersUser_idRelationshipPostAction = Option[String]
     type MediaTagsOpt = Seq[Tag]
     type MediaImages = Option[MediaImagesOpt]
     type MediaLikes = Option[MediaLikesOpt]
-    type MediaSearchGetDISTANCE = Int
+    type MediaSearchGetDISTANCE = BigInt
     type MediaMedia_idCommentsGetResponses200DataOpt = Seq[Comment]
     type MediaUsers_in_photoOpt = Seq[MiniProfile]
     type MediaMedia_idLikesGetResponses200DataOpt = Seq[Like]
@@ -36,9 +38,9 @@ package object yaml {
     type MediaLocation = Option[Location]
     type GeographiesGeo_idMediaRecentGetResponses200 = Null
     type MediaUsers_in_photo = Option[MediaUsers_in_photoOpt]
-    type LocationLatitude = Option[Double]
+    type LocationLatitude = Option[BigDecimal]
     type MediaMedia_idCommentsGetResponses200Data = Option[MediaMedia_idCommentsGetResponses200DataOpt]
-    type User_id_paramUser_id = Double
+    type User_id_paramUser_id = BigDecimal
     type UserCounts = Option[UserCountsOpt]
     type Tag_nameTag_name = String
 
@@ -72,8 +74,12 @@ package object yaml {
     case class LocationsSearchGetResponses200(data: LocationsSearchGetResponses200Data) 
     case class MediaImagesOpt(low_resolution: MediaMedia_idGetResponses200VideosStandard_resolution, thumbnail: MediaMedia_idGetResponses200VideosStandard_resolution, standard_resolution: MediaMedia_idGetResponses200VideosStandard_resolution) 
 
-    implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
-    implicit val bindable_OptionDoubleQuery = PlayPathBindables.createOptionQueryBindable[Double]
+    implicit val bindable_BigIntegerQuery = PlayPathBindables.queryBindableBigInteger
+    implicit val bindable_BigDecimalPath = PlayPathBindables.pathBindableBigDecimal
+    implicit val bindable_BigIntegerPath = PlayPathBindables.pathBindableBigInteger
+    implicit val bindable_BigDecimalQuery = PlayPathBindables.queryBindableBigDecimal
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
+    implicit val bindable_OptionBigIntQuery = PlayPathBindables.createOptionQueryBindable[BigInt]
+    implicit val bindable_OptionBigDecimalQuery = PlayPathBindables.createOptionQueryBindable[BigDecimal]
 
 }

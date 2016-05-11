@@ -222,10 +222,10 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     (tpe._1, Option(tpe._2)) match {
       case (ParameterType.INTEGER, Some("int64")) => Domain.Lng
       case (ParameterType.INTEGER, Some("int32")) => Domain.Intgr
-      case (ParameterType.INTEGER, _) => Domain.Intgr
+      case (ParameterType.INTEGER, _) => Domain.BInt
       case (ParameterType.NUMBER, Some("float")) => Domain.Flt
       case (ParameterType.NUMBER, Some("double")) => Domain.Dbl
-      case (ParameterType.NUMBER, _) => Domain.Dbl
+      case (ParameterType.NUMBER, _) => Domain.BDcml
       case (ParameterType.BOOLEAN, _) => Domain.Bool
       case (ParameterType.STRING, Some("binary")) => Domain.BinaryString
       case (ParameterType.STRING, Some("byte")) => Domain.Base64String
@@ -241,10 +241,10 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     (tpe._1, Option(tpe._2)) match {
       case (PrimitiveType.INTEGER, Some("int64")) => Domain.Lng
       case (PrimitiveType.INTEGER, Some("int32")) => Domain.Intgr
-      case (PrimitiveType.INTEGER, _) => Domain.Intgr
+      case (PrimitiveType.INTEGER, _) => Domain.BInt
       case (PrimitiveType.NUMBER, Some("float")) => Domain.Flt
       case (PrimitiveType.NUMBER, Some("double")) => Domain.Dbl
-      case (PrimitiveType.NUMBER, _) => Domain.Dbl
+      case (PrimitiveType.NUMBER, _) => Domain.BDcml
       case (PrimitiveType.BOOLEAN, _) => Domain.Bool
       case (PrimitiveType.STRING, Some("binary")) => Domain.BinaryString
       case (PrimitiveType.STRING, Some("byte")) => Domain.Base64String

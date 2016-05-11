@@ -4,7 +4,9 @@ import play.api.data.validation.Constraint
 import de.zalando.play.controllers._
 import PlayBodyParsing._
 import PlayValidations._
+
 import java.io.File
+import scala.math.BigInt
 // ----- constraints and wrapper validations -----
 class MultipartPostAvatarOptConstraints(override val instance: File) extends ValidationBase[File] {
     override def constraints: Seq[Constraint[File]] =
@@ -41,11 +43,11 @@ class BothPostRingtoneConstraints(override val instance: File) extends Validatio
 class BothPostRingtoneValidator(instance: File) extends RecursiveValidator {
     override val validators = Seq(new BothPostRingtoneConstraints(instance))
 }
-class BothPostYearOptConstraints(override val instance: Int) extends ValidationBase[Int] {
-    override def constraints: Seq[Constraint[Int]] =
+class BothPostYearOptConstraints(override val instance: BigInt) extends ValidationBase[BigInt] {
+    override def constraints: Seq[Constraint[BigInt]] =
         Seq()
 }
-class BothPostYearOptValidator(instance: Int) extends RecursiveValidator {
+class BothPostYearOptValidator(instance: BigInt) extends RecursiveValidator {
     override val validators = Seq(new BothPostYearOptConstraints(instance))
 }
 class Url_encodedPostAvatarConstraints(override val instance: File) extends ValidationBase[File] {

@@ -6,19 +6,22 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
 import PlayBodyParsing._
 import scala.util._
+import scala.math.BigInt
+
+import de.zalando.play.controllers.PlayPathBindables
 
 
 
 
 trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
-    private type getActionRequestType       = (Int)
+    private type getActionRequestType       = (BigInt)
     private type getActionType              = getActionRequestType => Try[(Int, Any)]
 
     private val errorToStatusget: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
 
 
     val getActionConstructor  = Action
-    def getAction = (f: getActionType) => (limit: Int) => getActionConstructor { request =>
+    def getAction = (f: getActionType) => (limit: BigInt) => getActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>

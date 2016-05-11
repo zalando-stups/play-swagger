@@ -1,12 +1,15 @@
 package basic_extension
+
 package object yaml {
-case class ErrorModel(message: String, code: Int) 
 
-    case class ExtendedErrorModel(message: String, code: Int, rootCause: String) 
-
-    
+    import scala.math.BigInt
 
 
-    
-    
-    }
+
+
+
+    case class ErrorModel(message: String, code: BigInt) 
+    case class ExtendedErrorModel(message: String, code: BigInt, rootCause: String) 
+
+
+}
