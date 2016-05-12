@@ -4,8 +4,10 @@ package security.api.yaml
 import play.api.http.Writeable
 import play.api.libs.iteratee.Execution.Implicits.trampoline
 import play.api.mvc.RequestHeader
-import de.zalando.play.controllers.{WrappedBodyParsersBase, ResponseWritersBase, WriteableWrapper}
+import de.zalando.play.controllers._
 import WriteableWrapper.writeable2wrapper
+
+import de.zalando.play.controllers.ArrayWrapper
 
 
 
