@@ -2,6 +2,7 @@ package de.zalando.swagger
 
 import java.io.File
 
+import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.parser.ParserException
 import org.scalatest.{FunSpec, MustMatchers}
@@ -25,9 +26,9 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
       swagger.securityDefinitions("internalApiKey").vendorExtensions contains "x-security-extension" mustBe true
     }
     it("should reject invalid vendor extensions") {
-      intercept[JsonMappingException] {
+      intercept[JsonParseException] {
         StrictYamlParser.parse(nok)
-      }.getClass mustBe classOf[JsonMappingException]
+      }.getClass mustBe classOf[JsonParseException]
     }
     it("should read hypermedia definitions") {
       implicit val (uri, swagger) = StrictYamlParser.parse(hypermediaOk)
@@ -42,7 +43,7 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers {
       swagger.paths("/").get.responses("default").targetState mustEqual None
     }
     it("should reject hypermedia definitions without well-formed definition") {
-      val exception = intercept[JsonMappingException] {
+      val exception = intercept[JsonParseException] {
         StrictYamlParser.parse(hypermediaNOk1)
       }
       exception.getMessage mustEqual "Malformed transition definitions"
