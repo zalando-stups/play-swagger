@@ -4,8 +4,15 @@ package string_formats.yaml
 import play.api.http.Writeable
 import play.api.libs.iteratee.Execution.Implicits.trampoline
 import play.api.mvc.RequestHeader
-import de.zalando.play.controllers.{WrappedBodyParsersBase, ResponseWritersBase, WriteableWrapper}
+import de.zalando.play.controllers._
 import WriteableWrapper.writeable2wrapper
+
+import de.zalando.play.controllers.Base64String
+import Base64String._
+import de.zalando.play.controllers.BinaryString
+import BinaryString._
+import org.joda.time.DateTime
+import org.joda.time.LocalDate
 
 
 

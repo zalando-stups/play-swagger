@@ -8,8 +8,8 @@ import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
 
 object SecurityExtractorsExecutionContext {
-    // TODO override with proper ExecutionContext instance
-    implicit val ec = scala.concurrent.ExecutionContext.global
+    // this ExecutionContext might be overridden if default configuration is not suitable for some reason
+    implicit val ec = de.zalando.play.controllers.Contexts.tokenChecking
 }
 
 trait SecurityExtractors {
