@@ -1,10 +1,10 @@
 package de.zalando.play.controllers
 
-import java.net.URLEncoder
+import java.net.{URLDecoder, URLEncoder}
 
 import play.api.http._
 import play.api.libs.json.JsValue
-import play.api.mvc.{ ActionBuilder, Request, RequestHeader, Result }
+import play.api.mvc.{ActionBuilder, Request, RequestHeader, Result}
 import play.api.mvc.Security.AuthenticatedRequest
 import sun.misc.BASE64Decoder
 
@@ -27,10 +27,10 @@ class FutureAuthenticatedBuilder[U](
   onUnauthorized: RequestHeader => Result)
     extends ActionBuilder[({ type R[A] = AuthenticatedRequest[A, U] })#R] {
 
-  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A, U]) => Future[Result]) =
+  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A, U]) => Future[Result]): Future[Result] =
     authenticate(request, block)
 
-  def authenticate[A](request: Request[A], block: (AuthenticatedRequest[A, U]) => Future[Result]) = {
+  def authenticate[A](request: Request[A], block: (AuthenticatedRequest[A, U]) => Future[Result]): Future[Result] = {
     userinfo(request).flatMap { userOpt =>
       userOpt.map { user =>
         block(new AuthenticatedRequest(user, request))
@@ -86,7 +86,7 @@ trait BasicAuthSecurityExtractor {
 }
 
 trait OAuthCommon {
-  private val bearer = "Bearer "
+  private val bearer = "bearer "
 
   protected def decodeBearer(auth: String): Option[String] =
     if ((auth.length < bearer.length) || (auth.substring(0, bearer.length).toLowerCase != bearer)) None
@@ -113,7 +113,7 @@ trait OAuthResourceOwnerPasswordCredentialsFlow extends OAuthCommon {
       if (tokenUrl.contains(placeHolder)) (HttpVerbs.GET, tokenUrl.replaceAllLiterally(placeHolder, escapedToken), "")
       else (HttpVerbs.POST, tokenUrl, s"token=$escapedToken")
     val request = WS.url(url).withMethod(method).withFollowRedirects(true).
-      withBody(InMemoryBody(body.getBytes)).withHeaders(HeaderNames.ACCEPT -> MimeTypes.JSON)
+      withBody(InMemoryBody(body.getBytes)).withHeaders(HeaderNames.ACCEPT -> MimeTypes.JSON, HeaderNames.CONTENT_TYPE -> MimeTypes.FORM)
     request.execute().map(_.json).map { json =>
       val active = (json \ "active").asOpt[Boolean].getOrElse(true)
       lazy val scope = (json \ "scope").asOpt[String]

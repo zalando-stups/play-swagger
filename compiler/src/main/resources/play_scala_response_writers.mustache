@@ -4,17 +4,26 @@ package {{main_package}}
 import play.api.http.Writeable
 import play.api.libs.iteratee.Execution.Implicits.trampoline
 import play.api.mvc.RequestHeader
-import de.zalando.play.controllers.{WrappedBodyParsersBase, ResponseWritersBase, WriteableWrapper}
+import de.zalando.play.controllers._
 import WriteableWrapper.writeable2wrapper
+
+{{for import in imports}}
+import {{import.name}}
+{{/for}}
 
 {{else}}
 {{if unmarshallers.data}}
 package {{main_package}}
 
 import play.api.http.Writeable
-import de.zalando.play.controllers.{ResponseWritersBase, WriteableWrapper}
-import WriteableWrapper.writeable2wrapper
 import play.api.libs.iteratee.Execution.Implicits.trampoline
+import play.api.mvc.RequestHeader
+import de.zalando.play.controllers._
+import WriteableWrapper.writeable2wrapper
+
+{{for import in imports}}
+import {{import.name}}
+{{/for}}
 
 {{/if}}
 {{/if}}
