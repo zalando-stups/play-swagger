@@ -42,7 +42,7 @@ trait EchoHandlerBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusmethod orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusmethod orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -104,7 +104,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuspost orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuspost orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -154,7 +154,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgettest_pathById orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgettest_pathById orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>

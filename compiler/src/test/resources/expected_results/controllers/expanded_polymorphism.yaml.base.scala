@@ -51,7 +51,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusfindPets orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusfindPets orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -118,7 +118,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -170,7 +170,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>

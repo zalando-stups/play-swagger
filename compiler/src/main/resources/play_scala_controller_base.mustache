@@ -104,7 +104,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
         {{/if}}
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => ({{m.error_to_status}} orElse defaultErrorMapping)(error)
+            case Failure(error) => ({{m.error_to_status}} orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>

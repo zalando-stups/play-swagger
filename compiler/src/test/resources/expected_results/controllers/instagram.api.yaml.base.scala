@@ -50,7 +50,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetmediaByMedia_idLikes orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetmediaByMedia_idLikes orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -100,7 +100,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuspostmediaByMedia_idLikes orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuspostmediaByMedia_idLikes orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -150,7 +150,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeletemediaByMedia_idLikes orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeletemediaByMedia_idLikes orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -200,7 +200,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersByUser_idFollows orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersByUser_idFollows orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -250,7 +250,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetlocationsByLocation_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetlocationsByLocation_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -300,7 +300,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersSearch orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersSearch orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -350,7 +350,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersSelfMediaLiked orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersSelfMediaLiked orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -400,7 +400,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgettagsByTag_name orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgettagsByTag_name orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -450,7 +450,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgettagsSearch orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgettagsSearch orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -500,7 +500,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersByUser_idFollowed_by orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersByUser_idFollowed_by orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -550,7 +550,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetmediaByMedia_idComments orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetmediaByMedia_idComments orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -615,7 +615,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuspostmediaByMedia_idComments orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuspostmediaByMedia_idComments orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -665,7 +665,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeletemediaByMedia_idComments orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeletemediaByMedia_idComments orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -715,7 +715,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgettagsByTag_nameMediaRecent orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgettagsByTag_nameMediaRecent orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -780,7 +780,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuspostusersByUser_idRelationship orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuspostusersByUser_idRelationship orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -830,7 +830,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersSelfFeed orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersSelfFeed orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -880,7 +880,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersByUser_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersByUser_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -930,7 +930,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetmediaSearch orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetmediaSearch orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -980,7 +980,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetgeographiesByGeo_idMediaRecent orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetgeographiesByGeo_idMediaRecent orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1030,7 +1030,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetmediaByShortcode orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetmediaByShortcode orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1080,7 +1080,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetlocationsSearch orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetlocationsSearch orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1124,7 +1124,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersSelfRequested_by orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersSelfRequested_by orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1174,7 +1174,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetmediaByMedia_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetmediaByMedia_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1224,7 +1224,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetlocationsByLocation_idMediaRecent orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetlocationsByLocation_idMediaRecent orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1274,7 +1274,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersByUser_idMediaRecent orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersByUser_idMediaRecent orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1318,7 +1318,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetmediaPopular orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetmediaPopular orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>

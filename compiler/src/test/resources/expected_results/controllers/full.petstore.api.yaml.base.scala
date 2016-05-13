@@ -55,7 +55,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusfindPetsByTags orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusfindPetsByTags orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -125,7 +125,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusplaceOrder orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusplaceOrder orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -192,7 +192,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuscreateUser orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuscreateUser orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -259,7 +259,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuscreateUsersWithListInput orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuscreateUsersWithListInput orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -315,7 +315,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetUserByName orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetUserByName orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -385,7 +385,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusupdateUser orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusupdateUser orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -440,7 +440,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeleteUser orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeleteUser orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -510,7 +510,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusupdatePet orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusupdatePet orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -578,7 +578,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -645,7 +645,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuscreateUsersWithArrayInput orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuscreateUsersWithArrayInput orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -701,7 +701,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetOrderById orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetOrderById orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -756,7 +756,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeleteOrder orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeleteOrder orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -802,7 +802,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuslogoutUser orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuslogoutUser orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -858,7 +858,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetPetById orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetPetById orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -921,7 +921,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusupdatePetWithForm orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusupdatePetWithForm orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -986,7 +986,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1041,7 +1041,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusfindPetsByStatus orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusfindPetsByStatus orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1096,7 +1096,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusloginUser orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusloginUser orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
