@@ -45,7 +45,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_metrics orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusnakadiHackGet_metrics orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -99,7 +99,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_events_from_single_partition orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusnakadiHackGet_events_from_single_partition orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -149,7 +149,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_partition orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusnakadiHackGet_partition orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -195,7 +195,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_topics orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusnakadiHackGet_topics orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -260,7 +260,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_events_from_multiple_partitions orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusnakadiHackGet_events_from_multiple_partitions orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -329,7 +329,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackPost_event orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusnakadiHackPost_event orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -379,7 +379,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackGet_partitions orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusnakadiHackGet_partitions orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -448,7 +448,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusnakadiHackPost_events orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusnakadiHackPost_events orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>

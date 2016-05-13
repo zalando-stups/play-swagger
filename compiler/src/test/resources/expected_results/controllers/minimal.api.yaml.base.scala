@@ -40,7 +40,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusindex orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusindex orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>

@@ -50,7 +50,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplantsByPlant_idWateringsByWatering_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplantsByPlant_idWateringsByWatering_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -102,7 +102,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputplantsByPlant_idWateringsByWatering_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputplantsByPlant_idWateringsByWatering_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -146,7 +146,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersMe orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersMe orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -197,7 +197,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplantsByPlant_idSunlight_needs orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplantsByPlant_idSunlight_needs orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -263,7 +263,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputplantsByPlant_idSunlight_needs orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputplantsByPlant_idSunlight_needs orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -313,7 +313,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusers orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusers orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -378,7 +378,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatuspostusers orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatuspostusers orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -428,7 +428,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetareasByArea_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetareasByArea_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -479,7 +479,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputareasByArea_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputareasByArea_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -529,7 +529,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeleteareasByArea_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeleteareasByArea_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -579,7 +579,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplants orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplants orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -630,7 +630,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetuserByUser_idPlants orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetuserByUser_idPlants orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -681,7 +681,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersByUser_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersByUser_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -747,7 +747,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputusersByUser_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputusersByUser_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -813,7 +813,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeleteusersByUser_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeleteusersByUser_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -863,7 +863,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetareas orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetareas orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -914,7 +914,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplantsByPlant_idLocation orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplantsByPlant_idLocation orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -980,7 +980,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputplantsByPlant_idLocation orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputplantsByPlant_idLocation orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1031,7 +1031,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeleteplantsByPlant_idLocation orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeleteplantsByPlant_idLocation orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1082,7 +1082,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetusersByUser_idPicture orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetusersByUser_idPicture orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1134,7 +1134,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputusersByUser_idPicture orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputusersByUser_idPicture orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1185,7 +1185,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeleteusersByUser_idPicture orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeleteusersByUser_idPicture orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1236,7 +1236,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplantsByPlant_idPictures orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplantsByPlant_idPictures orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1287,7 +1287,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplantsByPlant_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplantsByPlant_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1354,7 +1354,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputplantsByPlant_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputplantsByPlant_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1405,7 +1405,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeleteplantsByPlant_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeleteplantsByPlant_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1456,7 +1456,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplantsByPlant_idWaterings orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplantsByPlant_idWaterings orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1507,7 +1507,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplantsByPlant_idPicturesByPicture_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplantsByPlant_idPicturesByPicture_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1559,7 +1559,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputplantsByPlant_idPicturesByPicture_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputplantsByPlant_idPicturesByPicture_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1610,7 +1610,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusdeleteplantsByPlant_idPicturesByPicture_id orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusdeleteplantsByPlant_idPicturesByPicture_id orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1660,7 +1660,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusgetplantsByPlant_idWater_needs orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusgetplantsByPlant_idWater_needs orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
@@ -1726,7 +1726,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         
         val callerResult = f(request)
         val status = callerResult match {
-            case Failure(error) => (errorToStatusputplantsByPlant_idWater_needs orElse defaultErrorMapping)(error)
+            case Failure(error) => (errorToStatusputplantsByPlant_idWater_needs orElse defaultErrorMapping)(error)(error.getMessage)
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
