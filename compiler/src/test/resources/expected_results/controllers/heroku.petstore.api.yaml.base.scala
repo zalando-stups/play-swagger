@@ -53,7 +53,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
-                    Status(code)(result)
+                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
@@ -117,7 +117,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
-                    Status(code)(result)
+                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
@@ -181,7 +181,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
-                    Status(code)(result)
+                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
@@ -231,7 +231,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             case Success((code: Int, result: T @ unchecked)) =>
                 val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
                 writerOpt.map { implicit writer =>
-                    Status(code)(result)
+                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
                 }.getOrElse {
                     implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
                     Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
