@@ -1,9 +1,12 @@
 package form_data.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
+
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import java.io.File
@@ -13,22 +16,26 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
 
 trait Form_dataYamlBase extends Controller with PlayBodyParsing {
-    private type postmultipartActionRequestType       = (String, BothPostYear, MultipartPostAvatar)
-    private type postmultipartActionType              = postmultipartActionRequestType => Try[(Int, Any)]
+    sealed trait PostmultipartType[T] extends ResultWrapper[T]
+    case class Postmultipart200(result: MultipartPostResponses200)(implicit val writer: String => Option[Writeable[MultipartPostResponses200]]) extends PostmultipartType[MultipartPostResponses200] { val statusCode = 200 }
+    
 
-    private val errorToStatuspostmultipart: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type postmultipartActionRequestType       = (String, BothPostYear, MultipartPostAvatar)
+    private type postmultipartActionType[T]            = postmultipartActionRequestType => PostmultipartType[T] forSome { type T }
 
 
     val postmultipartActionConstructor  = Action
-    def postmultipartAction = (f: postmultipartActionType) => postmultipartActionConstructor { request =>
+    def postmultipartAction[T] = (f: postmultipartActionType[T]) => postmultipartActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmultipartResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[MultipartPostResponses200]
-            )
+
             
             val eitherFormParameters = FormDataParser.postmultipartParseForm(request)
             eitherFormParameters match {
@@ -41,7 +48,7 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
                 val result =
                         new MultipartPostValidator(name, year, avatar).errors match {
-                            case e if e.isEmpty => processValidpostmultipartRequest(f)((name, year, avatar))(possibleWriters, postmultipartResponseMimeType)
+                            case e if e.isEmpty => processValidpostmultipartRequest(f)((name, year, avatar))(postmultipartResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postmultipartResponseMimeType)
                                 BadRequest(l)
@@ -53,41 +60,25 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpostmultipartRequest[T <: Any](f: postmultipartActionType)(request: postmultipartActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatuspostmultipart orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidpostmultipartRequest[T](f: postmultipartActionType[T])(request: postmultipartActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type posturl_encodedActionRequestType       = (String, BothPostYear, File)
-    private type posturl_encodedActionType              = posturl_encodedActionRequestType => Try[(Int, Any)]
+    sealed trait Posturl_encodedType[T] extends ResultWrapper[T]
+    case class Posturl_encoded200(result: MultipartPostResponses200)(implicit val writer: String => Option[Writeable[MultipartPostResponses200]]) extends Posturl_encodedType[MultipartPostResponses200] { val statusCode = 200 }
+    
 
-    private val errorToStatusposturl_encoded: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type posturl_encodedActionRequestType       = (String, BothPostYear, File)
+    private type posturl_encodedActionType[T]            = posturl_encodedActionRequestType => Posturl_encodedType[T] forSome { type T }
 
 
     val posturl_encodedActionConstructor  = Action
-    def posturl_encodedAction = (f: posturl_encodedActionType) => posturl_encodedActionConstructor { request =>
+    def posturl_encodedAction[T] = (f: posturl_encodedActionType[T]) => posturl_encodedActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { posturl_encodedResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[MultipartPostResponses200]
-            )
+
             
             val eitherFormParameters = FormDataParser.posturl_encodedParseForm(request)
             eitherFormParameters match {
@@ -100,7 +91,7 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
                 val result =
                         new Url_encodedPostValidator(name, year, avatar).errors match {
-                            case e if e.isEmpty => processValidposturl_encodedRequest(f)((name, year, avatar))(possibleWriters, posturl_encodedResponseMimeType)
+                            case e if e.isEmpty => processValidposturl_encodedRequest(f)((name, year, avatar))(posturl_encodedResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(posturl_encodedResponseMimeType)
                                 BadRequest(l)
@@ -112,41 +103,25 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidposturl_encodedRequest[T <: Any](f: posturl_encodedActionType)(request: posturl_encodedActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusposturl_encoded orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidposturl_encodedRequest[T](f: posturl_encodedActionType[T])(request: posturl_encodedActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type postbothActionRequestType       = (String, BothPostYear, MultipartPostAvatar, File)
-    private type postbothActionType              = postbothActionRequestType => Try[(Int, Any)]
+    sealed trait PostbothType[T] extends ResultWrapper[T]
+    case class Postboth200(result: BothPostResponses200)(implicit val writer: String => Option[Writeable[BothPostResponses200]]) extends PostbothType[BothPostResponses200] { val statusCode = 200 }
+    
 
-    private val errorToStatuspostboth: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type postbothActionRequestType       = (String, BothPostYear, MultipartPostAvatar, File)
+    private type postbothActionType[T]            = postbothActionRequestType => PostbothType[T] forSome { type T }
 
 
     val postbothActionConstructor  = Action
-    def postbothAction = (f: postbothActionType) => postbothActionConstructor { request =>
+    def postbothAction[T] = (f: postbothActionType[T]) => postbothActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postbothResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[BothPostResponses200]
-            )
+
             
             val eitherFormParameters = FormDataParser.postbothParseForm(request)
             eitherFormParameters match {
@@ -159,7 +134,7 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
                 val result =
                         new BothPostValidator(name, year, avatar, ringtone).errors match {
-                            case e if e.isEmpty => processValidpostbothRequest(f)((name, year, avatar, ringtone))(possibleWriters, postbothResponseMimeType)
+                            case e if e.isEmpty => processValidpostbothRequest(f)((name, year, avatar, ringtone))(postbothResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postbothResponseMimeType)
                                 BadRequest(l)
@@ -171,25 +146,11 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpostbothRequest[T <: Any](f: postbothActionType)(request: postbothActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatuspostboth orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidpostbothRequest[T](f: postbothActionType[T])(request: postbothActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with PostmultipartType[Results.EmptyContent] with Posturl_encodedType[Results.EmptyContent] with PostbothType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with PostmultipartType[Results.EmptyContent] with Posturl_encodedType[Results.EmptyContent] with PostbothType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

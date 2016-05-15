@@ -1,9 +1,12 @@
 package expanded
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
+
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -12,30 +15,33 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
 
 trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
-    private type findPetsActionRequestType       = (PetsGetTags, PetsGetLimit)
-    private type findPetsActionType              = findPetsActionRequestType => Try[(Int, Any)]
+    sealed trait FindPetsType[T] extends ResultWrapper[T]
+    case class FindPets200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends FindPetsType[Seq[Pet]] { val statusCode = 200 }
+    
+    case class FindPetsNoSuchElementException(result: java.util.NoSuchElementException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends FindPetsType[java.util.NoSuchElementException] { val statusCode = 404 }
 
-    private val errorToStatusfindPets: PartialFunction[Throwable, Status] = { 
-        case _: java.util.NoSuchElementException => Status(404)
-     } 
+    private type findPetsActionRequestType       = (PetsGetTags, PetsGetLimit)
+    private type findPetsActionType[T]            = findPetsActionRequestType => FindPetsType[T] forSome { type T }
 
 
     val findPetsActionConstructor  = Action
-    def findPetsAction = (f: findPetsActionType) => (tags: PetsGetTags, limit: PetsGetLimit) => findPetsActionConstructor { request =>
+    def findPetsAction[T] = (f: findPetsActionType[T]) => (tags: PetsGetTags, limit: PetsGetLimit) => findPetsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Seq[Pet]]
-            ).withDefaultValue(anyToWritable[Error])
+
             
             
 
                 val result =
                         new PetsGetValidator(tags, limit).errors match {
-                            case e if e.isEmpty => processValidfindPetsRequest(f)((tags, limit))(possibleWriters, findPetsResponseMimeType)
+                            case e if e.isEmpty => processValidfindPetsRequest(f)((tags, limit))(findPetsResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(findPetsResponseMimeType)
                                 BadRequest(l)
@@ -45,33 +51,18 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidfindPetsRequest[T <: Any](f: findPetsActionType)(request: findPetsActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusfindPets orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidfindPetsRequest[T](f: findPetsActionType[T])(request: findPetsActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type addPetActionRequestType       = (NewPet)
-    private type addPetActionType              = addPetActionRequestType => Try[(Int, Any)]
+    sealed trait AddPetType[T] extends ResultWrapper[T]
+    case class AddPet200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends AddPetType[Pet] { val statusCode = 200 }
+    
+    case class AddPetNoSuchElementException(result: java.util.NoSuchElementException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends AddPetType[java.util.NoSuchElementException] { val statusCode = 404 }
 
-    private val errorToStatusaddPet: PartialFunction[Throwable, Status] = { 
-        case _: java.util.NoSuchElementException => Status(404)
-     } 
+    private type addPetActionRequestType       = (NewPet)
+    private type addPetActionType[T]            = addPetActionRequestType => AddPetType[T] forSome { type T }
 
         private def addPetParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -89,20 +80,18 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         }
 
     val addPetActionConstructor  = Action
-    def addPetAction = (f: addPetActionType) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
+    def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Pet]
-            ).withDefaultValue(anyToWritable[Error])
+
             val pet = request.body
             
             
 
                 val result =
                         new PetsPostValidator(pet).errors match {
-                            case e if e.isEmpty => processValidaddPetRequest(f)((pet))(possibleWriters, addPetResponseMimeType)
+                            case e if e.isEmpty => processValidaddPetRequest(f)((pet))(addPetResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(addPetResponseMimeType)
                                 BadRequest(l)
@@ -112,49 +101,33 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidaddPetRequest[T <: Any](f: addPetActionType)(request: addPetActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusaddPet orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidaddPetRequest[T](f: addPetActionType[T])(request: addPetActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type deletePetActionRequestType       = (Long)
-    private type deletePetActionType              = deletePetActionRequestType => Try[(Int, Any)]
+    sealed trait DeletePetType[T] extends ResultWrapper[T]
+    
+    case object DeletePet204 extends EmptyReturn(204)
+    
+    case class DeletePetNoSuchElementException(result: java.util.NoSuchElementException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeletePetType[java.util.NoSuchElementException] { val statusCode = 404 }
 
-    private val errorToStatusdeletePet: PartialFunction[Throwable, Status] = { 
-        case _: java.util.NoSuchElementException => Status(404)
-     } 
+    private type deletePetActionRequestType       = (Long)
+    private type deletePetActionType[T]            = deletePetActionRequestType => DeletePetType[T] forSome { type T }
 
 
     val deletePetActionConstructor  = Action
-    def deletePetAction = (f: deletePetActionType) => (id: Long) => deletePetActionConstructor { request =>
+    def deletePetAction[T] = (f: deletePetActionType[T]) => (id: Long) => deletePetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>
-                val possibleWriters = Map(
-                    204 -> anyToWritable[Null]
-            ).withDefaultValue(anyToWritable[Error])
+
             
             
 
                 val result =
                         new PetsIdDeleteValidator(id).errors match {
-                            case e if e.isEmpty => processValiddeletePetRequest(f)((id))(possibleWriters, deletePetResponseMimeType)
+                            case e if e.isEmpty => processValiddeletePetRequest(f)((id))(deletePetResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(deletePetResponseMimeType)
                                 BadRequest(l)
@@ -164,25 +137,11 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValiddeletePetRequest[T <: Any](f: deletePetActionType)(request: deletePetActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusdeletePet orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValiddeletePetRequest[T](f: deletePetActionType[T])(request: deletePetActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with FindPetsType[Results.EmptyContent] with AddPetType[Results.EmptyContent] with DeletePetType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with FindPetsType[Results.EmptyContent] with AddPetType[Results.EmptyContent] with DeletePetType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

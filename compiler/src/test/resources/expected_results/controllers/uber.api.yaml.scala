@@ -22,31 +22,31 @@ package uber.api.yaml {
     class UberApiYaml extends UberApiYamlBase {
         val getme = getmeAction {  _ =>  
             // ----- Start of unmanaged code area for action  UberApiYaml.getme
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  UberApiYaml.getme
         }
         val getproducts = getproductsAction { input: (Double, Double) =>
             val (latitude, longitude) = input
             // ----- Start of unmanaged code area for action  UberApiYaml.getproducts
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  UberApiYaml.getproducts
         }
         val getestimatesTime = getestimatesTimeAction { input: (Double, Double, ProfilePicture, ProfilePicture) =>
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
             // ----- Start of unmanaged code area for action  UberApiYaml.getestimatesTime
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  UberApiYaml.getestimatesTime
         }
         val getestimatesPrice = getestimatesPriceAction { input: (Double, Double, Double, Double) =>
             val (start_latitude, start_longitude, end_latitude, end_longitude) = input
             // ----- Start of unmanaged code area for action  UberApiYaml.getestimatesPrice
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  UberApiYaml.getestimatesPrice
         }
         val gethistory = gethistoryAction { input: (ErrorCode, ErrorCode) =>
             val (offset, limit) = input
             // ----- Start of unmanaged code area for action  UberApiYaml.gethistory
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  UberApiYaml.gethistory
         }
     

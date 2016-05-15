@@ -22,7 +22,7 @@ package cross_spec_references.yaml {
     class Cross_spec_referencesYaml extends Cross_spec_referencesYamlBase {
         val post = postAction { (root: ModelSchemaRoot) =>  
             // ----- Start of unmanaged code area for action  Cross_spec_referencesYaml.post
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Cross_spec_referencesYaml.post
         }
     

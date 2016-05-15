@@ -75,8 +75,11 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
 
     val (allActionResults, defaultResultType) = actionResults(call)(table)
 
+    val (nonEmptyActionResults, nullActionResults) = allActionResults.partition(_("type") != "Null")
+
     Map(
-      "result_types" -> allActionResults,
+      "full_result_types" -> nonEmptyActionResults,
+      "empty_result_types" -> nullActionResults,
       "default_result_type" -> defaultResultType,
       "end_comment" -> endComment(call),
       "start_comment" -> startComment(call),
@@ -97,7 +100,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
       "needs_custom_readers" -> customReaders,
       "has_no_validations" -> allValidations.isEmpty,
       "has_no_error_mappings" -> actionErrorMappings.isEmpty,
-      "form_parameters" -> formParams
+      "form_parameters" -> formParams,
+      "result_class_prefix" -> escape(capitalize("$", call.handler.method))
     ) ++ nameMappings ++ nameParamPair ++ securityData(call)
   }
 
@@ -146,8 +150,12 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
 
   private def errorMappings(call: ApiCall): Iterable[Map[String, String]] =
     call.errorMapping.flatMap { case (k, v) => v.map { ex =>
-      Map("exception_name" -> ex.getCanonicalName, "exception_code" -> k)
-    }
+        Map(
+          "exception_name" -> ex.getCanonicalName,
+          "simple_exception_name" -> ex.getSimpleName,
+          "exception_code" -> k
+        )
+      }
     }
 
   private def singleOrMultipleParameters(call: ApiCall)(table: DenotationTable) = {

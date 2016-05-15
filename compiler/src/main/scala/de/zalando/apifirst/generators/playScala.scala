@@ -230,6 +230,7 @@ class ScalaGenerator(val strictModel: StrictModel) {
 
   private def neededParts(imports: Seq[String]): Map[String, Boolean] = partsMapping map {
     case (k, v) => k -> imports.exists(_.contains(v))
+
   }
 }
 
@@ -270,10 +271,9 @@ object PlayScalaControllersGenerator {
   def singleMethod(unmanagedParts: Map[ApiCall, UnmanagedPart], table: DenotationTable): ApiCall => Map[String, Any] =
     call => {
       val method = table(call.asReference)("controller")
-      val failureImplementation = "?" * 3
       val methodWithCode = method + (
-        "implementation" -> unmanagedParts.get(call).map(_.relevantCode.mkString("\n").trim).getOrElse(s"Failure($failureImplementation)")
-        )
+        "implementation" -> unmanagedParts.get(call).map(_.relevantCode.mkString("\n").trim).getOrElse("NotImplementedYet")
+      )
       methodWithCode
     }
 }

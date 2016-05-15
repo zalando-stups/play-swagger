@@ -3,6 +3,9 @@ package de.zalando.play.controllers
 import play.api.http.Writeable
 import play.api.mvc.{AnyContentAsMultipartFormData, RequestHeader}
 import scala.language.implicitConversions
+import play.api.mvc.{RequestHeader, Result, Results}
+import play.api.http._
+import Results.{Status, Redirect}
 
 case class WriteableWrapper[T](w: Writeable[T], m: Manifest[T])
 
@@ -48,5 +51,16 @@ trait WrappedBodyParsersBase {
   def anyParser[T](implicit manifest: Manifest[T]): Seq[(String, Parser[T])] =
     custom.filter(_._2.m.runtimeClass.isAssignableFrom(manifest.runtimeClass)).map { e =>
       e.copy(_2 = e._2.asInstanceOf[ParserWrapper[T]].p) }
-  def optionParser[T](implicit manifest: Manifest[T]) = anyParser[Option[T]]
+  def optionParser[T](implicit manifest: Manifest[T]): Seq[(String, Parser[Option[T]])] = anyParser[Option[T]]
+}
+
+trait ResultWrapper[ResultT] {
+  def statusCode: Int
+  def result: ResultT
+  def writer: String => Option[Writeable[ResultT]]
+  def toResult(mimeType: String): Option[play.api.mvc.Result] =
+    if (statusCode / 100 == 3)
+      Option(Redirect(result.toString, statusCode))
+    else
+      writer(mimeType).map(Status(statusCode)(result)(_))
 }

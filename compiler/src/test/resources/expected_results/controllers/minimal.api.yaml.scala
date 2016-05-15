@@ -22,7 +22,7 @@ package admin {
     class Dashboard extends DashboardBase {
         val index = indexAction {  _ =>  
             // ----- Start of unmanaged code area for action  Dashboard.index
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Dashboard.index
         }
     

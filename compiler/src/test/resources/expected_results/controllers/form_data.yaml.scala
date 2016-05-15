@@ -25,19 +25,19 @@ package form_data.yaml {
         val postmultipart = postmultipartAction { input: (String, BothPostYear, MultipartPostAvatar) =>
             val (name, year, avatar) = input
             // ----- Start of unmanaged code area for action  Form_dataYaml.postmultipart
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Form_dataYaml.postmultipart
         }
         val posturl_encoded = posturl_encodedAction { input: (String, BothPostYear, File) =>
             val (name, year, avatar) = input
             // ----- Start of unmanaged code area for action  Form_dataYaml.posturl_encoded
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Form_dataYaml.posturl_encoded
         }
         val postboth = postbothAction { input: (String, BothPostYear, MultipartPostAvatar, File) =>
             val (name, year, avatar, ringtone) = input
             // ----- Start of unmanaged code area for action  Form_dataYaml.postboth
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Form_dataYaml.postboth
         }
     

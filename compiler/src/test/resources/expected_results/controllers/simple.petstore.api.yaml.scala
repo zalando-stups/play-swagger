@@ -22,7 +22,7 @@ package simple.petstore.api.yaml {
     class SimplePetstoreApiYaml extends SimplePetstoreApiYamlBase {
         val addPet = addPetAction { (pet: NewPet) =>  
             // ----- Start of unmanaged code area for action  SimplePetstoreApiYaml.addPet
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  SimplePetstoreApiYaml.addPet
         }
     
@@ -34,17 +34,17 @@ package simple.petstore.api.yaml {
         val methodLevel = methodLevelAction { input: (PetsGetTags, PetsGetLimit) =>
             val (tags, limit) = input
             // ----- Start of unmanaged code area for action  Dashboard.methodLevel
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Dashboard.methodLevel
         }
         val pathLevelGet = pathLevelGetAction { (id: Long) =>  
             // ----- Start of unmanaged code area for action  Dashboard.pathLevelGet
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Dashboard.pathLevelGet
         }
         val pathLevelDelete = pathLevelDeleteAction { (id: Long) =>  
             // ----- Start of unmanaged code area for action  Dashboard.pathLevelDelete
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Dashboard.pathLevelDelete
         }
     

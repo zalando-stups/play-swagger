@@ -1386,12 +1386,12 @@ import Generators._
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
-                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ Seq("status" -> Seq(status))   
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ Seq("status" -> Seq(status.toString))   
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     ("status" -> status) ::    Nil
+                        val form =   ("name" -> name.toString) ::     ("status" -> status.toString) ::    Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
@@ -1428,12 +1428,12 @@ import Generators._
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
-                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name))     ++ Seq("status" -> Seq(status))   
+                        val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ Seq("status" -> Seq(status.toString))   
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     ("status" -> status) ::    Nil
+                        val form =   ("name" -> name.toString) ::     ("status" -> status.toString) ::    Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 

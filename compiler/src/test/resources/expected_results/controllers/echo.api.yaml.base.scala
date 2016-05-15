@@ -1,9 +1,12 @@
 package echo
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResponseWriters}
+
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 
@@ -11,69 +14,59 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
 
 trait EchoHandlerBase extends Controller with PlayBodyParsing {
-    private type methodActionRequestType       = (Unit)
-    private type methodActionType              = methodActionRequestType => Try[(Int, Any)]
+    sealed trait MethodType[T] extends ResultWrapper[T]
+    
+    case object Method200 extends EmptyReturn(200)
+    
 
-    private val errorToStatusmethod: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type methodActionRequestType       = (Unit)
+    private type methodActionType[T]            = methodActionRequestType => MethodType[T] forSome { type T }
 
 
     val methodActionConstructor  = Action
-    def methodAction = (f: methodActionType) => methodActionConstructor { request =>
+    def methodAction[T] = (f: methodActionType[T]) => methodActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { methodResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Null]
-            )
+
             
             
 
-                val result = processValidmethodRequest(f)()(possibleWriters, methodResponseMimeType)
+                val result = processValidmethodRequest(f)()(methodResponseMimeType)
                 result
             
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidmethodRequest[T <: Any](f: methodActionType)(request: methodActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusmethod orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidmethodRequest[T](f: methodActionType[T])(request: methodActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with MethodType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with MethodType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }
-
 trait EchoApiYamlBase extends Controller with PlayBodyParsing {
-    private type postActionRequestType       = (PostName, PostName)
-    private type postActionType              = postActionRequestType => Try[(Int, Any)]
+    sealed trait PostType[T] extends ResultWrapper[T]
+    case class Post200(result: PostResponses200)(implicit val writer: String => Option[Writeable[PostResponses200]]) extends PostType[PostResponses200] { val statusCode = 200 }
+    
 
-    private val errorToStatuspost: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type postActionRequestType       = (PostName, PostName)
+    private type postActionType[T]            = postActionRequestType => PostType[T] forSome { type T }
 
 
     val postActionConstructor  = Action
-    def postAction = (f: postActionType) => postActionConstructor { request =>
+    def postAction[T] = (f: postActionType[T]) => postActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[PostResponses200]
-            )
+
             
             val eitherFormParameters = FormDataParser.postParseForm(request)
             eitherFormParameters match {
@@ -86,7 +79,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
 
                 val result =
                         new PostValidator(name, year).errors match {
-                            case e if e.isEmpty => processValidpostRequest(f)((name, year))(possibleWriters, postResponseMimeType)
+                            case e if e.isEmpty => processValidpostRequest(f)((name, year))(postResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(postResponseMimeType)
                                 BadRequest(l)
@@ -98,47 +91,32 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidpostRequest[T <: Any](f: postActionType)(request: postActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatuspost orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidpostRequest[T](f: postActionType[T])(request: postActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
-    private type gettest_pathByIdActionRequestType       = (String)
-    private type gettest_pathByIdActionType              = gettest_pathByIdActionRequestType => Try[(Int, Any)]
+    sealed trait Gettest_pathByIdType[T] extends ResultWrapper[T]
+    
+    case object Gettest_pathById200 extends EmptyReturn(200)
+    
 
-    private val errorToStatusgettest_pathById: PartialFunction[Throwable, Status] = PartialFunction.empty[Throwable, Status]
+    private type gettest_pathByIdActionRequestType       = (String)
+    private type gettest_pathByIdActionType[T]            = gettest_pathByIdActionRequestType => Gettest_pathByIdType[T] forSome { type T }
 
 
     val gettest_pathByIdActionConstructor  = Action
-    def gettest_pathByIdAction = (f: gettest_pathByIdActionType) => (id: String) => gettest_pathByIdActionConstructor { request =>
+    def gettest_pathByIdAction[T] = (f: gettest_pathByIdActionType[T]) => (id: String) => gettest_pathByIdActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettest_pathByIdResponseMimeType =>
-                val possibleWriters = Map(
-                    200 -> anyToWritable[Null]
-            )
+
             
             
 
                 val result =
                         new Test_pathIdGetValidator(id).errors match {
-                            case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id))(possibleWriters, gettest_pathByIdResponseMimeType)
+                            case e if e.isEmpty => processValidgettest_pathByIdRequest(f)((id))(gettest_pathByIdResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(gettest_pathByIdResponseMimeType)
                                 BadRequest(l)
@@ -148,25 +126,11 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
     }
 
-    private def processValidgettest_pathByIdRequest[T <: Any](f: gettest_pathByIdActionType)(request: gettest_pathByIdActionRequestType)
-                             (writers: Map[Int, String => Writeable[T]], mimeType: String)(implicit m: Manifest[T]) = {
-        import de.zalando.play.controllers.ResponseWriters
-        
-        val callerResult = f(request)
-        val status = callerResult match {
-            case Failure(error) => (errorToStatusgettest_pathById orElse defaultErrorMapping)(error)(error.getMessage)
-            case Success((code: Int, result: T @ unchecked)) =>
-                val writerOpt = ResponseWriters.choose(mimeType)[T]().orElse(writers.get(code).map(_.apply(mimeType)))
-                writerOpt.map { implicit writer =>
-                    if (code / 100 == 3) Redirect(result.toString, code) else Status(code)(result)
-                }.getOrElse {
-                    implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-                    Status(500)(new IllegalStateException(s"Response code was not defined in specification: $code"))
-                }
-        case Success(other) =>
-            implicit val errorWriter = anyToWritable[IllegalStateException](mimeType)
-            Status(500)(new IllegalStateException(s"Expected pair (responseCode, response) from the controller, but was: other"))
-        }
-        status
+    private def processValidgettest_pathByIdRequest[T](f: gettest_pathByIdActionType[T])(request: gettest_pathByIdActionRequestType)(mimeType: String) = {
+      f(request).toResult(mimeType).getOrElse {
+        Results.NotAcceptable
+      }
     }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with PostType[Results.EmptyContent] with Gettest_pathByIdType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with PostType[Results.EmptyContent] with Gettest_pathByIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

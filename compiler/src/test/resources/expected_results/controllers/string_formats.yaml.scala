@@ -27,7 +27,7 @@ package string_formats.yaml {
         val get = getAction { input: (BinaryString, GetBase64, GetDate, GetDate_time) =>
             val (petId, base64, date, date_time) = input
             // ----- Start of unmanaged code area for action  String_formatsYaml.get
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  String_formatsYaml.get
         }
     

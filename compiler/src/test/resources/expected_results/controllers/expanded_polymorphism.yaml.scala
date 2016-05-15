@@ -23,17 +23,17 @@ package expanded {
         val findPets = findPetsAction { input: (PetsGetTags, PetsGetLimit) =>
             val (tags, limit) = input
             // ----- Start of unmanaged code area for action  Expanded_polymorphismYaml.findPets
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Expanded_polymorphismYaml.findPets
         }
         val addPet = addPetAction { (pet: NewPet) =>  
             // ----- Start of unmanaged code area for action  Expanded_polymorphismYaml.addPet
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Expanded_polymorphismYaml.addPet
         }
         val deletePet = deletePetAction { (id: Long) =>  
             // ----- Start of unmanaged code area for action  Expanded_polymorphismYaml.deletePet
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  Expanded_polymorphismYaml.deletePet
         }
     

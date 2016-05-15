@@ -24,22 +24,22 @@ package heroku.petstore.api.yaml {
     class HerokuPetstoreApiYaml extends HerokuPetstoreApiYamlBase {
         val get = getAction { (limit: BigInt) =>  
             // ----- Start of unmanaged code area for action  HerokuPetstoreApiYaml.get
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  HerokuPetstoreApiYaml.get
         }
         val put = putAction { (pet: PutPet) =>  
             // ----- Start of unmanaged code area for action  HerokuPetstoreApiYaml.put
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  HerokuPetstoreApiYaml.put
         }
         val post = postAction { (pet: Pet) =>  
             // ----- Start of unmanaged code area for action  HerokuPetstoreApiYaml.post
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  HerokuPetstoreApiYaml.post
         }
         val getbyPetId = getbyPetIdAction { (petId: String) =>  
             // ----- Start of unmanaged code area for action  HerokuPetstoreApiYaml.getbyPetId
-            Failure(???)
+            NotImplementedYet
             // ----- End of unmanaged code area for action  HerokuPetstoreApiYaml.getbyPetId
         }
     

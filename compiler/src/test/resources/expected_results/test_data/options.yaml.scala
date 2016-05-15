@@ -2,10 +2,11 @@ package options.yaml
 
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
+import play.api.libs.json.scalacheck.JsValueGenerators
 import Arbitrary._
 import de.zalando.play.controllers.ArrayWrapper
 
-object Generators {
+object Generators extends JsValueGenerators {
     
 
     
