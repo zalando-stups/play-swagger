@@ -1,10 +1,12 @@
 package nakadi.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -13,15 +15,20 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait NakadiYamlBase extends Controller with PlayBodyParsing {
-    sealed trait nakadiHackGet_metricsType[ResultT] extends ResultWrapper[ResultT]
-    case class nakadiHackGet_metrics401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_metricsType[Problem] { val statusCode = 401 }
-    case class nakadiHackGet_metrics503(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_metricsType[Problem] { val statusCode = 503 }
-    case class nakadiHackGet_metrics200(result: Metrics)(implicit val writer: String => Option[Writeable[Metrics]]) extends nakadiHackGet_metricsType[Metrics] { val statusCode = 200 }
+    sealed trait NakadiHackGet_metricsType[T] extends ResultWrapper[T]
+    case class NakadiHackGet_metrics401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_metricsType[Problem] { val statusCode = 401 }
+    case class NakadiHackGet_metrics503(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_metricsType[Problem] { val statusCode = 503 }
+    case class NakadiHackGet_metrics200(result: Metrics)(implicit val writer: String => Option[Writeable[Metrics]]) extends NakadiHackGet_metricsType[Metrics] { val statusCode = 200 }
     
 
     private type nakadiHackGet_metricsActionRequestType       = (Unit)
-    private type nakadiHackGet_metricsActionType[T]            = nakadiHackGet_metricsActionRequestType => nakadiHackGet_metricsType[T]
+    private type nakadiHackGet_metricsActionType[T]            = nakadiHackGet_metricsActionRequestType => NakadiHackGet_metricsType[T] forSome { type T }
 
 
     val nakadiHackGet_metricsActionConstructor  = Action
@@ -44,16 +51,16 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait nakadiHackGet_events_from_single_partitionType[ResultT] extends ResultWrapper[ResultT]
-    case class nakadiHackGet_events_from_single_partition500(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 500 }
-    case class nakadiHackGet_events_from_single_partition404(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 404 }
-    case class nakadiHackGet_events_from_single_partition401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 401 }
-    case class nakadiHackGet_events_from_single_partition400(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 400 }
-    case class nakadiHackGet_events_from_single_partition200(result: SimpleStreamEvent)(implicit val writer: String => Option[Writeable[SimpleStreamEvent]]) extends nakadiHackGet_events_from_single_partitionType[SimpleStreamEvent] { val statusCode = 200 }
+    sealed trait NakadiHackGet_events_from_single_partitionType[T] extends ResultWrapper[T]
+    case class NakadiHackGet_events_from_single_partition500(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 500 }
+    case class NakadiHackGet_events_from_single_partition404(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 404 }
+    case class NakadiHackGet_events_from_single_partition401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 401 }
+    case class NakadiHackGet_events_from_single_partition400(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_events_from_single_partitionType[Problem] { val statusCode = 400 }
+    case class NakadiHackGet_events_from_single_partition200(result: SimpleStreamEvent)(implicit val writer: String => Option[Writeable[SimpleStreamEvent]]) extends NakadiHackGet_events_from_single_partitionType[SimpleStreamEvent] { val statusCode = 200 }
     
 
     private type nakadiHackGet_events_from_single_partitionActionRequestType       = (String, String, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout)
-    private type nakadiHackGet_events_from_single_partitionActionType[T]            = nakadiHackGet_events_from_single_partitionActionRequestType => nakadiHackGet_events_from_single_partitionType[T]
+    private type nakadiHackGet_events_from_single_partitionActionType[T]            = nakadiHackGet_events_from_single_partitionActionRequestType => NakadiHackGet_events_from_single_partitionType[T] forSome { type T }
 
 
     val nakadiHackGet_events_from_single_partitionActionConstructor  = Action
@@ -82,12 +89,12 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait nakadiHackGet_partitionType[ResultT] extends ResultWrapper[ResultT]
-    case class nakadiHackGet_partition200(result: TopicPartition)(implicit val writer: String => Option[Writeable[TopicPartition]]) extends nakadiHackGet_partitionType[TopicPartition] { val statusCode = 200 }
+    sealed trait NakadiHackGet_partitionType[T] extends ResultWrapper[T]
+    case class NakadiHackGet_partition200(result: TopicPartition)(implicit val writer: String => Option[Writeable[TopicPartition]]) extends NakadiHackGet_partitionType[TopicPartition] { val statusCode = 200 }
     
 
     private type nakadiHackGet_partitionActionRequestType       = (String, String)
-    private type nakadiHackGet_partitionActionType[T]            = nakadiHackGet_partitionActionRequestType => nakadiHackGet_partitionType[T]
+    private type nakadiHackGet_partitionActionType[T]            = nakadiHackGet_partitionActionRequestType => NakadiHackGet_partitionType[T] forSome { type T }
 
 
     val nakadiHackGet_partitionActionConstructor  = Action
@@ -116,14 +123,14 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait nakadiHackGet_topicsType[ResultT] extends ResultWrapper[ResultT]
-    case class nakadiHackGet_topics200(result: Seq[Topic])(implicit val writer: String => Option[Writeable[Seq[Topic]]]) extends nakadiHackGet_topicsType[Seq[Topic]] { val statusCode = 200 }
-    case class nakadiHackGet_topics401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_topicsType[Problem] { val statusCode = 401 }
-    case class nakadiHackGet_topics503(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_topicsType[Problem] { val statusCode = 503 }
+    sealed trait NakadiHackGet_topicsType[T] extends ResultWrapper[T]
+    case class NakadiHackGet_topics200(result: Seq[Topic])(implicit val writer: String => Option[Writeable[Seq[Topic]]]) extends NakadiHackGet_topicsType[Seq[Topic]] { val statusCode = 200 }
+    case class NakadiHackGet_topics401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_topicsType[Problem] { val statusCode = 401 }
+    case class NakadiHackGet_topics503(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_topicsType[Problem] { val statusCode = 503 }
     
 
     private type nakadiHackGet_topicsActionRequestType       = (Unit)
-    private type nakadiHackGet_topicsActionType[T]            = nakadiHackGet_topicsActionRequestType => nakadiHackGet_topicsType[T]
+    private type nakadiHackGet_topicsActionType[T]            = nakadiHackGet_topicsActionRequestType => NakadiHackGet_topicsType[T] forSome { type T }
 
 
     val nakadiHackGet_topicsActionConstructor  = Action
@@ -146,16 +153,16 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait nakadiHackGet_events_from_multiple_partitionsType[ResultT] extends ResultWrapper[ResultT]
-    case class nakadiHackGet_events_from_multiple_partitions500(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 500 }
-    case class nakadiHackGet_events_from_multiple_partitions404(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 404 }
-    case class nakadiHackGet_events_from_multiple_partitions401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 401 }
-    case class nakadiHackGet_events_from_multiple_partitions400(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 400 }
-    case class nakadiHackGet_events_from_multiple_partitions200(result: SimpleStreamEvent)(implicit val writer: String => Option[Writeable[SimpleStreamEvent]]) extends nakadiHackGet_events_from_multiple_partitionsType[SimpleStreamEvent] { val statusCode = 200 }
+    sealed trait NakadiHackGet_events_from_multiple_partitionsType[T] extends ResultWrapper[T]
+    case class NakadiHackGet_events_from_multiple_partitions500(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 500 }
+    case class NakadiHackGet_events_from_multiple_partitions404(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 404 }
+    case class NakadiHackGet_events_from_multiple_partitions401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 401 }
+    case class NakadiHackGet_events_from_multiple_partitions400(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackGet_events_from_multiple_partitionsType[Problem] { val statusCode = 400 }
+    case class NakadiHackGet_events_from_multiple_partitions200(result: SimpleStreamEvent)(implicit val writer: String => Option[Writeable[SimpleStreamEvent]]) extends NakadiHackGet_events_from_multiple_partitionsType[SimpleStreamEvent] { val statusCode = 200 }
     
 
     private type nakadiHackGet_events_from_multiple_partitionsActionRequestType       = (TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, TopicsTopicEventsGetStream_timeout, String, Int, TopicsTopicEventsGetStream_timeout, String)
-    private type nakadiHackGet_events_from_multiple_partitionsActionType[T]            = nakadiHackGet_events_from_multiple_partitionsActionRequestType => nakadiHackGet_events_from_multiple_partitionsType[T]
+    private type nakadiHackGet_events_from_multiple_partitionsActionType[T]            = nakadiHackGet_events_from_multiple_partitionsActionRequestType => NakadiHackGet_events_from_multiple_partitionsType[T] forSome { type T }
 
 
     val nakadiHackGet_events_from_multiple_partitionsActionConstructor  = Action
@@ -195,16 +202,17 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait nakadiHackPost_eventType[ResultT] extends ResultWrapper[ResultT]
-    case class nakadiHackPost_event201(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends nakadiHackPost_eventType[Null] { val statusCode = 201 }
-    case class nakadiHackPost_event403(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackPost_eventType[Problem] { val statusCode = 403 }
-    case class nakadiHackPost_event503(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackPost_eventType[Problem] { val statusCode = 503 }
-    case class nakadiHackPost_event401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackPost_eventType[Problem] { val statusCode = 401 }
-    case class nakadiHackPost_event422(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackPost_eventType[Problem] { val statusCode = 422 }
+    sealed trait NakadiHackPost_eventType[T] extends ResultWrapper[T]
+    case class NakadiHackPost_event403(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackPost_eventType[Problem] { val statusCode = 403 }
+    case class NakadiHackPost_event503(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackPost_eventType[Problem] { val statusCode = 503 }
+    case class NakadiHackPost_event401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackPost_eventType[Problem] { val statusCode = 401 }
+    case class NakadiHackPost_event422(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackPost_eventType[Problem] { val statusCode = 422 }
+    
+    case object NakadiHackPost_event201 extends EmptyReturn(201)
     
 
     private type nakadiHackPost_eventActionRequestType       = (String, TopicsTopicEventsBatchPostEvent)
-    private type nakadiHackPost_eventActionType[T]            = nakadiHackPost_eventActionRequestType => nakadiHackPost_eventType[T]
+    private type nakadiHackPost_eventActionType[T]            = nakadiHackPost_eventActionRequestType => NakadiHackPost_eventType[T] forSome { type T }
 
         private def nakadiHackPost_eventParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -248,12 +256,12 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait nakadiHackGet_partitionsType[ResultT] extends ResultWrapper[ResultT]
-    case class nakadiHackGet_partitions200(result: Seq[TopicPartition])(implicit val writer: String => Option[Writeable[Seq[TopicPartition]]]) extends nakadiHackGet_partitionsType[Seq[TopicPartition]] { val statusCode = 200 }
+    sealed trait NakadiHackGet_partitionsType[T] extends ResultWrapper[T]
+    case class NakadiHackGet_partitions200(result: Seq[TopicPartition])(implicit val writer: String => Option[Writeable[Seq[TopicPartition]]]) extends NakadiHackGet_partitionsType[Seq[TopicPartition]] { val statusCode = 200 }
     
 
     private type nakadiHackGet_partitionsActionRequestType       = (String)
-    private type nakadiHackGet_partitionsActionType[T]            = nakadiHackGet_partitionsActionRequestType => nakadiHackGet_partitionsType[T]
+    private type nakadiHackGet_partitionsActionType[T]            = nakadiHackGet_partitionsActionRequestType => NakadiHackGet_partitionsType[T] forSome { type T }
 
 
     val nakadiHackGet_partitionsActionConstructor  = Action
@@ -282,16 +290,17 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait nakadiHackPost_eventsType[ResultT] extends ResultWrapper[ResultT]
-    case class nakadiHackPost_events201(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends nakadiHackPost_eventsType[Null] { val statusCode = 201 }
-    case class nakadiHackPost_events403(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackPost_eventsType[Problem] { val statusCode = 403 }
-    case class nakadiHackPost_events503(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackPost_eventsType[Problem] { val statusCode = 503 }
-    case class nakadiHackPost_events401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackPost_eventsType[Problem] { val statusCode = 401 }
-    case class nakadiHackPost_events422(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends nakadiHackPost_eventsType[Problem] { val statusCode = 422 }
+    sealed trait NakadiHackPost_eventsType[T] extends ResultWrapper[T]
+    case class NakadiHackPost_events403(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackPost_eventsType[Problem] { val statusCode = 403 }
+    case class NakadiHackPost_events503(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackPost_eventsType[Problem] { val statusCode = 503 }
+    case class NakadiHackPost_events401(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackPost_eventsType[Problem] { val statusCode = 401 }
+    case class NakadiHackPost_events422(result: Problem)(implicit val writer: String => Option[Writeable[Problem]]) extends NakadiHackPost_eventsType[Problem] { val statusCode = 422 }
+    
+    case object NakadiHackPost_events201 extends EmptyReturn(201)
     
 
     private type nakadiHackPost_eventsActionRequestType       = (String, TopicsTopicEventsBatchPostEvent)
-    private type nakadiHackPost_eventsActionType[T]            = nakadiHackPost_eventsActionRequestType => nakadiHackPost_eventsType[T]
+    private type nakadiHackPost_eventsActionType[T]            = nakadiHackPost_eventsActionRequestType => NakadiHackPost_eventsType[T] forSome { type T }
 
         private def nakadiHackPost_eventsParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -335,6 +344,6 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]                          { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with nakadiHackGet_metricsType[Results.EmptyContent] with nakadiHackGet_events_from_single_partitionType[Results.EmptyContent] with nakadiHackGet_partitionType[Results.EmptyContent] with nakadiHackGet_topicsType[Results.EmptyContent] with nakadiHackGet_events_from_multiple_partitionsType[Results.EmptyContent] with nakadiHackPost_eventType[Results.EmptyContent] with nakadiHackGet_partitionsType[Results.EmptyContent] with nakadiHackPost_eventsType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with NakadiHackGet_metricsType[Results.EmptyContent] with NakadiHackGet_events_from_single_partitionType[Results.EmptyContent] with NakadiHackGet_partitionType[Results.EmptyContent] with NakadiHackGet_topicsType[Results.EmptyContent] with NakadiHackGet_events_from_multiple_partitionsType[Results.EmptyContent] with NakadiHackPost_eventType[Results.EmptyContent] with NakadiHackGet_partitionsType[Results.EmptyContent] with NakadiHackPost_eventsType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with NakadiHackGet_metricsType[Results.EmptyContent] with NakadiHackGet_events_from_single_partitionType[Results.EmptyContent] with NakadiHackGet_partitionType[Results.EmptyContent] with NakadiHackGet_topicsType[Results.EmptyContent] with NakadiHackGet_events_from_multiple_partitionsType[Results.EmptyContent] with NakadiHackPost_eventType[Results.EmptyContent] with NakadiHackGet_partitionsType[Results.EmptyContent] with NakadiHackPost_eventsType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

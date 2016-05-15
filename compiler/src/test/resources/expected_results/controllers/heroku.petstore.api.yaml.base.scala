@@ -1,10 +1,12 @@
 package heroku.petstore.api.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import scala.math.BigInt
@@ -13,13 +15,15 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+
+
 trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
-    sealed trait getType[ResultT] extends ResultWrapper[ResultT]
-    case class get200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends getType[Seq[Pet]] { val statusCode = 200 }
+    sealed trait GetType[T] extends ResultWrapper[T]
+    case class Get200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends GetType[Seq[Pet]] { val statusCode = 200 }
     
 
     private type getActionRequestType       = (BigInt)
-    private type getActionType[T]            = getActionRequestType => getType[T]
+    private type getActionType[T]            = getActionRequestType => GetType[T] forSome { type T }
 
 
     val getActionConstructor  = Action
@@ -48,12 +52,13 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putType[ResultT] extends ResultWrapper[ResultT]
-    case class put200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putType[Null] { val statusCode = 200 }
+    sealed trait PutType[T] extends ResultWrapper[T]
+    
+    case object Put200 extends EmptyReturn(200)
     
 
     private type putActionRequestType       = (PutPet)
-    private type putActionType[T]            = putActionRequestType => putType[T]
+    private type putActionType[T]            = putActionRequestType => PutType[T] forSome { type T }
 
         private def putParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -96,12 +101,13 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait postType[ResultT] extends ResultWrapper[ResultT]
-    case class post200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends postType[Null] { val statusCode = 200 }
+    sealed trait PostType[T] extends ResultWrapper[T]
+    
+    case object Post200 extends EmptyReturn(200)
     
 
     private type postActionRequestType       = (Pet)
-    private type postActionType[T]            = postActionRequestType => postType[T]
+    private type postActionType[T]            = postActionRequestType => PostType[T] forSome { type T }
 
         private def postParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -144,12 +150,13 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getbyPetIdType[ResultT] extends ResultWrapper[ResultT]
-    case class getbyPetId200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getbyPetIdType[Null] { val statusCode = 200 }
+    sealed trait GetbyPetIdType[T] extends ResultWrapper[T]
+    
+    case object GetbyPetId200 extends EmptyReturn(200)
     
 
     private type getbyPetIdActionRequestType       = (String)
-    private type getbyPetIdActionType[T]            = getbyPetIdActionRequestType => getbyPetIdType[T]
+    private type getbyPetIdActionType[T]            = getbyPetIdActionRequestType => GetbyPetIdType[T] forSome { type T }
 
 
     val getbyPetIdActionConstructor  = Action
@@ -178,6 +185,6 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]              { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with getType[Results.EmptyContent] with putType[Results.EmptyContent] with postType[Results.EmptyContent] with getbyPetIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetType[Results.EmptyContent] with PutType[Results.EmptyContent] with PostType[Results.EmptyContent] with GetbyPetIdType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetType[Results.EmptyContent] with PutType[Results.EmptyContent] with PostType[Results.EmptyContent] with GetbyPetIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

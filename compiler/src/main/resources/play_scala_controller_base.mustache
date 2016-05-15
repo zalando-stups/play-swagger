@@ -1,10 +1,12 @@
 package {{main_package}}
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 {{for import in imports}}
@@ -13,21 +15,31 @@ import {{import.name}}
 {{for import in binding_imports}}
 import {{import.name}}
 {{/for}}
+{{if marshallers.data}}
+{{else}}
+{{if unmarshallers.data}}
+{{else}}
+import de.zalando.play.controllers.ResponseWriters
+{{/if}}
+{{/if}}
 
 
 {{for controller in controllers}}
 trait {{controller.base}} extends Controller with PlayBodyParsing {{if controller.security_trait}} with {{controller.security_trait}} {{/if}}{
     {{for m in controller.methods}}
-    sealed trait {{m.method}}Type[ResultT] extends ResultWrapper[ResultT]
-    {{for result_type in m.result_types}}
-    case class {{m.method}}{{result_type.code}}(result: {{result_type.type}})(implicit val writer: String => Option[Writeable[{{result_type.type}}]]) extends {{m.method}}Type[{{result_type.type}}] { val statusCode = {{result_type.code}} }
+    sealed trait {{m.result_class_prefix}}Type[T] extends ResultWrapper[T]
+    {{for result_type in m.full_result_types}}
+    case class {{m.result_class_prefix}}{{result_type.code}}(result: {{result_type.type}})(implicit val writer: String => Option[Writeable[{{result_type.type}}]]) extends {{m.result_class_prefix}}Type[{{result_type.type}}] { val statusCode = {{result_type.code}} }
+    {{/for}}
+    {{for result_type in m.empty_result_types}}
+    case object {{m.result_class_prefix}}{{result_type.code}} extends EmptyReturn({{result_type.code}})
     {{/for}}
     {{for mapping in m.error_mappings}}
-    case class {{m.method}}{{mapping.simple_exception_name}}(result: {{mapping.exception_name}})(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends {{m.method}}Type[{{mapping.exception_name}}] { val statusCode = {{mapping.exception_code}} }
+    case class {{m.result_class_prefix}}{{mapping.simple_exception_name}}(result: {{mapping.exception_name}})(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends {{m.result_class_prefix}}Type[{{mapping.exception_name}}] { val statusCode = {{mapping.exception_code}} }
     {{/for}}
 
     private type {{m.action_request_type}}       = ({{for v in m.validations}}{{for f in v.fields}}{{f.type_name}}{{if f.isNotLast}}, {{/if}}{{/for}}{{/for}}{{if m.has_no_validations}}Unit{{/if}})
-    private type {{m.action_type}}[T]            = {{m.action_request_type}} => {{m.method}}Type[T]
+    private type {{m.action_type}}[T]            = {{m.action_request_type}} => {{m.result_class_prefix}}Type[T] forSome { type T }
 
     {{for body in m.body_param}}
         private def {{m.parser_name}}(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
@@ -103,7 +115,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
       }
     }
     {{/for}}
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent] {{for m in controller.methods}} {{if m.result_types}} {{else}} with {{m.method}}Type[Results.EmptyContent] {{/if}} {{/for}} { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent] {{for m in controller.methods}} with {{m.method}}Type[Results.EmptyContent]{{/for}} { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent] {{for m in controller.methods}} with {{m.result_class_prefix}}Type[Results.EmptyContent]{{/for}} { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent] {{for m in controller.methods}} with {{m.result_class_prefix}}Type[Results.EmptyContent]{{/for}} { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }
 {{/for}}

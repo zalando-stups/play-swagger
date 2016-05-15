@@ -1,10 +1,12 @@
 package uber.api.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import scala.math.BigDecimal
@@ -14,13 +16,18 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait UberApiYamlBase extends Controller with PlayBodyParsing {
-    sealed trait getmeType[ResultT] extends ResultWrapper[ResultT]
-    case class getme200(result: Profile)(implicit val writer: String => Option[Writeable[Profile]]) extends getmeType[Profile] { val statusCode = 200 }
+    sealed trait GetmeType[T] extends ResultWrapper[T]
+    case class Getme200(result: Profile)(implicit val writer: String => Option[Writeable[Profile]]) extends GetmeType[Profile] { val statusCode = 200 }
     
 
     private type getmeActionRequestType       = (Unit)
-    private type getmeActionType[T]            = getmeActionRequestType => getmeType[T]
+    private type getmeActionType[T]            = getmeActionRequestType => GetmeType[T] forSome { type T }
 
 
     val getmeActionConstructor  = Action
@@ -43,12 +50,12 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getproductsType[ResultT] extends ResultWrapper[ResultT]
-    case class getproducts200(result: Seq[Product])(implicit val writer: String => Option[Writeable[Seq[Product]]]) extends getproductsType[Seq[Product]] { val statusCode = 200 }
+    sealed trait GetproductsType[T] extends ResultWrapper[T]
+    case class Getproducts200(result: Seq[Product])(implicit val writer: String => Option[Writeable[Seq[Product]]]) extends GetproductsType[Seq[Product]] { val statusCode = 200 }
     
 
     private type getproductsActionRequestType       = (Double, Double)
-    private type getproductsActionType[T]            = getproductsActionRequestType => getproductsType[T]
+    private type getproductsActionType[T]            = getproductsActionRequestType => GetproductsType[T] forSome { type T }
 
 
     val getproductsActionConstructor  = Action
@@ -77,12 +84,12 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getestimatesTimeType[ResultT] extends ResultWrapper[ResultT]
-    case class getestimatesTime200(result: Seq[Product])(implicit val writer: String => Option[Writeable[Seq[Product]]]) extends getestimatesTimeType[Seq[Product]] { val statusCode = 200 }
+    sealed trait GetestimatesTimeType[T] extends ResultWrapper[T]
+    case class GetestimatesTime200(result: Seq[Product])(implicit val writer: String => Option[Writeable[Seq[Product]]]) extends GetestimatesTimeType[Seq[Product]] { val statusCode = 200 }
     
 
     private type getestimatesTimeActionRequestType       = (Double, Double, ProfilePicture, ProfilePicture)
-    private type getestimatesTimeActionType[T]            = getestimatesTimeActionRequestType => getestimatesTimeType[T]
+    private type getestimatesTimeActionType[T]            = getestimatesTimeActionRequestType => GetestimatesTimeType[T] forSome { type T }
 
 
     val getestimatesTimeActionConstructor  = Action
@@ -111,12 +118,12 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getestimatesPriceType[ResultT] extends ResultWrapper[ResultT]
-    case class getestimatesPrice200(result: Seq[PriceEstimate])(implicit val writer: String => Option[Writeable[Seq[PriceEstimate]]]) extends getestimatesPriceType[Seq[PriceEstimate]] { val statusCode = 200 }
+    sealed trait GetestimatesPriceType[T] extends ResultWrapper[T]
+    case class GetestimatesPrice200(result: Seq[PriceEstimate])(implicit val writer: String => Option[Writeable[Seq[PriceEstimate]]]) extends GetestimatesPriceType[Seq[PriceEstimate]] { val statusCode = 200 }
     
 
     private type getestimatesPriceActionRequestType       = (Double, Double, Double, Double)
-    private type getestimatesPriceActionType[T]            = getestimatesPriceActionRequestType => getestimatesPriceType[T]
+    private type getestimatesPriceActionType[T]            = getestimatesPriceActionRequestType => GetestimatesPriceType[T] forSome { type T }
 
 
     val getestimatesPriceActionConstructor  = Action
@@ -145,12 +152,12 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait gethistoryType[ResultT] extends ResultWrapper[ResultT]
-    case class gethistory200(result: Activities)(implicit val writer: String => Option[Writeable[Activities]]) extends gethistoryType[Activities] { val statusCode = 200 }
+    sealed trait GethistoryType[T] extends ResultWrapper[T]
+    case class Gethistory200(result: Activities)(implicit val writer: String => Option[Writeable[Activities]]) extends GethistoryType[Activities] { val statusCode = 200 }
     
 
     private type gethistoryActionRequestType       = (ErrorCode, ErrorCode)
-    private type gethistoryActionType[T]            = gethistoryActionRequestType => gethistoryType[T]
+    private type gethistoryActionType[T]            = gethistoryActionRequestType => GethistoryType[T] forSome { type T }
 
 
     val gethistoryActionConstructor  = Action
@@ -179,6 +186,6 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]                 { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with getmeType[Results.EmptyContent] with getproductsType[Results.EmptyContent] with getestimatesTimeType[Results.EmptyContent] with getestimatesPriceType[Results.EmptyContent] with gethistoryType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetmeType[Results.EmptyContent] with GetproductsType[Results.EmptyContent] with GetestimatesTimeType[Results.EmptyContent] with GetestimatesPriceType[Results.EmptyContent] with GethistoryType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetmeType[Results.EmptyContent] with GetproductsType[Results.EmptyContent] with GetestimatesTimeType[Results.EmptyContent] with GetestimatesPriceType[Results.EmptyContent] with GethistoryType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

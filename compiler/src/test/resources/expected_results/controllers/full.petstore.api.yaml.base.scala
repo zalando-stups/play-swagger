@@ -1,10 +1,12 @@
 package full.petstore.api.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -14,18 +16,19 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+
+
 trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with FullPetstoreApiYamlSecurity {
-    sealed trait findPetsByTagsType[ResultT] extends ResultWrapper[ResultT]
-    case class findPetsByTags400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends findPetsByTagsType[Null] { val statusCode = 400 }
-    case class findPetsByTags200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends findPetsByTagsType[Seq[Pet]] { val statusCode = 200 }
+    sealed trait FindPetsByTagsType[T] extends ResultWrapper[T]
+    case class FindPetsByTags200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends FindPetsByTagsType[Seq[Pet]] { val statusCode = 200 }
     
-    case class findPetsByTagsIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends findPetsByTagsType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object FindPetsByTags400 extends EmptyReturn(400)
     
-    case class findPetsByTagsIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends findPetsByTagsType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class FindPetsByTagsIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends FindPetsByTagsType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class FindPetsByTagsIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends FindPetsByTagsType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type findPetsByTagsActionRequestType       = (PetsFindByStatusGetStatus)
-    private type findPetsByTagsActionType[T]            = findPetsByTagsActionRequestType => findPetsByTagsType[T]
+    private type findPetsByTagsActionType[T]            = findPetsByTagsActionRequestType => FindPetsByTagsType[T] forSome { type T }
 
 
     val findPetsByTagsActionConstructor  = new findPetsByTagsSecureAction("write_pets", "read_pets")
@@ -54,17 +57,16 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait placeOrderType[ResultT] extends ResultWrapper[ResultT]
-    case class placeOrder400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends placeOrderType[Null] { val statusCode = 400 }
-    case class placeOrder200(result: Order)(implicit val writer: String => Option[Writeable[Order]]) extends placeOrderType[Order] { val statusCode = 200 }
+    sealed trait PlaceOrderType[T] extends ResultWrapper[T]
+    case class PlaceOrder200(result: Order)(implicit val writer: String => Option[Writeable[Order]]) extends PlaceOrderType[Order] { val statusCode = 200 }
     
-    case class placeOrderIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends placeOrderType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object PlaceOrder400 extends EmptyReturn(400)
     
-    case class placeOrderIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends placeOrderType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class PlaceOrderIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends PlaceOrderType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class PlaceOrderIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends PlaceOrderType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type placeOrderActionRequestType       = (StoresOrderPostBody)
-    private type placeOrderActionType[T]            = placeOrderActionRequestType => placeOrderType[T]
+    private type placeOrderActionType[T]            = placeOrderActionRequestType => PlaceOrderType[T] forSome { type T }
 
         private def placeOrderParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -108,15 +110,13 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait createUserType[ResultT] extends ResultWrapper[ResultT]
+    sealed trait CreateUserType[T] extends ResultWrapper[T]
     
-    case class createUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends createUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
-    
-    case class createUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends createUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class CreateUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends CreateUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class CreateUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends CreateUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type createUserActionRequestType       = (UsersUsernamePutBody)
-    private type createUserActionType[T]            = createUserActionRequestType => createUserType[T]
+    private type createUserActionType[T]            = createUserActionRequestType => CreateUserType[T] forSome { type T }
 
         private def createUserParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -160,15 +160,13 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait createUsersWithListInputType[ResultT] extends ResultWrapper[ResultT]
+    sealed trait CreateUsersWithListInputType[T] extends ResultWrapper[T]
     
-    case class createUsersWithListInputIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends createUsersWithListInputType[java.lang.IllegalArgumentException] { val statusCode = 405 }
-    
-    case class createUsersWithListInputIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends createUsersWithListInputType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class CreateUsersWithListInputIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends CreateUsersWithListInputType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class CreateUsersWithListInputIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends CreateUsersWithListInputType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type createUsersWithListInputActionRequestType       = (UsersCreateWithListPostBody)
-    private type createUsersWithListInputActionType[T]            = createUsersWithListInputActionRequestType => createUsersWithListInputType[T]
+    private type createUsersWithListInputActionType[T]            = createUsersWithListInputActionRequestType => CreateUsersWithListInputType[T] forSome { type T }
 
         private def createUsersWithListInputParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -212,18 +210,18 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait getUserByNameType[ResultT] extends ResultWrapper[ResultT]
-    case class getUserByName200(result: User)(implicit val writer: String => Option[Writeable[User]]) extends getUserByNameType[User] { val statusCode = 200 }
-    case class getUserByName404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getUserByNameType[Null] { val statusCode = 404 }
-    case class getUserByName400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getUserByNameType[Null] { val statusCode = 400 }
+    sealed trait GetUserByNameType[T] extends ResultWrapper[T]
+    case class GetUserByName200(result: User)(implicit val writer: String => Option[Writeable[User]]) extends GetUserByNameType[User] { val statusCode = 200 }
     
-    case class getUserByNameIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends getUserByNameType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object GetUserByName404 extends EmptyReturn(404)
     
-    case class getUserByNameIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends getUserByNameType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
+    case object GetUserByName400 extends EmptyReturn(400)
     
+    case class GetUserByNameIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends GetUserByNameType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class GetUserByNameIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends GetUserByNameType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type getUserByNameActionRequestType       = (String)
-    private type getUserByNameActionType[T]            = getUserByNameActionRequestType => getUserByNameType[T]
+    private type getUserByNameActionType[T]            = getUserByNameActionRequestType => GetUserByNameType[T] forSome { type T }
 
 
     val getUserByNameActionConstructor  = Action
@@ -252,17 +250,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait updateUserType[ResultT] extends ResultWrapper[ResultT]
-    case class updateUser404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends updateUserType[Null] { val statusCode = 404 }
-    case class updateUser400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends updateUserType[Null] { val statusCode = 400 }
+    sealed trait UpdateUserType[T] extends ResultWrapper[T]
     
-    case class updateUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends updateUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object UpdateUser404 extends EmptyReturn(404)
     
-    case class updateUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends updateUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
+    case object UpdateUser400 extends EmptyReturn(400)
     
+    case class UpdateUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends UpdateUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class UpdateUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends UpdateUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type updateUserActionRequestType       = (String, UsersUsernamePutBody)
-    private type updateUserActionType[T]            = updateUserActionRequestType => updateUserType[T]
+    private type updateUserActionType[T]            = updateUserActionRequestType => UpdateUserType[T] forSome { type T }
 
         private def updateUserParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -306,17 +304,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait deleteUserType[ResultT] extends ResultWrapper[ResultT]
-    case class deleteUser404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteUserType[Null] { val statusCode = 404 }
-    case class deleteUser400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteUserType[Null] { val statusCode = 400 }
+    sealed trait DeleteUserType[T] extends ResultWrapper[T]
     
-    case class deleteUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends deleteUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object DeleteUser404 extends EmptyReturn(404)
     
-    case class deleteUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends deleteUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
+    case object DeleteUser400 extends EmptyReturn(400)
     
+    case class DeleteUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeleteUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class DeleteUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeleteUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type deleteUserActionRequestType       = (String)
-    private type deleteUserActionType[T]            = deleteUserActionRequestType => deleteUserType[T]
+    private type deleteUserActionType[T]            = deleteUserActionRequestType => DeleteUserType[T] forSome { type T }
 
 
     val deleteUserActionConstructor  = Action
@@ -345,18 +343,19 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait updatePetType[ResultT] extends ResultWrapper[ResultT]
-    case class updatePet405(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends updatePetType[Null] { val statusCode = 405 }
-    case class updatePet404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends updatePetType[Null] { val statusCode = 404 }
-    case class updatePet400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends updatePetType[Null] { val statusCode = 400 }
+    sealed trait UpdatePetType[T] extends ResultWrapper[T]
     
-    case class updatePetIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends updatePetType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object UpdatePet405 extends EmptyReturn(405)
     
-    case class updatePetIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends updatePetType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
+    case object UpdatePet404 extends EmptyReturn(404)
     
+    case object UpdatePet400 extends EmptyReturn(400)
+    
+    case class UpdatePetIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends UpdatePetType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class UpdatePetIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends UpdatePetType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type updatePetActionRequestType       = (PetsPostBody)
-    private type updatePetActionType[T]            = updatePetActionRequestType => updatePetType[T]
+    private type updatePetActionType[T]            = updatePetActionRequestType => UpdatePetType[T] forSome { type T }
 
         private def updatePetParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -399,16 +398,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait addPetType[ResultT] extends ResultWrapper[ResultT]
-    case class addPet405(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends addPetType[Null] { val statusCode = 405 }
+    sealed trait AddPetType[T] extends ResultWrapper[T]
     
-    case class addPetIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends addPetType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object AddPet405 extends EmptyReturn(405)
     
-    case class addPetIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends addPetType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class AddPetIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends AddPetType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class AddPetIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends AddPetType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type addPetActionRequestType       = (PetsPostBody)
-    private type addPetActionType[T]            = addPetActionRequestType => addPetType[T]
+    private type addPetActionType[T]            = addPetActionRequestType => AddPetType[T] forSome { type T }
 
         private def addPetParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -451,15 +449,13 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait createUsersWithArrayInputType[ResultT] extends ResultWrapper[ResultT]
+    sealed trait CreateUsersWithArrayInputType[T] extends ResultWrapper[T]
     
-    case class createUsersWithArrayInputIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends createUsersWithArrayInputType[java.lang.IllegalArgumentException] { val statusCode = 405 }
-    
-    case class createUsersWithArrayInputIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends createUsersWithArrayInputType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class CreateUsersWithArrayInputIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends CreateUsersWithArrayInputType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class CreateUsersWithArrayInputIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends CreateUsersWithArrayInputType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type createUsersWithArrayInputActionRequestType       = (UsersCreateWithListPostBody)
-    private type createUsersWithArrayInputActionType[T]            = createUsersWithArrayInputActionRequestType => createUsersWithArrayInputType[T]
+    private type createUsersWithArrayInputActionType[T]            = createUsersWithArrayInputActionRequestType => CreateUsersWithArrayInputType[T] forSome { type T }
 
         private def createUsersWithArrayInputParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -503,18 +499,18 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait getOrderByIdType[ResultT] extends ResultWrapper[ResultT]
-    case class getOrderById404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getOrderByIdType[Null] { val statusCode = 404 }
-    case class getOrderById400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getOrderByIdType[Null] { val statusCode = 400 }
-    case class getOrderById200(result: Order)(implicit val writer: String => Option[Writeable[Order]]) extends getOrderByIdType[Order] { val statusCode = 200 }
+    sealed trait GetOrderByIdType[T] extends ResultWrapper[T]
+    case class GetOrderById200(result: Order)(implicit val writer: String => Option[Writeable[Order]]) extends GetOrderByIdType[Order] { val statusCode = 200 }
     
-    case class getOrderByIdIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends getOrderByIdType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object GetOrderById404 extends EmptyReturn(404)
     
-    case class getOrderByIdIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends getOrderByIdType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
+    case object GetOrderById400 extends EmptyReturn(400)
     
+    case class GetOrderByIdIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends GetOrderByIdType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class GetOrderByIdIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends GetOrderByIdType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type getOrderByIdActionRequestType       = (String)
-    private type getOrderByIdActionType[T]            = getOrderByIdActionRequestType => getOrderByIdType[T]
+    private type getOrderByIdActionType[T]            = getOrderByIdActionRequestType => GetOrderByIdType[T] forSome { type T }
 
 
     val getOrderByIdActionConstructor  = Action
@@ -543,17 +539,17 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait deleteOrderType[ResultT] extends ResultWrapper[ResultT]
-    case class deleteOrder404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteOrderType[Null] { val statusCode = 404 }
-    case class deleteOrder400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteOrderType[Null] { val statusCode = 400 }
+    sealed trait DeleteOrderType[T] extends ResultWrapper[T]
     
-    case class deleteOrderIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends deleteOrderType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object DeleteOrder404 extends EmptyReturn(404)
     
-    case class deleteOrderIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends deleteOrderType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
+    case object DeleteOrder400 extends EmptyReturn(400)
     
+    case class DeleteOrderIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeleteOrderType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class DeleteOrderIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeleteOrderType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type deleteOrderActionRequestType       = (String)
-    private type deleteOrderActionType[T]            = deleteOrderActionRequestType => deleteOrderType[T]
+    private type deleteOrderActionType[T]            = deleteOrderActionRequestType => DeleteOrderType[T] forSome { type T }
 
 
     val deleteOrderActionConstructor  = Action
@@ -582,15 +578,13 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait logoutUserType[ResultT] extends ResultWrapper[ResultT]
+    sealed trait LogoutUserType[T] extends ResultWrapper[T]
     
-    case class logoutUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends logoutUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
-    
-    case class logoutUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends logoutUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class LogoutUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends LogoutUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class LogoutUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends LogoutUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type logoutUserActionRequestType       = (Unit)
-    private type logoutUserActionType[T]            = logoutUserActionRequestType => logoutUserType[T]
+    private type logoutUserActionType[T]            = logoutUserActionRequestType => LogoutUserType[T] forSome { type T }
 
 
     val logoutUserActionConstructor  = Action
@@ -613,18 +607,18 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait getPetByIdType[ResultT] extends ResultWrapper[ResultT]
-    case class getPetById404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getPetByIdType[Null] { val statusCode = 404 }
-    case class getPetById400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getPetByIdType[Null] { val statusCode = 400 }
-    case class getPetById200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends getPetByIdType[Pet] { val statusCode = 200 }
+    sealed trait GetPetByIdType[T] extends ResultWrapper[T]
+    case class GetPetById200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends GetPetByIdType[Pet] { val statusCode = 200 }
     
-    case class getPetByIdIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends getPetByIdType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object GetPetById404 extends EmptyReturn(404)
     
-    case class getPetByIdIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends getPetByIdType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
+    case object GetPetById400 extends EmptyReturn(400)
     
+    case class GetPetByIdIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends GetPetByIdType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class GetPetByIdIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends GetPetByIdType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type getPetByIdActionRequestType       = (Long)
-    private type getPetByIdActionType[T]            = getPetByIdActionRequestType => getPetByIdType[T]
+    private type getPetByIdActionType[T]            = getPetByIdActionRequestType => GetPetByIdType[T] forSome { type T }
 
 
     val getPetByIdActionConstructor  = new getPetByIdSecureAction("write_pets", "read_pets")
@@ -653,16 +647,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait updatePetWithFormType[ResultT] extends ResultWrapper[ResultT]
-    case class updatePetWithForm405(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends updatePetWithFormType[Null] { val statusCode = 405 }
+    sealed trait UpdatePetWithFormType[T] extends ResultWrapper[T]
     
-    case class updatePetWithFormIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends updatePetWithFormType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object UpdatePetWithForm405 extends EmptyReturn(405)
     
-    case class updatePetWithFormIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends updatePetWithFormType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class UpdatePetWithFormIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends UpdatePetWithFormType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class UpdatePetWithFormIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends UpdatePetWithFormType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type updatePetWithFormActionRequestType       = (String, String, String)
-    private type updatePetWithFormActionType[T]            = updatePetWithFormActionRequestType => updatePetWithFormType[T]
+    private type updatePetWithFormActionType[T]            = updatePetWithFormActionRequestType => UpdatePetWithFormType[T] forSome { type T }
 
 
     val updatePetWithFormActionConstructor  = new updatePetWithFormSecureAction("write_pets", "read_pets")
@@ -700,16 +693,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait deletePetType[ResultT] extends ResultWrapper[ResultT]
-    case class deletePet400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deletePetType[Null] { val statusCode = 400 }
+    sealed trait DeletePetType[T] extends ResultWrapper[T]
     
-    case class deletePetIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends deletePetType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object DeletePet400 extends EmptyReturn(400)
     
-    case class deletePetIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends deletePetType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class DeletePetIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeletePetType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class DeletePetIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeletePetType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type deletePetActionRequestType       = (String, Long)
-    private type deletePetActionType[T]            = deletePetActionRequestType => deletePetType[T]
+    private type deletePetActionType[T]            = deletePetActionRequestType => DeletePetType[T] forSome { type T }
 
 
     val deletePetActionConstructor  = new deletePetSecureAction("write_pets", "read_pets")
@@ -749,17 +741,16 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait findPetsByStatusType[ResultT] extends ResultWrapper[ResultT]
-    case class findPetsByStatus200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends findPetsByStatusType[Seq[Pet]] { val statusCode = 200 }
-    case class findPetsByStatus400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends findPetsByStatusType[Null] { val statusCode = 400 }
+    sealed trait FindPetsByStatusType[T] extends ResultWrapper[T]
+    case class FindPetsByStatus200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends FindPetsByStatusType[Seq[Pet]] { val statusCode = 200 }
     
-    case class findPetsByStatusIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends findPetsByStatusType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object FindPetsByStatus400 extends EmptyReturn(400)
     
-    case class findPetsByStatusIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends findPetsByStatusType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class FindPetsByStatusIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends FindPetsByStatusType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class FindPetsByStatusIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends FindPetsByStatusType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type findPetsByStatusActionRequestType       = (PetsFindByStatusGetStatus)
-    private type findPetsByStatusActionType[T]            = findPetsByStatusActionRequestType => findPetsByStatusType[T]
+    private type findPetsByStatusActionType[T]            = findPetsByStatusActionRequestType => FindPetsByStatusType[T] forSome { type T }
 
 
     val findPetsByStatusActionConstructor  = new findPetsByStatusSecureAction("write_pets", "read_pets")
@@ -788,17 +779,16 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    sealed trait loginUserType[ResultT] extends ResultWrapper[ResultT]
-    case class loginUser200(result: String)(implicit val writer: String => Option[Writeable[String]]) extends loginUserType[String] { val statusCode = 200 }
-    case class loginUser400(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends loginUserType[Null] { val statusCode = 400 }
+    sealed trait LoginUserType[T] extends ResultWrapper[T]
+    case class LoginUser200(result: String)(implicit val writer: String => Option[Writeable[String]]) extends LoginUserType[String] { val statusCode = 200 }
     
-    case class loginUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends loginUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case object LoginUser400 extends EmptyReturn(400)
     
-    case class loginUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]])  extends loginUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
-    
+    case class LoginUserIllegalArgumentException(result: java.lang.IllegalArgumentException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends LoginUserType[java.lang.IllegalArgumentException] { val statusCode = 405 }
+    case class LoginUserIndexOutOfBoundsException(result: java.lang.IndexOutOfBoundsException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends LoginUserType[java.lang.IndexOutOfBoundsException] { val statusCode = 405 }
 
     private type loginUserActionRequestType       = (OrderStatus, OrderStatus)
-    private type loginUserActionType[T]            = loginUserActionRequestType => loginUserType[T]
+    private type loginUserActionType[T]            = loginUserActionRequestType => LoginUserType[T] forSome { type T }
 
 
     val loginUserActionConstructor  = Action
@@ -827,6 +817,6 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]         with createUserType[Results.EmptyContent]    with createUsersWithListInputType[Results.EmptyContent]                   with createUsersWithArrayInputType[Results.EmptyContent]          with logoutUserType[Results.EmptyContent]                  { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with findPetsByTagsType[Results.EmptyContent] with placeOrderType[Results.EmptyContent] with createUserType[Results.EmptyContent] with createUsersWithListInputType[Results.EmptyContent] with getUserByNameType[Results.EmptyContent] with updateUserType[Results.EmptyContent] with deleteUserType[Results.EmptyContent] with updatePetType[Results.EmptyContent] with addPetType[Results.EmptyContent] with createUsersWithArrayInputType[Results.EmptyContent] with getOrderByIdType[Results.EmptyContent] with deleteOrderType[Results.EmptyContent] with logoutUserType[Results.EmptyContent] with getPetByIdType[Results.EmptyContent] with updatePetWithFormType[Results.EmptyContent] with deletePetType[Results.EmptyContent] with findPetsByStatusType[Results.EmptyContent] with loginUserType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with FindPetsByTagsType[Results.EmptyContent] with PlaceOrderType[Results.EmptyContent] with CreateUserType[Results.EmptyContent] with CreateUsersWithListInputType[Results.EmptyContent] with GetUserByNameType[Results.EmptyContent] with UpdateUserType[Results.EmptyContent] with DeleteUserType[Results.EmptyContent] with UpdatePetType[Results.EmptyContent] with AddPetType[Results.EmptyContent] with CreateUsersWithArrayInputType[Results.EmptyContent] with GetOrderByIdType[Results.EmptyContent] with DeleteOrderType[Results.EmptyContent] with LogoutUserType[Results.EmptyContent] with GetPetByIdType[Results.EmptyContent] with UpdatePetWithFormType[Results.EmptyContent] with DeletePetType[Results.EmptyContent] with FindPetsByStatusType[Results.EmptyContent] with LoginUserType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with FindPetsByTagsType[Results.EmptyContent] with PlaceOrderType[Results.EmptyContent] with CreateUserType[Results.EmptyContent] with CreateUsersWithListInputType[Results.EmptyContent] with GetUserByNameType[Results.EmptyContent] with UpdateUserType[Results.EmptyContent] with DeleteUserType[Results.EmptyContent] with UpdatePetType[Results.EmptyContent] with AddPetType[Results.EmptyContent] with CreateUsersWithArrayInputType[Results.EmptyContent] with GetOrderByIdType[Results.EmptyContent] with DeleteOrderType[Results.EmptyContent] with LogoutUserType[Results.EmptyContent] with GetPetByIdType[Results.EmptyContent] with UpdatePetWithFormType[Results.EmptyContent] with DeletePetType[Results.EmptyContent] with FindPetsByStatusType[Results.EmptyContent] with LoginUserType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

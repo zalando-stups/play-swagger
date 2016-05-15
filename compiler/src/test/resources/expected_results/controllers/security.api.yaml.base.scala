@@ -1,10 +1,12 @@
 package security.api.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -13,13 +15,15 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+
+
 trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with SecurityApiYamlSecurity {
-    sealed trait getPetsByIdType[ResultT] extends ResultWrapper[ResultT]
-    case class getPetsById200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends getPetsByIdType[Seq[Pet]] { val statusCode = 200 }
+    sealed trait GetPetsByIdType[T] extends ResultWrapper[T]
+    case class GetPetsById200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends GetPetsByIdType[Seq[Pet]] { val statusCode = 200 }
     
 
     private type getPetsByIdActionRequestType       = (PetsIdGetId)
-    private type getPetsByIdActionType[T]            = getPetsByIdActionRequestType => getPetsByIdType[T]
+    private type getPetsByIdActionType[T]            = getPetsByIdActionRequestType => GetPetsByIdType[T] forSome { type T }
 
 
     val getPetsByIdActionConstructor  = new getPetsByIdSecureAction("user")
@@ -48,6 +52,6 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with Security
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]     { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with getPetsByIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetPetsByIdType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetPetsByIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

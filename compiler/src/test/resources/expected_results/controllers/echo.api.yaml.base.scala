@@ -1,10 +1,12 @@
 package echo
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 
@@ -12,13 +14,19 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait EchoHandlerBase extends Controller with PlayBodyParsing {
-    sealed trait methodType[ResultT] extends ResultWrapper[ResultT]
-    case class method200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends methodType[Null] { val statusCode = 200 }
+    sealed trait MethodType[T] extends ResultWrapper[T]
+    
+    case object Method200 extends EmptyReturn(200)
     
 
     private type methodActionRequestType       = (Unit)
-    private type methodActionType[T]            = methodActionRequestType => methodType[T]
+    private type methodActionType[T]            = methodActionRequestType => MethodType[T] forSome { type T }
 
 
     val methodActionConstructor  = Action
@@ -41,16 +49,16 @@ trait EchoHandlerBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]     { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with methodType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with MethodType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with MethodType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }
 trait EchoApiYamlBase extends Controller with PlayBodyParsing {
-    sealed trait postType[ResultT] extends ResultWrapper[ResultT]
-    case class post200(result: PostResponses200)(implicit val writer: String => Option[Writeable[PostResponses200]]) extends postType[PostResponses200] { val statusCode = 200 }
+    sealed trait PostType[T] extends ResultWrapper[T]
+    case class Post200(result: PostResponses200)(implicit val writer: String => Option[Writeable[PostResponses200]]) extends PostType[PostResponses200] { val statusCode = 200 }
     
 
     private type postActionRequestType       = (PostName, PostName)
-    private type postActionType[T]            = postActionRequestType => postType[T]
+    private type postActionType[T]            = postActionRequestType => PostType[T] forSome { type T }
 
 
     val postActionConstructor  = Action
@@ -88,12 +96,13 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait gettest_pathByIdType[ResultT] extends ResultWrapper[ResultT]
-    case class gettest_pathById200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends gettest_pathByIdType[Null] { val statusCode = 200 }
+    sealed trait Gettest_pathByIdType[T] extends ResultWrapper[T]
+    
+    case object Gettest_pathById200 extends EmptyReturn(200)
     
 
     private type gettest_pathByIdActionRequestType       = (String)
-    private type gettest_pathByIdActionType[T]            = gettest_pathByIdActionRequestType => gettest_pathByIdType[T]
+    private type gettest_pathByIdActionType[T]            = gettest_pathByIdActionRequestType => Gettest_pathByIdType[T] forSome { type T }
 
 
     val gettest_pathByIdActionConstructor  = Action
@@ -122,6 +131,6 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]        { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with postType[Results.EmptyContent] with gettest_pathByIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with PostType[Results.EmptyContent] with Gettest_pathByIdType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with PostType[Results.EmptyContent] with Gettest_pathByIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

@@ -1,10 +1,12 @@
 package simple.petstore.api.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -13,13 +15,15 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+
+
 trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
-    sealed trait addPetType[ResultT] extends ResultWrapper[ResultT]
-    case class addPet200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends addPetType[Pet] { val statusCode = 200 }
+    sealed trait AddPetType[T] extends ResultWrapper[T]
+    case class AddPet200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends AddPetType[Pet] { val statusCode = 200 }
     
 
     private type addPetActionRequestType       = (NewPet)
-    private type addPetActionType[T]            = addPetActionRequestType => addPetType[T]
+    private type addPetActionType[T]            = addPetActionRequestType => AddPetType[T] forSome { type T }
 
         private def addPetParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -63,16 +67,16 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]     { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with addPetType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with AddPetType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with AddPetType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }
 trait DashboardBase extends Controller with PlayBodyParsing {
-    sealed trait methodLevelType[ResultT] extends ResultWrapper[ResultT]
-    case class methodLevel200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends methodLevelType[Seq[Pet]] { val statusCode = 200 }
+    sealed trait MethodLevelType[T] extends ResultWrapper[T]
+    case class MethodLevel200(result: Seq[Pet])(implicit val writer: String => Option[Writeable[Seq[Pet]]]) extends MethodLevelType[Seq[Pet]] { val statusCode = 200 }
     
 
     private type methodLevelActionRequestType       = (PetsGetTags, PetsGetLimit)
-    private type methodLevelActionType[T]            = methodLevelActionRequestType => methodLevelType[T]
+    private type methodLevelActionType[T]            = methodLevelActionRequestType => MethodLevelType[T] forSome { type T }
 
 
     val methodLevelActionConstructor  = Action
@@ -101,12 +105,12 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait pathLevelGetType[ResultT] extends ResultWrapper[ResultT]
-    case class pathLevelGet200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends pathLevelGetType[Pet] { val statusCode = 200 }
+    sealed trait PathLevelGetType[T] extends ResultWrapper[T]
+    case class PathLevelGet200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends PathLevelGetType[Pet] { val statusCode = 200 }
     
 
     private type pathLevelGetActionRequestType       = (Long)
-    private type pathLevelGetActionType[T]            = pathLevelGetActionRequestType => pathLevelGetType[T]
+    private type pathLevelGetActionType[T]            = pathLevelGetActionRequestType => PathLevelGetType[T] forSome { type T }
 
 
     val pathLevelGetActionConstructor  = Action
@@ -135,12 +139,13 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait pathLevelDeleteType[ResultT] extends ResultWrapper[ResultT]
-    case class pathLevelDelete204(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends pathLevelDeleteType[Null] { val statusCode = 204 }
+    sealed trait PathLevelDeleteType[T] extends ResultWrapper[T]
+    
+    case object PathLevelDelete204 extends EmptyReturn(204)
     
 
     private type pathLevelDeleteActionRequestType       = (Long)
-    private type pathLevelDeleteActionType[T]            = pathLevelDeleteActionRequestType => pathLevelDeleteType[T]
+    private type pathLevelDeleteActionType[T]            = pathLevelDeleteActionRequestType => PathLevelDeleteType[T] forSome { type T }
 
 
     val pathLevelDeleteActionConstructor  = Action
@@ -169,6 +174,6 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]           { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with methodLevelType[Results.EmptyContent] with pathLevelGetType[Results.EmptyContent] with pathLevelDeleteType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with MethodLevelType[Results.EmptyContent] with PathLevelGetType[Results.EmptyContent] with PathLevelDeleteType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with MethodLevelType[Results.EmptyContent] with PathLevelGetType[Results.EmptyContent] with PathLevelDeleteType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

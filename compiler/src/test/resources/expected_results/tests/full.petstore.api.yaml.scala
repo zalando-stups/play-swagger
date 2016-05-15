@@ -1391,7 +1391,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     ("status" -> status) ::    Nil
+                        val form =   ("name" -> name.toString) ::     ("status" -> status.toString) ::    Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
@@ -1433,7 +1433,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     ("status" -> status) ::    Nil
+                        val form =   ("name" -> name.toString) ::     ("status" -> status.toString) ::    Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 

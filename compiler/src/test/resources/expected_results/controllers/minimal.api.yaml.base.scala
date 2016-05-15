@@ -1,22 +1,30 @@
 package admin
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait DashboardBase extends Controller with PlayBodyParsing {
-    sealed trait indexType[ResultT] extends ResultWrapper[ResultT]
-    case class index200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends indexType[Null] { val statusCode = 200 }
+    sealed trait IndexType[T] extends ResultWrapper[T]
+    
+    case object Index200 extends EmptyReturn(200)
     
 
     private type indexActionRequestType       = (Unit)
-    private type indexActionType[T]            = indexActionRequestType => indexType[T]
+    private type indexActionType[T]            = indexActionRequestType => IndexType[T] forSome { type T }
 
 
     val indexActionConstructor  = Action
@@ -39,6 +47,6 @@ trait DashboardBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]     { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with indexType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with IndexType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with IndexType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

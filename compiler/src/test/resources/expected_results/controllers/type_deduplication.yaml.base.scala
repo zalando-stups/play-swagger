@@ -1,10 +1,12 @@
 package type_deduplication.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import scala.math.BigInt
@@ -13,14 +15,19 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
-    sealed trait getplantsByPlant_idWateringsByWatering_idType[ResultT] extends ResultWrapper[ResultT]
-    case class getplantsByPlant_idWateringsByWatering_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends getplantsByPlant_idWateringsByWatering_idType[Error] { val statusCode = 404 }
-    case class getplantsByPlant_idWateringsByWatering_id200(result: Watering)(implicit val writer: String => Option[Writeable[Watering]]) extends getplantsByPlant_idWateringsByWatering_idType[Watering] { val statusCode = 200 }
+    sealed trait GetplantsByPlant_idWateringsByWatering_idType[T] extends ResultWrapper[T]
+    case class GetplantsByPlant_idWateringsByWatering_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetplantsByPlant_idWateringsByWatering_idType[Error] { val statusCode = 404 }
+    case class GetplantsByPlant_idWateringsByWatering_id200(result: Watering)(implicit val writer: String => Option[Writeable[Watering]]) extends GetplantsByPlant_idWateringsByWatering_idType[Watering] { val statusCode = 200 }
     
 
     private type getplantsByPlant_idWateringsByWatering_idActionRequestType       = (String, String)
-    private type getplantsByPlant_idWateringsByWatering_idActionType[T]            = getplantsByPlant_idWateringsByWatering_idActionRequestType => getplantsByPlant_idWateringsByWatering_idType[T]
+    private type getplantsByPlant_idWateringsByWatering_idActionType[T]            = getplantsByPlant_idWateringsByWatering_idActionRequestType => GetplantsByPlant_idWateringsByWatering_idType[T] forSome { type T }
 
 
     val getplantsByPlant_idWateringsByWatering_idActionConstructor  = Action
@@ -49,14 +56,16 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putplantsByPlant_idWateringsByWatering_idType[ResultT] extends ResultWrapper[ResultT]
-    case class putplantsByPlant_idWateringsByWatering_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends putplantsByPlant_idWateringsByWatering_idType[Error] { val statusCode = 404 }
-    case class putplantsByPlant_idWateringsByWatering_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idWateringsByWatering_idType[Null] { val statusCode = 200 }
-    case class putplantsByPlant_idWateringsByWatering_id201(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idWateringsByWatering_idType[Null] { val statusCode = 201 }
+    sealed trait PutplantsByPlant_idWateringsByWatering_idType[T] extends ResultWrapper[T]
+    case class PutplantsByPlant_idWateringsByWatering_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends PutplantsByPlant_idWateringsByWatering_idType[Error] { val statusCode = 404 }
+    
+    case object PutplantsByPlant_idWateringsByWatering_id200 extends EmptyReturn(200)
+    
+    case object PutplantsByPlant_idWateringsByWatering_id201 extends EmptyReturn(201)
     
 
     private type putplantsByPlant_idWateringsByWatering_idActionRequestType       = (String, String)
-    private type putplantsByPlant_idWateringsByWatering_idActionType[T]            = putplantsByPlant_idWateringsByWatering_idActionRequestType => putplantsByPlant_idWateringsByWatering_idType[T]
+    private type putplantsByPlant_idWateringsByWatering_idActionType[T]            = putplantsByPlant_idWateringsByWatering_idActionRequestType => PutplantsByPlant_idWateringsByWatering_idType[T] forSome { type T }
 
 
     val putplantsByPlant_idWateringsByWatering_idActionConstructor  = Action
@@ -85,12 +94,12 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getusersMeType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersMe200(result: User)(implicit val writer: String => Option[Writeable[User]]) extends getusersMeType[User] { val statusCode = 200 }
+    sealed trait GetusersMeType[T] extends ResultWrapper[T]
+    case class GetusersMe200(result: User)(implicit val writer: String => Option[Writeable[User]]) extends GetusersMeType[User] { val statusCode = 200 }
     
 
     private type getusersMeActionRequestType       = (Unit)
-    private type getusersMeActionType[T]            = getusersMeActionRequestType => getusersMeType[T]
+    private type getusersMeActionType[T]            = getusersMeActionRequestType => GetusersMeType[T] forSome { type T }
 
 
     val getusersMeActionConstructor  = Action
@@ -113,13 +122,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getplantsByPlant_idSunlight_needsType[ResultT] extends ResultWrapper[ResultT]
-    case class getplantsByPlant_idSunlight_needs404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getplantsByPlant_idSunlight_needsType[Null] { val statusCode = 404 }
-    case class getplantsByPlant_idSunlight_needs200(result: SunlightNeeds)(implicit val writer: String => Option[Writeable[SunlightNeeds]]) extends getplantsByPlant_idSunlight_needsType[SunlightNeeds] { val statusCode = 200 }
+    sealed trait GetplantsByPlant_idSunlight_needsType[T] extends ResultWrapper[T]
+    case class GetplantsByPlant_idSunlight_needs200(result: SunlightNeeds)(implicit val writer: String => Option[Writeable[SunlightNeeds]]) extends GetplantsByPlant_idSunlight_needsType[SunlightNeeds] { val statusCode = 200 }
+    
+    case object GetplantsByPlant_idSunlight_needs404 extends EmptyReturn(404)
     
 
     private type getplantsByPlant_idSunlight_needsActionRequestType       = (String)
-    private type getplantsByPlant_idSunlight_needsActionType[T]            = getplantsByPlant_idSunlight_needsActionRequestType => getplantsByPlant_idSunlight_needsType[T]
+    private type getplantsByPlant_idSunlight_needsActionType[T]            = getplantsByPlant_idSunlight_needsActionRequestType => GetplantsByPlant_idSunlight_needsType[T] forSome { type T }
 
 
     val getplantsByPlant_idSunlight_needsActionConstructor  = Action
@@ -148,13 +158,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putplantsByPlant_idSunlight_needsType[ResultT] extends ResultWrapper[ResultT]
-    case class putplantsByPlant_idSunlight_needs200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idSunlight_needsType[Null] { val statusCode = 200 }
-    case class putplantsByPlant_idSunlight_needs404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idSunlight_needsType[Null] { val statusCode = 404 }
+    sealed trait PutplantsByPlant_idSunlight_needsType[T] extends ResultWrapper[T]
+    
+    case object PutplantsByPlant_idSunlight_needs200 extends EmptyReturn(200)
+    
+    case object PutplantsByPlant_idSunlight_needs404 extends EmptyReturn(404)
     
 
     private type putplantsByPlant_idSunlight_needsActionRequestType       = (String, SunlightNeeds)
-    private type putplantsByPlant_idSunlight_needsActionType[T]            = putplantsByPlant_idSunlight_needsActionRequestType => putplantsByPlant_idSunlight_needsType[T]
+    private type putplantsByPlant_idSunlight_needsActionType[T]            = putplantsByPlant_idSunlight_needsActionRequestType => PutplantsByPlant_idSunlight_needsType[T] forSome { type T }
 
         private def putplantsByPlant_idSunlight_needsParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -198,12 +210,12 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getusersType[ResultT] extends ResultWrapper[ResultT]
-    case class getusers200(result: Seq[User])(implicit val writer: String => Option[Writeable[Seq[User]]]) extends getusersType[Seq[User]] { val statusCode = 200 }
+    sealed trait GetusersType[T] extends ResultWrapper[T]
+    case class Getusers200(result: Seq[User])(implicit val writer: String => Option[Writeable[Seq[User]]]) extends GetusersType[Seq[User]] { val statusCode = 200 }
     
 
     private type getusersActionRequestType       = (UsersGetLimit, UsersGetLimit)
-    private type getusersActionType[T]            = getusersActionRequestType => getusersType[T]
+    private type getusersActionType[T]            = getusersActionRequestType => GetusersType[T] forSome { type T }
 
 
     val getusersActionConstructor  = Action
@@ -232,12 +244,13 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait postusersType[ResultT] extends ResultWrapper[ResultT]
-    case class postusers200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends postusersType[Null] { val statusCode = 200 }
+    sealed trait PostusersType[T] extends ResultWrapper[T]
+    
+    case object Postusers200 extends EmptyReturn(200)
     
 
     private type postusersActionRequestType       = (SigninData)
-    private type postusersActionType[T]            = postusersActionRequestType => postusersType[T]
+    private type postusersActionType[T]            = postusersActionRequestType => PostusersType[T] forSome { type T }
 
         private def postusersParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -281,12 +294,12 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getareasByArea_idType[ResultT] extends ResultWrapper[ResultT]
-    case class getareasByArea_id200(result: Area)(implicit val writer: String => Option[Writeable[Area]]) extends getareasByArea_idType[Area] { val statusCode = 200 }
+    sealed trait GetareasByArea_idType[T] extends ResultWrapper[T]
+    case class GetareasByArea_id200(result: Area)(implicit val writer: String => Option[Writeable[Area]]) extends GetareasByArea_idType[Area] { val statusCode = 200 }
     
 
     private type getareasByArea_idActionRequestType       = (String)
-    private type getareasByArea_idActionType[T]            = getareasByArea_idActionRequestType => getareasByArea_idType[T]
+    private type getareasByArea_idActionType[T]            = getareasByArea_idActionRequestType => GetareasByArea_idType[T] forSome { type T }
 
 
     val getareasByArea_idActionConstructor  = Action
@@ -315,13 +328,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putareasByArea_idType[ResultT] extends ResultWrapper[ResultT]
-    case class putareasByArea_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putareasByArea_idType[Null] { val statusCode = 200 }
-    case class putareasByArea_id201(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putareasByArea_idType[Null] { val statusCode = 201 }
+    sealed trait PutareasByArea_idType[T] extends ResultWrapper[T]
+    
+    case object PutareasByArea_id200 extends EmptyReturn(200)
+    
+    case object PutareasByArea_id201 extends EmptyReturn(201)
     
 
     private type putareasByArea_idActionRequestType       = (String)
-    private type putareasByArea_idActionType[T]            = putareasByArea_idActionRequestType => putareasByArea_idType[T]
+    private type putareasByArea_idActionType[T]            = putareasByArea_idActionRequestType => PutareasByArea_idType[T] forSome { type T }
 
 
     val putareasByArea_idActionConstructor  = Action
@@ -350,12 +365,13 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait deleteareasByArea_idType[ResultT] extends ResultWrapper[ResultT]
-    case class deleteareasByArea_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteareasByArea_idType[Null] { val statusCode = 200 }
+    sealed trait DeleteareasByArea_idType[T] extends ResultWrapper[T]
+    
+    case object DeleteareasByArea_id200 extends EmptyReturn(200)
     
 
     private type deleteareasByArea_idActionRequestType       = (String)
-    private type deleteareasByArea_idActionType[T]            = deleteareasByArea_idActionRequestType => deleteareasByArea_idType[T]
+    private type deleteareasByArea_idActionType[T]            = deleteareasByArea_idActionRequestType => DeleteareasByArea_idType[T] forSome { type T }
 
 
     val deleteareasByArea_idActionConstructor  = Action
@@ -384,12 +400,12 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getplantsType[ResultT] extends ResultWrapper[ResultT]
-    case class getplants200(result: Seq[Plant])(implicit val writer: String => Option[Writeable[Seq[Plant]]]) extends getplantsType[Seq[Plant]] { val statusCode = 200 }
+    sealed trait GetplantsType[T] extends ResultWrapper[T]
+    case class Getplants200(result: Seq[Plant])(implicit val writer: String => Option[Writeable[Seq[Plant]]]) extends GetplantsType[Seq[Plant]] { val statusCode = 200 }
     
 
     private type getplantsActionRequestType       = (PlantsGetLimit, PlantsGetOffset)
-    private type getplantsActionType[T]            = getplantsActionRequestType => getplantsType[T]
+    private type getplantsActionType[T]            = getplantsActionRequestType => GetplantsType[T] forSome { type T }
 
 
     val getplantsActionConstructor  = Action
@@ -418,13 +434,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getuserByUser_idPlantsType[ResultT] extends ResultWrapper[ResultT]
-    case class getuserByUser_idPlants404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getuserByUser_idPlantsType[Null] { val statusCode = 404 }
-    case class getuserByUser_idPlants200(result: Seq[Plant])(implicit val writer: String => Option[Writeable[Seq[Plant]]]) extends getuserByUser_idPlantsType[Seq[Plant]] { val statusCode = 200 }
+    sealed trait GetuserByUser_idPlantsType[T] extends ResultWrapper[T]
+    case class GetuserByUser_idPlants200(result: Seq[Plant])(implicit val writer: String => Option[Writeable[Seq[Plant]]]) extends GetuserByUser_idPlantsType[Seq[Plant]] { val statusCode = 200 }
+    
+    case object GetuserByUser_idPlants404 extends EmptyReturn(404)
     
 
     private type getuserByUser_idPlantsActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
-    private type getuserByUser_idPlantsActionType[T]            = getuserByUser_idPlantsActionRequestType => getuserByUser_idPlantsType[T]
+    private type getuserByUser_idPlantsActionType[T]            = getuserByUser_idPlantsActionRequestType => GetuserByUser_idPlantsType[T] forSome { type T }
 
 
     val getuserByUser_idPlantsActionConstructor  = Action
@@ -453,13 +470,13 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getusersByUser_idType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersByUser_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends getusersByUser_idType[Error] { val statusCode = 404 }
-    case class getusersByUser_id200(result: User)(implicit val writer: String => Option[Writeable[User]]) extends getusersByUser_idType[User] { val statusCode = 200 }
+    sealed trait GetusersByUser_idType[T] extends ResultWrapper[T]
+    case class GetusersByUser_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetusersByUser_idType[Error] { val statusCode = 404 }
+    case class GetusersByUser_id200(result: User)(implicit val writer: String => Option[Writeable[User]]) extends GetusersByUser_idType[User] { val statusCode = 200 }
     
 
     private type getusersByUser_idActionRequestType       = (String)
-    private type getusersByUser_idActionType[T]            = getusersByUser_idActionRequestType => getusersByUser_idType[T]
+    private type getusersByUser_idActionType[T]            = getusersByUser_idActionRequestType => GetusersByUser_idType[T] forSome { type T }
 
 
     val getusersByUser_idActionConstructor  = Action
@@ -488,13 +505,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putusersByUser_idType[ResultT] extends ResultWrapper[ResultT]
-    case class putusersByUser_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putusersByUser_idType[Null] { val statusCode = 200 }
-    case class putusersByUser_id201(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putusersByUser_idType[Null] { val statusCode = 201 }
+    sealed trait PutusersByUser_idType[T] extends ResultWrapper[T]
+    
+    case object PutusersByUser_id200 extends EmptyReturn(200)
+    
+    case object PutusersByUser_id201 extends EmptyReturn(201)
     
 
     private type putusersByUser_idActionRequestType       = (String, User)
-    private type putusersByUser_idActionType[T]            = putusersByUser_idActionRequestType => putusersByUser_idType[T]
+    private type putusersByUser_idActionType[T]            = putusersByUser_idActionRequestType => PutusersByUser_idType[T] forSome { type T }
 
         private def putusersByUser_idParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -538,13 +557,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait deleteusersByUser_idType[ResultT] extends ResultWrapper[ResultT]
-    case class deleteusersByUser_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends deleteusersByUser_idType[Error] { val statusCode = 404 }
-    case class deleteusersByUser_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteusersByUser_idType[Null] { val statusCode = 200 }
+    sealed trait DeleteusersByUser_idType[T] extends ResultWrapper[T]
+    case class DeleteusersByUser_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteusersByUser_idType[Error] { val statusCode = 404 }
+    
+    case object DeleteusersByUser_id200 extends EmptyReturn(200)
     
 
     private type deleteusersByUser_idActionRequestType       = (String, User)
-    private type deleteusersByUser_idActionType[T]            = deleteusersByUser_idActionRequestType => deleteusersByUser_idType[T]
+    private type deleteusersByUser_idActionType[T]            = deleteusersByUser_idActionRequestType => DeleteusersByUser_idType[T] forSome { type T }
 
         private def deleteusersByUser_idParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -588,12 +608,12 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getareasType[ResultT] extends ResultWrapper[ResultT]
-    case class getareas200(result: Seq[Area])(implicit val writer: String => Option[Writeable[Seq[Area]]]) extends getareasType[Seq[Area]] { val statusCode = 200 }
+    sealed trait GetareasType[T] extends ResultWrapper[T]
+    case class Getareas200(result: Seq[Area])(implicit val writer: String => Option[Writeable[Seq[Area]]]) extends GetareasType[Seq[Area]] { val statusCode = 200 }
     
 
     private type getareasActionRequestType       = (UsersGetLimit, UsersGetLimit)
-    private type getareasActionType[T]            = getareasActionRequestType => getareasType[T]
+    private type getareasActionType[T]            = getareasActionRequestType => GetareasType[T] forSome { type T }
 
 
     val getareasActionConstructor  = Action
@@ -622,13 +642,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getplantsByPlant_idLocationType[ResultT] extends ResultWrapper[ResultT]
-    case class getplantsByPlant_idLocation404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getplantsByPlant_idLocationType[Null] { val statusCode = 404 }
-    case class getplantsByPlant_idLocation200(result: Location)(implicit val writer: String => Option[Writeable[Location]]) extends getplantsByPlant_idLocationType[Location] { val statusCode = 200 }
+    sealed trait GetplantsByPlant_idLocationType[T] extends ResultWrapper[T]
+    case class GetplantsByPlant_idLocation200(result: Location)(implicit val writer: String => Option[Writeable[Location]]) extends GetplantsByPlant_idLocationType[Location] { val statusCode = 200 }
+    
+    case object GetplantsByPlant_idLocation404 extends EmptyReturn(404)
     
 
     private type getplantsByPlant_idLocationActionRequestType       = (String)
-    private type getplantsByPlant_idLocationActionType[T]            = getplantsByPlant_idLocationActionRequestType => getplantsByPlant_idLocationType[T]
+    private type getplantsByPlant_idLocationActionType[T]            = getplantsByPlant_idLocationActionRequestType => GetplantsByPlant_idLocationType[T] forSome { type T }
 
 
     val getplantsByPlant_idLocationActionConstructor  = Action
@@ -657,13 +678,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putplantsByPlant_idLocationType[ResultT] extends ResultWrapper[ResultT]
-    case class putplantsByPlant_idLocation200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idLocationType[Null] { val statusCode = 200 }
-    case class putplantsByPlant_idLocation404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idLocationType[Null] { val statusCode = 404 }
+    sealed trait PutplantsByPlant_idLocationType[T] extends ResultWrapper[T]
+    
+    case object PutplantsByPlant_idLocation200 extends EmptyReturn(200)
+    
+    case object PutplantsByPlant_idLocation404 extends EmptyReturn(404)
     
 
     private type putplantsByPlant_idLocationActionRequestType       = (String, Location)
-    private type putplantsByPlant_idLocationActionType[T]            = putplantsByPlant_idLocationActionRequestType => putplantsByPlant_idLocationType[T]
+    private type putplantsByPlant_idLocationActionType[T]            = putplantsByPlant_idLocationActionRequestType => PutplantsByPlant_idLocationType[T] forSome { type T }
 
         private def putplantsByPlant_idLocationParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -707,13 +730,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait deleteplantsByPlant_idLocationType[ResultT] extends ResultWrapper[ResultT]
-    case class deleteplantsByPlant_idLocation200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteplantsByPlant_idLocationType[Null] { val statusCode = 200 }
-    case class deleteplantsByPlant_idLocation404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteplantsByPlant_idLocationType[Null] { val statusCode = 404 }
+    sealed trait DeleteplantsByPlant_idLocationType[T] extends ResultWrapper[T]
+    
+    case object DeleteplantsByPlant_idLocation200 extends EmptyReturn(200)
+    
+    case object DeleteplantsByPlant_idLocation404 extends EmptyReturn(404)
     
 
     private type deleteplantsByPlant_idLocationActionRequestType       = (String)
-    private type deleteplantsByPlant_idLocationActionType[T]            = deleteplantsByPlant_idLocationActionRequestType => deleteplantsByPlant_idLocationType[T]
+    private type deleteplantsByPlant_idLocationActionType[T]            = deleteplantsByPlant_idLocationActionRequestType => DeleteplantsByPlant_idLocationType[T] forSome { type T }
 
 
     val deleteplantsByPlant_idLocationActionConstructor  = Action
@@ -742,13 +767,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getusersByUser_idPictureType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends getusersByUser_idPictureType[Error] { val statusCode = 404 }
-    case class getusersByUser_idPicture200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getusersByUser_idPictureType[Null] { val statusCode = 200 }
+    sealed trait GetusersByUser_idPictureType[T] extends ResultWrapper[T]
+    case class GetusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetusersByUser_idPictureType[Error] { val statusCode = 404 }
+    
+    case object GetusersByUser_idPicture200 extends EmptyReturn(200)
     
 
     private type getusersByUser_idPictureActionRequestType       = (String)
-    private type getusersByUser_idPictureActionType[T]            = getusersByUser_idPictureActionRequestType => getusersByUser_idPictureType[T]
+    private type getusersByUser_idPictureActionType[T]            = getusersByUser_idPictureActionRequestType => GetusersByUser_idPictureType[T] forSome { type T }
 
 
     val getusersByUser_idPictureActionConstructor  = Action
@@ -777,14 +803,16 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putusersByUser_idPictureType[ResultT] extends ResultWrapper[ResultT]
-    case class putusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends putusersByUser_idPictureType[Error] { val statusCode = 404 }
-    case class putusersByUser_idPicture200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putusersByUser_idPictureType[Null] { val statusCode = 200 }
-    case class putusersByUser_idPicture201(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putusersByUser_idPictureType[Null] { val statusCode = 201 }
+    sealed trait PutusersByUser_idPictureType[T] extends ResultWrapper[T]
+    case class PutusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends PutusersByUser_idPictureType[Error] { val statusCode = 404 }
+    
+    case object PutusersByUser_idPicture200 extends EmptyReturn(200)
+    
+    case object PutusersByUser_idPicture201 extends EmptyReturn(201)
     
 
     private type putusersByUser_idPictureActionRequestType       = (String)
-    private type putusersByUser_idPictureActionType[T]            = putusersByUser_idPictureActionRequestType => putusersByUser_idPictureType[T]
+    private type putusersByUser_idPictureActionType[T]            = putusersByUser_idPictureActionRequestType => PutusersByUser_idPictureType[T] forSome { type T }
 
 
     val putusersByUser_idPictureActionConstructor  = Action
@@ -813,13 +841,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait deleteusersByUser_idPictureType[ResultT] extends ResultWrapper[ResultT]
-    case class deleteusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends deleteusersByUser_idPictureType[Error] { val statusCode = 404 }
-    case class deleteusersByUser_idPicture200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteusersByUser_idPictureType[Null] { val statusCode = 200 }
+    sealed trait DeleteusersByUser_idPictureType[T] extends ResultWrapper[T]
+    case class DeleteusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteusersByUser_idPictureType[Error] { val statusCode = 404 }
+    
+    case object DeleteusersByUser_idPicture200 extends EmptyReturn(200)
     
 
     private type deleteusersByUser_idPictureActionRequestType       = (String)
-    private type deleteusersByUser_idPictureActionType[T]            = deleteusersByUser_idPictureActionRequestType => deleteusersByUser_idPictureType[T]
+    private type deleteusersByUser_idPictureActionType[T]            = deleteusersByUser_idPictureActionRequestType => DeleteusersByUser_idPictureType[T] forSome { type T }
 
 
     val deleteusersByUser_idPictureActionConstructor  = Action
@@ -848,13 +877,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getplantsByPlant_idPicturesType[ResultT] extends ResultWrapper[ResultT]
-    case class getplantsByPlant_idPictures200(result: Seq[String])(implicit val writer: String => Option[Writeable[Seq[String]]]) extends getplantsByPlant_idPicturesType[Seq[String]] { val statusCode = 200 }
-    case class getplantsByPlant_idPictures404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getplantsByPlant_idPicturesType[Null] { val statusCode = 404 }
+    sealed trait GetplantsByPlant_idPicturesType[T] extends ResultWrapper[T]
+    case class GetplantsByPlant_idPictures200(result: Seq[String])(implicit val writer: String => Option[Writeable[Seq[String]]]) extends GetplantsByPlant_idPicturesType[Seq[String]] { val statusCode = 200 }
+    
+    case object GetplantsByPlant_idPictures404 extends EmptyReturn(404)
     
 
     private type getplantsByPlant_idPicturesActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
-    private type getplantsByPlant_idPicturesActionType[T]            = getplantsByPlant_idPicturesActionRequestType => getplantsByPlant_idPicturesType[T]
+    private type getplantsByPlant_idPicturesActionType[T]            = getplantsByPlant_idPicturesActionRequestType => GetplantsByPlant_idPicturesType[T] forSome { type T }
 
 
     val getplantsByPlant_idPicturesActionConstructor  = Action
@@ -883,13 +913,13 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getplantsByPlant_idType[ResultT] extends ResultWrapper[ResultT]
-    case class getplantsByPlant_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends getplantsByPlant_idType[Error] { val statusCode = 404 }
-    case class getplantsByPlant_id200(result: Plant)(implicit val writer: String => Option[Writeable[Plant]]) extends getplantsByPlant_idType[Plant] { val statusCode = 200 }
+    sealed trait GetplantsByPlant_idType[T] extends ResultWrapper[T]
+    case class GetplantsByPlant_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetplantsByPlant_idType[Error] { val statusCode = 404 }
+    case class GetplantsByPlant_id200(result: Plant)(implicit val writer: String => Option[Writeable[Plant]]) extends GetplantsByPlant_idType[Plant] { val statusCode = 200 }
     
 
     private type getplantsByPlant_idActionRequestType       = (String)
-    private type getplantsByPlant_idActionType[T]            = getplantsByPlant_idActionRequestType => getplantsByPlant_idType[T]
+    private type getplantsByPlant_idActionType[T]            = getplantsByPlant_idActionRequestType => GetplantsByPlant_idType[T] forSome { type T }
 
 
     val getplantsByPlant_idActionConstructor  = Action
@@ -918,14 +948,17 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putplantsByPlant_idType[ResultT] extends ResultWrapper[ResultT]
-    case class putplantsByPlant_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idType[Null] { val statusCode = 200 }
-    case class putplantsByPlant_id201(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idType[Null] { val statusCode = 201 }
-    case class putplantsByPlant_id404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idType[Null] { val statusCode = 404 }
+    sealed trait PutplantsByPlant_idType[T] extends ResultWrapper[T]
+    
+    case object PutplantsByPlant_id200 extends EmptyReturn(200)
+    
+    case object PutplantsByPlant_id201 extends EmptyReturn(201)
+    
+    case object PutplantsByPlant_id404 extends EmptyReturn(404)
     
 
     private type putplantsByPlant_idActionRequestType       = (String, Plant)
-    private type putplantsByPlant_idActionType[T]            = putplantsByPlant_idActionRequestType => putplantsByPlant_idType[T]
+    private type putplantsByPlant_idActionType[T]            = putplantsByPlant_idActionRequestType => PutplantsByPlant_idType[T] forSome { type T }
 
         private def putplantsByPlant_idParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -969,13 +1002,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait deleteplantsByPlant_idType[ResultT] extends ResultWrapper[ResultT]
-    case class deleteplantsByPlant_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends deleteplantsByPlant_idType[Error] { val statusCode = 404 }
-    case class deleteplantsByPlant_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteplantsByPlant_idType[Null] { val statusCode = 200 }
+    sealed trait DeleteplantsByPlant_idType[T] extends ResultWrapper[T]
+    case class DeleteplantsByPlant_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteplantsByPlant_idType[Error] { val statusCode = 404 }
+    
+    case object DeleteplantsByPlant_id200 extends EmptyReturn(200)
     
 
     private type deleteplantsByPlant_idActionRequestType       = (String)
-    private type deleteplantsByPlant_idActionType[T]            = deleteplantsByPlant_idActionRequestType => deleteplantsByPlant_idType[T]
+    private type deleteplantsByPlant_idActionType[T]            = deleteplantsByPlant_idActionRequestType => DeleteplantsByPlant_idType[T] forSome { type T }
 
 
     val deleteplantsByPlant_idActionConstructor  = Action
@@ -1004,13 +1038,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getplantsByPlant_idWateringsType[ResultT] extends ResultWrapper[ResultT]
-    case class getplantsByPlant_idWaterings200(result: Seq[Watering])(implicit val writer: String => Option[Writeable[Seq[Watering]]]) extends getplantsByPlant_idWateringsType[Seq[Watering]] { val statusCode = 200 }
-    case class getplantsByPlant_idWaterings404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getplantsByPlant_idWateringsType[Null] { val statusCode = 404 }
+    sealed trait GetplantsByPlant_idWateringsType[T] extends ResultWrapper[T]
+    case class GetplantsByPlant_idWaterings200(result: Seq[Watering])(implicit val writer: String => Option[Writeable[Seq[Watering]]]) extends GetplantsByPlant_idWateringsType[Seq[Watering]] { val statusCode = 200 }
+    
+    case object GetplantsByPlant_idWaterings404 extends EmptyReturn(404)
     
 
     private type getplantsByPlant_idWateringsActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
-    private type getplantsByPlant_idWateringsActionType[T]            = getplantsByPlant_idWateringsActionRequestType => getplantsByPlant_idWateringsType[T]
+    private type getplantsByPlant_idWateringsActionType[T]            = getplantsByPlant_idWateringsActionRequestType => GetplantsByPlant_idWateringsType[T] forSome { type T }
 
 
     val getplantsByPlant_idWateringsActionConstructor  = Action
@@ -1039,13 +1074,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getplantsByPlant_idPicturesByPicture_idType[ResultT] extends ResultWrapper[ResultT]
-    case class getplantsByPlant_idPicturesByPicture_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends getplantsByPlant_idPicturesByPicture_idType[Error] { val statusCode = 404 }
-    case class getplantsByPlant_idPicturesByPicture_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getplantsByPlant_idPicturesByPicture_idType[Null] { val statusCode = 200 }
+    sealed trait GetplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
+    case class GetplantsByPlant_idPicturesByPicture_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetplantsByPlant_idPicturesByPicture_idType[Error] { val statusCode = 404 }
+    
+    case object GetplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
     
 
     private type getplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
-    private type getplantsByPlant_idPicturesByPicture_idActionType[T]            = getplantsByPlant_idPicturesByPicture_idActionRequestType => getplantsByPlant_idPicturesByPicture_idType[T]
+    private type getplantsByPlant_idPicturesByPicture_idActionType[T]            = getplantsByPlant_idPicturesByPicture_idActionRequestType => GetplantsByPlant_idPicturesByPicture_idType[T] forSome { type T }
 
 
     val getplantsByPlant_idPicturesByPicture_idActionConstructor  = Action
@@ -1074,14 +1110,17 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putplantsByPlant_idPicturesByPicture_idType[ResultT] extends ResultWrapper[ResultT]
-    case class putplantsByPlant_idPicturesByPicture_id404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idPicturesByPicture_idType[Null] { val statusCode = 404 }
-    case class putplantsByPlant_idPicturesByPicture_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idPicturesByPicture_idType[Null] { val statusCode = 200 }
-    case class putplantsByPlant_idPicturesByPicture_id201(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idPicturesByPicture_idType[Null] { val statusCode = 201 }
+    sealed trait PutplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
+    
+    case object PutplantsByPlant_idPicturesByPicture_id404 extends EmptyReturn(404)
+    
+    case object PutplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
+    
+    case object PutplantsByPlant_idPicturesByPicture_id201 extends EmptyReturn(201)
     
 
     private type putplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
-    private type putplantsByPlant_idPicturesByPicture_idActionType[T]            = putplantsByPlant_idPicturesByPicture_idActionRequestType => putplantsByPlant_idPicturesByPicture_idType[T]
+    private type putplantsByPlant_idPicturesByPicture_idActionType[T]            = putplantsByPlant_idPicturesByPicture_idActionRequestType => PutplantsByPlant_idPicturesByPicture_idType[T] forSome { type T }
 
 
     val putplantsByPlant_idPicturesByPicture_idActionConstructor  = Action
@@ -1110,13 +1149,14 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait deleteplantsByPlant_idPicturesByPicture_idType[ResultT] extends ResultWrapper[ResultT]
-    case class deleteplantsByPlant_idPicturesByPicture_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends deleteplantsByPlant_idPicturesByPicture_idType[Error] { val statusCode = 404 }
-    case class deleteplantsByPlant_idPicturesByPicture_id200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends deleteplantsByPlant_idPicturesByPicture_idType[Null] { val statusCode = 200 }
+    sealed trait DeleteplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
+    case class DeleteplantsByPlant_idPicturesByPicture_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteplantsByPlant_idPicturesByPicture_idType[Error] { val statusCode = 404 }
+    
+    case object DeleteplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
     
 
     private type deleteplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
-    private type deleteplantsByPlant_idPicturesByPicture_idActionType[T]            = deleteplantsByPlant_idPicturesByPicture_idActionRequestType => deleteplantsByPlant_idPicturesByPicture_idType[T]
+    private type deleteplantsByPlant_idPicturesByPicture_idActionType[T]            = deleteplantsByPlant_idPicturesByPicture_idActionRequestType => DeleteplantsByPlant_idPicturesByPicture_idType[T] forSome { type T }
 
 
     val deleteplantsByPlant_idPicturesByPicture_idActionConstructor  = Action
@@ -1145,12 +1185,12 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait getplantsByPlant_idWater_needsType[ResultT] extends ResultWrapper[ResultT]
-    case class getplantsByPlant_idWater_needs200(result: WaterNeeds)(implicit val writer: String => Option[Writeable[WaterNeeds]]) extends getplantsByPlant_idWater_needsType[WaterNeeds] { val statusCode = 200 }
+    sealed trait GetplantsByPlant_idWater_needsType[T] extends ResultWrapper[T]
+    case class GetplantsByPlant_idWater_needs200(result: WaterNeeds)(implicit val writer: String => Option[Writeable[WaterNeeds]]) extends GetplantsByPlant_idWater_needsType[WaterNeeds] { val statusCode = 200 }
     
 
     private type getplantsByPlant_idWater_needsActionRequestType       = (String)
-    private type getplantsByPlant_idWater_needsActionType[T]            = getplantsByPlant_idWater_needsActionRequestType => getplantsByPlant_idWater_needsType[T]
+    private type getplantsByPlant_idWater_needsActionType[T]            = getplantsByPlant_idWater_needsActionRequestType => GetplantsByPlant_idWater_needsType[T] forSome { type T }
 
 
     val getplantsByPlant_idWater_needsActionConstructor  = Action
@@ -1179,13 +1219,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait putplantsByPlant_idWater_needsType[ResultT] extends ResultWrapper[ResultT]
-    case class putplantsByPlant_idWater_needs200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idWater_needsType[Null] { val statusCode = 200 }
-    case class putplantsByPlant_idWater_needs404(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends putplantsByPlant_idWater_needsType[Null] { val statusCode = 404 }
+    sealed trait PutplantsByPlant_idWater_needsType[T] extends ResultWrapper[T]
+    
+    case object PutplantsByPlant_idWater_needs200 extends EmptyReturn(200)
+    
+    case object PutplantsByPlant_idWater_needs404 extends EmptyReturn(404)
     
 
     private type putplantsByPlant_idWater_needsActionRequestType       = (String, WaterNeeds)
-    private type putplantsByPlant_idWater_needsActionType[T]            = putplantsByPlant_idWater_needsActionRequestType => putplantsByPlant_idWater_needsType[T]
+    private type putplantsByPlant_idWater_needsActionType[T]            = putplantsByPlant_idWater_needsActionRequestType => PutplantsByPlant_idWater_needsType[T] forSome { type T }
 
         private def putplantsByPlant_idWater_needsParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -1229,6 +1271,6 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]                                                                                                  { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with getplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with putplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with getusersMeType[Results.EmptyContent] with getplantsByPlant_idSunlight_needsType[Results.EmptyContent] with putplantsByPlant_idSunlight_needsType[Results.EmptyContent] with getusersType[Results.EmptyContent] with postusersType[Results.EmptyContent] with getareasByArea_idType[Results.EmptyContent] with putareasByArea_idType[Results.EmptyContent] with deleteareasByArea_idType[Results.EmptyContent] with getplantsType[Results.EmptyContent] with getuserByUser_idPlantsType[Results.EmptyContent] with getusersByUser_idType[Results.EmptyContent] with putusersByUser_idType[Results.EmptyContent] with deleteusersByUser_idType[Results.EmptyContent] with getareasType[Results.EmptyContent] with getplantsByPlant_idLocationType[Results.EmptyContent] with putplantsByPlant_idLocationType[Results.EmptyContent] with deleteplantsByPlant_idLocationType[Results.EmptyContent] with getusersByUser_idPictureType[Results.EmptyContent] with putusersByUser_idPictureType[Results.EmptyContent] with deleteusersByUser_idPictureType[Results.EmptyContent] with getplantsByPlant_idPicturesType[Results.EmptyContent] with getplantsByPlant_idType[Results.EmptyContent] with putplantsByPlant_idType[Results.EmptyContent] with deleteplantsByPlant_idType[Results.EmptyContent] with getplantsByPlant_idWateringsType[Results.EmptyContent] with getplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with putplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with deleteplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with getplantsByPlant_idWater_needsType[Results.EmptyContent] with putplantsByPlant_idWater_needsType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with PutplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with GetusersMeType[Results.EmptyContent] with GetplantsByPlant_idSunlight_needsType[Results.EmptyContent] with PutplantsByPlant_idSunlight_needsType[Results.EmptyContent] with GetusersType[Results.EmptyContent] with PostusersType[Results.EmptyContent] with GetareasByArea_idType[Results.EmptyContent] with PutareasByArea_idType[Results.EmptyContent] with DeleteareasByArea_idType[Results.EmptyContent] with GetplantsType[Results.EmptyContent] with GetuserByUser_idPlantsType[Results.EmptyContent] with GetusersByUser_idType[Results.EmptyContent] with PutusersByUser_idType[Results.EmptyContent] with DeleteusersByUser_idType[Results.EmptyContent] with GetareasType[Results.EmptyContent] with GetplantsByPlant_idLocationType[Results.EmptyContent] with PutplantsByPlant_idLocationType[Results.EmptyContent] with DeleteplantsByPlant_idLocationType[Results.EmptyContent] with GetusersByUser_idPictureType[Results.EmptyContent] with PutusersByUser_idPictureType[Results.EmptyContent] with DeleteusersByUser_idPictureType[Results.EmptyContent] with GetplantsByPlant_idPicturesType[Results.EmptyContent] with GetplantsByPlant_idType[Results.EmptyContent] with PutplantsByPlant_idType[Results.EmptyContent] with DeleteplantsByPlant_idType[Results.EmptyContent] with GetplantsByPlant_idWateringsType[Results.EmptyContent] with GetplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with PutplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with DeleteplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with GetplantsByPlant_idWater_needsType[Results.EmptyContent] with PutplantsByPlant_idWater_needsType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with PutplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with GetusersMeType[Results.EmptyContent] with GetplantsByPlant_idSunlight_needsType[Results.EmptyContent] with PutplantsByPlant_idSunlight_needsType[Results.EmptyContent] with GetusersType[Results.EmptyContent] with PostusersType[Results.EmptyContent] with GetareasByArea_idType[Results.EmptyContent] with PutareasByArea_idType[Results.EmptyContent] with DeleteareasByArea_idType[Results.EmptyContent] with GetplantsType[Results.EmptyContent] with GetuserByUser_idPlantsType[Results.EmptyContent] with GetusersByUser_idType[Results.EmptyContent] with PutusersByUser_idType[Results.EmptyContent] with DeleteusersByUser_idType[Results.EmptyContent] with GetareasType[Results.EmptyContent] with GetplantsByPlant_idLocationType[Results.EmptyContent] with PutplantsByPlant_idLocationType[Results.EmptyContent] with DeleteplantsByPlant_idLocationType[Results.EmptyContent] with GetusersByUser_idPictureType[Results.EmptyContent] with PutusersByUser_idPictureType[Results.EmptyContent] with DeleteusersByUser_idPictureType[Results.EmptyContent] with GetplantsByPlant_idPicturesType[Results.EmptyContent] with GetplantsByPlant_idType[Results.EmptyContent] with PutplantsByPlant_idType[Results.EmptyContent] with DeleteplantsByPlant_idType[Results.EmptyContent] with GetplantsByPlant_idWateringsType[Results.EmptyContent] with GetplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with PutplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with DeleteplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with GetplantsByPlant_idWater_needsType[Results.EmptyContent] with PutplantsByPlant_idWater_needsType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

@@ -1,10 +1,12 @@
 package hackweek.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -12,13 +14,18 @@ import scala.math.BigInt
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait HackweekYamlBase extends Controller with PlayBodyParsing {
-    sealed trait getschemaModelType[ResultT] extends ResultWrapper[ResultT]
-    case class getschemaModel200(result: ModelSchemaRoot)(implicit val writer: String => Option[Writeable[ModelSchemaRoot]]) extends getschemaModelType[ModelSchemaRoot] { val statusCode = 200 }
+    sealed trait GetschemaModelType[T] extends ResultWrapper[T]
+    case class GetschemaModel200(result: ModelSchemaRoot)(implicit val writer: String => Option[Writeable[ModelSchemaRoot]]) extends GetschemaModelType[ModelSchemaRoot] { val statusCode = 200 }
     
 
     private type getschemaModelActionRequestType       = (ModelSchemaRoot)
-    private type getschemaModelActionType[T]            = getschemaModelActionRequestType => getschemaModelType[T]
+    private type getschemaModelActionType[T]            = getschemaModelActionRequestType => GetschemaModelType[T] forSome { type T }
 
         private def getschemaModelParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -62,6 +69,6 @@ trait HackweekYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]     { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with getschemaModelType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetschemaModelType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetschemaModelType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

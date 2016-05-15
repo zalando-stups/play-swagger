@@ -73,7 +73,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::       Nil
+                        val form =   ("name" -> name.toString) ::     year.map(m => "year" -> m.toString).toList :::       Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
@@ -113,7 +113,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::       Nil
+                        val form =   ("name" -> name.toString) ::     year.map(m => "year" -> m.toString).toList :::       Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
@@ -194,7 +194,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::          Nil
+                        val form =   ("name" -> name.toString) ::     year.map(m => "year" -> m.toString).toList :::          Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
@@ -234,7 +234,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::          Nil
+                        val form =   ("name" -> name.toString) ::     year.map(m => "year" -> m.toString).toList :::          Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
@@ -317,7 +317,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::       Nil
+                        val form =   ("name" -> name.toString) ::     year.map(m => "year" -> m.toString).toList :::       Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
@@ -357,7 +357,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form =   ("name" -> name) ::     year.map(m => "year" -> m.toString).toList :::       Nil
+                        val form =   ("name" -> name.toString) ::     year.map(m => "year" -> m.toString).toList :::       Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 

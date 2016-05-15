@@ -1,10 +1,12 @@
 package cross_spec_references.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
@@ -12,13 +14,18 @@ import scala.math.BigInt
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait Cross_spec_referencesYamlBase extends Controller with PlayBodyParsing {
-    sealed trait postType[ResultT] extends ResultWrapper[ResultT]
-    case class post200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends postType[Pet] { val statusCode = 200 }
+    sealed trait PostType[T] extends ResultWrapper[T]
+    case class Post200(result: Pet)(implicit val writer: String => Option[Writeable[Pet]]) extends PostType[Pet] { val statusCode = 200 }
     
 
     private type postActionRequestType       = (ModelSchemaRoot)
-    private type postActionType[T]            = postActionRequestType => postType[T]
+    private type postActionType[T]            = postActionRequestType => PostType[T] forSome { type T }
 
         private def postParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -62,6 +69,6 @@ trait Cross_spec_referencesYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]     { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with postType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with PostType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with PostType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

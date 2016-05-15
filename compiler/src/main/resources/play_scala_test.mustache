@@ -82,7 +82,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form = {{for p in test.form_parameters}} {{if p.is_file}} {{else}} {{if p.optional}}{{p.field_name}}.map(m => "{{p.field_name}}" -> m.toString).toList ::: {{else}}("{{p.field_name}}" -> {{p.field_name}}) :: {{/if}} {{/if}} {{/for}} Nil
+                        val form = {{for p in test.form_parameters}} {{if p.is_file}} {{else}} {{if p.optional}}{{p.field_name}}.map(m => "{{p.field_name}}" -> m.toString).toList ::: {{else}}("{{p.field_name}}" -> {{p.field_name}}.toString) :: {{/if}} {{/if}} {{/for}} Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
@@ -128,7 +128,7 @@ import Generators._
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (acceptHeader == "application/x-www-form-urlencoded") {
-                        val form = {{for p in test.form_parameters}} {{if p.is_file}} {{else}} {{if p.optional}}{{p.field_name}}.map(m => "{{p.field_name}}" -> m.toString).toList ::: {{else}}("{{p.field_name}}" -> {{p.field_name}}) :: {{/if}} {{/if}} {{/for}} Nil
+                        val form = {{for p in test.form_parameters}} {{if p.is_file}} {{else}} {{if p.optional}}{{p.field_name}}.map(m => "{{p.field_name}}" -> m.toString).toList ::: {{else}}("{{p.field_name}}" -> {{p.field_name}}.toString) :: {{/if}} {{/if}} {{/for}} Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 

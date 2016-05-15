@@ -1,10 +1,12 @@
 package form_data.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import java.io.File
@@ -14,13 +16,18 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait Form_dataYamlBase extends Controller with PlayBodyParsing {
-    sealed trait postmultipartType[ResultT] extends ResultWrapper[ResultT]
-    case class postmultipart200(result: MultipartPostResponses200)(implicit val writer: String => Option[Writeable[MultipartPostResponses200]]) extends postmultipartType[MultipartPostResponses200] { val statusCode = 200 }
+    sealed trait PostmultipartType[T] extends ResultWrapper[T]
+    case class Postmultipart200(result: MultipartPostResponses200)(implicit val writer: String => Option[Writeable[MultipartPostResponses200]]) extends PostmultipartType[MultipartPostResponses200] { val statusCode = 200 }
     
 
     private type postmultipartActionRequestType       = (String, BothPostYear, MultipartPostAvatar)
-    private type postmultipartActionType[T]            = postmultipartActionRequestType => postmultipartType[T]
+    private type postmultipartActionType[T]            = postmultipartActionRequestType => PostmultipartType[T] forSome { type T }
 
 
     val postmultipartActionConstructor  = Action
@@ -58,12 +65,12 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait posturl_encodedType[ResultT] extends ResultWrapper[ResultT]
-    case class posturl_encoded200(result: MultipartPostResponses200)(implicit val writer: String => Option[Writeable[MultipartPostResponses200]]) extends posturl_encodedType[MultipartPostResponses200] { val statusCode = 200 }
+    sealed trait Posturl_encodedType[T] extends ResultWrapper[T]
+    case class Posturl_encoded200(result: MultipartPostResponses200)(implicit val writer: String => Option[Writeable[MultipartPostResponses200]]) extends Posturl_encodedType[MultipartPostResponses200] { val statusCode = 200 }
     
 
     private type posturl_encodedActionRequestType       = (String, BothPostYear, File)
-    private type posturl_encodedActionType[T]            = posturl_encodedActionRequestType => posturl_encodedType[T]
+    private type posturl_encodedActionType[T]            = posturl_encodedActionRequestType => Posturl_encodedType[T] forSome { type T }
 
 
     val posturl_encodedActionConstructor  = Action
@@ -101,12 +108,12 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    sealed trait postbothType[ResultT] extends ResultWrapper[ResultT]
-    case class postboth200(result: BothPostResponses200)(implicit val writer: String => Option[Writeable[BothPostResponses200]]) extends postbothType[BothPostResponses200] { val statusCode = 200 }
+    sealed trait PostbothType[T] extends ResultWrapper[T]
+    case class Postboth200(result: BothPostResponses200)(implicit val writer: String => Option[Writeable[BothPostResponses200]]) extends PostbothType[BothPostResponses200] { val statusCode = 200 }
     
 
     private type postbothActionRequestType       = (String, BothPostYear, MultipartPostAvatar, File)
-    private type postbothActionType[T]            = postbothActionRequestType => postbothType[T]
+    private type postbothActionType[T]            = postbothActionRequestType => PostbothType[T] forSome { type T }
 
 
     val postbothActionConstructor  = Action
@@ -144,6 +151,6 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]           { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with postmultipartType[Results.EmptyContent] with posturl_encodedType[Results.EmptyContent] with postbothType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with PostmultipartType[Results.EmptyContent] with Posturl_encodedType[Results.EmptyContent] with PostbothType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with PostmultipartType[Results.EmptyContent] with Posturl_encodedType[Results.EmptyContent] with PostbothType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

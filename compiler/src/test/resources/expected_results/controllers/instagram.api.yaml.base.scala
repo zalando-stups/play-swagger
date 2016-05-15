@@ -1,10 +1,12 @@
 package instagram.api.yaml
 
+import scala.language.existentials
+
 import play.api.mvc.{Action, Controller, Results}
 import play.api.http._
 import Results.Status
 
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper, ResponseWriters}
+import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
 import scala.math.BigInt
@@ -14,13 +16,18 @@ import de.zalando.play.controllers.PlayPathBindables
 
 
 
+import de.zalando.play.controllers.ResponseWriters
+
+
+
+
 trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with InstagramApiYamlSecurity {
-    sealed trait getmediaByMedia_idLikesType[ResultT] extends ResultWrapper[ResultT]
-    case class getmediaByMedia_idLikes200(result: MediaMedia_idLikesGetResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idLikesGetResponses200]]) extends getmediaByMedia_idLikesType[MediaMedia_idLikesGetResponses200] { val statusCode = 200 }
+    sealed trait GetmediaByMedia_idLikesType[T] extends ResultWrapper[T]
+    case class GetmediaByMedia_idLikes200(result: MediaMedia_idLikesGetResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idLikesGetResponses200]]) extends GetmediaByMedia_idLikesType[MediaMedia_idLikesGetResponses200] { val statusCode = 200 }
     
 
     private type getmediaByMedia_idLikesActionRequestType       = (BigInt)
-    private type getmediaByMedia_idLikesActionType[T]            = getmediaByMedia_idLikesActionRequestType => getmediaByMedia_idLikesType[T]
+    private type getmediaByMedia_idLikesActionType[T]            = getmediaByMedia_idLikesActionRequestType => GetmediaByMedia_idLikesType[T] forSome { type T }
 
 
     val getmediaByMedia_idLikesActionConstructor  = new getmediaByMedia_idLikesSecureAction("basic", "comments", "relationships", "likes")
@@ -49,12 +56,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait postmediaByMedia_idLikesType[ResultT] extends ResultWrapper[ResultT]
-    case class postmediaByMedia_idLikes200(result: MediaMedia_idCommentsDeleteResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsDeleteResponses200]]) extends postmediaByMedia_idLikesType[MediaMedia_idCommentsDeleteResponses200] { val statusCode = 200 }
+    sealed trait PostmediaByMedia_idLikesType[T] extends ResultWrapper[T]
+    case class PostmediaByMedia_idLikes200(result: MediaMedia_idCommentsDeleteResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsDeleteResponses200]]) extends PostmediaByMedia_idLikesType[MediaMedia_idCommentsDeleteResponses200] { val statusCode = 200 }
     
 
     private type postmediaByMedia_idLikesActionRequestType       = (BigInt)
-    private type postmediaByMedia_idLikesActionType[T]            = postmediaByMedia_idLikesActionRequestType => postmediaByMedia_idLikesType[T]
+    private type postmediaByMedia_idLikesActionType[T]            = postmediaByMedia_idLikesActionRequestType => PostmediaByMedia_idLikesType[T] forSome { type T }
 
 
     val postmediaByMedia_idLikesActionConstructor  = new postmediaByMedia_idLikesSecureAction("comments")
@@ -83,12 +90,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait deletemediaByMedia_idLikesType[ResultT] extends ResultWrapper[ResultT]
-    case class deletemediaByMedia_idLikes200(result: MediaMedia_idCommentsDeleteResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsDeleteResponses200]]) extends deletemediaByMedia_idLikesType[MediaMedia_idCommentsDeleteResponses200] { val statusCode = 200 }
+    sealed trait DeletemediaByMedia_idLikesType[T] extends ResultWrapper[T]
+    case class DeletemediaByMedia_idLikes200(result: MediaMedia_idCommentsDeleteResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsDeleteResponses200]]) extends DeletemediaByMedia_idLikesType[MediaMedia_idCommentsDeleteResponses200] { val statusCode = 200 }
     
 
     private type deletemediaByMedia_idLikesActionRequestType       = (BigInt)
-    private type deletemediaByMedia_idLikesActionType[T]            = deletemediaByMedia_idLikesActionRequestType => deletemediaByMedia_idLikesType[T]
+    private type deletemediaByMedia_idLikesActionType[T]            = deletemediaByMedia_idLikesActionRequestType => DeletemediaByMedia_idLikesType[T] forSome { type T }
 
 
     val deletemediaByMedia_idLikesActionConstructor  = new deletemediaByMedia_idLikesSecureAction("basic", "comments", "relationships", "likes")
@@ -117,12 +124,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getusersByUser_idFollowsType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersByUser_idFollows200(result: UsersUser_idFollowsGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idFollowsGetResponses200]]) extends getusersByUser_idFollowsType[UsersUser_idFollowsGetResponses200] { val statusCode = 200 }
+    sealed trait GetusersByUser_idFollowsType[T] extends ResultWrapper[T]
+    case class GetusersByUser_idFollows200(result: UsersUser_idFollowsGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idFollowsGetResponses200]]) extends GetusersByUser_idFollowsType[UsersUser_idFollowsGetResponses200] { val statusCode = 200 }
     
 
     private type getusersByUser_idFollowsActionRequestType       = (BigDecimal)
-    private type getusersByUser_idFollowsActionType[T]            = getusersByUser_idFollowsActionRequestType => getusersByUser_idFollowsType[T]
+    private type getusersByUser_idFollowsActionType[T]            = getusersByUser_idFollowsActionRequestType => GetusersByUser_idFollowsType[T] forSome { type T }
 
 
     val getusersByUser_idFollowsActionConstructor  = new getusersByUser_idFollowsSecureAction("basic", "comments", "relationships", "likes")
@@ -151,12 +158,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getlocationsByLocation_idType[ResultT] extends ResultWrapper[ResultT]
-    case class getlocationsByLocation_id200(result: LocationsLocation_idGetResponses200)(implicit val writer: String => Option[Writeable[LocationsLocation_idGetResponses200]]) extends getlocationsByLocation_idType[LocationsLocation_idGetResponses200] { val statusCode = 200 }
+    sealed trait GetlocationsByLocation_idType[T] extends ResultWrapper[T]
+    case class GetlocationsByLocation_id200(result: LocationsLocation_idGetResponses200)(implicit val writer: String => Option[Writeable[LocationsLocation_idGetResponses200]]) extends GetlocationsByLocation_idType[LocationsLocation_idGetResponses200] { val statusCode = 200 }
     
 
     private type getlocationsByLocation_idActionRequestType       = (BigInt)
-    private type getlocationsByLocation_idActionType[T]            = getlocationsByLocation_idActionRequestType => getlocationsByLocation_idType[T]
+    private type getlocationsByLocation_idActionType[T]            = getlocationsByLocation_idActionRequestType => GetlocationsByLocation_idType[T] forSome { type T }
 
 
     val getlocationsByLocation_idActionConstructor  = new getlocationsByLocation_idSecureAction("basic", "comments", "relationships", "likes")
@@ -185,12 +192,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getusersSearchType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersSearch200(result: UsersUser_idFollowsGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idFollowsGetResponses200]]) extends getusersSearchType[UsersUser_idFollowsGetResponses200] { val statusCode = 200 }
+    sealed trait GetusersSearchType[T] extends ResultWrapper[T]
+    case class GetusersSearch200(result: UsersUser_idFollowsGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idFollowsGetResponses200]]) extends GetusersSearchType[UsersUser_idFollowsGetResponses200] { val statusCode = 200 }
     
 
     private type getusersSearchActionRequestType       = (String, MediaFilter)
-    private type getusersSearchActionType[T]            = getusersSearchActionRequestType => getusersSearchType[T]
+    private type getusersSearchActionType[T]            = getusersSearchActionRequestType => GetusersSearchType[T] forSome { type T }
 
 
     val getusersSearchActionConstructor  = new getusersSearchSecureAction("basic", "comments", "relationships", "likes")
@@ -219,12 +226,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getusersSelfMediaLikedType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersSelfMediaLiked200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends getusersSelfMediaLikedType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
+    sealed trait GetusersSelfMediaLikedType[T] extends ResultWrapper[T]
+    case class GetusersSelfMediaLiked200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends GetusersSelfMediaLikedType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
     
 
     private type getusersSelfMediaLikedActionRequestType       = (MediaId, MediaId)
-    private type getusersSelfMediaLikedActionType[T]            = getusersSelfMediaLikedActionRequestType => getusersSelfMediaLikedType[T]
+    private type getusersSelfMediaLikedActionType[T]            = getusersSelfMediaLikedActionRequestType => GetusersSelfMediaLikedType[T] forSome { type T }
 
 
     val getusersSelfMediaLikedActionConstructor  = new getusersSelfMediaLikedSecureAction("basic", "comments", "relationships", "likes")
@@ -253,12 +260,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait gettagsByTag_nameType[ResultT] extends ResultWrapper[ResultT]
-    case class gettagsByTag_name200(result: Tag)(implicit val writer: String => Option[Writeable[Tag]]) extends gettagsByTag_nameType[Tag] { val statusCode = 200 }
+    sealed trait GettagsByTag_nameType[T] extends ResultWrapper[T]
+    case class GettagsByTag_name200(result: Tag)(implicit val writer: String => Option[Writeable[Tag]]) extends GettagsByTag_nameType[Tag] { val statusCode = 200 }
     
 
     private type gettagsByTag_nameActionRequestType       = (String)
-    private type gettagsByTag_nameActionType[T]            = gettagsByTag_nameActionRequestType => gettagsByTag_nameType[T]
+    private type gettagsByTag_nameActionType[T]            = gettagsByTag_nameActionRequestType => GettagsByTag_nameType[T] forSome { type T }
 
 
     val gettagsByTag_nameActionConstructor  = new gettagsByTag_nameSecureAction("basic", "comments", "relationships", "likes")
@@ -287,12 +294,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait gettagsSearchType[ResultT] extends ResultWrapper[ResultT]
-    case class gettagsSearch200(result: TagsSearchGetResponses200)(implicit val writer: String => Option[Writeable[TagsSearchGetResponses200]]) extends gettagsSearchType[TagsSearchGetResponses200] { val statusCode = 200 }
+    sealed trait GettagsSearchType[T] extends ResultWrapper[T]
+    case class GettagsSearch200(result: TagsSearchGetResponses200)(implicit val writer: String => Option[Writeable[TagsSearchGetResponses200]]) extends GettagsSearchType[TagsSearchGetResponses200] { val statusCode = 200 }
     
 
     private type gettagsSearchActionRequestType       = (MediaFilter)
-    private type gettagsSearchActionType[T]            = gettagsSearchActionRequestType => gettagsSearchType[T]
+    private type gettagsSearchActionType[T]            = gettagsSearchActionRequestType => GettagsSearchType[T] forSome { type T }
 
 
     val gettagsSearchActionConstructor  = new gettagsSearchSecureAction("basic", "comments", "relationships", "likes")
@@ -321,12 +328,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getusersByUser_idFollowed_byType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersByUser_idFollowed_by200(result: UsersUser_idFollowsGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idFollowsGetResponses200]]) extends getusersByUser_idFollowed_byType[UsersUser_idFollowsGetResponses200] { val statusCode = 200 }
+    sealed trait GetusersByUser_idFollowed_byType[T] extends ResultWrapper[T]
+    case class GetusersByUser_idFollowed_by200(result: UsersUser_idFollowsGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idFollowsGetResponses200]]) extends GetusersByUser_idFollowed_byType[UsersUser_idFollowsGetResponses200] { val statusCode = 200 }
     
 
     private type getusersByUser_idFollowed_byActionRequestType       = (BigDecimal)
-    private type getusersByUser_idFollowed_byActionType[T]            = getusersByUser_idFollowed_byActionRequestType => getusersByUser_idFollowed_byType[T]
+    private type getusersByUser_idFollowed_byActionType[T]            = getusersByUser_idFollowed_byActionRequestType => GetusersByUser_idFollowed_byType[T] forSome { type T }
 
 
     val getusersByUser_idFollowed_byActionConstructor  = new getusersByUser_idFollowed_bySecureAction("basic", "comments", "relationships", "likes")
@@ -355,12 +362,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getmediaByMedia_idCommentsType[ResultT] extends ResultWrapper[ResultT]
-    case class getmediaByMedia_idComments200(result: MediaMedia_idCommentsGetResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsGetResponses200]]) extends getmediaByMedia_idCommentsType[MediaMedia_idCommentsGetResponses200] { val statusCode = 200 }
+    sealed trait GetmediaByMedia_idCommentsType[T] extends ResultWrapper[T]
+    case class GetmediaByMedia_idComments200(result: MediaMedia_idCommentsGetResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsGetResponses200]]) extends GetmediaByMedia_idCommentsType[MediaMedia_idCommentsGetResponses200] { val statusCode = 200 }
     
 
     private type getmediaByMedia_idCommentsActionRequestType       = (BigInt)
-    private type getmediaByMedia_idCommentsActionType[T]            = getmediaByMedia_idCommentsActionRequestType => getmediaByMedia_idCommentsType[T]
+    private type getmediaByMedia_idCommentsActionType[T]            = getmediaByMedia_idCommentsActionRequestType => GetmediaByMedia_idCommentsType[T] forSome { type T }
 
 
     val getmediaByMedia_idCommentsActionConstructor  = new getmediaByMedia_idCommentsSecureAction("basic", "comments", "relationships", "likes")
@@ -389,12 +396,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait postmediaByMedia_idCommentsType[ResultT] extends ResultWrapper[ResultT]
-    case class postmediaByMedia_idComments200(result: MediaMedia_idCommentsDeleteResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsDeleteResponses200]]) extends postmediaByMedia_idCommentsType[MediaMedia_idCommentsDeleteResponses200] { val statusCode = 200 }
+    sealed trait PostmediaByMedia_idCommentsType[T] extends ResultWrapper[T]
+    case class PostmediaByMedia_idComments200(result: MediaMedia_idCommentsDeleteResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsDeleteResponses200]]) extends PostmediaByMedia_idCommentsType[MediaMedia_idCommentsDeleteResponses200] { val statusCode = 200 }
     
 
     private type postmediaByMedia_idCommentsActionRequestType       = (BigInt, LocationLatitude)
-    private type postmediaByMedia_idCommentsActionType[T]            = postmediaByMedia_idCommentsActionRequestType => postmediaByMedia_idCommentsType[T]
+    private type postmediaByMedia_idCommentsActionType[T]            = postmediaByMedia_idCommentsActionRequestType => PostmediaByMedia_idCommentsType[T] forSome { type T }
 
         private def postmediaByMedia_idCommentsParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -438,12 +445,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait deletemediaByMedia_idCommentsType[ResultT] extends ResultWrapper[ResultT]
-    case class deletemediaByMedia_idComments200(result: MediaMedia_idCommentsDeleteResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsDeleteResponses200]]) extends deletemediaByMedia_idCommentsType[MediaMedia_idCommentsDeleteResponses200] { val statusCode = 200 }
+    sealed trait DeletemediaByMedia_idCommentsType[T] extends ResultWrapper[T]
+    case class DeletemediaByMedia_idComments200(result: MediaMedia_idCommentsDeleteResponses200)(implicit val writer: String => Option[Writeable[MediaMedia_idCommentsDeleteResponses200]]) extends DeletemediaByMedia_idCommentsType[MediaMedia_idCommentsDeleteResponses200] { val statusCode = 200 }
     
 
     private type deletemediaByMedia_idCommentsActionRequestType       = (BigInt)
-    private type deletemediaByMedia_idCommentsActionType[T]            = deletemediaByMedia_idCommentsActionRequestType => deletemediaByMedia_idCommentsType[T]
+    private type deletemediaByMedia_idCommentsActionType[T]            = deletemediaByMedia_idCommentsActionRequestType => DeletemediaByMedia_idCommentsType[T] forSome { type T }
 
 
     val deletemediaByMedia_idCommentsActionConstructor  = new deletemediaByMedia_idCommentsSecureAction("basic", "comments", "relationships", "likes")
@@ -472,12 +479,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait gettagsByTag_nameMediaRecentType[ResultT] extends ResultWrapper[ResultT]
-    case class gettagsByTag_nameMediaRecent200(result: TagsTag_nameMediaRecentGetResponses200)(implicit val writer: String => Option[Writeable[TagsTag_nameMediaRecentGetResponses200]]) extends gettagsByTag_nameMediaRecentType[TagsTag_nameMediaRecentGetResponses200] { val statusCode = 200 }
+    sealed trait GettagsByTag_nameMediaRecentType[T] extends ResultWrapper[T]
+    case class GettagsByTag_nameMediaRecent200(result: TagsTag_nameMediaRecentGetResponses200)(implicit val writer: String => Option[Writeable[TagsTag_nameMediaRecentGetResponses200]]) extends GettagsByTag_nameMediaRecentType[TagsTag_nameMediaRecentGetResponses200] { val statusCode = 200 }
     
 
     private type gettagsByTag_nameMediaRecentActionRequestType       = (String)
-    private type gettagsByTag_nameMediaRecentActionType[T]            = gettagsByTag_nameMediaRecentActionRequestType => gettagsByTag_nameMediaRecentType[T]
+    private type gettagsByTag_nameMediaRecentActionType[T]            = gettagsByTag_nameMediaRecentActionRequestType => GettagsByTag_nameMediaRecentType[T] forSome { type T }
 
 
     val gettagsByTag_nameMediaRecentActionConstructor  = new gettagsByTag_nameMediaRecentSecureAction("basic", "comments", "relationships", "likes")
@@ -506,12 +513,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait postusersByUser_idRelationshipType[ResultT] extends ResultWrapper[ResultT]
-    case class postusersByUser_idRelationship200(result: UsersUser_idFollowsGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idFollowsGetResponses200]]) extends postusersByUser_idRelationshipType[UsersUser_idFollowsGetResponses200] { val statusCode = 200 }
+    sealed trait PostusersByUser_idRelationshipType[T] extends ResultWrapper[T]
+    case class PostusersByUser_idRelationship200(result: UsersUser_idFollowsGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idFollowsGetResponses200]]) extends PostusersByUser_idRelationshipType[UsersUser_idFollowsGetResponses200] { val statusCode = 200 }
     
 
     private type postusersByUser_idRelationshipActionRequestType       = (BigDecimal, UsersUser_idRelationshipPostAction)
-    private type postusersByUser_idRelationshipActionType[T]            = postusersByUser_idRelationshipActionRequestType => postusersByUser_idRelationshipType[T]
+    private type postusersByUser_idRelationshipActionType[T]            = postusersByUser_idRelationshipActionRequestType => PostusersByUser_idRelationshipType[T] forSome { type T }
 
         private def postusersByUser_idRelationshipParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
             def bodyMimeType: Option[MediaType] => String = mediaType => {
@@ -555,12 +562,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getusersSelfFeedType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersSelfFeed200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends getusersSelfFeedType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
+    sealed trait GetusersSelfFeedType[T] extends ResultWrapper[T]
+    case class GetusersSelfFeed200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends GetusersSelfFeedType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
     
 
     private type getusersSelfFeedActionRequestType       = (MediaId, MediaId, MediaId)
-    private type getusersSelfFeedActionType[T]            = getusersSelfFeedActionRequestType => getusersSelfFeedType[T]
+    private type getusersSelfFeedActionType[T]            = getusersSelfFeedActionRequestType => GetusersSelfFeedType[T] forSome { type T }
 
 
     val getusersSelfFeedActionConstructor  = new getusersSelfFeedSecureAction("basic", "comments", "relationships", "likes")
@@ -589,12 +596,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getusersByUser_idType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersByUser_id200(result: UsersUser_idGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idGetResponses200]]) extends getusersByUser_idType[UsersUser_idGetResponses200] { val statusCode = 200 }
+    sealed trait GetusersByUser_idType[T] extends ResultWrapper[T]
+    case class GetusersByUser_id200(result: UsersUser_idGetResponses200)(implicit val writer: String => Option[Writeable[UsersUser_idGetResponses200]]) extends GetusersByUser_idType[UsersUser_idGetResponses200] { val statusCode = 200 }
     
 
     private type getusersByUser_idActionRequestType       = (BigDecimal)
-    private type getusersByUser_idActionType[T]            = getusersByUser_idActionRequestType => getusersByUser_idType[T]
+    private type getusersByUser_idActionType[T]            = getusersByUser_idActionRequestType => GetusersByUser_idType[T] forSome { type T }
 
 
     val getusersByUser_idActionConstructor  = new getusersByUser_idSecureAction("basic")
@@ -623,12 +630,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getmediaSearchType[ResultT] extends ResultWrapper[ResultT]
-    case class getmediaSearch200(result: MediaSearchGetResponses200)(implicit val writer: String => Option[Writeable[MediaSearchGetResponses200]]) extends getmediaSearchType[MediaSearchGetResponses200] { val statusCode = 200 }
+    sealed trait GetmediaSearchType[T] extends ResultWrapper[T]
+    case class GetmediaSearch200(result: MediaSearchGetResponses200)(implicit val writer: String => Option[Writeable[MediaSearchGetResponses200]]) extends GetmediaSearchType[MediaSearchGetResponses200] { val statusCode = 200 }
     
 
     private type getmediaSearchActionRequestType       = (MediaId, BigInt, LocationLatitude, MediaId, LocationLatitude)
-    private type getmediaSearchActionType[T]            = getmediaSearchActionRequestType => getmediaSearchType[T]
+    private type getmediaSearchActionType[T]            = getmediaSearchActionRequestType => GetmediaSearchType[T] forSome { type T }
 
 
     val getmediaSearchActionConstructor  = new getmediaSearchSecureAction("basic", "comments", "relationships", "likes")
@@ -657,12 +664,13 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getgeographiesByGeo_idMediaRecentType[ResultT] extends ResultWrapper[ResultT]
-    case class getgeographiesByGeo_idMediaRecent200(result: Null)(implicit val writer: String => Option[Writeable[Null]]) extends getgeographiesByGeo_idMediaRecentType[Null] { val statusCode = 200 }
+    sealed trait GetgeographiesByGeo_idMediaRecentType[T] extends ResultWrapper[T]
+    
+    case object GetgeographiesByGeo_idMediaRecent200 extends EmptyReturn(200)
     
 
     private type getgeographiesByGeo_idMediaRecentActionRequestType       = (BigInt, MediaId, MediaId)
-    private type getgeographiesByGeo_idMediaRecentActionType[T]            = getgeographiesByGeo_idMediaRecentActionRequestType => getgeographiesByGeo_idMediaRecentType[T]
+    private type getgeographiesByGeo_idMediaRecentActionType[T]            = getgeographiesByGeo_idMediaRecentActionRequestType => GetgeographiesByGeo_idMediaRecentType[T] forSome { type T }
 
 
     val getgeographiesByGeo_idMediaRecentActionConstructor  = new getgeographiesByGeo_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
@@ -691,12 +699,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getmediaByShortcodeType[ResultT] extends ResultWrapper[ResultT]
-    case class getmediaByShortcode200(result: Media)(implicit val writer: String => Option[Writeable[Media]]) extends getmediaByShortcodeType[Media] { val statusCode = 200 }
+    sealed trait GetmediaByShortcodeType[T] extends ResultWrapper[T]
+    case class GetmediaByShortcode200(result: Media)(implicit val writer: String => Option[Writeable[Media]]) extends GetmediaByShortcodeType[Media] { val statusCode = 200 }
     
 
     private type getmediaByShortcodeActionRequestType       = (String)
-    private type getmediaByShortcodeActionType[T]            = getmediaByShortcodeActionRequestType => getmediaByShortcodeType[T]
+    private type getmediaByShortcodeActionType[T]            = getmediaByShortcodeActionRequestType => GetmediaByShortcodeType[T] forSome { type T }
 
 
     val getmediaByShortcodeActionConstructor  = new getmediaByShortcodeSecureAction("basic", "comments", "relationships", "likes")
@@ -725,12 +733,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getlocationsSearchType[ResultT] extends ResultWrapper[ResultT]
-    case class getlocationsSearch200(result: LocationsSearchGetResponses200)(implicit val writer: String => Option[Writeable[LocationsSearchGetResponses200]]) extends getlocationsSearchType[LocationsSearchGetResponses200] { val statusCode = 200 }
+    sealed trait GetlocationsSearchType[T] extends ResultWrapper[T]
+    case class GetlocationsSearch200(result: LocationsSearchGetResponses200)(implicit val writer: String => Option[Writeable[LocationsSearchGetResponses200]]) extends GetlocationsSearchType[LocationsSearchGetResponses200] { val statusCode = 200 }
     
 
     private type getlocationsSearchActionRequestType       = (MediaId, MediaId, MediaId, LocationLatitude, MediaId, LocationLatitude)
-    private type getlocationsSearchActionType[T]            = getlocationsSearchActionRequestType => getlocationsSearchType[T]
+    private type getlocationsSearchActionType[T]            = getlocationsSearchActionRequestType => GetlocationsSearchType[T] forSome { type T }
 
 
     val getlocationsSearchActionConstructor  = new getlocationsSearchSecureAction("basic", "comments", "relationships", "likes")
@@ -759,12 +767,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getusersSelfRequested_byType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersSelfRequested_by200(result: UsersSelfRequested_byGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfRequested_byGetResponses200]]) extends getusersSelfRequested_byType[UsersSelfRequested_byGetResponses200] { val statusCode = 200 }
+    sealed trait GetusersSelfRequested_byType[T] extends ResultWrapper[T]
+    case class GetusersSelfRequested_by200(result: UsersSelfRequested_byGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfRequested_byGetResponses200]]) extends GetusersSelfRequested_byType[UsersSelfRequested_byGetResponses200] { val statusCode = 200 }
     
 
     private type getusersSelfRequested_byActionRequestType       = (Unit)
-    private type getusersSelfRequested_byActionType[T]            = getusersSelfRequested_byActionRequestType => getusersSelfRequested_byType[T]
+    private type getusersSelfRequested_byActionType[T]            = getusersSelfRequested_byActionRequestType => GetusersSelfRequested_byType[T] forSome { type T }
 
 
     val getusersSelfRequested_byActionConstructor  = new getusersSelfRequested_bySecureAction("basic", "comments", "relationships", "likes")
@@ -787,12 +795,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getmediaByMedia_idType[ResultT] extends ResultWrapper[ResultT]
-    case class getmediaByMedia_id200(result: Media)(implicit val writer: String => Option[Writeable[Media]]) extends getmediaByMedia_idType[Media] { val statusCode = 200 }
+    sealed trait GetmediaByMedia_idType[T] extends ResultWrapper[T]
+    case class GetmediaByMedia_id200(result: Media)(implicit val writer: String => Option[Writeable[Media]]) extends GetmediaByMedia_idType[Media] { val statusCode = 200 }
     
 
     private type getmediaByMedia_idActionRequestType       = (BigInt)
-    private type getmediaByMedia_idActionType[T]            = getmediaByMedia_idActionRequestType => getmediaByMedia_idType[T]
+    private type getmediaByMedia_idActionType[T]            = getmediaByMedia_idActionRequestType => GetmediaByMedia_idType[T] forSome { type T }
 
 
     val getmediaByMedia_idActionConstructor  = new getmediaByMedia_idSecureAction("basic", "comments", "relationships", "likes")
@@ -821,12 +829,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getlocationsByLocation_idMediaRecentType[ResultT] extends ResultWrapper[ResultT]
-    case class getlocationsByLocation_idMediaRecent200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends getlocationsByLocation_idMediaRecentType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
+    sealed trait GetlocationsByLocation_idMediaRecentType[T] extends ResultWrapper[T]
+    case class GetlocationsByLocation_idMediaRecent200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends GetlocationsByLocation_idMediaRecentType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
     
 
     private type getlocationsByLocation_idMediaRecentActionRequestType       = (BigInt, MediaId, MediaId, MediaFilter, MediaFilter)
-    private type getlocationsByLocation_idMediaRecentActionType[T]            = getlocationsByLocation_idMediaRecentActionRequestType => getlocationsByLocation_idMediaRecentType[T]
+    private type getlocationsByLocation_idMediaRecentActionType[T]            = getlocationsByLocation_idMediaRecentActionRequestType => GetlocationsByLocation_idMediaRecentType[T] forSome { type T }
 
 
     val getlocationsByLocation_idMediaRecentActionConstructor  = new getlocationsByLocation_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
@@ -855,12 +863,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getusersByUser_idMediaRecentType[ResultT] extends ResultWrapper[ResultT]
-    case class getusersByUser_idMediaRecent200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends getusersByUser_idMediaRecentType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
+    sealed trait GetusersByUser_idMediaRecentType[T] extends ResultWrapper[T]
+    case class GetusersByUser_idMediaRecent200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends GetusersByUser_idMediaRecentType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
     
 
     private type getusersByUser_idMediaRecentActionRequestType       = (BigDecimal, MediaId, MediaFilter, MediaId, MediaFilter, MediaId)
-    private type getusersByUser_idMediaRecentActionType[T]            = getusersByUser_idMediaRecentActionRequestType => getusersByUser_idMediaRecentType[T]
+    private type getusersByUser_idMediaRecentActionType[T]            = getusersByUser_idMediaRecentActionRequestType => GetusersByUser_idMediaRecentType[T] forSome { type T }
 
 
     val getusersByUser_idMediaRecentActionConstructor  = new getusersByUser_idMediaRecentSecureAction("basic", "comments", "relationships", "likes")
@@ -889,12 +897,12 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    sealed trait getmediaPopularType[ResultT] extends ResultWrapper[ResultT]
-    case class getmediaPopular200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends getmediaPopularType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
+    sealed trait GetmediaPopularType[T] extends ResultWrapper[T]
+    case class GetmediaPopular200(result: UsersSelfFeedGetResponses200)(implicit val writer: String => Option[Writeable[UsersSelfFeedGetResponses200]]) extends GetmediaPopularType[UsersSelfFeedGetResponses200] { val statusCode = 200 }
     
 
     private type getmediaPopularActionRequestType       = (Unit)
-    private type getmediaPopularActionType[T]            = getmediaPopularActionRequestType => getmediaPopularType[T]
+    private type getmediaPopularActionType[T]            = getmediaPopularActionRequestType => GetmediaPopularType[T] forSome { type T }
 
 
     val getmediaPopularActionConstructor  = new getmediaPopularSecureAction("basic", "comments", "relationships", "likes")
@@ -917,6 +925,6 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
         Results.NotAcceptable
       }
     }
-    case object EmptyReturn extends ResultWrapper[Results.EmptyContent]                                                                                { val statusCode = 204; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
-    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with getmediaByMedia_idLikesType[Results.EmptyContent] with postmediaByMedia_idLikesType[Results.EmptyContent] with deletemediaByMedia_idLikesType[Results.EmptyContent] with getusersByUser_idFollowsType[Results.EmptyContent] with getlocationsByLocation_idType[Results.EmptyContent] with getusersSearchType[Results.EmptyContent] with getusersSelfMediaLikedType[Results.EmptyContent] with gettagsByTag_nameType[Results.EmptyContent] with gettagsSearchType[Results.EmptyContent] with getusersByUser_idFollowed_byType[Results.EmptyContent] with getmediaByMedia_idCommentsType[Results.EmptyContent] with postmediaByMedia_idCommentsType[Results.EmptyContent] with deletemediaByMedia_idCommentsType[Results.EmptyContent] with gettagsByTag_nameMediaRecentType[Results.EmptyContent] with postusersByUser_idRelationshipType[Results.EmptyContent] with getusersSelfFeedType[Results.EmptyContent] with getusersByUser_idType[Results.EmptyContent] with getmediaSearchType[Results.EmptyContent] with getgeographiesByGeo_idMediaRecentType[Results.EmptyContent] with getmediaByShortcodeType[Results.EmptyContent] with getlocationsSearchType[Results.EmptyContent] with getusersSelfRequested_byType[Results.EmptyContent] with getmediaByMedia_idType[Results.EmptyContent] with getlocationsByLocation_idMediaRecentType[Results.EmptyContent] with getusersByUser_idMediaRecentType[Results.EmptyContent] with getmediaPopularType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
+    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetmediaByMedia_idLikesType[Results.EmptyContent] with PostmediaByMedia_idLikesType[Results.EmptyContent] with DeletemediaByMedia_idLikesType[Results.EmptyContent] with GetusersByUser_idFollowsType[Results.EmptyContent] with GetlocationsByLocation_idType[Results.EmptyContent] with GetusersSearchType[Results.EmptyContent] with GetusersSelfMediaLikedType[Results.EmptyContent] with GettagsByTag_nameType[Results.EmptyContent] with GettagsSearchType[Results.EmptyContent] with GetusersByUser_idFollowed_byType[Results.EmptyContent] with GetmediaByMedia_idCommentsType[Results.EmptyContent] with PostmediaByMedia_idCommentsType[Results.EmptyContent] with DeletemediaByMedia_idCommentsType[Results.EmptyContent] with GettagsByTag_nameMediaRecentType[Results.EmptyContent] with PostusersByUser_idRelationshipType[Results.EmptyContent] with GetusersSelfFeedType[Results.EmptyContent] with GetusersByUser_idType[Results.EmptyContent] with GetmediaSearchType[Results.EmptyContent] with GetgeographiesByGeo_idMediaRecentType[Results.EmptyContent] with GetmediaByShortcodeType[Results.EmptyContent] with GetlocationsSearchType[Results.EmptyContent] with GetusersSelfRequested_byType[Results.EmptyContent] with GetmediaByMedia_idType[Results.EmptyContent] with GetlocationsByLocation_idMediaRecentType[Results.EmptyContent] with GetusersByUser_idMediaRecentType[Results.EmptyContent] with GetmediaPopularType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetmediaByMedia_idLikesType[Results.EmptyContent] with PostmediaByMedia_idLikesType[Results.EmptyContent] with DeletemediaByMedia_idLikesType[Results.EmptyContent] with GetusersByUser_idFollowsType[Results.EmptyContent] with GetlocationsByLocation_idType[Results.EmptyContent] with GetusersSearchType[Results.EmptyContent] with GetusersSelfMediaLikedType[Results.EmptyContent] with GettagsByTag_nameType[Results.EmptyContent] with GettagsSearchType[Results.EmptyContent] with GetusersByUser_idFollowed_byType[Results.EmptyContent] with GetmediaByMedia_idCommentsType[Results.EmptyContent] with PostmediaByMedia_idCommentsType[Results.EmptyContent] with DeletemediaByMedia_idCommentsType[Results.EmptyContent] with GettagsByTag_nameMediaRecentType[Results.EmptyContent] with PostusersByUser_idRelationshipType[Results.EmptyContent] with GetusersSelfFeedType[Results.EmptyContent] with GetusersByUser_idType[Results.EmptyContent] with GetmediaSearchType[Results.EmptyContent] with GetgeographiesByGeo_idMediaRecentType[Results.EmptyContent] with GetmediaByShortcodeType[Results.EmptyContent] with GetlocationsSearchType[Results.EmptyContent] with GetusersSelfRequested_byType[Results.EmptyContent] with GetmediaByMedia_idType[Results.EmptyContent] with GetlocationsByLocation_idMediaRecentType[Results.EmptyContent] with GetusersByUser_idMediaRecentType[Results.EmptyContent] with GetmediaPopularType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }
