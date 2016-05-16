@@ -2,13 +2,13 @@ package de.zalando.apifirst
 
 import java.net.URL
 
+import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.apifirst.Hypermedia.{State, StateTransitionsTable}
-import de.zalando.apifirst.naming.{Path, Reference, TypeName}
 import de.zalando.apifirst.ParameterPlace.ParameterPlace
-import de.zalando.apifirst.naming.{ Path, Reference, TypeName }
+import de.zalando.apifirst.naming.{Path, Reference, TypeName}
 
-import scala.language.{ implicitConversions, postfixOps }
+import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
 
 sealed trait Expr
@@ -130,11 +130,11 @@ object Domain {
   abstract class Type(val name: TypeName, val meta: TypeMeta, denotation: Map[String, Any] = Map.empty) extends Expr {
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
-    def toShortString(pad: String) = getClass.getSimpleName
+    def toShortString(pad: String): String = getClass.getSimpleName
   }
   
   case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None)) {
-    override def toShortString(pad: String) = s"${super.toShortString(pad)}($name)"
+    override def toShortString(pad: String): String = s"${super.toShortString(pad)}($name)"
   }
   
   abstract class ProvidedType(name: String, override val meta: TypeMeta)
@@ -200,8 +200,9 @@ object Domain {
                            val descendants: Seq[Type],
                            val root: Option[Reference])
     extends Type(name, meta) {
-    override def toShortString(pad: String) = s"${getClass.getSimpleName}(${descendants.map(_.toShortString(pad+"\t")).mkString(s"\n$pad",s"\n$pad","")})"
-    override def nestedTypes = descendants flatMap ( _.nestedTypes )
+    override def toShortString(pad: String): String =
+      s"${getClass.getSimpleName}(${descendants.map(_.toShortString(pad + "\t")).mkString(s"\n$pad",s"\n$pad","")})"
+    override def nestedTypes: Seq[Type] = descendants flatMap ( _.nestedTypes )
     override def imports: Set[String] = descendants.flatMap(_.imports).toSet
     def withTypes(t: Seq[Type]): Composite
   }
@@ -211,14 +212,14 @@ object Domain {
                    override val descendants: Seq[Type],
                    override val root: Option[Reference] = None)
     extends Composite(name, meta, descendants, root) {
-    def withTypes(t: Seq[Type]) = this.copy(descendants = t)
+    def withTypes(t: Seq[Type]): AllOf = this.copy(descendants = t)
   }
 
   case class OneOf(override val name: TypeName,
                    override val meta: TypeMeta,
                    override val descendants: Seq[Type])
     extends Composite(name, meta, descendants, None) {
-    def withTypes(t: Seq[Type]) = this.copy(descendants = t)
+    def withTypes(t: Seq[Type]): OneOf = this.copy(descendants = t)
   }
 
   /**
@@ -227,55 +228,64 @@ object Domain {
   abstract class Container(name: TypeName, val tpe: Type, override val meta: TypeMeta, override val imports: Set[String])
     extends Type(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
-    override def nestedTypes = Seq(tpe)
-    override def toShortString(pad: String) = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
+    override def nestedTypes: Seq[Type] = Seq(tpe)
+    override def toShortString(pad: String): String = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
     def withType(t: Type): Container
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: String)
     extends Container(tpe.name / "ArrayWrapper", tpe, meta, Set("de.zalando.play.controllers.ArrayWrapper")) {
-    def withType(t: Type) = this.copy(tpe = t)
+    def withType(t: Type): Arr = this.copy(tpe = t)
   }
 
   case class ArrResult(override val tpe: Type, override val meta: TypeMeta)
     extends Container(tpe.name / "Seq", tpe, meta, Set.empty[String]) {
-    def withType(t: Type) = this.copy(tpe = t)
+    def withType(t: Type): ArrResult = this.copy(tpe = t)
   }
 
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
     extends Container(tpe.name / "Option", tpe, meta, Set.empty[String]) {
-    def withType(t: Type) = this.copy(tpe = t)
+    def withType(t: Type): Opt = this.copy(tpe = t)
   }
 
   case class CatchAll(override val tpe: Type, override val meta: TypeMeta)
     extends Container(tpe.name / "Map", tpe, meta, Set("scala.collection.immutable.Map")) {
-    def withType(t: Type) = this.copy(tpe = t)
-    override def nestedTypes = Str(None, None) +: super.nestedTypes
+    def withType(t: Type): CatchAll = this.copy(tpe = t)
+    override def nestedTypes: Seq[Type] = Str(None, None) +: super.nestedTypes
   }
 
   case class Field(name: TypeName, tpe: Type) {
-    def toString(pad: String) = s"""\n${pad}Field($name, ${tpe.toShortString(pad+"\t")})"""
-
-    def imports = tpe match {
+    def toString(pad: String): String = s"""\n${pad}Field($name, ${tpe.toShortString(pad + "\t")})"""
+    def imports: Set[String] = tpe match {
       case c: Container => c.allImports
       case o => o.imports
     }
 
-    def nestedTypes = tpe.nestedTypes :+ tpe
+    def nestedTypes: Seq[Type] = tpe.nestedTypes :+ tpe
   }
 
   case class TypeDef(override val name: TypeName,
                      fields: Seq[Field],
                      override val meta: TypeMeta) extends Type(name, meta) {
-    override def toString = s"""\n\tTypeDef($name, \n\t\tSeq(${fields.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), $meta)\n"""
-
-    override def toShortString(pad: String) = s"""TypeDef($name, Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
-
-    override def nestedTypes = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
-
-    override def imports = (fields flatMap { _.imports }).toSet
+    override def toString: String = s"""\n\tTypeDef($name, \n\t\tSeq(${fields.mkString("\n\t\t\t", ",\n\t\t\t", "")}\n\t\t), $meta)\n"""
+    override def toShortString(pad: String): String = s"""TypeDef($name, Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
+    override def nestedTypes: Seq[Type] = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
+    override def imports: Set[String] = (fields flatMap { _.imports }).toSet
   }
 
+  abstract class EnumType(override val name: Reference, override val tpe: Type, override val meta: TypeMeta)
+    extends Container(tpe.name / "Enum", tpe, meta, Set.empty[String])
+
+  case class EnumTrait(override val tpe: Type, override val meta: TypeMeta, leaves: Set[EnumObject])
+    extends EnumType(tpe.name / "Enum", tpe, meta) {
+      override def nestedTypes: Seq[Type] = tpe +: leaves.toSeq
+      override def withType(t: Type): EnumTrait = this.copy(tpe = t)
+  }
+
+  case class EnumObject(override val tpe: Type, fieldValue: String, override val meta: TypeMeta)
+    extends EnumType(tpe.name / fieldValue, tpe, meta) {
+    override def withType(t: Type): EnumObject = this.copy(tpe = t)
+  }
 }
 
 case object ParameterPlace extends Enumeration {
@@ -360,7 +370,7 @@ object Application {
     resultTypes:      TypesResponseInfo,
     targetStates:     StateResponseInfo,
     security: Set[Security.Constraint] = Set.empty) {
-    def asReference = (path.prepend("paths") / verb.toString.toLowerCase).ref
+    def asReference: Reference = (path.prepend("paths") / verb.toString.toLowerCase).ref
   }
 
   type ParameterLookupTable = Map[ParameterRef, Parameter]
@@ -379,7 +389,7 @@ object Application {
        securityDefinitionsTable: SecurityDefinitionsTable) {
     def findParameter(ref: ParameterRef): Parameter = params(ref)
     def findParameter(name: Reference): Option[Parameter] = params.find(_._1.name == name).map(_._2)
-    def findType(ref: Reference) = typeDefs(ref)
+    def findType(ref: Reference): Type = typeDefs(ref)
   }
 
 }

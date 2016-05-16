@@ -4,7 +4,7 @@
 			Field(⌿definitions⌿Pet⌿name, Str), 
 			Field(⌿definitions⌿Pet⌿petType, Str)))
 		TypeDef(⌿definitions⌿Cat, Seq(
-			Field(⌿definitions⌿Cat⌿huntingSkill, Str))))
+			Field(⌿definitions⌿Cat⌿huntingSkill, EnumTrait(Str)))))
 ⌿definitions⌿Dog ->
 	AllOf(
 		TypeDef(⌿definitions⌿Pet, Seq(
@@ -25,7 +25,7 @@
 				Field(⌿definitions⌿Pet⌿name, Str), 
 				Field(⌿definitions⌿Pet⌿petType, Str)))
 			TypeDef(⌿definitions⌿CatNDog, Seq(
-				Field(⌿definitions⌿CatNDog⌿huntingSkill, Str)))))
+				Field(⌿definitions⌿CatNDog⌿huntingSkill, EnumTrait(Str))))))
 ⌿definitions⌿Pet ->
 	TypeDef(⌿definitions⌿Pet, Seq(
 		Field(⌿definitions⌿Pet⌿name, Str), 

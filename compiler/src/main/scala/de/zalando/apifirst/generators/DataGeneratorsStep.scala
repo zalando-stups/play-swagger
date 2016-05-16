@@ -24,6 +24,10 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
     generatorProps(typeDef._1, typeDef._2)(table)
 
   private def generatorProps(ref: Reference, v: Type)(table: DenotationTable): Denotation = v match {
+    case t: EnumTrait =>
+      Map("test_data_aliases" -> enumGenerator(ref, t)(table))
+    case t: EnumObject =>
+      empty
     case t: Container =>
       Map("test_data_aliases" -> containerGenerator(ref, t)(table))
     case t: PrimitiveType =>
@@ -37,6 +41,14 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
   }
 
   private def containerGenerator(k: Reference, v: Type)(table: DenotationTable): Map[String, Any] = {
+    Map(
+      GENERATOR_NAME -> generatorNameForType(v, table),
+      "creator_method" -> prepend("create", generator(k, table)),
+      "generator" -> generator(k, table)
+    )
+  }
+
+  private def enumGenerator(k: Reference, v: Type)(table: DenotationTable): Map[String, Any] = {
     Map(
       GENERATOR_NAME -> generatorNameForType(v, table),
       "creator_method" -> prepend("create", generator(k, table)),
@@ -73,6 +85,9 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
       case Opt(tpe, _) => s"Gen.option($innerGenerator)"
       case Arr(tpe, _, format) => s"""_genList($innerGenerator, "$format")"""
       case ArrResult(tpe, _) => s"Gen.containerOf[List,$className]($innerGenerator)"
+      case EnumTrait(tpe, _, leaves) =>
+        val choice = leaves.map { l => memberNameDenotation(t, l.name) }.mkString(", ")
+        s"""Gen.oneOf(Seq($choice))"""
       case c@CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
     }
   }

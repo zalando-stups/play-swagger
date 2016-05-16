@@ -57,13 +57,6 @@ class MediaFilterOptConstraints(override val instance: String) extends Validatio
 class MediaFilterOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new MediaFilterOptConstraints(instance))
 }
-class UsersUser_idRelationshipPostActionOptConstraints(override val instance: String) extends ValidationBase[String] {
-    override def constraints: Seq[Constraint[String]] =
-        Seq(enum("approve,unblock,block,unfollow,follow"))
-}
-class UsersUser_idRelationshipPostActionOptValidator(instance: String) extends RecursiveValidator {
-    override val validators = Seq(new UsersUser_idRelationshipPostActionOptConstraints(instance))
-}
 class MediaMedia_idLikesGetMedia_idConstraints(override val instance: BigInt) extends ValidationBase[BigInt] {
     override def constraints: Seq[Constraint[BigInt]] =
         Seq()
@@ -186,9 +179,6 @@ class LocationLatitudeValidator(instance: LocationLatitude) extends RecursiveVal
 }
 class MediaFilterValidator(instance: MediaFilter) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new MediaFilterOptValidator(_) }
-}
-class UsersUser_idRelationshipPostActionValidator(instance: UsersUser_idRelationshipPostAction) extends RecursiveValidator {
-    override val validators = instance.toSeq.map { new UsersUser_idRelationshipPostActionOptValidator(_) }
 }
 // ----- array delegating validators -----
 // ----- catch all simple validators -----

@@ -26,6 +26,17 @@ package object {{main_package_suffix}} {
     case class {{class.name}}({{for field in class.fields}}{{field.name}}: {{field.type_name}}{{if field.isNotLast}}, {{/if}}{{/for}}) {{for trait in class.trait}}extends I{{trait.name}}{{/for}}
 {{/for}}
 
+{{for enum in enums}}
+    sealed trait {{enum.name}} { def value: {{enum.type_name}} }
+    {{for leaf in enum.leaves}}
+    case object {{leaf.name}} extends {{enum.name}} { val value = {{leaf.value}} }
+    {{/for}}
+    implicit def stringTo{{enum.name}}(in: String): {{enum.name}} = in match {
+    {{for leaf in enum.leaves}}
+        case {{leaf.value}} => {{leaf.name}}
+    {{/for}}
+    }
+{{/for}}
 {{for binding in model_bindings}}
     {{binding.full_name}}
 {{/for}}

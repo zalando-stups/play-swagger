@@ -20,6 +20,8 @@ object Generators extends JsValueGenerators {
     def createErrorSourceGenerator = _generate(ErrorSourceGenerator)
     def createModelSchemaArticleModelAttributesOptGenerator = _generate(ModelSchemaArticleModelAttributesOptGenerator)
     def createModelSchemaRootLinksGenerator = _generate(ModelSchemaRootLinksGenerator)
+    def createModelSchemaAgeGroupsArrGenerator = _generate(ModelSchemaAgeGroupsArrGenerator)
+    def createModelSchemaSilhouetteIdGenerator = _generate(ModelSchemaSilhouetteIdGenerator)
     def createModelSchemaArticleModelAttributesGenerator = _generate(ModelSchemaArticleModelAttributesGenerator)
     def createModelSchemaLengthRegisterGenerator = _generate(ModelSchemaLengthRegisterGenerator)
     def createErrorsErrorsGenerator = _generate(ErrorsErrorsGenerator)
@@ -37,10 +39,12 @@ object Generators extends JsValueGenerators {
     def ErrorSourceGenerator = Gen.option(ErrorSourceNameClashGenerator)
     def ModelSchemaArticleModelAttributesOptGenerator = _genList(arbitrary[String], "csv")
     def ModelSchemaRootLinksGenerator = Gen.option(LinksGenerator)
+    def ModelSchemaAgeGroupsArrGenerator = Gen.oneOf(Seq(Baby, Kid, Teen, Adult))
+    def ModelSchemaSilhouetteIdGenerator = Gen.oneOf(Seq(Kitchen, Bikini_top, Toys, Nightwear_combination, Bra, One_piece_underwear, Ball, Cleansing, Skincare, Jewellery, Headgear, Bustier, Beach_trouser, Bedroom, Lounge, Nail, Undershirt, Combination_clothing, Gloves, Fragrance, Other_equipment, Fitness, Bathroom, One_piece_nightwear, Sleeping_bag, Coat, Case, Sandals, Ankle_boots, Stocking, Shirt, Backpack, Face_cosmetic, Travel_equipment, Hair, Sneaker, Beauty_equipment, Bikini_combination, Backless_slipper, Beach_accessoires, Scarf, First_shoe, Voucher, Wallet, Peeling, Glasses, Boards, Sun, Shave, Low_shoe, Underwear_combination, Nightdress, Suit_accessoires, Watch, Headphones, Skates, Boots, Jacket, Etui, Night_shirt, Other_accessoires, Vest, Bag, System, Racket, Trouser, Lip_cosmetic, Keychain, Belt, Ballerina_shoe, One_piece_suit, Night_trouser, Skirt, Tights, Beach_shirt, Dress, Bicycle, Protector, Eye_cosmetic, Bathrobe, Bicycle_equipment, Pullover, One_piece_beachwear, Underpant, Living, Cardigan, Corsage, Shoe_accessoires, Umbrella, Pumps, Tent, T_shirt_top, Ski))
     def ModelSchemaArticleModelAttributesGenerator = Gen.option(ModelSchemaArticleModelAttributesOptGenerator)
     def ModelSchemaLengthRegisterGenerator = Gen.option(arbitrary[String])
     def ErrorsErrorsGenerator = Gen.option(ErrorsErrorsOptGenerator)
-    def ModelSchemaAgeGroupsGenerator = _genList(arbitrary[String], "csv")
+    def ModelSchemaAgeGroupsGenerator = _genList(ModelSchemaAgeGroupsArrGenerator, "csv")
     def ModelSchemaRootMetaGenerator = Gen.option(MetaGenerator)
     
 
@@ -73,14 +77,14 @@ object Generators extends JsValueGenerators {
         sizeRegister <- arbitrary[String]
         brand <- arbitrary[String]
         partnerArticleModelId <- arbitrary[BigInt]
-        silhouetteId <- arbitrary[String]
         description <- MetaCopyrightGenerator
         ageGroups <- ModelSchemaAgeGroupsGenerator
         keywords <- ModelSchemaKeywordsGenerator
         lengthRegister <- ModelSchemaLengthRegisterGenerator
+        silhouetteId <- ModelSchemaSilhouetteIdGenerator
         specialDescriptions <- ModelSchemaSpecialDescriptionsGenerator
         articleModelAttributes <- ModelSchemaArticleModelAttributesGenerator
-    } yield ModelSchema(name, sizeRegister, brand, partnerArticleModelId, silhouetteId, description, ageGroups, keywords, lengthRegister, specialDescriptions, articleModelAttributes)
+    } yield ModelSchema(name, sizeRegister, brand, partnerArticleModelId, description, ageGroups, keywords, lengthRegister, silhouetteId, specialDescriptions, articleModelAttributes)
     def ErrorGenerator = for {
         source <- ErrorSourceGenerator
         code <- MetaCopyrightGenerator
