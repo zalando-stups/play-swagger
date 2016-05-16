@@ -7,7 +7,13 @@ import Arbitrary._
 
 object Generators extends JsValueGenerators {
     
+
     
+    def createCatHuntingSkillGenerator = _generate(CatHuntingSkillGenerator)
+    
+
+    
+    def CatHuntingSkillGenerator = Gen.oneOf(Seq(Clueless, Lazy, Adventurous, Aggressive))
     
 
     def createCatGenerator = _generate(CatGenerator)
@@ -20,7 +26,7 @@ object Generators extends JsValueGenerators {
     def CatGenerator = for {
         name <- arbitrary[String]
         petType <- arbitrary[String]
-        huntingSkill <- arbitrary[String]
+        huntingSkill <- CatHuntingSkillGenerator
     } yield Cat(name, petType, huntingSkill)
     def DogGenerator = for {
         name <- arbitrary[String]
@@ -31,7 +37,7 @@ object Generators extends JsValueGenerators {
         name <- arbitrary[String]
         petType <- arbitrary[String]
         packSize <- arbitrary[Int]
-        huntingSkill <- arbitrary[String]
+        huntingSkill <- CatHuntingSkillGenerator
     } yield CatNDog(name, petType, packSize, huntingSkill)
     def PetGenerator = for {
         name <- arbitrary[String]

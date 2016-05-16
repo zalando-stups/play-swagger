@@ -36,26 +36,12 @@ class ModelSchemaPartnerArticleModelIdConstraints(override val instance: BigInt)
 class ModelSchemaPartnerArticleModelIdValidator(instance: BigInt) extends RecursiveValidator {
     override val validators = Seq(new ModelSchemaPartnerArticleModelIdConstraints(instance))
 }
-class ModelSchemaSilhouetteIdConstraints(override val instance: String) extends ValidationBase[String] {
-    override def constraints: Seq[Constraint[String]] =
-        Seq(enum("ankle_boots,nightdress,low_shoe,ballerina_shoe,voucher,belt,skates,eye_cosmetic,dress,sleeping_bag,system,other_accessoires,bag,etui,bikini_top,hair,undershirt,bathroom,bedroom,one_piece_nightwear,combination_clothing,sun,t_shirt_top,watch,night_shirt,pumps,stocking,boots,beach_trouser,tent,lip_cosmetic,underpant,skincare,backpack,pullover,lounge,sandals,suit_accessoires,coat,other_equipment,beach_shirt,bicycle,ski,cardigan,protector,beach_accessoires,jacket,one_piece_beachwear,headgear,shoe_accessoires,sneaker,headphones,kitchen,bicycle_equipment,ball,nightwear_combination,fitness,tights,one_piece_suit,vest,bustier,first_shoe,one_piece_underwear,bikini_combination,face_cosmetic,fragrance,glasses,shirt,trouser,racket,travel_equipment,case,backless_slipper,umbrella,underwear_combination,jewellery,shave,skirt,bathrobe,wallet,cleansing,night_trouser,corsage,peeling,beauty_equipment,nail,toys,bra,gloves,living,keychain,scarf,boards"))
-}
-class ModelSchemaSilhouetteIdValidator(instance: String) extends RecursiveValidator {
-    override val validators = Seq(new ModelSchemaSilhouetteIdConstraints(instance))
-}
 class MetaCopyrightOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
         Seq()
 }
 class MetaCopyrightOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new MetaCopyrightOptConstraints(instance))
-}
-class ModelSchemaAgeGroupsArrConstraints(override val instance: String) extends ValidationBase[String] {
-    override def constraints: Seq[Constraint[String]] =
-        Seq(enum("baby,kid,teen,adult"))
-}
-class ModelSchemaAgeGroupsArrValidator(instance: String) extends RecursiveValidator {
-    override val validators = Seq(new ModelSchemaAgeGroupsArrConstraints(instance))
 }
 class ModelSchemaKeywordsOptConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -92,9 +78,7 @@ class ModelSchemaRootDataOptValidator(instance: ModelSchemaRootDataOpt) extends 
         new ModelSchemaSizeRegisterValidator(instance.sizeRegister), 
         new ModelSchemaBrandValidator(instance.brand), 
         new ModelSchemaPartnerArticleModelIdValidator(instance.partnerArticleModelId), 
-        new ModelSchemaSilhouetteIdValidator(instance.silhouetteId), 
         new MetaCopyrightValidator(instance.description), 
-        new ModelSchemaAgeGroupsValidator(instance.ageGroups), 
         new ModelSchemaKeywordsValidator(instance.keywords), 
         new ModelSchemaLengthRegisterValidator(instance.lengthRegister), 
         new ModelSchemaSpecialDescriptionsValidator(instance.specialDescriptions), 
@@ -135,13 +119,6 @@ class ModelSchemaRootLinksValidator(instance: ModelSchemaRootLinks) extends Recu
     override val validators = instance.toSeq.map { new ModelSchemaRootLinksOptValidator(_) }
 }
 // ----- array delegating validators -----
-class ModelSchemaAgeGroupsConstraints(override val instance: ModelSchemaAgeGroups) extends ValidationBase[ModelSchemaAgeGroups] {
-    override def constraints: Seq[Constraint[ModelSchemaAgeGroups]] =
-        Seq(maxItems(4))
-}
-class ModelSchemaAgeGroupsValidator(instance: ModelSchemaAgeGroups) extends RecursiveValidator {
-    override val validators = new ModelSchemaAgeGroupsConstraints(instance) +: instance.map { new ModelSchemaAgeGroupsArrValidator(_)}
-}
 class ModelSchemaSpecialDescriptionsOptConstraints(override val instance: ModelSchemaSpecialDescriptionsOpt) extends ValidationBase[ModelSchemaSpecialDescriptionsOpt] {
     override def constraints: Seq[Constraint[ModelSchemaSpecialDescriptionsOpt]] =
         Seq()

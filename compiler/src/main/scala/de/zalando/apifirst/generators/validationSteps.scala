@@ -88,41 +88,51 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
     * - CatchAll need to validate {MaxProperties} and {MinProperties}
     * - TypeDefs does not need to constraint anything and fields recursive
     */
-  def constraints0(types: (Reference, Type))(implicit table: DenotationTable): Validations = {
+  def constraints0(types: (Reference, Type))(implicit table: DenotationTable): Validations =
     types match {
       case (r: Reference, t: PrimitiveType) =>
         Seq("primitive_validations" -> typeConstraints(r, t))
       case (r: Reference, t: Arr) =>
-        val delegate = delegateName(r, t, "Arr")
-        val result = ("array_validations" -> optValidations(r, t, delegate)) +: constraints0(delegate -> t.tpe)
-        result
+        tpeConstraints(r, t, "Arr", "array")
       case (r: Reference, t: ArrResult) =>
-        val delegate = delegateName(r, t, "Arr")
-        val result = ("array_validations" -> optValidations(r, t, delegate)) +: constraints0(delegate -> t.tpe)
-        result
+        tpeConstraints(r, t, "Arr", "array")
       case (r: Reference, t: CatchAll) =>
-        val result = ("catch_validations" -> typeConstraints(r, t)) +: constraints0((r / "CatchAll") -> t.tpe)
-        result
+        tpeConstraints(r, t, "CatchAll", "catch")
       case (r: Reference, t: Opt) =>
-        val delegate = delegateName(r, t, "Opt")
-        val result = ("opt_validations" -> optValidations(r, t, delegate)) +: constraints0(delegate -> t.tpe)
-        result
+        tpeConstraints(r, t, "Opt", "opt")
+      case (r: Reference, t: EnumType) =>
+        Nil
       case (r, t: TypeDef) =>
-        val result = ("typedef_validations" -> typeDefValidations(r, t)) +: t.fields.flatMap { f => constraints0(f.name -> f.tpe) }
-        result
+        typeDefConstraints(r, t)
       case (r, TypeRef(ref)) if ! app.findType(ref).isInstanceOf[TypeRef] =>
-        val result = constraints0(ref -> app.findType(ref))
-        result
+        constraints0(ref -> app.findType(ref))
       case (r, TypeRef(ref)) =>
         Nil
       case (r, t: Composite) =>
         Nil // TODO FIXME
     }
+
+  private def typeDefConstraints(r: Reference, t: TypeDef)
+                                (implicit table: DenotationTable): Seq[(String, Map[String, Any])] = {
+    val fields = t.fields.flatMap { f => constraints0(f.name -> f.tpe) }
+    val mainType = "typedef_validations" -> typeDefValidations(r, t)
+    mainType +: fields
+  }
+
+  private def tpeConstraints(r: Reference, t: Container, suffix: String, key: String)
+                            (implicit table: DenotationTable): Validations = {
+    val delegate = delegateName(r, t, suffix)
+    val constraints = constraints0(delegate -> t.tpe)
+    if (constraints.nonEmpty)
+      ((key + "_validations") -> optValidations(r, t, delegate)) +: constraints
+    else
+      constraints
   }
 
   private def delegateName(r: Reference, t: Container, suffix: String): Reference = {
     t.tpe match {
       case p: PrimitiveType => r / suffix
+      case t: CatchAll => r / suffix
       case _ => t.tpe.name
     }
   }
@@ -131,11 +141,12 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
     Map(
       "validation_name" -> validator(r, table),
       "type_name" -> typeNameDenotation(table, r),
-      "fields" -> t.fields.map { f =>
-        Map(
-          "field_name" -> escape(f.name.simple),
-          "validation_name" -> validator(fieldName(f), table)
-        )
+      "fields" -> t.fields.collect {
+        case f if constraints0(f.name -> f.tpe).nonEmpty =>
+          Map(
+            "field_name" -> escape(f.name.simple),
+            "validation_name" -> validator(fieldName(f), table)
+          )
       }
     )
 
@@ -161,9 +172,12 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
       case _ => typeName
     }
     val implicits = t match {
-      case f: Flt if f.meta.constraints.exists(_.contains("multipleOf")) => Seq("implicit val floatIntegral = scala.math.Numeric.FloatAsIfIntegral")
-      case f: Dbl if f.meta.constraints.exists(_.contains("multipleOf")) => Seq("implicit val doubleIntegral = scala.math.Numeric.DoubleAsIfIntegral")
-      case _ => Seq.empty[String]
+      case f: Flt if f.meta.constraints.exists(_.contains("multipleOf")) =>
+        Seq("implicit val floatIntegral = scala.math.Numeric.FloatAsIfIntegral")
+      case f: Dbl if f.meta.constraints.exists(_.contains("multipleOf")) =>
+        Seq("implicit val doubleIntegral = scala.math.Numeric.DoubleAsIfIntegral")
+      case _ =>
+        Seq.empty[String]
     }
     Map(
       "restrictions" -> t.meta.constraints.filterNot(_.isEmpty).map { c =>

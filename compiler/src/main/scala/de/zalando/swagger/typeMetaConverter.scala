@@ -29,6 +29,9 @@ object TypeMetaConverter extends ParameterNaming {
   implicit def namedTypesTypeMeta(nb: NamedTypes): TypeMeta =
     TypeMeta(Some(s"Named types: $nb.size"), Nil)
 
+  implicit def enumTypeMeta(enumSize: Int): TypeMeta =
+    TypeMeta(Some(s"Enum type : $enumSize"), Nil)
+
   implicit def parametersListItemMeta(item:ParametersListItem): TypeMeta =
     item match {
       case r @ JsonReference(ref) =>

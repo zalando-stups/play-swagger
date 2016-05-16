@@ -129,6 +129,9 @@ object TypeFlattener extends TypeAnalyzer {
       val newFields = t.fields.filterNot(complexField) ++ changedFields
       val newTypeDef = t.copy(fields = newFields)
       (ref -> newTypeDef) +: extractedTypes
+    case t: EnumTrait =>
+      val leafTypes = t.leaves.map { l => ref / l.fieldValue -> l }
+      (ref -> t) +: leafTypes.toSeq
     case c: Container if isComplexType(c.tpe) =>
       val newRef = ref / c.getClass.getSimpleName
       Seq(ref -> c.withType(TypeRef(newRef)), newRef -> c.tpe)
@@ -209,6 +212,10 @@ trait TypeAnalyzer {
       one.meta.constraints.intersect(two.meta.constraints).size == one.meta.constraints.size
 
   def isSameTypeDef(one: Type)(two: Type): Boolean = (one, two) match {
+    case (c1: EnumObject, c2: EnumObject) if c1.tpe == c2.tpe =>
+      c1.fieldValue == c2.fieldValue
+    case (c1: EnumTrait, c2: EnumTrait) if c1.tpe == c2.tpe =>
+      c1.leaves.map(_.fieldValue) == c2.leaves.map(_.fieldValue)
     case (c1: Container, c2: Container) if c1.getClass == c2.getClass =>
       isSameTypeDef(c1.tpe)(c2.tpe)
     case (c1: Composite, c2: Composite) if c1.getClass == c2.getClass && c1.descendants.size == c2.descendants.size =>

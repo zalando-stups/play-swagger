@@ -54,5 +54,5 @@ class TypeFlattenerIntegrationTest extends FunSpec with MustMatchers with Expect
     }
   }
 
-  def clean(str: String) = str.split("\n").map(_.trim).mkString("\n")
+  def clean(str: String): String = str.split("\n").map(_.trim).mkString("\n")
 }

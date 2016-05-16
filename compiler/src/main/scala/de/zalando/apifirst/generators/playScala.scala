@@ -175,6 +175,7 @@ class ScalaGenerator(val strictModel: StrictModel) {
       "classes" -> ReShaper.filterByType("classes", denotationTable),
       "aliases" -> ReShaper.filterByType("aliases", denotationTable),
       "traits" -> ReShaper.filterByType("traits", denotationTable),
+      "enums" -> ReShaper.filterByType("enums", denotationTable),
       "test_data_classes" -> ReShaper.filterByType("test_data_classes", denotationTable),
       "test_data_aliases" -> ReShaper.filterByType("test_data_aliases", denotationTable),
       "tests" -> ReShaper.filterByType("tests", denotationTable),

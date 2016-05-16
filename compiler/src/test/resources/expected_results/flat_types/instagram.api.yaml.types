@@ -86,7 +86,7 @@
 ⌿paths⌿/locations/{location-id}⌿⌿location-id -> 
 	BInt
 ⌿paths⌿/users/{user-id}/relationship⌿post⌿action -> 
-	Opt(Str)
+	Opt(TypeRef(⌿paths⌿/users/{user-id}/relationship⌿post⌿action⌿Opt))
 ⌿definitions⌿Media⌿tags⌿Opt -> 
 	ArrResult(TypeRef(⌿definitions⌿Tag))
 ⌿definitions⌿User⌿counts⌿Opt -> 
@@ -146,6 +146,8 @@
 	TypeDef(⌿paths⌿/tags/search⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta, TypeRef(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿meta)), 
 		Field(⌿paths⌿/tags/search⌿get⌿responses⌿200⌿data, TypeRef(⌿definitions⌿Media⌿tags))))
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action⌿Opt -> 
+	EnumTrait(Str)
 ⌿paths⌿/users/{user-id}⌿get⌿responses⌿200 -> 
 	TypeDef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200, Seq(
 		Field(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data, TypeRef(⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data))))
@@ -166,14 +168,24 @@
 	Opt(TypeRef(⌿paths⌿/users/self/feed⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/media/{media-id}/likes⌿get⌿responses⌿200⌿data⌿Opt))
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action⌿Opt⌿follow -> 
+	EnumObject(Str)
 ⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/locations/search⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/media/search⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/media/search⌿get⌿responses⌿200⌿data⌿Opt))
 ⌿paths⌿/users/{user-id}⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿definitions⌿User))
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action⌿Opt⌿unblock -> 
+	EnumObject(Str)
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action⌿Opt⌿approve -> 
+	EnumObject(Str)
 ⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data -> 
 	Opt(TypeRef(⌿paths⌿/media/{media-id}/comments⌿get⌿responses⌿200⌿data⌿Opt))
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action⌿Opt⌿unfollow -> 
+	EnumObject(Str)
+⌿paths⌿/users/{user-id}/relationship⌿post⌿action⌿Opt⌿block -> 
+	EnumObject(Str)
 ⌿paths⌿/media/{media-id}⌿get⌿responses⌿200⌿videos⌿standard_resolution -> 
 	Opt(TypeRef(⌿definitions⌿Image))
 ⌿paths⌿/users/self/requested-by⌿get⌿responses⌿200⌿meta⌿Opt -> 

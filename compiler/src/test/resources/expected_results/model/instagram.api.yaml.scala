@@ -18,7 +18,7 @@ package object yaml {
     type MediaTags = Option[MediaTagsOpt]
     type MediaMedia_idLikesGetResponses200Data = Option[MediaMedia_idLikesGetResponses200DataOpt]
     type MediaId = Option[BigInt]
-    type UsersUser_idRelationshipPostAction = Option[String]
+    type UsersUser_idRelationshipPostAction = Option[UsersUser_idRelationshipPostActionOpt]
     type MediaTagsOpt = Seq[Tag]
     type MediaImages = Option[MediaImagesOpt]
     type MediaLikes = Option[MediaLikesOpt]
@@ -74,12 +74,33 @@ package object yaml {
     case class LocationsSearchGetResponses200(data: LocationsSearchGetResponses200Data) 
     case class MediaImagesOpt(low_resolution: MediaMedia_idGetResponses200VideosStandard_resolution, thumbnail: MediaMedia_idGetResponses200VideosStandard_resolution, standard_resolution: MediaMedia_idGetResponses200VideosStandard_resolution) 
 
+    sealed trait UsersUser_idRelationshipPostActionOpt { def value: String }
+    case object Unfollow extends UsersUser_idRelationshipPostActionOpt { val value = "unfollow" }
+    case object Approve extends UsersUser_idRelationshipPostActionOpt { val value = "approve" }
+    case object Block extends UsersUser_idRelationshipPostActionOpt { val value = "block" }
+    case object Unblock extends UsersUser_idRelationshipPostActionOpt { val value = "unblock" }
+    case object Follow extends UsersUser_idRelationshipPostActionOpt { val value = "follow" }
+    implicit def stringToUsersUser_idRelationshipPostActionOpt(in: String): UsersUser_idRelationshipPostActionOpt = in match {
+        case "unfollow" => Unfollow
+        case "approve" => Approve
+        case "block" => Block
+        case "unblock" => Unblock
+        case "follow" => Follow
+    }
+
     implicit val bindable_BigIntQuery = PlayPathBindables.queryBindableBigInt
+
     implicit val bindable_BigDecimalPath = PlayPathBindables.pathBindableBigDecimal
+
     implicit val bindable_BigIntPath = PlayPathBindables.pathBindableBigInt
+
     implicit val bindable_BigDecimalQuery = PlayPathBindables.queryBindableBigDecimal
+
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
+
     implicit val bindable_OptionBigIntQuery = PlayPathBindables.createOptionQueryBindable[BigInt]
+
     implicit val bindable_OptionBigDecimalQuery = PlayPathBindables.createOptionQueryBindable[BigDecimal]
+
 
 }

@@ -58,7 +58,7 @@ trait Transformation[T] extends EnrichmentStep[T] {
   */
 class ScalaPlayTypeEnricher(val app: StrictModel) extends Transformation[Type] with
   DataGeneratorsStep with
-  AliasesStep with TraitsStep with ClassesStep with CommonDataStep {
+  AliasesStep with EnumsStep with TraitsStep with ClassesStep with CommonDataStep {
 
   override val data = app.typeDefs.toSeq
 

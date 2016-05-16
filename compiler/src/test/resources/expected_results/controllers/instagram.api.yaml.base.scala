@@ -531,8 +531,8 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
             
             import de.zalando.play.controllers.WrappedBodyParsers
             
-            val customParsers = WrappedBodyParsers.optionParser[String]
-            optionParser[String](bodyMimeType, customParsers, "Invalid UsersUser_idRelationshipPostAction", maxLength)
+            val customParsers = WrappedBodyParsers.optionParser[UsersUser_idRelationshipPostActionOpt]
+            optionParser[UsersUser_idRelationshipPostActionOpt](bodyMimeType, customParsers, "Invalid UsersUser_idRelationshipPostAction", maxLength)
         }
 
     val postusersByUser_idRelationshipActionConstructor  = new postusersByUser_idRelationshipSecureAction("relationships")

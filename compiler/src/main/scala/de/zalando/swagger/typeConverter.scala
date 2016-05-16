@@ -124,8 +124,9 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
         val meta = arrayTypeMeta(param.comment.getOrElse(param.format), param)
         checkRequired(name, required, wrapInArray(types.head, meta, None), param.default) +: types.tail
       case PrimitiveType.OBJECT =>
-        val obj = param.allOf map {
-          extensionType(name, None) // "None" means that everything defined as a part of the composition is required
+        val obj = param.allOf map { p =>
+          val everythingIsRequired = None
+          extensionType(name, everythingIsRequired)(p)
         } getOrElse {
           val typeName = typeNameFromInlinedReference(param) getOrElse name
           val catchAll = fromSchemaOrBoolean(name / "additionalProperties", param.additionalProperties, param)
@@ -135,6 +136,15 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
           checkRequired(name, required, types, param.default)
         }
         Seq(obj)
+      case tpe if param.enum.isDefined =>
+        val meta = enumTypeMeta(param.enum.get.size)
+        val typeName = typeNameFromInlinedReference(param) getOrElse name
+        val primitiveType = (p, param.format)(param)
+        val leaves = param.enum.get map { value =>
+          EnumObject(primitiveType, value.toString, TypeMeta(Some(value.toString)))
+        }
+        val rootType = typeName -> EnumTrait(primitiveType, meta, leaves)
+        Seq(checkRequired(name, required, rootType, param.default))
       case _ =>
         val primitiveType = name -> (p, param.format)(param)
         Seq(checkRequired(name, required, primitiveType, param.default))

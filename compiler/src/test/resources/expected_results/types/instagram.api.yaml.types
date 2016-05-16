@@ -131,7 +131,7 @@
 ⌿paths⌿/users/{user-id}/media/recent⌿⌿user-id ->
 	BDcml
 ⌿paths⌿/users/{user-id}/relationship⌿post⌿action ->
-	Opt(Str)
+	Opt(EnumTrait(Str))
 ⌿paths⌿/media/search⌿get⌿MAX_TIMESTAMP ->
 	Opt(BInt)
 ⌿paths⌿/users/{user-id}/followed-by⌿⌿user-id ->
