@@ -17,14 +17,33 @@ lazy val api = (project in file("api"))
       "joda-time" % "joda-time" % "2.9.1",
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "com.typesafe.play" %% "play-java-ws" % PlayVersion,
-      "org.scalacheck" %% "scalacheck" % "1.12.4",
-      "org.specs2" %% "specs2-scalacheck" % "3.6",
-      "me.jeffmay" %% "play-json-tests" % "1.3.0"
+      "org.scalacheck" %% "scalacheck" % "1.12.4" % "test",
+      "org.specs2" %% "specs2-scalacheck" % "3.6" % "test",
+      "me.jeffmay" %% "play-json-tests" % "1.3.0" % "test"
     ),
     scalaVersion :=  "2.10.5",
     crossScalaVersions := Seq(scalaVersion.value, ScalaVersion),
     resolvers ++= Seq(
       "jeffmay" at "https://dl.bintray.com/jeffmay/maven"
+    )
+  )
+
+lazy val swaggerModel = (project in file("swagger-model"))
+  .enablePlugins(BuildInfoPlugin)
+  .settings(common: _*)
+  .settings(
+    name := "swagger-model",
+    scalaVersion := "2.10.5",
+    sbtPlugin := false,
+
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "de.zalando",
+    libraryDependencies ++= Seq(
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
+      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
+      "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
+      "org.scalatest" %% "scalatest" % "2.2.3" % "test"
     )
   )
 
@@ -42,17 +61,18 @@ lazy val compiler = (project in file("compiler"))
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
-      "org.scalatest" %% "scalatest" % "2.2.3" % "test",
       "com.typesafe.play" %% "routes-compiler" % PlayVersion % Provided,
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "org.scala-lang" % "scala-library" % scalaVersion.value,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalacheck" %% "scalacheck" % "1.12.5",
+      "org.scalatest" %% "scalatest" % "2.2.3" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
       "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
       "de.zalando" %% "beard" % "0.0.6"
     )
   )
+  .dependsOn(swaggerModel)
 
 // This is the sbt plugin
 lazy val plugin = (project in file("plugin"))
@@ -79,13 +99,14 @@ lazy val plugin = (project in file("plugin"))
       )
     },
     scriptedDependencies := {
+      val d = (publishLocal in swaggerModel).value
       val a = (publishLocal in api).value
       val b = (publishLocal in compiler).value
       val c = publishLocal.value
     },
     scriptedBufferLog := false
   )
-  .dependsOn(compiler)
+  .dependsOn(swaggerModel, compiler)
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
@@ -94,7 +115,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "play-swagger-root"
   )
-  .aggregate(api, compiler, plugin)
+  .aggregate(swaggerModel, api, compiler, plugin)
 
 def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   organization := "de.zalando",
