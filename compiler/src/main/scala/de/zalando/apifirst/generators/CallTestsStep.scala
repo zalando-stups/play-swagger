@@ -4,7 +4,6 @@ import de.zalando.apifirst.Application.{ApiCall, ParameterRef}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.{ParameterPlace, ScalaName}
-import play.api.http.{HeaderNames, MimeTypes}
 
 /**
   * @author  slasch
@@ -12,20 +11,29 @@ import play.api.http.{HeaderNames, MimeTypes}
   */
 trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with ParameterData {
 
-  override def steps = tests +: super.steps
+  override def steps: Seq[SingleStep] = tests +: super.steps
 
   val testsSuffix = "Spec"
 
   /**
     * Puts tests related information into the denotation table
     *
+    * TODO currently, no tests are generated for secure endpoints
+    * TODO design test extension which will allow to augment test
+    * TODO requests with security-related data
+    *
     * @return
     */
   protected val tests: SingleStep = apiCall => table =>
     if (apiCall._2.handler.parameters.isEmpty) empty
+    else if (apiCall._2.security.nonEmpty) {
+      println(s"INFO: Not generating tests for secure API endpoint ${apiCall._2.verb} ${apiCall._2.path.asSwagger} , " +
+        "this issue will be addressed in future versions of the plugin")
+      empty
+    }
     else Map("tests" -> callTest(apiCall._2)(table))
 
-  def callTest(call: ApiCall)(implicit table: DenotationTable) = {
+  def callTest(call: ApiCall)(implicit table: DenotationTable): Map[String, Object] = {
     val namespace = if (app.basePath == "/") "" else app.basePath
 
     val (allActionResults, defaultResultType) = actionResults(call)(table)
@@ -57,7 +65,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
 
 
   // TODO should try all possible marshallers
-  def bodyParameter(call: ApiCall, resultType: Option[String]) = {
+  def bodyParameter(call: ApiCall, resultType: Option[String]): Option[Map[String, String]] = {
     call.handler.parameters.map {
       app.findParameter
     }.find {
@@ -79,7 +87,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
     }
   }
 
-  def singleParameter(table: DenotationTable)(param: ParameterRef) = {
+  def singleParameter(table: DenotationTable)(param: ParameterRef): Map[String, String] = {
     val paramName = app.findParameter(param)
     val typeName = paramName.typeName
     val genName = generator(typeName.name, table)
