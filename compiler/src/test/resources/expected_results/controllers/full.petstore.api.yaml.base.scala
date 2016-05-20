@@ -669,6 +669,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             eitherFormParameters match {
                 case Left(problem: Seq[String]) =>
                     val msg = problem.mkString("\n")
+                    implicit val marshaller: Writeable[String] = anyToWritable(updatePetWithFormResponseMimeType)
                     BadRequest(msg)
 
                 case Right((name, status)) =>

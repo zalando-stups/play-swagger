@@ -7,7 +7,9 @@ import scala.language.implicitConversions
 /**
   * @since 20.02.2016.
   */
-case class Base64String(value: String)
+case class Base64String(value: String) {
+  override val toString: String = Base64String.base64string2string(this)
+}
 
 object Base64String {
   implicit def string2base64string(s: String): Base64String =

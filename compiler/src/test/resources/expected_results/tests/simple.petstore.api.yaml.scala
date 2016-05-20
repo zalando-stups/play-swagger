@@ -34,7 +34,9 @@ import Generators._
 
       def checkResult(props: Prop) =
         Test.check(Test.Parameters.default, props).status match {
-          case Failed(_, labels) => failure(labels.mkString("\n"))
+          case Failed(args, labels) =>
+            val failureMsg = labels.mkString("\n") + " given args: " + args.map(_.arg).mkString("'", "', '","'")
+            failure(failureMsg)
           case Proved(_) | Exhausted | Passed => success
           case PropException(_, e, labels) =>
             val error = if (labels.isEmpty) e.getLocalizedMessage() else labels.mkString("\n")
@@ -52,18 +54,22 @@ import Generators._
 
 
             val url = s"""/api/pets"""
+            val contentTypes: Seq[String] = Seq(
+                "application/json"
+            )
             val acceptHeaders: Seq[String] = Seq(
                "application/json"
             )
-            val propertyList = acceptHeaders.map { acceptHeader =>
+            val contentHeaders = for { ct <- contentTypes; ac <- acceptHeaders } yield (ac, ct)
+            val propertyList = contentHeaders.map { case (acceptHeader, contentType) =>
                 val headers =
-                    Seq() :+ ("Accept" -> acceptHeader)
+                    Seq() :+ ("Accept" -> acceptHeader) :+ ("Content-Type" -> contentType)
 
                     val parsed_pet = PlayBodyParsing.jacksonMapper("ErrorModel").writeValueAsString(pet)
 
                 val request = FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)
                 val path =
-                    if (acceptHeader == "multipart/form-data") {
+                    if (contentType == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
@@ -71,20 +77,22 @@ import Generators._
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
-                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                    } else if (contentType == "application/x-www-form-urlencoded") {
                         val form =  Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
                 val errors = new PetsPostValidator(pet).errors
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m =>
+                    s"Contains error: $m in ${contentAsString(path)}" |:(contentAsString(path).contains(m) ?= true)
+                }
 
-                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
-                    requestStatusCode_(path) ?= BAD_REQUEST ,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
+                (s"given 'Content-Type' [$contentType], 'Accept' header [$acceptHeader] and URL: [$url]" + "and body [" + parsed_pet + "]") |: all(
+                    "StatusCode = BAD_REQUEST" |: (requestStatusCode_(path) ?= BAD_REQUEST),
+                    s"Content-Type = $acceptHeader" |: (requestContentType_(path) ?= Some(acceptHeader)),
+                    "non-empty errors" |: (errors.nonEmpty ?= true),
+                    "at least one validation failing" |: atLeastOne(validations:_*)
                 )
             }
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
@@ -95,16 +103,20 @@ import Generators._
             val parsed_pet = parserConstructor("ErrorModel").writeValueAsString(pet)
             
             val url = s"""/api/pets"""
-            val acceptHeaders: Seq[String] = Seq(
-               "application/json"
+            val contentTypes: Seq[String] = Seq(
+                "application/json"
             )
-            val propertyList = acceptHeaders.map { acceptHeader =>
+            val acceptHeaders: Seq[String] = Seq(
+                "application/json"
+            )
+            val contentHeaders = for { ct <- contentTypes; ac <- acceptHeaders } yield (ac, ct)
+            val propertyList = contentHeaders.map { case (acceptHeader, contentType) =>
                 val headers =
-                   Seq() :+ ("Accept" -> acceptHeader)
+                   Seq() :+ ("Accept" -> acceptHeader) :+ ("Content-Type" -> contentType)
 
                 val request = FakeRequest(POST, url).withHeaders(headers:_*).withBody(parsed_pet)
                 val path =
-                    if (acceptHeader == "multipart/form-data") {
+                    if (contentType == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
@@ -112,7 +124,7 @@ import Generators._
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
-                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                    } else if (contentType == "application/x-www-form-urlencoded") {
                         val form =  Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
@@ -130,11 +142,11 @@ import Generators._
                     parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
                 }
 
-                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" + "and body [" + parsed_pet + "]") |: all(
-                    possibleResponseTypes.contains(expectedCode) ?= true,
-                    parsedApiResponse.isSuccess ?= true,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.isEmpty ?= true
+                (s"Given response code [$expectedCode], 'Content-Type' [$contentType], 'Accept' header [$acceptHeader] and URL: [$url]" + "and body [" + parsed_pet + "]") |: all(
+                    "Response Code is allowed" |: (possibleResponseTypes.contains(expectedCode) ?= true),
+                    "Successful" |: (parsedApiResponse.isSuccess ?= true),
+                    s"Content-Type = $acceptHeader" |: (requestContentType_(path) ?= Some(acceptHeader)),
+                    "No errors" |: (errors.isEmpty ?= true)
                 )
             }
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
@@ -169,6 +181,9 @@ import Generators._
             val (tags, limit) = input
 
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
+            val contentTypes: Seq[String] = Seq(
+                "application/json"
+            )
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
@@ -178,14 +193,15 @@ import Generators._
             
                "text/html"
             )
-            val propertyList = acceptHeaders.map { acceptHeader =>
+            val contentHeaders = for { ct <- contentTypes; ac <- acceptHeaders } yield (ac, ct)
+            val propertyList = contentHeaders.map { case (acceptHeader, contentType) =>
                 val headers =
-                    Seq() :+ ("Accept" -> acceptHeader)
+                    Seq() :+ ("Accept" -> acceptHeader) :+ ("Content-Type" -> contentType)
 
 
                 val request = FakeRequest(GET, url).withHeaders(headers:_*)
                 val path =
-                    if (acceptHeader == "multipart/form-data") {
+                    if (contentType == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
@@ -193,20 +209,22 @@ import Generators._
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
-                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                    } else if (contentType == "application/x-www-form-urlencoded") {
                         val form =  Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
                 val errors = new PetsGetValidator(tags, limit).errors
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m =>
+                    s"Contains error: $m in ${contentAsString(path)}" |:(contentAsString(path).contains(m) ?= true)
+                }
 
-                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
-                    requestStatusCode_(path) ?= BAD_REQUEST ,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
+                (s"given 'Content-Type' [$contentType], 'Accept' header [$acceptHeader] and URL: [$url]" ) |: all(
+                    "StatusCode = BAD_REQUEST" |: (requestStatusCode_(path) ?= BAD_REQUEST),
+                    s"Content-Type = $acceptHeader" |: (requestContentType_(path) ?= Some(acceptHeader)),
+                    "non-empty errors" |: (errors.nonEmpty ?= true),
+                    "at least one validation failing" |: atLeastOne(validations:_*)
                 )
             }
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
@@ -216,22 +234,26 @@ import Generators._
             val (tags, limit) = input
             
             val url = s"""/api/pets?${toQuery("tags", tags)}&${toQuery("limit", limit)}"""
-            val acceptHeaders: Seq[String] = Seq(
-               "application/json", 
-            
-               "application/xml", 
-            
-               "text/xml", 
-            
-               "text/html"
+            val contentTypes: Seq[String] = Seq(
+                "application/json"
             )
-            val propertyList = acceptHeaders.map { acceptHeader =>
+            val acceptHeaders: Seq[String] = Seq(
+                "application/json", 
+            
+                "application/xml", 
+            
+                "text/xml", 
+            
+                "text/html"
+            )
+            val contentHeaders = for { ct <- contentTypes; ac <- acceptHeaders } yield (ac, ct)
+            val propertyList = contentHeaders.map { case (acceptHeader, contentType) =>
                 val headers =
-                   Seq() :+ ("Accept" -> acceptHeader)
+                   Seq() :+ ("Accept" -> acceptHeader) :+ ("Content-Type" -> contentType)
 
                 val request = FakeRequest(GET, url).withHeaders(headers:_*)
                 val path =
-                    if (acceptHeader == "multipart/form-data") {
+                    if (contentType == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
@@ -239,7 +261,7 @@ import Generators._
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
-                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                    } else if (contentType == "application/x-www-form-urlencoded") {
                         val form =  Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
@@ -257,11 +279,11 @@ import Generators._
                     parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
                 }
 
-                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
-                    possibleResponseTypes.contains(expectedCode) ?= true,
-                    parsedApiResponse.isSuccess ?= true,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.isEmpty ?= true
+                (s"Given response code [$expectedCode], 'Content-Type' [$contentType], 'Accept' header [$acceptHeader] and URL: [$url]" ) |: all(
+                    "Response Code is allowed" |: (possibleResponseTypes.contains(expectedCode) ?= true),
+                    "Successful" |: (parsedApiResponse.isSuccess ?= true),
+                    s"Content-Type = $acceptHeader" |: (requestContentType_(path) ?= Some(acceptHeader)),
+                    "No errors" |: (errors.isEmpty ?= true)
                 )
             }
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
@@ -299,6 +321,9 @@ import Generators._
 
 
             val url = s"""/api/pets/${toPath(id)}"""
+            val contentTypes: Seq[String] = Seq(
+                "application/json"
+            )
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
             
@@ -308,14 +333,15 @@ import Generators._
             
                "text/html"
             )
-            val propertyList = acceptHeaders.map { acceptHeader =>
+            val contentHeaders = for { ct <- contentTypes; ac <- acceptHeaders } yield (ac, ct)
+            val propertyList = contentHeaders.map { case (acceptHeader, contentType) =>
                 val headers =
-                    Seq() :+ ("Accept" -> acceptHeader)
+                    Seq() :+ ("Accept" -> acceptHeader) :+ ("Content-Type" -> contentType)
 
 
                 val request = FakeRequest(GET, url).withHeaders(headers:_*)
                 val path =
-                    if (acceptHeader == "multipart/form-data") {
+                    if (contentType == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
@@ -323,20 +349,22 @@ import Generators._
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
-                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                    } else if (contentType == "application/x-www-form-urlencoded") {
                         val form =  Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
                 val errors = new PetsIdGetValidator(id).errors
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m =>
+                    s"Contains error: $m in ${contentAsString(path)}" |:(contentAsString(path).contains(m) ?= true)
+                }
 
-                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
-                    requestStatusCode_(path) ?= BAD_REQUEST ,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
+                (s"given 'Content-Type' [$contentType], 'Accept' header [$acceptHeader] and URL: [$url]" ) |: all(
+                    "StatusCode = BAD_REQUEST" |: (requestStatusCode_(path) ?= BAD_REQUEST),
+                    s"Content-Type = $acceptHeader" |: (requestContentType_(path) ?= Some(acceptHeader)),
+                    "non-empty errors" |: (errors.nonEmpty ?= true),
+                    "at least one validation failing" |: atLeastOne(validations:_*)
                 )
             }
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
@@ -345,22 +373,26 @@ import Generators._
         def testValidInput(id: Long) = {
             
             val url = s"""/api/pets/${toPath(id)}"""
-            val acceptHeaders: Seq[String] = Seq(
-               "application/json", 
-            
-               "application/xml", 
-            
-               "text/xml", 
-            
-               "text/html"
+            val contentTypes: Seq[String] = Seq(
+                "application/json"
             )
-            val propertyList = acceptHeaders.map { acceptHeader =>
+            val acceptHeaders: Seq[String] = Seq(
+                "application/json", 
+            
+                "application/xml", 
+            
+                "text/xml", 
+            
+                "text/html"
+            )
+            val contentHeaders = for { ct <- contentTypes; ac <- acceptHeaders } yield (ac, ct)
+            val propertyList = contentHeaders.map { case (acceptHeader, contentType) =>
                 val headers =
-                   Seq() :+ ("Accept" -> acceptHeader)
+                   Seq() :+ ("Accept" -> acceptHeader) :+ ("Content-Type" -> contentType)
 
                 val request = FakeRequest(GET, url).withHeaders(headers:_*)
                 val path =
-                    if (acceptHeader == "multipart/form-data") {
+                    if (contentType == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
@@ -368,7 +400,7 @@ import Generators._
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
-                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                    } else if (contentType == "application/x-www-form-urlencoded") {
                         val form =  Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
@@ -386,11 +418,11 @@ import Generators._
                     parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
                 }
 
-                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
-                    possibleResponseTypes.contains(expectedCode) ?= true,
-                    parsedApiResponse.isSuccess ?= true,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.isEmpty ?= true
+                (s"Given response code [$expectedCode], 'Content-Type' [$contentType], 'Accept' header [$acceptHeader] and URL: [$url]" ) |: all(
+                    "Response Code is allowed" |: (possibleResponseTypes.contains(expectedCode) ?= true),
+                    "Successful" |: (parsedApiResponse.isSuccess ?= true),
+                    s"Content-Type = $acceptHeader" |: (requestContentType_(path) ?= Some(acceptHeader)),
+                    "No errors" |: (errors.isEmpty ?= true)
                 )
             }
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
@@ -424,17 +456,21 @@ import Generators._
 
 
             val url = s"""/api/pets/${toPath(id)}"""
+            val contentTypes: Seq[String] = Seq(
+                "application/json"
+            )
             val acceptHeaders: Seq[String] = Seq(
                "application/json"
             )
-            val propertyList = acceptHeaders.map { acceptHeader =>
+            val contentHeaders = for { ct <- contentTypes; ac <- acceptHeaders } yield (ac, ct)
+            val propertyList = contentHeaders.map { case (acceptHeader, contentType) =>
                 val headers =
-                    Seq() :+ ("Accept" -> acceptHeader)
+                    Seq() :+ ("Accept" -> acceptHeader) :+ ("Content-Type" -> contentType)
 
 
                 val request = FakeRequest(DELETE, url).withHeaders(headers:_*)
                 val path =
-                    if (acceptHeader == "multipart/form-data") {
+                    if (contentType == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
@@ -442,20 +478,22 @@ import Generators._
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
-                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                    } else if (contentType == "application/x-www-form-urlencoded") {
                         val form =  Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
                 val errors = new PetsIdDeleteValidator(id).errors
 
-                lazy val validations = errors flatMap { _.messages } map { m => contentAsString(path).contains(m) ?= true }
+                lazy val validations = errors flatMap { _.messages } map { m =>
+                    s"Contains error: $m in ${contentAsString(path)}" |:(contentAsString(path).contains(m) ?= true)
+                }
 
-                ("given 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
-                    requestStatusCode_(path) ?= BAD_REQUEST ,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.nonEmpty ?= true,
-                    all(validations:_*)
+                (s"given 'Content-Type' [$contentType], 'Accept' header [$acceptHeader] and URL: [$url]" ) |: all(
+                    "StatusCode = BAD_REQUEST" |: (requestStatusCode_(path) ?= BAD_REQUEST),
+                    s"Content-Type = $acceptHeader" |: (requestContentType_(path) ?= Some(acceptHeader)),
+                    "non-empty errors" |: (errors.nonEmpty ?= true),
+                    "at least one validation failing" |: atLeastOne(validations:_*)
                 )
             }
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
@@ -464,16 +502,20 @@ import Generators._
         def testValidInput(id: Long) = {
             
             val url = s"""/api/pets/${toPath(id)}"""
-            val acceptHeaders: Seq[String] = Seq(
-               "application/json"
+            val contentTypes: Seq[String] = Seq(
+                "application/json"
             )
-            val propertyList = acceptHeaders.map { acceptHeader =>
+            val acceptHeaders: Seq[String] = Seq(
+                "application/json"
+            )
+            val contentHeaders = for { ct <- contentTypes; ac <- acceptHeaders } yield (ac, ct)
+            val propertyList = contentHeaders.map { case (acceptHeader, contentType) =>
                 val headers =
-                   Seq() :+ ("Accept" -> acceptHeader)
+                   Seq() :+ ("Accept" -> acceptHeader) :+ ("Content-Type" -> contentType)
 
                 val request = FakeRequest(DELETE, url).withHeaders(headers:_*)
                 val path =
-                    if (acceptHeader == "multipart/form-data") {
+                    if (contentType == "multipart/form-data") {
                         import de.zalando.play.controllers.WriteableWrapper.anyContentAsMultipartFormWritable
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
@@ -481,7 +523,7 @@ import Generators._
                         val form = new MultipartFormData(data, files, Nil, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
-                    } else if (acceptHeader == "application/x-www-form-urlencoded") {
+                    } else if (contentType == "application/x-www-form-urlencoded") {
                         val form =  Nil
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
@@ -499,11 +541,11 @@ import Generators._
                     parseResponseContent(mapper, requestContentAsString_(path), mimeType, possibleResponseTypes(expectedCode))
                 }
 
-                ("given response code " + expectedCode + " and 'Accept' header '" + acceptHeader + "' and URL: [" + url + "]" ) |: all(
-                    possibleResponseTypes.contains(expectedCode) ?= true,
-                    parsedApiResponse.isSuccess ?= true,
-                    requestContentType_(path) ?= Some(acceptHeader),
-                    errors.isEmpty ?= true
+                (s"Given response code [$expectedCode], 'Content-Type' [$contentType], 'Accept' header [$acceptHeader] and URL: [$url]" ) |: all(
+                    "Response Code is allowed" |: (possibleResponseTypes.contains(expectedCode) ?= true),
+                    "Successful" |: (parsedApiResponse.isSuccess ?= true),
+                    s"Content-Type = $acceptHeader" |: (requestContentType_(path) ?= Some(acceptHeader)),
+                    "No errors" |: (errors.isEmpty ?= true)
                 )
             }
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
