@@ -38,7 +38,7 @@ object FormDataParser {
                 val files: Map[String, Option[FilePart[TemporaryFile]]] =
                 ({{for param in form_data.form_parameters}}{{if param.is_file}}("{{param.field_name}}", form.file("{{param.field_name}}")) :: {{/if}}{{/for}}Nil).toMap
                 fromDataParts(form.dataParts, files, useFiles = true)
-            }.getOrElse(Left(Seq("Could not find 'application/x-www-form-urlencoded' body")))
+            }.getOrElse(Left(Seq("Could not find 'multipart/form-data' body")))
             {{/if}}
             case other =>
                 Left(Seq("Content type " + other + " is not supported"))

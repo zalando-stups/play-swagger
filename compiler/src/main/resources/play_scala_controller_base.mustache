@@ -77,6 +77,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
             eitherFormParameters match {
                 case Left(problem: Seq[String]) =>
                     val msg = problem.mkString("\n")
+                    implicit val marshaller: Writeable[String] = anyToWritable({{m.response_mime_type_name}})
                     BadRequest(msg)
 
                 case Right(({{for param in m.form_parameters}}{{param.field_name}}{{if param.isNotLast}}, {{/if}}{{/for}})) =>

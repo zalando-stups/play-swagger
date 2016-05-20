@@ -41,6 +41,7 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
             eitherFormParameters match {
                 case Left(problem: Seq[String]) =>
                     val msg = problem.mkString("\n")
+                    implicit val marshaller: Writeable[String] = anyToWritable(postmultipartResponseMimeType)
                     BadRequest(msg)
 
                 case Right((name, year, avatar)) =>
@@ -84,6 +85,7 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
             eitherFormParameters match {
                 case Left(problem: Seq[String]) =>
                     val msg = problem.mkString("\n")
+                    implicit val marshaller: Writeable[String] = anyToWritable(posturl_encodedResponseMimeType)
                     BadRequest(msg)
 
                 case Right((name, year, avatar)) =>
@@ -127,6 +129,7 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
             eitherFormParameters match {
                 case Left(problem: Seq[String]) =>
                     val msg = problem.mkString("\n")
+                    implicit val marshaller: Writeable[String] = anyToWritable(postbothResponseMimeType)
                     BadRequest(msg)
 
                 case Right((name, year, avatar, ringtone)) =>

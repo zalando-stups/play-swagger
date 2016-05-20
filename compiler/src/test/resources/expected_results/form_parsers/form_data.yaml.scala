@@ -30,7 +30,7 @@ object FormDataParser {
                 val files: Map[String, Option[FilePart[TemporaryFile]]] =
                 (("avatar", form.file("avatar")) :: Nil).toMap
                 fromDataParts(form.dataParts, files, useFiles = true)
-            }.getOrElse(Left(Seq("Could not find 'application/x-www-form-urlencoded' body")))
+            }.getOrElse(Left(Seq("Could not find 'multipart/form-data' body")))
             
             case other =>
                 Left(Seq("Content type " + other + " is not supported"))
@@ -59,7 +59,7 @@ object FormDataParser {
                 val files: Map[String, Option[FilePart[TemporaryFile]]] =
                 (("avatar", form.file("avatar")) :: ("ringtone", form.file("ringtone")) :: Nil).toMap
                 fromDataParts(form.dataParts, files, useFiles = true)
-            }.getOrElse(Left(Seq("Could not find 'application/x-www-form-urlencoded' body")))
+            }.getOrElse(Left(Seq("Could not find 'multipart/form-data' body")))
             
             case other =>
                 Left(Seq("Content type " + other + " is not supported"))

@@ -38,14 +38,11 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
 
     val (allActionResults, defaultResultType) = actionResults(call)(table)
 
-    val acceptHeaders = acceptHeader(call)
-
-    val allHeaders    = headers(call)
-
     val formParams = validationsByType(call, p => p.place == ParameterPlace.FORM)
 
     Map(
-      "accept_headers"        -> acceptHeaders,
+      "accept_headers"        -> acceptHeader(call),
+      "content_types"         -> contentTypes(call),
       "result_types"          -> allActionResults,
       "default_result_type"   -> defaultResultType,
       "verb_name"             -> call.verb.name,
@@ -54,7 +51,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
       "validation_name"       -> validator(call.asReference, table),
       "body_param"            -> bodyParameter(call, defaultResultType),
       "form_parameters"       -> formParams,
-      "headers"               -> allHeaders
+      "headers"               -> headers(call)
     ) ++ parameters(call)(table)
   }
 
@@ -63,6 +60,10 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
       Map("name" -> header)
     }
 
+  def contentTypes(call: ApiCall): Set[Map[String, String]] =
+    call.mimeIn.map(_.name).map { header =>
+      Map("name" -> header)
+    }
 
   // TODO should try all possible marshallers
   def bodyParameter(call: ApiCall, resultType: Option[String]): Option[Map[String, String]] = {

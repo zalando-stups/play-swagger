@@ -72,6 +72,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
             eitherFormParameters match {
                 case Left(problem: Seq[String]) =>
                     val msg = problem.mkString("\n")
+                    implicit val marshaller: Writeable[String] = anyToWritable(postResponseMimeType)
                     BadRequest(msg)
 
                 case Right((name, year)) =>
