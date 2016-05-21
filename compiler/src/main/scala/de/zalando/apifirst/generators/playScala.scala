@@ -5,6 +5,7 @@ import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames.DenotationTable
 import PlayScalaControllerAnalyzer._
+import de.zalando.apifirst.StringUtil
 
 import scala.collection.Iterable
 
@@ -157,7 +158,7 @@ class ScalaGenerator(val strictModel: StrictModel) {
       "main_package" -> pckg,
       "main_package_prefix" -> pckg.split('.').init.mkString("."),
       "main_package_suffix" -> pckg.split('.').last,
-      "spec_name" -> escape(capitalize("\\.", fileName) + "Spec"),
+      "spec_name" -> escape(StringUtil.capitalize("\\.", fileName) + "Spec"),
       "form_parsers_required" -> formParsersRequired
     )
 

@@ -6,6 +6,7 @@ import de.zalando.apifirst.Http.{ApplicationFormUrlEncoded, MultipartFormData}
 import de.zalando.apifirst.Security.{Constraint, OAuth2Constraint}
 import de.zalando.apifirst.{Http, ParameterPlace}
 import de.zalando.apifirst.ScalaName._
+import de.zalando.apifirst.StringUtil._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
 import de.zalando.play.controllers.WriterFactories

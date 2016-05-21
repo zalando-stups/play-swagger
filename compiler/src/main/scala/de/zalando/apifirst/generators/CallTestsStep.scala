@@ -3,7 +3,7 @@ package de.zalando.apifirst.generators
 import de.zalando.apifirst.Application.{ApiCall, ParameterRef}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.generators.DenotationNames._
-import de.zalando.apifirst.{ParameterPlace, ScalaName}
+import de.zalando.apifirst.{ParameterPlace, ScalaName, StringUtil}
 
 /**
   * @author  slasch
@@ -83,7 +83,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
     }.map { p =>
       Map(
         "name" -> p.name.simple,
-        "parameter_name" -> ScalaName.escape(ScalaName.camelize("\\.", p.simple))
+        "parameter_name" -> ScalaName.escape(StringUtil.camelize("\\.", p.simple))
       )
     }
   }
@@ -93,7 +93,7 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
     val typeName = paramName.typeName
     val genName = generator(typeName.name, table)
     Map(
-      "name" -> ScalaName.escape(ScalaName.camelize("\\.", param.simple)),
+      "name" -> ScalaName.escape(StringUtil.camelize("\\.", param.simple)),
       "type" -> typeNameDenotation(table, param.name),
       "generator" -> genName
     )
