@@ -1,7 +1,7 @@
 package de.zalando.play.compiler
 
 import de.zalando.apifirst.Application.{ApiCall, StrictModel}
-import de.zalando.apifirst.{ScalaName, ParameterPlace}
+import de.zalando.apifirst.{Domain, ParameterPlace, ScalaName, StringUtil}
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.naming.{Path, Reference}
 import play.routes.compiler._
@@ -33,7 +33,11 @@ object RuleGenerator {
     val params = call.handler.parameters flatMap { param =>
       val p = model.findParameter(param)
       if (p.place != ParameterPlace.BODY && p.place != ParameterPlace.HEADER && p.place != ParameterPlace.FORM) {
-        Some(Parameter(escape(p.name), p.typeName.name.typeAlias(), p.fixed, p.default))
+        val default = p.typeName match {
+          case s: Domain.Str => p.default map StringUtil.quoteIfNeeded
+          case _ => p.default
+        }
+        Some(Parameter(escape(p.name), p.typeName.name.typeAlias(), p.fixed, default))
       } else
         None
     }

@@ -3,6 +3,7 @@ package de.zalando.apifirst.generators
 import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef, StrictModel}
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
+import de.zalando.apifirst.StringUtil
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.{Reference, TypeName}
 
@@ -44,7 +45,7 @@ trait CallValidatorsStep extends EnrichmentStep[ApiCall] with ValidatorsCommon {
       "validation_name" -> validator(r, table),
       "fields" -> call.handler.parameters.map { p =>
         Map(
-          "field_name" -> escape(camelize("\\.", p.name.simple)),
+          "field_name" -> escape(StringUtil.camelize("\\.", p.name.simple)),
           "type_name" -> typeNameDenotation(table, p.name),
           "validation_name" -> validator(p.name, table)
         )

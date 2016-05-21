@@ -2,6 +2,7 @@ package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
+import de.zalando.apifirst.StringUtil
 import de.zalando.apifirst.naming.Reference
 import de.zalando.apifirst.generators.DenotationNames._
 
@@ -74,16 +75,9 @@ trait EnumsStep extends EnrichmentStep[Type] {
 
   private def cleanItemValue(v: EnumObject): String =
     v.tpe match {
-      case s: Str => addQuotesIfNeeded(v)
+      case s: Str => StringUtil.quoteIfNeeded(v.fieldValue)
       case _ => v.fieldValue
     }
-
-  // this should not be needed, but most of the specifications don't care
-  // to enclose string literals fpr enum definitions in quotes
-  private def addQuotesIfNeeded(v: EnumObject): String =
-    if (!v.fieldValue.startsWith("\"")) "\"" + v.fieldValue + "\""
-    else if (v.fieldValue.startsWith("'") && v.fieldValue.endsWith("'")) "\"" + v.fieldValue.substring(1, v.fieldValue.length - 1) + "\""
-    else v.fieldValue
 
 }
 

@@ -111,7 +111,7 @@ object naming {
   * naming model. Probably it should be refactored to support
   * other specification formats
   */
-object ScalaName extends StringUtil {
+object ScalaName {
   implicit def reference2ScalaName(r: Reference): ScalaName = ScalaName(r)
   private val scalaNames = Seq(
     "abstract", "case", "do", "for", "import", "lazy", "object", "override", "return",
@@ -139,20 +139,29 @@ object ScalaName extends StringUtil {
 
 }
 
-trait StringUtil {
-  def capitalize(separator: String, str: String) = {
+object StringUtil {
+
+  private val doubleQuoted = "\".+\"".r.pattern
+
+  def capitalize(separator: String, str: String): String = {
     assert(str != null)
     str.split(separator).map { p => if (p.nonEmpty) p.head.toUpper +: p.tail else p }.mkString("")
   }
 
-  def camelize(separator: String, str: String) = capitalize(separator, str) match {
+  def camelize(separator: String, str: String): String = capitalize(separator, str) match {
     case p if p.isEmpty => ""
     case p => p.head.toLower +: p.tail
   }
+
+  def quoteIfNeeded(str: String): String =
+    if (doubleQuoted.matcher(str).matches()) str else "\"" + str + "\""
+
+
 }
 
 case class ScalaName(ref: Reference) {
   import ScalaName._
+  import StringUtil._
   val parts = ref.parts.flatMap(_.split("/").filter(_.nonEmpty)) match {
     case Nil =>
       throw new IllegalArgumentException(s"At least one part required to construct a name, but got $ref")
@@ -160,17 +169,17 @@ case class ScalaName(ref: Reference) {
     case many => many.map(removeVars)
   }
   private def removeVars(s: String) = if (s.startsWith("{") && s.endsWith("}")) s.substring(1,s.length-1) else s
-  def packageName = parts.head.toLowerCase.split("/").filter(_.nonEmpty).map(escape).mkString(".")
-  def qualifiedName(prefix: String, suffix: String) = (packageName + suffix, typeAlias(prefix, suffix))
-  def fullName(prefix: String, suffix: String) = packageName + suffix + "." + typeAlias(prefix, suffix)
-  def className = escape(capitalize("/", parts.tail.head))
-  def typeAlias(prefix: String = "", suffix: String = "") = {
+  def packageName: String = parts.head.toLowerCase.split("/").filter(_.nonEmpty).map(escape).mkString(".")
+  def qualifiedName(prefix: String, suffix: String): (String, String) = (packageName + suffix, typeAlias(prefix, suffix))
+  def fullName(prefix: String, suffix: String): String = packageName + suffix + "." + typeAlias(prefix, suffix)
+  def className: String = escape(capitalize("/", parts.tail.head))
+  def typeAlias(prefix: String = "", suffix: String = ""): String = {
     val withSuffix = if (suffix.trim.isEmpty) parts.tail else parts.tail.:+(suffix)
     val (withPrefix, caseTransformer) =
       if (prefix.trim.isEmpty) (withSuffix, capitalize _) else (prefix :: withSuffix, camelize _)
     escape(caseTransformer("/", withPrefix.mkString("/")))
   }
 
-  def methodName = escape(camelize("/", parts.last))
-  def names = (packageName, className, methodName)
+  def methodName: String = escape(camelize("/", parts.last))
+  def names: (String, String, String) = (packageName, className, methodName)
 }
