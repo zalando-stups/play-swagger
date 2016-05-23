@@ -41,20 +41,26 @@ The template project contains following:
 - `project` folder containing pre-configured `plugins.sbt` file with a definition of all required resolvers and plugins
 - `conf` folder with following customized contents:
     * `routes` file with route configuration for Swagger UI, example specification and commented out links to other examples
-    * `example.yaml` an example Swagger specification for demo purposes. The specification has a dummy implementation
-    * `examples` folder containing other different Swagger specification examples. Each specification in this folder demonstrates some aspect play-swagger plugin in detailed fashion.
+    * `example.yaml`, a demo Swagger specification. The specification has a dummy implementation in `app` folder. 
+    * `examples` folder containing other different Swagger specification examples. Each specification in this folder represents some aspect of the Play-Swagger plugin in more details.
         For the specification to be picked up by the plugin it must be moved into the `conf` folder. It is allowed to have multiple Swagger specifications in the `conf` folder at the same time. 
 - `app` directory with following template implementations:
     * `controllers/Swagger.scala` - a backend side of the Swagger UI
     * `generated_controllers/example.yaml.scala` - a dummy implementation of the example controller. Will be (re)generated if deleted
-    * `security/example.yaml.scala` - a marshaller for OAuth2 tokens. Will not be regenerated until a) deleted or renamed and b)explicitly requested by issuing swaggerSecurity command 
+    * `security/example.yaml.scala` - a marshaller for OAuth2 tokens. Will not be regenerated until 
+        a) deleted or renamed
+        b) explicitly requested by issuing a `swaggerSecurity` command 
 
 
 ## Welcome to Play-Swagger
 
 Congratulations, you just created a new Play-Swagger application!
 
-The [Play Framework](http://www.playframework.com/) with the [Play-Swagger](https://github.com/zalando/play-Swagger/) plugin makes it easy to build RESTful web services from a Swagger API specification as the single source of truth. Play is based on a lightweight, stateless, web-friendly architecture. Built on [Akka](http://akka.io), Play provides predictable and minimal resource consumption for highly-scalable applications. The Play-Swagger plugin takes Swagger API definitions and treats them as the single source of truth of your REST services.
+The [Play Framework](http://www.playframework.com/) with the [Play-Swagger](https://github.com/zalando/play-Swagger/) 
+plugin make it easy to build RESTful web services from a Swagger API specification as the single source of truth. 
+Play is based on a lightweight, stateless, web-friendly architecture. Built on [Akka](http://akka.io), 
+Play provides predictable and minimal resource consumption for highly-scalable applications. 
+The Play-Swagger plugin takes Swagger API definitions and treats them as the single source of truth of your REST services.
 
 Play-Swagger supports round-trip regeneration and compilation of:
 
@@ -65,7 +71,7 @@ Play-Swagger supports round-trip regeneration and compilation of:
 - Unit tests for validating your service at the API boundary (managed).
 - Swagger path definitions onto skeletons for Play controller implementations (unmanaged).
 
-In the list above, "(managed)" means that the code is managed by activator or sbt. The code is not controlled 
+In the list above, "(managed)" means that the code is managed by sbt. The code is not controlled 
 and altered by you, the programmer of the REST service. The plugin takes your Swagger API definition as the single 
 source of truth and regenerates these code parts in a consistent manner.
 You'll instead be focusing on implementing the service business logic in an (unmanaged) Play controller class 
@@ -79,8 +85,8 @@ Manual generation and compilation of:
 
 is supported in the case if
 
-a) No security extractor or unmarshaller with the same name exists
-b) The developer issues `swaggerSecurity` or `swaggerMarshallers` SBT command 
+    a) No security extractor or unmarshaller with the same name already exists
+    b) The developer issues `swaggerSecurity` or `swaggerMarshallers` sbt command 
 
 ## Run Your Application
 
@@ -95,231 +101,55 @@ run statically from the within Play, which provides a sandbox for your service.
 The template is configured with a template Swagger API definition called `example.yaml` 
 and located in the `conf` directory of the Play application. 
 
-The `example.yaml` definition provides an API definition, shown below. 
-
-```yaml
-swagger: '2.0'
-info:
-  version: 1.0
-  title: Swagger Security Example
-  description: |
-    This specification demonstrates usage of protected resources with swagger.
-basePath: /example
-schemes:
-  - http
-  - https
-consumes:
-  - application/json
-produces:
-  - application/json
-x-api-first-error-mapping:
-  301:
-    - java.lang.SecurityException
-  401:
-    - java.lang.IllegalArgumentException
-paths:
-  /token:
-    x-api-first-handler: "example.yaml.TokenService.token"
-    post:
-      description: |
-        This API endpoint is used by the example itself to validate the security token,
-        basically representing an Authorization server.
-        Normally, this service will be operated by different company and deployed in different environment,
-        but for the demo purposes we placed it in the same specification.
-      consumes:
-        - application/x-www-form-urlencoded
-      produces:
-        - application/json
-      parameters:
-      - name: token
-        in: formData
-        description: oauth2 token
-        type: string
-        format: byte
-        pattern: "[A-Za-z0-9]*"
-        minLength: 5
-        maxLength: 100
-        required: true
-      responses:
-        200:
-          description: |
-            Normal response, a User in the case if valid token was provided .
-            The `User` needs to be inlined here. If it would be defined in the `definitions` area,
-            the scopes field would be an `ArrayWrapper` (for parsing purposes)
-          schema:
-            type: object
-            required:
-              - username
-              - scopes
-            properties:
-              username:
-                type: string
-                minLength: 3
-                maxLength: 200
-              scopes:
-                type: array
-                items:
-                  type: string
-                  minLength: 1
-                  maxLength: 40
-        401:
-          description: |
-            In the case if no valid token was provided
-          # schema must be provided here, otherwise the returning type will be Null
-          schema:
-            type: string
-        default:
-          description: error payload
-          schema:
-            $ref: '#/definitions/ErrorModel'
-    get:
-      description: |
-        This endpoint is used by Swagger UI to get a token and store it into the UI session.
-        Normally, it would include some authentication procedure, but for the purpose of the example
-        this API issues the same token for any combination of parameters and responds with a local redirect url
-        which is then used by the frontend to parse the token.
-      parameters:
-      - name: redirect_uri
-        in: query
-        description: the redirection URL
-        type: string
-        minLength: 1
-        maxLength: 1110
-        required: false
-        default: http://localhost:9000/example/token
-      - name: scope
-        in: query
-        description: requested scope
-        type: string
-        minLength: 1
-        maxLength: 110
-        required: false
-        default: "admin:org"
-      - name: response_type
-        in: query
-        type: string
-        pattern: "token"
-        required: false
-        default: "token"
-      - name: state
-        in: query
-        description: Any application state to be forwarded back to the frontend
-        type: string
-        minLength: 1
-        maxLength: 110
-        required: false
-      responses:
-        301:
-          description: |
-            A redirect from the login form
-          schema:
-            type: string
-            minLength: 10
-            maxLength: 100
-        401:
-          description: |
-            In the case if no valid combination of username and password was provided
-            # schema is not provided here, the returning type will be Null
-        default:
-          description: error payload
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  /todos/{user_id}:
-    get:
-      parameters:
-      - name: user_id
-        in: path
-        description: ID of the user
-        required: true
-        type: integer
-        minimum: 0
-        exclusiveMinimum: true
-      - name: count
-        in: query
-        type: integer
-      description: Returns user's todo
-      operationId: getUserTodos
-      security:
-        - internalOAuth:
-          - user
-          - admin:org
-          - admin:public_key
-      produces:
-        - application/json+todos
-      responses:
-        200:
-          description: Normal response
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Todo'
-        default:
-          description: No payload
-securityDefinitions:
-  internalOAuth:
-    type: oauth2
-    scopes:
-      user: Grants read/write access to profile info only. Note that this scope includes user:email and user:follow.
-      admin:org: Fully manage organization, teams, and memberships.
-      admin:public_key: Fully manage public keys.
-    flow: implicit
-    # we use a single API here to issue token (for SwaggerUI)
-    authorizationUrl: http://localhost:9000/example/token
-    # and to validate it later
-    x-token-validation-url: http://localhost:9000/example/token
-definitions:
-  Todo:
-    required:
-      - name
-    properties:
-      name:
-        type: string
-      tag:
-        type: string
-      description:
-        type: string
-  ErrorModel:
-    required:
-      - code
-      - message
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
-```
+The `example.yaml` definition provides an example [API description](https://github.com/zalando/play-swagger-service/blob/master/conf/example.yaml)
 
 This definition contains three end points: 
 - the `/token` path, which accept the `GET` and `POST` methods
 - the `/todos/{user_id}`, which accepts the `GET` method. 
 
-The `GET /token` API is provided as an authentication server and is used by the Swagger UI to request an OAuth token. 
-The `POST /token` API is provided as a part of authorization server and is used by the security part of the generated code to validate OAuth tokens
+The `GET /token` API plays a role of an authentication server and is used by the Swagger UI for OAuth token requests.
+The `POST /token` API represents an authorization server and is used by the security part of the 
+generated code to validate OAuth tokens.
  
-The `GET /todos/{user_id}` takes a path parameter `user_id` and returns a TODO list for given user. To work, the OAuth token with the scope `admin:org` must be requested using the Swagger UI 
+The `GET /todos/{user_id}` takes a path parameter `user_id` and returns a TODO list for given user. 
+For the client to be allowed to access this endpoint, it must provide an OAuth token with the scope `admin:org`. 
+The token can be requested using the Swagger UI.
 
-Try it out for yourself: Click the [default](http://localhost:9000/) button to expand the API definition in the Swagger UI.
+Try it out for yourself: 
+
+Click the [default](http://localhost:9000/) button to expand the API definition in the Swagger UI.
 
 
 # Play Routes Integration
 
-As a Play application developer, you are used to defining your endpoints in the `conf/routes` file. Not so with the Play-Swagger plugin! Swagger API specifications already define endpoints as `path` definitions, as seen in the example above. So why do the work twice, right? Instead, the Play-Swagger plugin requires you to link your API definition in the routes file ones—making all Swagger API-defined endpoints available as children of one single path context location, and generating Play route definitions from them (as shown below):
+As a Play application developer, you are used to defining your endpoints in the `conf/routes` file. 
+Not so with the Play-Swagger plugin! Swagger API specifications already define endpoints as `path` definitions, 
+as seen in the example above. So why do the work twice, right? Instead, the Play-Swagger plugin requires you to 
+link your API definition in the routes file ones—making all Swagger API-defined endpoints available as children 
+of one single path context location, and generating Play route definitions from them (as shown below):
 
 ```
 ->      /example        example.yaml.Routes
 ```
 
-Note that the `conf/routes` file provided by this activator template also contains a couple of additional `GET` mappings in order to be able to run the Swagger UI sandbox against the project contained API definition and the service that is generated from it.
+Note that the `conf/routes` file provided by this activator template also contains a couple of additional `GET` 
+mappings required for the the Swagger UI sandbox.
 
-There are a couple of additional commented out links to other examples. If you move some specification from the `examples` folder into the `conf` folder, you'll need to uncomment an appropriate line in the `routes` file.  
+There are a couple of commented out links to other examples. If you activate some specification by moving it from 
+the `examples` folder into the `conf` folder, you'll need to uncomment an appropriate line in the `routes` file in
+order for play to be able to find it.  
 
 
 ## Swagger Domain Definitions
 
-Scala domain model definitions are generated for all data types defined as Swagger parameters in an API specification.  Swagger parameters can be of path, query, header, form or body types, and consist of either primitive data types or more complex types composed from objects and arrays with primitives as leaves. 
-Both primitive types and complex types are mapped to scala.  
-As an example, let's look at the Swagger API specification file `simple.petstore.api.yaml`, which defines the API of a simple pet store. It contains a model definition for a pet.
+Scala domain model definitions are generated for all data types defined as Swagger parameters in an API specification. 
+Swagger parameters can be of path, query, header, form or body types, and consist of either primitive data types or 
+more complex types composed from objects and arrays with primitives as leaves. 
+
+Both primitive types and complex types are mapped to scala.
+
+As an example, let's look at the Swagger API specification file [`simple.petstore.api.yaml`](https://github.com/zalando/play-swagger-service/blob/master/conf/examples/simple.petstore.api.yaml), 
+which defines the API of a simple pet store. It contains a model definition for a pet.
 
 ```yaml
 definitions:
@@ -337,7 +167,9 @@ definitions:
         type: string
 ```
 
-This definition consists of an object `pet` containing the required properties `id` and `name` and the optional property `tag`. The Swagger primitive types of these properties are a 64-bit `integer` and (twice) a `string`, successively.  The Play-Swagger plugin will map this definition on to a generated Scala model.
+This definition consists of an object `pet` containing the required properties `id` and `name` 
+and the optional property `tag`. The Swagger primitive types of these properties are a 64-bit `integer` 
+and (twice) a `string`, successively.  The Play-Swagger plugin will map this definition on to a generated Scala model.
 
 ```scala
 package simple.petstore.api
@@ -353,11 +185,12 @@ package object yaml {
 This generated model contains a type definition `PetTag`, which declares a type alias for the optional `tag` property, 
 and a `Pet` case class with the properties as named in the Swagger API definition and mapped on the subsequent 
 Scala primitive or declared types. The case class and type alias are generated in an package object `yaml`, 
-this package  object itself is contained in the package `simple.petstore.api` so that full object name forms an API filename.
+this package  object itself is contained in the package `simple.petstore.api` so that full object name corresponds 
+to the API filename.
 
 Note that models are generated within a Play application as _managed_ code in the target folder. 
 Generated model code is not intended to be altered.  We should instead look upon the Swagger definition as the single 
-source of truth, and as the source code that defines our model. 
+source of truth, and as the source code that defines our model.
 The Swagger specification file of our API is, in that sense, part of the codebase. 
 Even though the generated `Pet` case class is managed by the plugin, and not us, it can (of course) 
 be used in our application codebase after being imported.
@@ -370,20 +203,25 @@ val pet = Pet(0L, "Tucker", Some("Greyhound"))
 
 ## Specification Cross-References
 
-A `$ref` element of the specification is allowed to contain file name part. Because of this, it is possible to split 
-a single specification into multiple files as shown in `cross_spec_references.yaml` example. It is also possible to reference
-a definition in one specification from another specification. In this case for each reference an independent copy of the class
-definition will be created for each referencing specification. The definition is then placed into the appropriate package 
-for each specification. Thus, even if multiple classes with the same name and structure might be generated, they all will
-coexist in their own namespace and won't be interchangeable.
+A `$ref` element of the specification is allowed to contain a name of file as it's part. Because of this, it is possible to split 
+a single specification into multiple files as shown in [`cross_spec_references.yaml`](https://github.com/zalando/play-swagger-service/blob/master/conf/examples/cross_spec_references.yaml) 
+example. It is also possible to reference a definition in one specification from another specification. 
+In this case for each reference an independent copy of the class definition will be created for each referencing specification. 
+The definition is then placed into the appropriate package for each specification. 
+
+Thus, even if multiple classes with  the same name and structure might be generated, they all will coexist in their 
+own separate namespaces and won't be interchangeable.
+
 
 ## Primitive Types
 
-Swagger version 2.0 allows for primitive data types based on the types defined by [JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8).  
+Swagger version 2.0 allows for primitive data types based on the types defined by 
+[JSON-Schema](http://json-schema.org/latest/json-schema-core.html#anchor8).
+
 When generated as Scala, the following mapping applies:
 
 | Common Name | Swagger Type | Swagger Format | Scala Type                                  |
-|------------:|-------------:|---------------:|--------------------------------------------:|
+|-------------|--------------|----------------|---------------------------------------------|
 | integer     | integer      | int32          | scala.Int                                   |
 | long        | integer      | int64          | scala.Long                                  |
 | float       | number       | float          | scala.Float                                 |
@@ -399,8 +237,8 @@ When generated as Scala, the following mapping applies:
 | password    | string       | password       | scala.String                                |
 | file        | file         |                | java.io.File                                |
 
-Additionally, if a validation of type "enum" is defined for some primitive type, a trait and a set of case objects together forming an ADT 
-are generated for this enum.
+Additionally, if a validation of type "enum" is defined for some primitive type, a trait and a set of case objects forming an ADT 
+will be generated for this enum.
 
 ## Complex Types
 
@@ -415,8 +253,8 @@ and defined as Swagger [Schema Objects](https://github.com/Swagger-api/Swagger-s
 for parameter definitions of `type: "object"`.
 For example, given a Swagger API definition file `api.yaml` containing a model that defines a `person` as an object 
 with the properties `name` and `age` of the primitive types `string` and `integer` subsequently, 
-this object will be mapped on a Scala case class, and generated in a Scala object (namespace) with the same name 
-as the root Swagger property in which it occurs. I.e. `definitions` and in a package with the same name as the 
+this object will be mapped on a Scala case class, and generated in a Scala package object (namespace) with the same name 
+as the extension of the file the specification is read from and in a package with the same name as the 
 Swagger definition file in which the model is defined—that is, `api`
 
 ```yaml
@@ -529,7 +367,16 @@ package object yaml {
 }
 ```
 
-In the case, if a parameter is _not_ required, it is allowed to provide a default parameter value.
+
+### Parameter optionality
+
+As object properties can be optional, so can be query, header, body or form parameters. 
+In the case if they are not required, they are mapped to the Scala's `Option` type. 
+
+Path parameters are _must_ be declared as required.
+
+In the case, if a parameter is _not_ required, it is allowed to have a default value.
+
 
 ### Extension
 
@@ -653,11 +500,16 @@ and four case objects implementing that trait.
 ### Additional Properties
 
 Swagger's model language allows objects' additional properties to be loosely defined employing the `additionalProperties` annotation 
-in order to model dictionaries. These dictionaries are mapped to Scala's `Map`code> type, for which a type alias is generated following the same (by now) well-known pattern as for optional properties, with the map's key parameter type being a Scala `String`code>.
+in order to model dictionaries. These dictionaries are mapped to Scala's `Map` type, for which a type alias is 
+generated following the same (by now) well-known pattern as for optional properties, with the map's key parameter type being a Scala `String`.
 
-A Swagger additional property definition takes as its type property the element type of the dictionary, which can be of primitive or complex type and which is mapped on Scala as the map's value parameter type. Swagger allows for one `additionalProperties`code> annotation per object definition, so we can generate this Scala parameter with the static name `additionalProperties`code>.
+A Swagger additional property definition takes as its type property the element type of the dictionary, 
+which can be of primitive or complex type and which is mapped on Scala as the map's value parameter type. 
+Swagger allows for one `additionalProperties` annotation per object definition, so we can generate this Scala parameter 
+with the static name `additionalProperties`.
 
-In the following example we define a Swagger model object definition `KeyedArray`code> that uses the `additionalProperties` annotation to provide the object with a set of key value mappings from string to array. E.g.
+In the following example we define a Swagger model object definition `KeyedArray` that uses the `additionalProperties` 
+annotation to provide the object with a set of key value mappings from string to array. E.g.
 
 ```yaml
 definitions:
@@ -690,8 +542,9 @@ package object yaml {
 
 Swagger's `array` is used to define properties that hold sets or lists of model values—possibly of a primitive type, 
 but complex element types are also allowed. Depending on the place where the array definition appears, Swagger array can be mapped to one of two Scala types, parametrised for the element type that it contains:
-- if an array only defined inline as a part of the response definition, it is defined as a `Seq` type
-- otherwise (array appears in the parameter definition or in the `definitions` part of the specification) it is defined as am `de.zalando.play.controllers.ArrayWrapper`
+- if an array only defined inline as a part of the response definition, it is translated to a `Seq` type
+- otherwise (array appears in the parameter definition or in the `definitions` part of the specification) it is 
+defined as a `de.zalando.play.controllers.ArrayWrapper`
 
 For example, in the snippet below, an `Activity` object definition is referred to as an item element in the 
 `messages` property of `type: array` of the containing object definition `Example`. 
@@ -826,7 +679,6 @@ package object yaml {
     type ExampleMessages = Option[ExampleMessagesOpt]
     type ExampleNested = Option[ExampleNestedOpt]
     type ExampleMessagesOptArr = ArrayWrapper[Activity]
-    type ApiGetResponses200 = Null
     type ExampleNestedOptArrArrArr = ArrayWrapper[String]
     type ExampleNestedOptArrArr = ArrayWrapper[ExampleNestedOptArrArrArr]
     type ActivityActions = Option[String]
