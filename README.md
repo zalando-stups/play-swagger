@@ -28,7 +28,7 @@ We benefit from community feedback. All comments are welcome!
 
 # Play-Swagger Tutorial
 
-The tutorial uses the [play-swagger-service](http://www.typesafe.com/activator/template/play-swagger-service) activator template.
+This tutorial is based on the [play-swagger-service](http://www.typesafe.com/activator/template/play-swagger-service) activator template.
 
 ```bash
 $ activator new playground play-swagger-service
@@ -696,65 +696,91 @@ package object yaml {
 Swagger API definitions allow for constraints to be put on parameter types. 
 We have already seen the `required` constraint, used to mark a parameter or specific field within 
 a domain definition to be required upon input. Additional constraints, as defined by the 
-<a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#parameterObject">Parameter Object</a>, 
-can be added to your API definition. The Play-Swagger plugin wil generate validations for these parameter 
+[Parameter Object](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#parameterObject), 
+can be added to your API definition. The Play-Swagger plugin will generate validations for these parameter 
 constraints and make sure that your controller methods are only called if the input of your service 
 complies to those constraints. 
 
-In the example below, we take an API definition, which contains a `year` parameter of 
-type `string`, both in the query parameter and in the response. Let's change that type to integer and 
-add a `minimum` and `maximum` constraint that allows only for years to be between 2000 and 2100. 
-Let's also make the parameter required.
+In the example below, the API definition of the `token` parameter of 
+type `Base64String`, as the form parameter, contains validation rules for the lenght of the perameter as well as a regexp pattern the value of the parameter must confirm to.
+The parameter is also required.
 
 ```yaml
 ...
-post:
-  responses:
-    200:
-      description: Echo POST
-      schema:
-        type: object
-        properties:
-          name:
-            type: string
-          year:
-            type: integer
-  parameters:
-    - name: name
-      in: query
-      type: string
-    - name: year
-      in: query
-      type: integer
-      required: true
-      minimum: 2000
-      maximum: 2100
+parameters:
+      - name: token
+        in: formData
+        description: oauth2 token
+        type: string
+        format: byte
+        pattern: "[A-Za-z0-9]*"
+        minLength: 5
+        maxLength: 100
+        required: true
 ...
 ```
 
+Let's take another example:
+
+```yaml
+...
+    get:
+      parameters:
+      - name: state
+        in: query
+        description: Any application state to be forwarded back to the frontend
+        type: string
+        minLength: 1
+        maxLength: 110
+        required: false
+...
+```
+
+The `state` parameter is of type string, is not required and has no default value. 
+It is also only allowed to have a state of length between 1 and 110, otherwise it won't pass validation. 
+For the demo purposes, let's change it's type to `integer` and make it required. 
+
+As the parameter is required now, the `default` value cannot be present. The `maxLength` and `maxLength` validations 
+are not allowed for integer parameters, therefore let's replace them with `minimum` and `maximum` values:
+    
+```yaml
+...
+    get:
+      parameters:
+      - name: state
+        in: query
+        description: Any application state to be forwarded back to the frontend
+        type: integer
+        format: int32
+        required: true
+        minimum: 2000
+        maximum: 2100      
+...
+```    
+
+
 As we just changed the parameter type, refreshing Swagger UI will, in addition to generating validations 
 for that parameter type, also force a regeneration of the model consistent with the validation. 
-That's nice, but note that it still breaks the current implementation of the controller class, as the 
-implementation of the `postAction` expects `year` to be of type `String`.
+That's nice, but note that it will break the current implementation of the controller class, as the 
+implementation of the `postAction` expects `state` to be of type `String`.
 
 ![Validation screenshot](/docs/validations-01.png)
 
-Let's change the implementation. The second parameter `year` is no longer 
-(normalised as a type from the `name` parameter) of type `PostName` 
-but of type `PostYear`, and now required. We change the type in the input and wrap 
-it in a `Some` when responding, as the parameter still is optional in its response.
+Let's change the implementation. The second parameter `state` is no longer 
+(normalised as a type from the `name` parameter) of type `Option[String]` 
+but of type `Int`. We change the implementation to take it into the account:
 
 ```scala
-val post = postAction {
-    input: (PostName, PostYear) =>
-    val (name, year) = input
-    Success(
-        Some(PostResponses200Opt(name, Some(year)))
-    )
+...
+val tokenGet = tokenGetAction { input: (String, String, String, Int) =>
+    val (redirect_uri, scope, response_type, state) = input
+    // ----- Start of unmanaged code area for action  TokenService.tokenGet
+    val statePart = s"""state=$state"""
+...
 }
 ```
 
-Refreshing Swagger UI and trying out a couple of integer values for `year` shows that the service 
+Refreshing Swagger UI and trying out a couple of integer values for `state` shows that the service 
 now excepts value within the range `[2000..2100]`, but returns a descriptive error when outside. I.e.
 
 ```json
@@ -775,7 +801,7 @@ now excepts value within the range `[2000..2100]`, but returns a descriptive err
 Having an API definition as the single source of truth in your codebase—with formal type specification of the in- and output values, 
 including their constraints—provides for a powerful feature when it comes to testing. 
 The Play-Swagger plugin automates the creation of test data generators that can drive property checks directly 
-from the API specification. Play-Swagger generates data generators and unit tests directly from your Swagger API specification.
+from the API specification. Play-Swagger derives data generators and unit tests directly from your Swagger API specification.
 
 Property-based testing using generator-driven property checks is a cool way to test the validity of your application 
 according to the rules or properties that apply to your application. Properties, in this sense, are high-level 
@@ -810,6 +836,9 @@ paths:
           required: false
           type: integer
           format: int32
+      responses:
+        default:
+          description: error payload
     post:
       parameters:
         - name: pet
@@ -817,6 +846,9 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/newPet'
+      responses:
+        default:
+          description: error payload
   /pets/{id}:
     get:
       parameters:
@@ -825,6 +857,9 @@ paths:
           required: true
           type: integer
           format: int64
+      responses:
+        default:
+          description: error payload
     delete:
       parameters:
         - name: id
@@ -832,6 +867,9 @@ paths:
           required: true
           type: integer
           format: int64
+      responses:
+        default:
+          description: error payload
 definitions:
   pet:
     required:
@@ -867,26 +905,22 @@ with both `name` and `id` being mandatory. This specification maps to the follow
 
 
 ```scala
-package simple.petstore.api.yaml
-object definitions {
+package example
 
-  type NewPetTag = Option[String]
-  type NewPetId = Option[Long]
+package object yaml {
 
-  case class Pet(
-        id: Long,
-        name: String,
-        tag: NewPetTag
-  )
-  case class NewPet(
-        name: String,
-        id: NewPetId,
-        tag: NewPetTag
-  )
-}
-object paths {
-  import definitions._
-  type PetsGetLimit = Option[Int]
+    import de.zalando.play.controllers.PlayPathBindables
+
+    type PetsIdDeleteResponsesDefault = Null
+    type NewPetTag = Option[String]
+    type PetsIdDeleteId = Long
+    type PetsGetLimit = Option[Int]
+    type NewPetId = Option[Long]
+
+    case class Pet(id: Long, name: String, tag: NewPetTag) 
+    case class NewPet(name: String, id: NewPetId, tag: NewPetTag) 
+
+    implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
 }
 ```
 
@@ -911,60 +945,42 @@ and `Some` arbitrarily id value. It's probably best to let the Scala generator c
 Note how it composes according to the same structure as the Scala model code.
 
 ```scala
-package simple.petstore.api.yaml
+package example.yaml
+
 import org.scalacheck.Gen
-import org.scalacheck.Arbitrary._
+import org.scalacheck.Arbitrary
+import play.api.libs.json.scalacheck.JsValueGenerators
+import Arbitrary._
 
-object definitionsGenerator {
-    import definitions._
+object Generators extends JsValueGenerators {
 
-    def createNewPetTagGenerator =
-        _generate(NewPetTagGenerator)
-    def createNewPetIdGenerator =
-        _generate(NewPetIdGenerator)
-    def createPetGenerator =
-        _generate(PetGenerator)
-    def createNewPetGenerator =
-        _generate(NewPetGenerator)
+    def createNullGenerator = _generate(NullGenerator)
+    def createNewPetTagGenerator = _generate(NewPetTagGenerator)
+    def createLongGenerator = _generate(LongGenerator)
+    def createPetsGetLimitGenerator = _generate(PetsGetLimitGenerator)
+    def createNewPetIdGenerator = _generate(NewPetIdGenerator)
 
-    val NewPetTagGenerator =
-        Gen.option(arbitrary[String])
-    val NewPetIdGenerator =
-        Gen.option(arbitrary[Long])
+    def createPetGenerator = _generate(PetGenerator)
+    def createNewPetGenerator = _generate(NewPetGenerator)
 
-    val PetGenerator =
-        for {
-            id <- arbitrary[Long]
-            name <- arbitrary[String]
-            tag <- NewPetTagGenerator
-        } yield Pet(id, name, tag)
+    def NullGenerator = arbitrary[Null]
+    def NewPetTagGenerator = Gen.option(arbitrary[String])
+    def LongGenerator = arbitrary[Long]
+    def PetsGetLimitGenerator = Gen.option(arbitrary[Int])
+    def NewPetIdGenerator = Gen.option(arbitrary[Long])
 
-    val NewPetGenerator =
-        for {
-            name <- arbitrary[String]
-            id <- NewPetIdGenerator
-            tag <- NewPetTagGenerator
-        } yield NewPet(name, id, tag)
+    def PetGenerator = for {
+        id <- arbitrary[Long]
+        name <- arbitrary[String]
+        tag <- NewPetTagGenerator
+    } yield Pet(id, name, tag)
+    def NewPetGenerator = for {
+        name <- arbitrary[String]
+        id <- NewPetIdGenerator
+        tag <- NewPetTagGenerator
+    } yield NewPet(name, id, tag)
 
-    def _generate[T](gen: Gen[T]) =
-        (count: Int) => for {
-            i <- 1 to count
-        } yield gen.sample
-}
-
-object pathsGenerator {
-    import definitions._
-
-    def createPetsGetLimitGenerator =
-        _generate(PetsGetLimitGenerator)
-
-    val PetsGetLimitGenerator =
-        Gen.option(arbitrary[Int])
-
-    def _generate[T](gen: Gen[T]) =
-        (count: Int) => for {
-            i <- 1 to count
-        } yield gen.sample
+    def _generate[T](gen: Gen[T]) = (count: Int) => for (i <- 1 to count) yield gen.sample
 }
 ```
 
@@ -989,6 +1005,7 @@ To use the plugin in a plain Play project:
 - Do the same for `build.sbt`
 - Put a Swagger specification with a ```.yaml``` or ```.json``` extension into the ```conf``` directory
 - Add a specification link (`->`) to the play's routes file
+
 
 ## Plugin Project Structure
 
@@ -1029,10 +1046,12 @@ The play-swagger plugin provides a couple of commands useful for development:
 * `swaggerPrintFlatAstTypes` - outputs type definitions after type optimisations
 * `swaggerPrintFlatAstParameters` - outputs parameter definitions after type optimisations
 
+
 ## Plugin Testing
 
 We're using the sbt scripted framework for testing. You can find the tests in `plugin/src/sbt-test`, and run them 
 by running `scripted` in the sbt console.
+
 
 ## Code quality
 
