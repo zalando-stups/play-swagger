@@ -5,10 +5,10 @@ import java.net.URI
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Domain.PrimitiveType
-import de.zalando.apifirst.TypeNormaliser
+import de.zalando.apifirst.{ScalaName, TypeNormaliser}
 import de.zalando.apifirst.generators.ScalaGenerator
 import de.zalando.swagger.strictModel.SwaggerModel
-import de.zalando.swagger.{ ModelConverter, StrictJsonParser, StrictYamlParser }
+import de.zalando.swagger.{ModelConverter, StrictJsonParser, StrictYamlParser}
 import org.apache.commons.io.FileUtils
 import play.routes.compiler.RoutesCompiler.RoutesCompilerTask
 import play.routes.compiler.RoutesGenerator
@@ -16,77 +16,87 @@ import play.routes.compiler.RoutesGenerator
 import scala.collection.immutable.::
 import scala.io.Codec
 
-/**
- * The compiler
- */
-object SwaggerCompiler {
-
-  type generatorF = (String, String, String) => Seq[String]
-
-  def readSwaggerModel(task: SwaggerCompilationTask): (URI, SwaggerModel) = {
-    val parser = if (task.definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
-    val (uri, model) = parser.parse(task.definitionFile)
+object SwaggerParser {
+  def readSwaggerModel(definitionFile: File): (URI, SwaggerModel) = {
+    val parser = if (definitionFile.getName.endsWith(".yaml")) StrictYamlParser else StrictJsonParser
+    val (uri, model) = parser.parse(definitionFile)
     (uri, model)
   }
 
   def convertModelToAST(definitionFile: File, uri: URI, model: SwaggerModel): StrictModel =
     ModelConverter.fromModel(uri, model, Option(definitionFile))
 
-  def flattenAST(initialAst: StrictModel): StrictModel =
-    TypeNormaliser.flatten(initialAst)
+}
 
-  def compileBase(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
-    flatAst: StrictModel): SwaggerCompilationResult = {
+object AstNormaliser {
+  def flattenAST(initialAst: StrictModel): StrictModel = TypeNormaliser.flatten(initialAst)
+}
+
+
+case class PlayScalaCompilationTask(definitionFile: File, generator: RoutesGenerator)
+/**
+ * The compiler
+ */
+object PlayScalaCompiler {
+
+  type generatorF = (String, String, String) => Seq[String]
+
+  def compileBase(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
+                  flatAst: StrictModel): CompilationResult = {
     val places = Seq("/model/", "/validators/", "/security/", "/controllers_base/", "/marshallers/")
     val generator = new ScalaGenerator(flatAst).generateBase
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
     SwaggerCompilationResult(swaggerFiles)
   }
 
-  def compileTests(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
-    flatAst: StrictModel): SwaggerCompilationResult = {
+  def compileTests(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
+                   flatAst: StrictModel): CompilationResult = {
     val places = Seq("/generators/", "/tests/")
     val generator = new ScalaGenerator(flatAst).generateTest
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
     SwaggerCompilationResult(swaggerFiles)
   }
 
-  def compileControllers(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
-    flatAst: StrictModel): SwaggerCompilationResult = {
+  def compileControllers(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
+                         flatAst: StrictModel): CompilationResult = {
     val places = Seq("/generated_controllers/")
     val generator = new ScalaGenerator(flatAst).generateControllers
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
-    SwaggerControllerCompilationResult(swaggerFiles.flatten)
+    ControllerCompilationResult(swaggerFiles.flatten)
   }
 
-  def compileMarshallers(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
-    flatAst: StrictModel): SwaggerCompilationResult = {
+  def compileMarshallers(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
+                         flatAst: StrictModel): CompilationResult = {
     val places = Seq("/marshallers/")
     val generator = new ScalaGenerator(flatAst).generateMarshallers
     val swaggerFiles = compileSwagger(task, outputDir, places, generator, overwrite = false)(flatAst)
-    SwaggerControllerCompilationResult(swaggerFiles.flatten)
+    ControllerCompilationResult(swaggerFiles.flatten)
   }
 
-  def compileExtractors(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
-    flatAst: StrictModel): SwaggerCompilationResult = {
+  def compileExtractors(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
+                        flatAst: StrictModel): CompilationResult = {
     val places = Seq("/security/")
     val generator = new ScalaGenerator(flatAst).generateExtractors
     val swaggerFiles = compileSwagger(task, outputDir, places, generator, overwrite = false)(flatAst)
-    SwaggerControllerCompilationResult(swaggerFiles.flatten)
+    ControllerCompilationResult(swaggerFiles.flatten)
   }
 
-  def compileRoutes(task: SwaggerCompilationTask, outputDir: File, keyPrefix: String, routesImport: Seq[String],
-    flatAst: StrictModel): SwaggerCompilationResult = {
+  def compileRoutes(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
+                    flatAst: StrictModel): CompilationResult = {
     val routesFiles = compileRoutes(task, outputDir, routesImport)(flatAst)
     SwaggerCompilationResult(routesFiles)
   }
 
-  private def compileSwagger(task: SwaggerCompilationTask, outputDir: File, places: Seq[String], generator: generatorF, overwrite: Boolean = true)(implicit flatAst: StrictModel) = {
+  private def compileSwagger(task: PlayScalaCompilationTask, outputDir: File, places: Seq[String],
+                             generator: generatorF, overwrite: Boolean = true)(implicit flatAst: StrictModel) = {
     val currentCtrlr = readFile(outputDir, fullFileName(Option(task.definitionFile), places.last))
-    val packageName = flatAst.packageName.getOrElse(task.packageName)
+    val packageName = flatAst.packageName.getOrElse(taskPackageName(task))
     val artifacts = places zip generator(task.definitionFile.getName, packageName, currentCtrlr)
     persistFiles(task.definitionFile, outputDir, overwrite, artifacts)
   }
+
+  private def taskPackageName(task: PlayScalaCompilationTask): String =
+    ScalaName.scalaPackageName(task.definitionFile.getName)
 
   private def persistFiles(definitionFile: File, outputDir: File, overwrite: Boolean, artifacts: Seq[(String, String)]): Seq[Seq[File]] = {
     val persister = persist(Option(definitionFile), outputDir, overwrite) _
@@ -99,8 +109,8 @@ object SwaggerCompiler {
       case t: PrimitiveType if t.imports.nonEmpty => t.imports.filterNot(_.contains("_"))
     }.flatten.toSeq
 
-  private def compileRoutes(task: SwaggerCompilationTask, outputDir: File, routesImport: Seq[String])(implicit flatAst: StrictModel) = {
-    val namespace = flatAst.packageName.getOrElse(task.packageName)
+  private def compileRoutes(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String])(implicit flatAst: StrictModel) = {
+    val namespace = flatAst.packageName.getOrElse(taskPackageName(task))
     val allImports = ((namespace + "._") +: (additionalImports(flatAst) ++ routesImport)).distinct
     val playNameSpace = Some(namespace)
     val playRules = RuleGenerator.apiCalls2PlayRules(flatAst.calls: _*).toList
@@ -134,7 +144,7 @@ object SwaggerCompiler {
     FileUtils.writeStringToFile(file, content, implicitly[Codec].name)
   }
 
-  def readFile(outputDir: File, fileName: String) = {
+  def readFile(outputDir: File, fileName: String): String = {
     val file = new File(outputDir, fileName)
     if (file.exists && file.canRead)
       FileUtils.readFileToString(file)
@@ -144,44 +154,31 @@ object SwaggerCompiler {
 }
 
 /**
- * This should capture everything about the compilation of a single file.
- *
- * Incremental compilation will hash the toString of this file and use it as part of its algorithm to determine if
- * anything has changed - this is why, for example, the version is included, so that when you upgrade play swagger, it
- * will trigger a recompile.
- */
-case class SwaggerCompilationTask(
-  definitionFile: File,
-  packageName: String,
-  generator: RoutesGenerator,
-  playSwaggerVersion: String)
-
-/**
  * Results of a compilation
  */
-sealed trait SwaggerCompilationResult {
+sealed trait CompilationResult {
   def allFiles: Set[File]
 }
 object SwaggerCompilationResult {
-  def apply(results: Seq[Seq[File]]) = results match {
+  def apply(results: Seq[Seq[File]]): CompilationResult with Product with Serializable = results match {
     case model :: validators :: security :: controllers :: formParsers :: Nil =>
-      SwaggerBaseCompilationResult(model, validators, security, controllers, formParsers)
-    case testData :: tests :: Nil => SwaggerTestCompilationResult(testData, tests)
-    case routes :: Nil => SwaggerRoutesCompilationResult(routes)
+      BaseCompilationResult(model, validators, security, controllers, formParsers)
+    case testData :: tests :: Nil => TestCompilationResult(testData, tests)
+    case routes :: Nil => RoutesCompilationResult(routes)
     case other => throw new IllegalArgumentException("Not recognized: " + other)
   }
 }
-case class SwaggerBaseCompilationResult(modelFiles: Seq[File], validatorFiles: Seq[File],
-    securityFiles: Seq[File], controllerBaseFiles: Seq[File], formParserFiles: Seq[File]) extends SwaggerCompilationResult {
+case class BaseCompilationResult(modelFiles: Seq[File], validatorFiles: Seq[File],
+    securityFiles: Seq[File], controllerBaseFiles: Seq[File], formParserFiles: Seq[File]) extends CompilationResult {
   def allFiles: Set[File] = (modelFiles ++ validatorFiles ++ securityFiles ++ controllerBaseFiles ++ formParserFiles).toSet
 }
-case class SwaggerRoutesCompilationResult(routesFiles: Seq[File]) extends SwaggerCompilationResult {
+case class RoutesCompilationResult(routesFiles: Seq[File]) extends CompilationResult {
   def allFiles: Set[File] = routesFiles.toSet
 }
-case class SwaggerControllerCompilationResult(controllerFiles: Seq[File]) extends SwaggerCompilationResult {
+case class ControllerCompilationResult(controllerFiles: Seq[File]) extends CompilationResult {
   def allFiles: Set[File] = controllerFiles.toSet
 }
-case class SwaggerTestCompilationResult(testDataGeneratorFiles: Seq[File],
-    testFiles: Seq[File]) extends SwaggerCompilationResult {
+case class TestCompilationResult(testDataGeneratorFiles: Seq[File],
+    testFiles: Seq[File]) extends CompilationResult {
   def allFiles: Set[File] = (testDataGeneratorFiles ++ testFiles).toSet
 }

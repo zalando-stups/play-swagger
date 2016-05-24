@@ -1,40 +1,41 @@
-package de.zalando.play.swagger.sbt
+package de.zalando.play.apifirst.sbt
+
+import java.io.File
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Hypermedia
-import de.zalando.play.compiler.SwaggerCompilationTask
 import de.zalando.apifirst.generators.AstScalaPlayEnricher
 
 /**
   * @since 23.03.2016.
   */
-object SwaggerPrettyPrinter {
-  def types(task: SwaggerCompilationTask, ast: StrictModel): Seq[String] = {
+object ApiFirstPrettyPrinter {
+  def types(file: File, ast: StrictModel): Seq[String] = {
     val typeDefs  = ast.typeDefs
     val typeMap   = typeDefs map { case (k, v) => k -> ("\n\t\t" + v.toShortString("\t\t\t")) }
     val lines = typeMap.toSeq.sortBy(_._1.parts.size).map(p => formatText(p._1.toString())(magenta,black) + " → " + p._2)
-    withFileName("Types:\t", task, lines)
+    withFileName("Types:\t", file, lines)
   }
 
-  def parameters(task: SwaggerCompilationTask, ast: StrictModel): Seq[String] = {
+  def parameters(file: File, ast: StrictModel): Seq[String] = {
     val params      = ast.params
     val lines       = params.toSeq.sortBy(_._1.name.parts.size).map(p => formatText(p._1.name.toString)(dyellow,black) + " → " + p._2)
-    withFileName("Parameters:\t", task, lines)
+    withFileName("Parameters:\t", file, lines)
   }
 
-  def states(task: SwaggerCompilationTask, ast: StrictModel): Seq[String] = {
+  def states(file: File, ast: StrictModel): Seq[String] = {
     val lines       = Hypermedia.State.toDot(ast.stateTransitions)
-    withFileName("State Diagram:\t", task, lines)
+    withFileName("State Diagram:\t", file, lines)
   }
 
-  def denotations(task: SwaggerCompilationTask, ast: StrictModel): Seq[String] = {
+  def denotations(file: File, ast: StrictModel): Seq[String] = {
     val play = AstScalaPlayEnricher(ast)
     val lines = play.toSeq.map({case (ref, den) => formatText(ref.toString)(dyellow, black) + " → " + den })
-    withFileName("Parameters:\t", task, lines)
+    withFileName("Parameters:\t", file, lines)
   }
 
-  def withFileName(prefix: String, task: SwaggerCompilationTask, lines: Seq[String]): Seq[String] =
-    s"\n$prefix${formatText(task.definitionFile.getName)(blue,black)}\n" +: "\n" +: lines :+ "\n" :+ "\n"
+  def withFileName(prefix: String, definitionFile: File, lines: Seq[String]): Seq[String] =
+    s"\n$prefix${formatText(definitionFile.getName)(blue,black)}\n" +: "\n" +: lines :+ "\n" :+ "\n"
 
   def textColor(color: Int): String = { s"\033[38;5;${color}m" }
   def backgroundColor(color:Int): String = { s"\033[48;5;${color}m" }
