@@ -85,8 +85,8 @@ Manual generation and compilation of:
 
 is supported in the case if
 
-    a) No security extractor or unmarshaller with the same name already exists
-    b) The developer issues `swaggerSecurity` or `swaggerMarshallers` sbt command 
+a) No security extractor or unmarshaller with the same name already exists
+b) The developer issues `swaggerSecurity` or `swaggerMarshallers` sbt command 
 
 ## Run Your Application
 
@@ -691,7 +691,7 @@ package object yaml {
 
 ```
 
-## Swagger Validations (TODO)
+## Swagger Validations
 
 Swagger API definitions allow for constraints to be put on parameter types. 
 We have already seen the `required` constraint, used to mark a parameter or specific field within 
@@ -767,8 +767,7 @@ implementation of the `postAction` expects `state` to be of type `String`.
 ![Validation screenshot](/docs/validations-01.png)
 
 Let's change the implementation. The second parameter `state` is no longer 
-(normalised as a type from the `name` parameter) of type `Option[String]` 
-but of type `Int`. We change the implementation to take it into the account:
+of type `Option[String]` but of type `Int`. We change the implementation to take this fact into the account:
 
 ```scala
 ...
