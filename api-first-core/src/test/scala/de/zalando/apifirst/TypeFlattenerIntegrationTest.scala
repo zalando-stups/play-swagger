@@ -63,7 +63,6 @@ class TypeFlattenerIntegrationTest extends FunSpec with MustMatchers {
 
   def asInFile(name: String, suffix: String): String = {
     val expectedFile = new File(expectation_path, prefix + name + suffix)
-    println("READING: " + expectedFile.getCanonicalPath)
     if (expectedFile.canRead) {
       val src = Source.fromFile(expectedFile)
       val result = src.getLines().mkString("\n")
