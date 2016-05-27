@@ -4,7 +4,7 @@ import java.io.File
 
 import de.zalando.BuildInfo
 import de.zalando.apifirst.Application.StrictModel
-import de.zalando.play.compiler.SwaggerParser
+import de.zalando.swagger.SwaggerParser
 import de.zalando.swagger.strictModel.SwaggerModel
 import sbt.Keys._
 import sbt.{Defaults, _}

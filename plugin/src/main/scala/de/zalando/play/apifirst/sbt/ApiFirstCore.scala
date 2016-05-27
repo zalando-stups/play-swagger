@@ -4,8 +4,7 @@ import java.io.File
 
 import de.zalando.BuildInfo
 import de.zalando.apifirst.Application.StrictModel
-import de.zalando.play.compiler.AstNormaliser
-import de.zalando.play.swagger.sbt.ApiFirstSwaggerParser
+import de.zalando.apifirst.AstNormaliser
 import sbt.Keys._
 import sbt.{Types, _}
 
