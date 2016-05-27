@@ -9,7 +9,7 @@ $ absent target/routes/test/generators/echo.api.yaml.scala
 
 # Fails while compiled for the first time because of missing controllers
 > clean
-> swagger
+> playScalaApiFirstApp
 
 # $ absent app/generated_controllers/echo.api.yaml.scala
 $ exists target/routes/main/controllers_base/echo.api.yaml.scala
@@ -17,7 +17,7 @@ $ exists target/routes/main/model/echo.api.yaml.scala
 $ exists target/routes/main/validators/echo.api.yaml.scala
 
 # The controller generation must be triggered explicitly
-# > swaggerControllers
+# > playScalaControllers
 
 # all controllers were generated
 
@@ -43,10 +43,10 @@ $ absent target/routes/test/generators/echo.api.yaml.scala
 
 # Successfully compiles after controllers have being generated
 > clean
-> swagger
+> playScalaApiFirstApp
 -> compile
-> swaggerMarshallers
-> swaggerSecurity
+> playScalaMarshallers
+> playScalaSecurity
 # $ pause
 > compile
 
