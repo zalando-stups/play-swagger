@@ -10,7 +10,7 @@ import org.scalatest.{FunSpec, MustMatchers}
   */
 class SecurityConverterIntegrationTest extends FunSpec with MustMatchers with ExpectedResults {
 
-  override val expectationsFolder = "/expected_results/security_definitions/"
+  override val expectationsFolder = super.expectationsFolder + "security_definitions/"
 
   val fixtures = new File(resourcesPath + "examples").listFiles
 

@@ -9,7 +9,7 @@ import org.scalatest.{FunSpec, MustMatchers}
   */
 class SecurityConstraintsIntegrationTest extends FunSpec with MustMatchers with ExpectedResults {
 
-  override val expectationsFolder = "/expected_results/security_constraints/"
+  override val expectationsFolder = super.expectationsFolder + "security_constraints/"
 
   val fixtures = new File("swagger-parser/src/test/resources/examples").listFiles
 

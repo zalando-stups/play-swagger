@@ -7,7 +7,7 @@ import org.scalatest.{FunSpec, MustMatchers}
 
 class TypeConverterTest extends FunSpec with MustMatchers with ExpectedResults {
 
-  override val expectationsFolder = "/expected_results/types/"
+  override val expectationsFolder = super.expectationsFolder + "types/"
 
   val modelFixtures = new File(resourcesPath + "model").listFiles
 

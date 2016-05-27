@@ -8,7 +8,7 @@ import org.scalatest.{FunSpec, MustMatchers}
 
 class HypermediaConverterTest extends FunSpec with MustMatchers with ExpectedResults {
 
-  override val expectationsFolder = "/expected_results/hypermedia/"
+  override val expectationsFolder = super.expectationsFolder + "hypermedia/"
 
   val exampleFixtures = new File(resourcesPath + "extensions").listFiles
 

@@ -11,7 +11,7 @@ trait ExpectedResults {
 
   val resourcesPath = "swagger-parser/src/test/resources/"
 
-  val expectationsFolder = "/expected_results/"
+  def expectationsFolder: String = "/expected_results/"
 
   def dump(result: String, file: File, suffix: String): Unit = {
     if (result.nonEmpty) {

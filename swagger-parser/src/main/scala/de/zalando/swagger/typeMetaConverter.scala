@@ -24,10 +24,10 @@ object TypeMetaConverter extends ParameterNaming {
     TypeMeta(Option(nb.format), toValidations(nb))
 
   implicit def schemaArrayTypeMeta(nb: SchemaArray): TypeMeta =
-    TypeMeta(Some(s"Schemas: $nb.size"), Nil)
+    TypeMeta(Some(s"Schemas: ${nb.size}"), Nil)
 
   implicit def namedTypesTypeMeta(nb: NamedTypes): TypeMeta =
-    TypeMeta(Some(s"Named types: $nb.size"), Nil)
+    TypeMeta(Some(s"Named types: ${nb.size}"), Nil)
 
   implicit def enumTypeMeta(enumSize: Int): TypeMeta =
     TypeMeta(Some(s"Enum type : $enumSize"), Nil)

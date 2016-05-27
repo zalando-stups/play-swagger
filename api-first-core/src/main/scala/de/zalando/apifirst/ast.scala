@@ -116,8 +116,8 @@ object Domain {
     override def toString: String = s"""TypeMeta($escapedComment, $constrStr)"""
     private val replacement = Seq('"','"','"','+','"','"','"','"','"','"','"','"','"','+','"','"','"').mkString
     private def escape(s: String) =
-      if (s.contains('"')) "\"\"\"" + s.replaceAllLiterally("\"\"\"", replacement) + "\"\"\""
-      else "\"" + s + "\""
+      (if (s.contains('"')) "\"\"\"" + s.replaceAllLiterally("\"\"\"", replacement) + "\"\"\""
+      else "\"" + s + "\"").replace('\n',' ')
     lazy val constrStr = constraints.map(escape)
     val escapedComment = comment.map(escape)
   }

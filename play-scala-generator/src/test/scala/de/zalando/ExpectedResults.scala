@@ -1,7 +1,8 @@
 package de.zalando
 
-import java.io.File
+import java.io.{File, FileOutputStream}
 
+import de.zalando.apifirst.util.ScalaPrinter
 import de.zalando.model._
 
 import scala.io.Source
@@ -55,13 +56,12 @@ trait ExpectedResults {
   def dump(result: String, name: String, suffix: String): Unit = {
     if (result.nonEmpty) {
       val newFile = target(name, suffix)
-      //newFile.getParentFile.mkdirs()
-      //      newFile.delete()
-//      newFile.createNewFile()
-      println("BOOO: " + newFile.getAbsolutePath)
-      //val out = new FileOutputStream(newFile)
-      //out.write(result.getBytes)
-      //out.close()
+      newFile.getParentFile.mkdirs()
+      newFile.delete()
+      newFile.createNewFile()
+      val out = new FileOutputStream(newFile)
+      out.write(result.getBytes)
+      out.close()
     }
   }
 
@@ -81,7 +81,6 @@ trait ExpectedResults {
 
   def clean(str: String): String = str.split("\n").map(_.trim).filter(_.nonEmpty).mkString("\n")
 
-  def nameFromModel(ast: WithModel): String =
-    ast.getClass.getName.split("\\.").last.replaceAllLiterally("_yaml$", "") + ".yaml"
+  def nameFromModel(ast: WithModel): String = ScalaPrinter.nameFromModel(ast)
 
 }
