@@ -127,7 +127,7 @@ lazy val plugin = (project in file("plugin"))
       Seq(
         "-Dproject.version=" + version.value,
         "-Dscala.version=" + scalaVersion.value,
-        "-Xmx512M",
+        "-Xmx768M",
         "-XX:ReservedCodeCacheSize=256M"
       )
     },
