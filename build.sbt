@@ -47,20 +47,55 @@ lazy val swaggerModel = (project in file("swagger-model"))
     )
   )
 
-// This is the compiler, it does compilation of swagger definitions,
-// but has no dependency on sbt, so, for example, someone could use it to
-// implement gradle support
-lazy val compiler = (project in file("compiler"))
-  .enablePlugins(SbtTwirl)
+lazy val apiFirstCore = (project in file("api-first-core"))
+  .enablePlugins(BuildInfoPlugin)
   .settings(common: _*)
-  .dependsOn(api)
   .settings(
-    name := "play-swagger-compiler",
+    name := "api-first-core",
     scalaVersion := "2.10.5",
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+      "org.scala-lang" % "scala-library" % scalaVersion.value,
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scalatest" %% "scalatest" % "2.2.3" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.12.5" % "test"
+    )
+  )
+  .dependsOn(api)
+
+
+lazy val swaggerParser = (project in file("swagger-parser"))
+  .enablePlugins(BuildInfoPlugin)
+  .settings(common: _*)
+  .settings(
+    name := "swagger-parser",
+    scalaVersion := "2.10.5",
+    sbtPlugin := false,
+
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "de.zalando",
     libraryDependencies ++= Seq(
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
+      "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
+      "org.scalatest" %% "scalatest" % "2.2.3" % "test"
+    )
+  )
+  .dependsOn(swaggerModel, apiFirstCore)
+
+
+lazy val playScalaGenerator = (project in file("play-scala-generator"))
+  .enablePlugins(BuildInfoPlugin)
+  .settings(common: _*)
+  .settings(
+    name := "play-scala-generator",
+    scalaVersion := "2.10.5",
+    sbtPlugin := false,
+
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "de.zalando",
+    libraryDependencies ++= Seq(
       "com.typesafe.play" %% "routes-compiler" % PlayVersion % Provided,
       "com.typesafe.play" %% "play" % PlayVersion % Provided,
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
@@ -68,11 +103,9 @@ lazy val compiler = (project in file("compiler"))
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalatest" %% "scalatest" % "2.2.3" % "test",
       "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
-      "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
       "de.zalando" %% "beard" % "0.0.6"
     )
-  )
-  .dependsOn(swaggerModel)
+  ).dependsOn(apiFirstCore)
 
 // This is the sbt plugin
 lazy val plugin = (project in file("plugin"))
@@ -94,19 +127,21 @@ lazy val plugin = (project in file("plugin"))
       Seq(
         "-Dproject.version=" + version.value,
         "-Dscala.version=" + scalaVersion.value,
-        "-Xmx512M",
+        "-Xmx768M",
         "-XX:ReservedCodeCacheSize=256M"
       )
     },
     scriptedDependencies := {
-      val d = (publishLocal in swaggerModel).value
-      val a = (publishLocal in api).value
-      val b = (publishLocal in compiler).value
-      val c = publishLocal.value
+      val a = (publishLocal in swaggerModel).value
+      val b = (publishLocal in api).value
+      val c = (publishLocal in apiFirstCore).value
+      val d = (publishLocal in swaggerParser).value
+      val e = (publishLocal in playScalaGenerator).value
+      val f = publishLocal.value
     },
     scriptedBufferLog := false
   )
-  .dependsOn(swaggerModel, compiler)
+  .dependsOn(swaggerModel, swaggerParser, apiFirstCore, playScalaGenerator)
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
@@ -115,11 +150,11 @@ lazy val root = (project in file("."))
   .settings(
     name := "play-swagger-root"
   )
-  .aggregate(swaggerModel, api, compiler, plugin)
+  .aggregate(swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
 
 def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   organization := "de.zalando",
-  version      := "0.1.8",
+  version      := "0.1.9",
   fork in ( Test, run ) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
@@ -148,8 +183,6 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   removeWartRemoverFromCompileTarget ++ addFoursquareLinterToLintTarget ++ removeFoursquareLinterFromCompileTarget
 // ++ scalariformSettings
 
-coverageExcludedPackages := "de\\.zalando\\.play\\.swagger\\.sbt\\.PlaySwagger"
-
 // coverageEnabled := false
 
 coverageMinimum := 80
@@ -160,6 +193,7 @@ coverageHighlighting := {
   if (scalaBinaryVersion.value == "2.10") false
   else false
 }
+
 
 // Apply default Scalariform formatting.
 // Reformat at every compile.
@@ -199,11 +233,11 @@ def addWartRemoverToLintTarget: Seq[_root_.sbt.Def.Setting[_]] = {
   // I didn't simply include WartRemove in the build all the time because it roughly tripled compile time.
   inConfig(LintTarget) {
     wartremoverErrors ++= Seq(
-      // Ban inferring Any, Serializable, and Product because such inferrence usually indicates a code error.
+      // Ban inferring Any, Serializable, and Product because such inference usually indicates a code error.
       Wart.Any,
       Wart.Serializable,
       Wart.Product,
-      // Ban calling partial methods because they behave surprisingingly
+      // Ban calling partial methods because they behave surprisingly
       Wart.ListOps,
       Wart.OptionPartial,
       Wart.EitherProjectionPartial,
