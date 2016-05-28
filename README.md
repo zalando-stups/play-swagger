@@ -49,7 +49,7 @@ The template project contains following:
     * `generated_controllers/example.yaml.scala` - a dummy implementation of the example controller. Will be (re)generated if deleted
     * `security/example.yaml.scala` - a marshaller for OAuth2 tokens. Will not be regenerated until 
         a) deleted or renamed
-        b) explicitly requested by issuing a `swaggerSecurity` command 
+        b) explicitly requested by issuing a `apiFirstSecurity` command 
 
 
 ## Welcome to Play-Swagger
@@ -86,7 +86,7 @@ Manual generation and compilation of:
 is supported in the case if
 
 a) No security extractor or unmarshaller with the same name already exists
-b) The developer issues `swaggerSecurity` or `swaggerMarshallers` sbt command 
+b) The developer issues `apiFirstSecurity` or `apiFirstMarshallers` sbt command 
 
 ## Run Your Application
 
@@ -1006,18 +1006,6 @@ To use the plugin in a plain Play project:
 - Add a specification link (`->`) to the play's routes file
 
 
-## Plugin Project Structure
-
-There are a couple of sub-projects:
-
-* `swagger-model` - A standalone Scala Swagger model and a Jackson parser for it. Can be used by another projects
-* `api` - This is the project that's automatically added to the runtime classpath of any projects that use this plugin.
-* `compiler` - This is a stand-alone compiler that the plugin uses. It doesn't depend on sbt, and could theoretically 
-be used to build support for other build systems.
-* `plugin` - This is the sbt plugin. It depends on `swagger-model`, `compiler`, and automatically adds `api` to the `libraryDependencies` 
-of any project that uses it.
-
-
 ## Plugin Architecture
 
 Ths Play-Swagger plugin has a three-tier architecture:
@@ -1030,6 +1018,32 @@ The separation of the specification and generation tiers allows for plugging in 
 and generating source code for different frameworks.
 
 
+## Plugin Project Structure
+
+There are a couple of sub-projects:
+
+* `swagger-model` - A standalone Scala Swagger model and a Jackson parser for it. Can be used by another projects
+* `api` - This is the project that's automatically added to the runtime classpath of any projects that use this plugin.
+* `swagger-parser` - A converter of the Swagger model to the internal AST of the plugin
+* `api-first-core` - This is a core of the plugin with minimal functionality. It includes defining an AST structure and some transformations on AST.  
+* `play-scala-generator` - The standalone generator for transforming an AST into the skeleton of Play-Scala application. 
+* `plugin` - A coupble of sbt plugins, one for each tier:
+    - `ApiFirstSwaggerParser` - a plugin wrapping Swagger parsing part 
+    - `ApiFirstCore` - a wrapper for AST-related functionality
+    - `ApiFirstPlayScalaCodeGenerator` - a wrapper for the Play-Scala generator
+
+Because of the modular plugin architecture, all modules must be enabled separatly in sbt's build.sbt. 
+It is also necessary to configure which parser(s) must be used by the plugin, like that: 
+
+```scala
+lazy val root = (project in file(".")).enablePlugins(PlayScala, ApiFirstCore, ApiFirstPlayScalaCodeGenerator, ApiFirstSwaggerParser)
+
+apiFirstParsers := Seq(ApiFirstSwaggerParser.swaggerSpec2Ast.value).flatten
+```
+
+Please take a look at activator template's configuration for complete example.
+
+
 ## Plugin Developing
 
 sbt doesn't allow sub-projects to depend on each other as sbt plugins. To test an sbt plugin, you need a separate 
@@ -1039,11 +1053,11 @@ directory, and run sbt. This project uses an sbt `ProjectRef` to the sbt plugin,
 
 The play-swagger plugin provides a couple of commands useful for development: 
 
-* `swaggerPrintDenotations` - outputs a common names of different parts of the AST as they are intended to be used in generated Scala code
-* `swaggerPrintRawAstTypes` - outputs all type definitions as they read from the specification before type optimisations
-* `swaggerPrintRawAstParameters` - outputs all parameters definitions before type optimisations
-* `swaggerPrintFlatAstTypes` - outputs type definitions after type optimisations
-* `swaggerPrintFlatAstParameters` - outputs parameter definitions after type optimisations
+* `apiFirstPrintDenotations` - outputs a common names of different parts of the AST as they are intended to be used in generated Scala code
+* `apiFirstPrintRawAstTypes` - outputs all type definitions as they read from the specification before type optimisations
+* `apiFirstPrintRawAstParameters` - outputs all parameters definitions before type optimisations
+* `apiFirstPrintFlatAstTypes` - outputs type definitions after type optimisations
+* `apiFirstPrintFlatAstParameters` - outputs parameter definitions after type optimisations
 
 
 ## Plugin Testing

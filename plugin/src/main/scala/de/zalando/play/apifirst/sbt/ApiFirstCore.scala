@@ -21,7 +21,7 @@ object ApiFirstCore extends AutoPlugin {
 
     lazy val apiFirstPreparedData = taskKey[Seq[StrictModelWithFile]]("Pairs compilation tasks with models to prepare them for code generation")
 
-    lazy val specificationASTs = taskKey[Seq[StrictModelWithFile]]("Specifications converted to ASTs")
+    lazy val apiFirstParsers = taskKey[Seq[StrictModelWithFile]]("Specifications converted to ASTs")
 
     lazy val apiFirstFlattenAst = taskKey[Seq[StrictModelWithFile]]("Prepares AST by removing duplicate types and flattening it")
 
@@ -57,7 +57,7 @@ object ApiFirstCore extends AutoPlugin {
 
     sourcePositionMappers := Seq(),
 
-    apiFirstRawData := specificationASTs.value,
+    apiFirstRawData := apiFirstParsers.value,
 
     apiFirstPreparedData := apiFirstRawData.value map { case (file, model) => (file, AstNormaliser.flattenAST(model)) },
 
