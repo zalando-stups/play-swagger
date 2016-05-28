@@ -43,7 +43,7 @@ lazy val swaggerModel = (project in file("swagger-model"))
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
       "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
-      "org.scalatest" %% "scalatest" % "2.2.3" % "test"
+      "org.scalatest" %% "scalatest" % "2.2.6" % "test"
     )
   )
 
@@ -79,7 +79,7 @@ lazy val swaggerParser = (project in file("swagger-parser"))
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
       "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
-      "org.scalatest" %% "scalatest" % "2.2.3" % "test"
+      "org.scalatest" %% "scalatest" % "2.2.6" % "test"
     )
   )
   .dependsOn(swaggerModel, apiFirstCore)
@@ -101,7 +101,7 @@ lazy val playScalaGenerator = (project in file("play-scala-generator"))
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "org.scala-lang" % "scala-library" % scalaVersion.value,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %% "scalatest" % "2.2.3" % "test",
+      "org.scalatest" %% "scalatest" % "2.2.6" % "test",
       "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
       "de.zalando" %% "beard" % "0.0.6"
     )
