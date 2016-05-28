@@ -19,4 +19,4 @@ libraryDependencies ++= Seq(
   "me.jeffmay" %% "play-json-tests" % "1.3.0" % "test"
 )
 
-specificationASTs := Seq(ApiFirstSwaggerParser.swaggerSpec2Ast.value).flatten
+apiFirstParsers := Seq(ApiFirstSwaggerParser.swaggerSpec2Ast.value).flatten
