@@ -103,7 +103,8 @@ lazy val playScalaGenerator = (project in file("play-scala-generator"))
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalatest" %% "scalatest" % "2.2.6" % "test",
       "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
-      "de.zalando" %% "beard" % "0.0.6"
+      "de.zalando" %% "beard" % "0.0.6",
+      "io.argonaut" %% "argonaut" % "6.1"
     )
   ).dependsOn(apiFirstCore)
 
