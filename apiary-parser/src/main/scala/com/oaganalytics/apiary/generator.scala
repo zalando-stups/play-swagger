@@ -1,7 +1,10 @@
 package com.oaganalytics.apib
 import de.zalando.apifirst._
-import Domain._, Application._
-import scalaz._, Scalaz._
+import Domain._
+import Application._
+
+import scalaz._
+import Scalaz._
 
 case class Response(statusCode: Int, ref: naming.Reference, parameter: Parameter, headers: Map[String, String])
 // More parameters are in the transition
@@ -197,8 +200,9 @@ object Generator {
       mimeIn = req.headers.get("Content-Type").map(x => Set(new Http.MimeType(x))).getOrElse(Set()),
       mimeOut = resp.headers.get("Content-Type").map(x => Set(new Http.MimeType(x))).getOrElse(Set()),
       errorMapping = Map(), // TODO
-      resultTypes = Map(resp.statusCode -> responseRef),
-      defaultResult = Some(responseRef)
+      resultTypes = TypesResponseInfo(Map(resp.statusCode -> responseRef), Some(responseRef)),
+      targetStates = StateResponseInfo(Map.empty[Int, Hypermedia.State], None),
+      security = Set.empty[Security.Constraint]
     )
     val parameters = pathParameters ++ reqParameter ++ respParameter
     ResourceTranslation(List(call), parameters, parameters.map({case (ref, param) => ref.name -> param.typeName}))
@@ -255,7 +259,9 @@ object Generator {
       params = translation.parameters,
       discriminators = Map(),
       basePath = basePath,
-      packageName = Some(packageName)
+      packageName = Some(packageName),
+      stateTransitions = Map.empty, // TODO
+      securityDefinitionsTable = Map.empty // TODO
     )
   }
 }
