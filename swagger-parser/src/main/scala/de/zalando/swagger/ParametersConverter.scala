@@ -5,7 +5,7 @@ import java.net.URI
 import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef}
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst._
-import de.zalando.apifirst.naming.{Pointer, Reference, uriToReference}
+import de.zalando.apifirst.naming.{Reference, uriToReference}
 import de.zalando.swagger.strictModel._
 
 import scala.language.postfixOps
@@ -14,12 +14,15 @@ import scala.language.postfixOps
  * @author  slasch
  * @since   03.11.2015.
  */
-class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String, typeDefs: ParameterNaming#NamedTypes, val useFileNameAsPackage: Boolean)
+class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String,
+                          typeDefs: ParameterNaming#NamedTypes, val useFileNameAsPackage: Boolean)
   extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
   private val FIXED = None // There is no way to define fixed parameters in swagger spec
 
-  val definitionFileName: Option[String] = None // TODO the definition file should be resolved from base URI
+  val definitionFileName: Option[String] =
+    if (base.getScheme == "file") Option(base.getSchemeSpecificPart) else None
+
   /**
    * For each parameter defined inline, creates definition in lookup table
    * Converts existing references as well by creating type pointer
@@ -66,7 +69,7 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
   private def fromExplicitParameter(prefix: Reference, ref: String): Application.Parameter = {
     val default = None
     val parameter = model.parameters.find { case (paramName, _) =>
-      paramName == Pointer.deref(ref).simple
+      paramName == Reference.deref(ref).simple
     } map {
       _._2
     } getOrElse {
@@ -131,7 +134,7 @@ object Constraints {
 trait ParameterReferenceGenerator {
   protected def refFromParametersListItem(prefix: Reference)(li: ParametersListItem): ParameterRef = li match {
     case jr@JsonReference(ref) =>
-      ParameterRef(prefix / Pointer.deref(ref).simple)
+      ParameterRef(prefix / Reference.deref(ref).simple)
     case p: BodyParameter[_] =>
       ParameterRef(prefix / p.name)
     case p: NonBodyParameter[_] =>

@@ -12,26 +12,19 @@ import scala.language.{implicitConversions, postfixOps}
  * @since   03.11.2015.
  */
 object naming {
-  // FIXME helper types to simplify migration from JsonPointer
-  type TypeName = Reference
-  type Pointer = Reference
-  object Pointer {
-    def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
-    def deref(jstr: String) = Reference.fromUrl(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
-  }
 
   implicit def uriToReference(uri: URI): Reference = uriFragmentToReference(uri.getFragment)
 
-  def uriFragmentToReference(fragment: String): Reference = {
+  def uriFragmentToReference(fragment: String): Reference =
     Reference(Option(fragment).map(_.split("/").mkString(Reference.delimiter)).getOrElse(""))
-  }
+
   object dsl {
     import scala.language.implicitConversions
     implicit def nameToNameOps(name: Reference): NameDsl = new NameDsl(name)
     implicit def stringToName(s: String): Reference = Reference(s)
     class NameDsl(val name: Reference) {
-      def /(pp: String) = name.copy(parts = name.parts :+ pp)
-      def /(other: Reference) = merge(other)
+      def /(pp: String): Reference = name.copy(parts = name.parts :+ pp)
+      def /(other: Reference): Reference = merge(other)
       private def merge(other: Reference) = name.copy(parts = name.parts ++ other.parts)
     }
   }
@@ -41,14 +34,11 @@ object naming {
     val qualified = if (parts.isEmpty) delimiter else delimiter + parts.mkString(delimiter)
     val simple = if (parts.isEmpty) delimiter else parts.last
     val parent = if (parts.isEmpty) root else Reference(parts.init)
+    val tokens = parts
     override def toString: String = qualified
-    def toScalaString(pad: String): String = s"""${pad}Reference("$qualified")"""
-    // FIXME helper methods to simplify migration from JsonPointer
     def /(part: String): Reference = new NameDsl(this) / part
     def /(part: Reference): Reference = new NameDsl(this) / part
     def prepend(part: String): Reference = Reference(part :: parts)
-    val tokens = parts
-    val pointer = this
     lazy val isResponsePath = parts.contains(responses)
     lazy val isDefinition = parts.headOption.exists(_ == definitions)
     lazy val isTopResponsePath = parts.last == responses
@@ -69,6 +59,8 @@ object naming {
       val parts = if (normalized.length == 1 && normalized.head.isEmpty) List.empty else normalized
       Reference(parts)
     }
+    private def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
+    def deref(jstr: String) = Reference.fromUrl(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
   }
 
   case class Path(private val reference: Reference) {
@@ -92,7 +84,7 @@ object naming {
     def map[That](f: String => That) = ref.parts.map(f)
     def nonEmpty = ref.parts.nonEmpty
     def last = ref.parts.last
-    def asScala: String = s"""Path(${reference.toScalaString("")})"""
+    def asScala: String = s"""Path(Reference("${ref.qualified}"))"""
   }
 
   object Path {
@@ -101,7 +93,6 @@ object naming {
     def strip(part: String) = if (pathParam(part)) part.tail.dropRight(1) else part
     def toString(prefix: String, suffix: String, transform: String => String = identity)(part: String) =
       if (pathParam(part)) s"$prefix${ScalaName.escape(transform(strip(part)))}$suffix" else transform(part)
-
   }
 }
 

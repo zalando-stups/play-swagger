@@ -6,7 +6,7 @@ import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.apifirst.Hypermedia.{State, StateTransitionsTable}
 import de.zalando.apifirst.ParameterPlace.ParameterPlace
-import de.zalando.apifirst.naming.{Path, Reference, TypeName}
+import de.zalando.apifirst.naming.{Path, Reference}
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -64,7 +64,6 @@ object Hypermedia {
 
   trait State extends Expr {
     def name: String
-    def toScalaString(pad: String): String = s"""${pad}NamedState("$name")"""
   }
 
   type Condition                = Option[String]
@@ -101,7 +100,6 @@ object Hypermedia {
 
   case object Self extends State {
     override val name = "Self"
-    override def toScalaString(pad: String): String = s"""${pad}Self"""
   }
 
   case class Relation(tpe: String, from: State, to: State)
@@ -110,6 +108,7 @@ object Hypermedia {
 
 object Domain {
 
+  type TypeName = Reference
   type ModelDefinition = Iterable[Domain.Type]
 
   case class TypeMeta(comment: Option[String], constraints: Seq[String]) {
@@ -135,19 +134,12 @@ object Domain {
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
-    def toShortString(pad: String): String = getClass.getSimpleName
-    def toScalaString(pad: String): String = getClass.getSimpleName + "(" + name + ", " + meta + ")"
   }
   
-  case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None)) {
-    override def toShortString(pad: String): String = s"${super.toShortString(pad)}($name)"
-    override def toScalaString(pad: String): String = s"${getClass.getSimpleName}(${name.toScalaString("")})"
-  }
+  case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None))
 
   abstract class ProvidedType(name: String, override val meta: TypeMeta)
-    extends Type(Reference(name), meta) {
-    override def toScalaString(pad: String): String = toString
-  }
+    extends Type(Reference(name), meta)
 
   class Nmbr(name: String, override val meta: TypeMeta) extends ProvidedType(name, meta) with PrimitiveType
 
@@ -167,9 +159,7 @@ object Domain {
     override val imports = Set("scala.math.BigInt")
   }
 
-  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends ProvidedType("String", meta) with PrimitiveType {
-    override def toScalaString(pad: String): String = s"""Str(${format.map("\"" + _ + "\"")}, $meta)"""
-  }
+  case class Str(format: Option[String] = None, override val meta: TypeMeta) extends ProvidedType("String", meta) with PrimitiveType
 
   case class Bool(override val meta: TypeMeta) extends ProvidedType("Boolean", meta) with PrimitiveType
 
@@ -211,16 +201,9 @@ object Domain {
                            val descendants: Seq[Type],
                            val root: Option[Reference])
     extends Type(name, meta) {
-    override def toShortString(pad: String): String =
-      s"${getClass.getSimpleName}(${descendants.map(_.toShortString(pad + "\t")).mkString(s"\n$pad",s"\n$pad","")})"
     override def nestedTypes: Seq[Type] = descendants flatMap ( _.nestedTypes )
     override def imports: Set[String] = descendants.flatMap(_.imports).toSet
     def withTypes(t: Seq[Type]): Composite
-    override def toScalaString(pad: String): String = {
-      // val impStr = if (imports.isEmpty) "Set.empty[String]" else imports.mkString("Set(\"", "\", \"","\")")
-      val descStr = s""" Seq(${descendants.map(_.toScalaString(pad + "\t")).mkString(s"\n$pad",s",\n$pad","")}) """
-      s"$pad${getClass.getSimpleName}(${name.toScalaString("")}, $meta, $descStr, ${root.map(_.toScalaString(""))})"
-    }
   }
 
   case class AllOf(override val name: TypeName,
@@ -245,26 +228,17 @@ object Domain {
     extends Type(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
     override def nestedTypes: Seq[Type] = Seq(tpe)
-    override def toShortString(pad: String): String = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
-    override def toScalaString(pad: String): String = {
-      // val impStr = if (imports.isEmpty) "Set.empty[String]" else imports.mkString("Set(\"", "\", \"","\")")
-      s"${getClass.getSimpleName}(${tpe.toScalaString(pad)}, $meta)"
-    }
     def withType(t: Type): Container
   }
 
   case class Arr(override val tpe: Type, override val meta: TypeMeta, format: String)
     extends Container(tpe.name / "ArrayWrapper", tpe, meta, Set("de.zalando.play.controllers.ArrayWrapper")) {
     def withType(t: Type): Arr = this.copy(tpe = t)
-    override def toScalaString(pad: String): String =
-      s"""${getClass.getSimpleName}(${tpe.toScalaString(pad)}, $meta, "$format")"""
   }
 
   case class ArrResult(override val tpe: Type, override val meta: TypeMeta)
     extends Container(tpe.name / "Seq", tpe, meta, Set.empty[String]) {
     def withType(t: Type): ArrResult = this.copy(tpe = t)
-    override def toScalaString(pad: String): String =
-      s"""${getClass.getSimpleName}(${tpe.toScalaString(pad)}, $meta)"""
   }
 
   case class Opt(override val tpe: Type, override val meta: TypeMeta)
@@ -279,25 +253,19 @@ object Domain {
   }
 
   case class Field(name: TypeName, tpe: Type) {
-    def toString(pad: String): String = s"""\n${pad}Field($name, ${tpe.toShortString(pad + "\t")})"""
     def imports: Set[String] = tpe match {
       case c: Container => c.allImports
       case o => o.imports
     }
-
     def nestedTypes: Seq[Type] = tpe.nestedTypes :+ tpe
-    def toScalaString(pad: String): String = s"""${pad}Field(${name.toScalaString("")}, ${tpe.toScalaString(pad + "\t")})"""
   }
 
   case class TypeDef(override val name: TypeName,
                      fields: Seq[Field],
                      override val meta: TypeMeta) extends Type(name, meta) {
     override def toString: String = s"""\n\tTypeDef($name, \n\t\tSeq(${fields.mkString("\n\t\t", ",\n\t\t", "")}\n\t\t), $meta)\n"""
-    override def toShortString(pad: String): String = s"""TypeDef($name, Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
     override def nestedTypes: Seq[Type] = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
     override def imports: Set[String] = (fields flatMap { _.imports }).toSet
-    override def toScalaString(pad: String): String =
-      s"""TypeDef(${name.toScalaString("")}, \n\t\t\tSeq(${fields.map(_.toScalaString(pad)).mkString("\n\t\t", ",\n\t\t", "")}\n\t\t\t), $meta)"""
   }
 
   abstract class EnumType(override val name: Reference, override val tpe: Type, override val meta: TypeMeta)
@@ -307,19 +275,11 @@ object Domain {
     extends EnumType(tpe.name / "Enum", tpe, meta) {
       override def nestedTypes: Seq[Type] = tpe +: leaves.toSeq
       override def withType(t: Type): EnumTrait = this.copy(tpe = t)
-    override def toScalaString(pad: String): String = {
-      val leavesStr = leaves.map(_.toScalaString(pad + "\t\t")).mkString("\n", ",\n","\n")
-      s"""$pad${getClass.getSimpleName}(${tpe.toScalaString("")}, $meta, \n${pad}\tSet($leavesStr\n${pad}\t))"""
-    }
-
   }
 
   case class EnumObject(override val tpe: Type, fieldValue: String, override val meta: TypeMeta)
     extends EnumType(tpe.name / fieldValue, tpe, meta) {
     override def withType(t: Type): EnumObject = this.copy(tpe = t)
-    override def toScalaString(pad: String): String =
-      s"""$pad${getClass.getSimpleName}(${tpe.toScalaString("")}, "$fieldValue", $meta)"""
-
   }
 }
 
@@ -336,34 +296,25 @@ object Security {
   type OAuth2Scopes = Map[String, String]
   sealed trait Definition {
     def description: Option[String]
-    def toScalaString: String = s"""${getClass.getSimpleName}(${description.map("\"" + _ + "\"")})"""
   }
   case class Basic(description: Option[String]) extends Definition
   case class ApiKey(description: Option[String], name: String, in: ParameterPlace) extends Definition {
     require(in == ParameterPlace.QUERY || in == ParameterPlace.HEADER)
     require(name.nonEmpty)
-    override def toScalaString: String =
-      s"""${getClass.getSimpleName}(${description.map("\"" + _ + "\"")}, "$name", ParameterPlace.withName("$in"))"""
   }
   case class OAuth2Definition(description: Option[String], validationURL: Option[URL],
       scopes: OAuth2Scopes) extends Definition {
     require(validationURL != null)
-    override def toScalaString: String = {
-      val scopesStr = scopes.map{case (k,v) => s""" "$k" -> "${v.replace('\n', ' ')}" """}.mkString(", ")
-      s"""OAuth2Definition(${description.map("\"" + _ + "\"")}, ${validationURL.map("new URL(\"" + _ + "\")")}, Map[String, String]($scopesStr))""".stripMargin
-    }
   }
 
   sealed trait Constraint {
     def name: String
     def definition: Definition
-    def toScalaString: String = s"""${getClass.getSimpleName}("$name", ${definition.toScalaString})"""
   }
   case class BasicConstraint(name: String, definition: Definition) extends Constraint
   case class ApiKeyConstraint(name: String, definition: Definition) extends Constraint
   case class OAuth2Constraint(name: String, definition: OAuth2Definition, scopes: Set[String]) extends Constraint {
     require(scopes.forall(definition.scopes.keySet.contains))
-    override def toScalaString: String = s"""${getClass.getSimpleName}("$name", ${definition.toScalaString}, Set(${scopes.map("\"" + _ + "\"").mkString(", ")}))"""
   }
   object Constraint {
     def fromDefinition(name: String, definition: Definition, scopes: Set[String]): Constraint = definition match {
@@ -378,7 +329,6 @@ object Application {
 
   case class ParameterRef(name: Reference) {
     val simple = name.simple
-    def toScalaString(pad: String): String = s"""${pad}ParameterRef(${name.toScalaString("")})"""
   }
 
   case class Parameter(
@@ -388,42 +338,23 @@ object Application {
     default: Option[String],
     constraint: String,
     encode: Boolean,
-    place: ParameterPlace.Value) extends Expr with Positional {
-    def toScalaString: String =
-      s"""Parameter("$name", ${typeName.toScalaString("")}, ${fixed.map("\"" + _ + "\"")}, ${default.map("\"" + _ + "\"")}, "$constraint", encode = $encode, ParameterPlace.withName("${place}"))"""
-  }
+    place: ParameterPlace.Value) extends Expr with Positional
 
   case class HandlerCall(
     packageName: String,
     controller: String,
     instantiate: Boolean,
     method: String,
-    parameters: Seq[ParameterRef]) {
-    def toScalaString(pad:String): String =
-      s"""HandlerCall(\n$pad\t"$packageName",\n$pad\t"$controller",\n$pad\tinstantiate = $instantiate,\n$pad\t"$method",parameters = ${parameters.map(_.toScalaString(pad + "\t\t")).mkString(s"\n$pad\tSeq(\n", s",\n", s"\n$pad\t\t)\n")}$pad\t)"""
-  }
+    parameters: Seq[ParameterRef])
 
   abstract class ResponseInfo[T] {
     def results: Map[Int, T]
     def default: Option[T]
   }
 
-  case class TypesResponseInfo(results: Map[Int, ParameterRef], default: Option[ParameterRef]) extends ResponseInfo[ParameterRef] {
-    def toScalaString(pad: String): String = {
-      val resStr =
-        if (results.isEmpty) "Map.empty[Int, ParameterRef]"
-        else s"\n$pad\tMap[Int, ParameterRef](" + results.map{case(k,v) => s"\n$pad\t$k -> " + v.toScalaString("")}.mkString(",") + s"\n$pad)"
-      s"""${pad}TypesResponseInfo($resStr, ${default.map(_.toScalaString("\t"))})"""
-    }
-  }
-  case class StateResponseInfo(results: Map[Int, State], default: Option[State]) extends ResponseInfo[State] {
-    def toScalaString(pad: String): String = {
-      val resStr =
-        if (results.isEmpty) "Map.empty[Int, State]"
-        else s"\n$pad\tMap[Int, State](" + results.map{case(k,v) => s"\n$pad\t\t$k -> " + v.toScalaString("")}.mkString(",") + s"\n$pad)"
-      s"""StateResponseInfo($resStr, ${default.map(_.toScalaString(""))})"""
-    }
-  }
+  case class TypesResponseInfo(results: Map[Int, ParameterRef], default: Option[ParameterRef]) extends ResponseInfo[ParameterRef]
+
+  case class StateResponseInfo(results: Map[Int, State], default: Option[State]) extends ResponseInfo[State]
 
   case class ApiCall(
     verb:             Http.Verb,
@@ -436,19 +367,6 @@ object Application {
     targetStates:     StateResponseInfo,
     security: Set[Security.Constraint] = Set.empty) {
     def asReference: Reference = (path.prepend("paths") / verb.toString.toLowerCase).ref
-    def toScalaString: String = {
-      val errorStr = if (errorMapping.isEmpty)
-        "Map.empty[String, Seq[Class[Exception]]]"
-      else  errorMapping.map { case (k, v) =>
-        "\"" + k + "\" -> Seq(" + v.map(_.getCanonicalName).map("classOf[" + _ + "]").mkString(", ") + ")"
-      }.mkString("Map(", ", ", ")")
-      val mimeInStr = if (mimeIn.isEmpty) "Set.empty[MimeType]" else mimeIn.mkString("Set(", ", ", ")")
-      val mimeOutStr = if (mimeOut.isEmpty) "Set.empty[MimeType]" else mimeOut.mkString("Set(", ", ", ")")
-      val securityStr =
-        if (security.isEmpty) "Set.empty[Security.Constraint]"
-        else security.map(_.toScalaString).mkString("Set(\n\t\t\t", ",\n\t\t\t", "\n\t\t)")
-      s"""\n\tApiCall($verb, ${path.asScala}, \n\t\t${handler.toScalaString("\t\t")}, \n\t\t$mimeInStr, \n\t\t$mimeOutStr, \n\t\t$errorStr, \n${resultTypes.toScalaString("\t\t")}, \n\t\t${targetStates.toScalaString("\t\t\t")}, \n\t\t$securityStr)"""
-    }
   }
 
   type ParameterLookupTable = Map[ParameterRef, Parameter]

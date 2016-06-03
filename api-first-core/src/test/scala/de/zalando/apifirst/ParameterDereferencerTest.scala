@@ -2,7 +2,7 @@ package de.zalando.apifirst
 
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.naming.{Reference, TypeName}
+import de.zalando.apifirst.naming.Reference
 import org.scalatest.{FunSpec, MustMatchers}
 
 /**

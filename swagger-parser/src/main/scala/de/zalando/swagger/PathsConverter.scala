@@ -94,8 +94,8 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
     }.toSeq
 
   private def errorMappings(path: PathItem, operation: Operation) =
-    Seq(operation.vendorErrorMappings, path.vendorErrorMappings, model.vendorErrorMappings).
-      filter(_ != null).reduce(_ ++ _).toSet.toMap // TODO check that operation > path > model
+    Seq(model.vendorErrorMappings, path.vendorErrorMappings, operation.vendorErrorMappings).
+      filter(_ != null).reduce(_ ++ _).toSet.toMap
 
   private def mimeTypes(operation: Operation) = {
     val mimeIn = orderedMediaTypeList(operation.consumes, model.consumes)

@@ -172,7 +172,6 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
 
   private def startComment(action: ApiCall) = s"$sof ${PlayScalaControllerAnalyzer.asMarker(action)}"
 
-  // TODO made these names constants
   def callValidations(ref: Reference)(implicit table: DenotationTable): Any =
     table(ref)("validators").getOrElse("call_validations", Nil)
 

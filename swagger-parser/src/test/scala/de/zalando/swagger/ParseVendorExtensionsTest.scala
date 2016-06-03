@@ -4,6 +4,8 @@ import java.io.File
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.parser.ParserException
+import de.zalando.apifirst.Application.ApiCall
+import de.zalando.apifirst.Http.{GET, POST, PUT}
 import org.scalatest.{FunSpec, MustMatchers}
 
 class ParseVendorExtensionsTest extends FunSpec with MustMatchers with ExpectedResults {
@@ -13,6 +15,7 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers with ExpectedR
   val hypermediaOk = new File(resourcesPath + "extensions/hypermedia.ok.yaml")
   val hypermediaNOk1 = new File(resourcesPath + "extensions/hypermedia.nok1.yaml")
   val hypermediaNOk2 = new File(resourcesPath + "extensions/hypermedia.nok2.yaml")
+  val errorMapping = new File(resourcesPath + "extensions/error_mapping.yaml")
 
   describe("The swagger parser") {
     it("should read valid vendor extensions") {
@@ -51,6 +54,28 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers with ExpectedR
       intercept[ParserException] {
         StrictYamlParser.parse(hypermediaNOk2)
       }.getClass mustBe classOf[ParserException]
+    }
+
+    it("should read error mappings and assign right preference to them") {
+      val (uri, model) = StrictYamlParser.parse(errorMapping)
+      val ast = ModelConverter.fromModel(errorMapping.toURI, model, Option(errorMapping))
+      val expectedForPUT = Map(
+        "404" -> List(classOf[java.util.NoSuchElementException]),
+        "403" -> List(classOf[java.lang.SecurityException]),
+        "405" -> List(classOf[java.lang.IllegalStateException]),
+        "400" -> List(classOf[java.util.NoSuchElementException])
+      )
+      val expectedForPOST = Map(
+        "403" -> List(classOf[java.lang.SecurityException]),
+        "404" -> List(classOf[java.util.NoSuchElementException]),
+        "405" -> List(classOf[java.lang.IllegalStateException])
+      )
+      ast.calls.foreach {
+        case ApiCall(POST, _, _, _, _, mapping, _, _, _) =>
+          mapping must contain theSameElementsAs expectedForPOST
+        case ApiCall(PUT, _, _, _, _, mapping, _, _, _) =>
+          mapping must contain theSameElementsAs expectedForPUT
+      }
     }
   }
 }

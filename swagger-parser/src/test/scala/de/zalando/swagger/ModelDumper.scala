@@ -4,11 +4,12 @@ import java.io.File
 
 import de.zalando.apifirst.util.ScalaPrinter
 import de.zalando.apifirst.{ScalaName, TypeNormaliser}
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{FunSpec, Ignore, MustMatchers}
 
 /**
   * @since 18.11.2015.
   */
+@Ignore
 class ModelDumper extends FunSpec with MustMatchers with ExpectedResults {
 
   override def expectationsFolder: String = "/../../play-scala-generator/src/test/scala/model/"
@@ -21,7 +22,7 @@ class ModelDumper extends FunSpec with MustMatchers with ExpectedResults {
 
   def toTest: File => Boolean = f => f.getName.endsWith(".yaml") // && f.getName.startsWith("basic_poly")
 
-  describe("ScalaTestDataGenerator should generate model files") {
+  describe("ScalaModelDumper should generate scala files") {
     (modelFixtures ++ exampleFixtures ++ validationFixtures).filter(toTest).foreach { file =>
       dumpFile(file)
     }

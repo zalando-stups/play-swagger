@@ -3,6 +3,7 @@ package de.zalando.apifirst.util
 import java.io.File
 
 import de.zalando.apifirst.Application.StrictModel
+import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.Hypermedia
 
 /**
@@ -11,7 +12,7 @@ import de.zalando.apifirst.Hypermedia
 trait PrettyPrinter {
   def types(file: File, ast: StrictModel): Seq[String] = {
     val typeDefs  = ast.typeDefs
-    val typeMap   = typeDefs map { case (k, v) => k -> ("\n\t\t" + v.toShortString("\t\t\t")) }
+    val typeMap   = typeDefs map { case (k, v) => k -> ("\n\t\t" + ShortString.toShortString("\t\t\t")(v)) }
     val lines = typeMap.toSeq.sortBy(_._1.parts.size).map(p => formatText(p._1.toString())(magenta,black) + " → " + p._2)
     withFileName("Types:\t", file, lines)
   }
@@ -52,3 +53,33 @@ trait PrettyPrinter {
 }
 
 object PrettyPrinter extends PrettyPrinter
+
+object ShortString {
+  def toShortString(pad: String)(a: Any): String = a match {
+    case f: Field => field(pad, f)
+    case t: TypeDef => typeDef(pad, t)
+    case c: Composite => composite(pad, c)
+    case c: Container => container(pad, c)
+    case t: TypeRef => typeRef(pad, t)
+    case t: Type => typeStr(pad, t)
+    case other => other.toString
+  }
+
+  private def typeStr(pad: String, t: Type) = t.getClass.getSimpleName
+
+  private def field(pad: String, f: Field) =
+    s"""\n${pad}Field(${f.name}, ${toShortString(pad + "\t")(f.tpe)})"""
+
+  private def typeDef(pad: String, t: TypeDef) =
+    s"""TypeDef(${t.name}, Seq(${t.fields.map(toShortString(pad)).mkString(", ")}))"""
+
+  private def typeRef(pad: String, t: TypeRef) =
+    s"${t.getClass.getSimpleName}(${t.name})"
+
+  private def container(pad: String, c: Container) =
+    s"${c.getClass.getSimpleName}(${toShortString(pad)(c.tpe)})"
+
+  private def composite(pad: String, c: Composite) =
+    s"${c.getClass.getSimpleName}(${c.descendants.map(toShortString(pad + "\t")).mkString(s"\n$pad",s"\n$pad","")})"
+
+}
