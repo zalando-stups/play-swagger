@@ -1853,4 +1853,210 @@ object Data {
 }
 """
 
+  val postTransition = """
+{
+  "element": "transition",
+  "meta": {
+    "title": "Create an Config"
+  },
+  "attributes": {
+    "href": "/configs",
+    "data": {
+      "element": "dataStructure",
+      "content": [
+        {
+          "element": "object",
+          "content": [
+            {
+              "element": "member",
+              "attributes": {
+                "typeAttributes": [
+                  "required"
+                ]
+              },
+              "content": {
+                "key": {
+                  "element": "string",
+                  "content": "config"
+                },
+                "value": {
+                  "element": "object",
+                  "content": [
+                    {
+                      "element": "member",
+                      "meta": {
+                        "description": ""
+                      },
+                      "attributes": {
+                        "typeAttributes": [
+                          "required"
+                        ]
+                      },
+                      "content": {
+                        "key": {
+                          "element": "string",
+                          "content": "dataVersion"
+                        },
+                        "value": {
+                          "element": "string",
+                          "content": "unique-id"
+                        }
+                      }
+                    },
+                    {
+                      "element": "member",
+                      "meta": {
+                        "description": ""
+                      },
+                      "attributes": {
+                        "typeAttributes": [
+                          "optional"
+                        ]
+                      },
+                      "content": {
+                        "key": {
+                          "element": "string",
+                          "content": "author"
+                        },
+                        "value": {
+                          "element": "string",
+                          "content": "unique-id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "content": [
+    {
+      "element": "httpTransaction",
+      "content": [
+        {
+          "element": "httpRequest",
+          "attributes": {
+            "method": "POST",
+            "title": "",
+            "headers": {
+              "element": "httpHeaders",
+              "content": [
+                {
+                  "element": "member",
+                  "content": {
+                    "key": {
+                      "element": "string",
+                      "content": "Content-Type"
+                    },
+                    "value": {
+                      "element": "string",
+                      "content": "application/json"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "content": [
+            {
+              "element": "asset",
+              "meta": {
+                "classes": [
+                  "messageBody"
+                ]
+              },
+              "attributes": {
+                "contentType": "application/json"
+              },
+              "content": ""
+            }
+          ]
+        },
+        {
+          "element": "httpResponse",
+          "attributes": {
+            "statusCode": "201",
+            "headers": {
+              "element": "httpHeaders",
+              "content": [
+                {
+                  "element": "member",
+                  "content": {
+                    "key": {
+                      "element": "string",
+                      "content": "Content-Type"
+                    },
+                    "value": {
+                      "element": "string",
+                      "content": "application/json"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "content": [
+            {
+              "element": "dataStructure",
+              "content": [
+                {
+                  "element": "object",
+                  "content": [
+                    {
+                      "element": "member",
+                      "attributes": {
+                        "typeAttributes": [
+                          "required"
+                        ]
+                      },
+                      "content": {
+                        "key": {
+                          "element": "string",
+                          "content": "config"
+                        },
+                        "value": {
+                          "element": " Config"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "element": "asset",
+              "meta": {
+                "classes": [
+                  "messageBody"
+                ]
+              },
+              "attributes": {
+                "contentType": "application/json"
+              },
+              "content": ""
+            },
+            {
+              "element": "asset",
+              "meta": {
+                "classes": [
+                  "messageBodySchema"
+                ]
+              },
+              "attributes": {
+                "contentType": "application/json"
+              },
+              "content": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
+
 }

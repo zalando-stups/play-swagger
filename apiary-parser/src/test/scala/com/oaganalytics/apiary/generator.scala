@@ -74,4 +74,9 @@ class GeneratorTest extends FunSpec with MustMatchers {
       model.typeDefs(naming.Reference(List("paths", "companies", "{company}", "getbody", "200", "responseBody"))).asInstanceOf[TypeDef].fields.head.asInstanceOf[Field].tpe.asInstanceOf[TypeRef].name mustBe(naming.Reference(List("definitions", "CompanyCompany")))
     })
   }
+  it("should add the post body from TransitionAttributes") {
+    json[Transition](postTransition, { transition =>
+      Generator.transform(transition, naming.Reference(List("test")), "test", "testController").parameters.keys.head.name.parts mustBe(List("paths", "configs", "postbody", "requestBody"))
+    })
+  }
 }

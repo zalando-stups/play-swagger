@@ -171,6 +171,13 @@ object Generator {
     })
   }
 
+  def transform(transitionAttributes: TransitionAttributes, ref: naming.Reference): List[(ParameterRef, Type)] = {
+    transitionAttributes match {
+      case h: HrefAttributes => transform(h.hrefVariables, ref)
+      case b: BodyAttributes => List(ParameterRef(ref / "requestBody") -> transform(b.data, ref))
+    }
+  }
+
   def transform(transition: Transition, defaultPath: naming.Reference, packageName: String, controller: String):
       ResourceTranslation = {
     val href = transition.attributes.map(attr => Href(attr.href))
@@ -181,7 +188,7 @@ object Generator {
     val req = transform(transition.request, namespacedRef)
     val resp = transform(transition.response, namespacedRef)
     val name = naming.Reference(namespacedRef.parts.init :+ escape(namespacedRef.parts.last))
-    val vars = transition.attributes.map(a => transform(a.hrefVariables, namespacedRef)).getOrElse(List())
+    val vars = transition.attributes.map(a => transform(a, namespacedRef)).getOrElse(List())
     val pathParameters: ParameterLookupTable = href.map(_.compile(vars)).getOrElse(Map())
     val responseRef = ParameterRef(resp.ref)
     val respParameter = Map(responseRef -> resp.parameter)
