@@ -133,12 +133,9 @@ object Domain {
   abstract class Type(val name: TypeName, val meta: TypeMeta) extends Expr {
     def nestedTypes: Seq[Type] = Nil
     def imports: Set[String] = Set.empty
-    def toShortString(pad: String): String = getClass.getSimpleName
   }
   
-  case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None)) {
-    override def toShortString(pad: String): String = s"${super.toShortString(pad)}($name)"
-  }
+  case class TypeRef(override val name: Reference) extends Type(name, TypeMeta(None))
 
   abstract class ProvidedType(name: String, override val meta: TypeMeta)
     extends Type(Reference(name), meta)
@@ -203,8 +200,6 @@ object Domain {
                            val descendants: Seq[Type],
                            val root: Option[Reference])
     extends Type(name, meta) {
-    override def toShortString(pad: String): String =
-      s"${getClass.getSimpleName}(${descendants.map(_.toShortString(pad + "\t")).mkString(s"\n$pad",s"\n$pad","")})"
     override def nestedTypes: Seq[Type] = descendants flatMap ( _.nestedTypes )
     override def imports: Set[String] = descendants.flatMap(_.imports).toSet
     def withTypes(t: Seq[Type]): Composite
@@ -232,7 +227,6 @@ object Domain {
     extends Type(name, meta) {
     def allImports: Set[String] = imports ++ tpe.imports
     override def nestedTypes: Seq[Type] = Seq(tpe)
-    override def toShortString(pad: String): String = s"${getClass.getSimpleName}(${tpe.toShortString(pad)})"
     def withType(t: Type): Container
   }
 
@@ -258,7 +252,6 @@ object Domain {
   }
 
   case class Field(name: TypeName, tpe: Type) {
-    def toString(pad: String): String = s"""\n${pad}Field($name, ${tpe.toShortString(pad + "\t")})"""
     def imports: Set[String] = tpe match {
       case c: Container => c.allImports
       case o => o.imports
@@ -270,7 +263,6 @@ object Domain {
                      fields: Seq[Field],
                      override val meta: TypeMeta) extends Type(name, meta) {
     override def toString: String = s"""\n\tTypeDef($name, \n\t\tSeq(${fields.mkString("\n\t\t", ",\n\t\t", "")}\n\t\t), $meta)\n"""
-    override def toShortString(pad: String): String = s"""TypeDef($name, Seq(${fields.map(_.toString(pad)).mkString(", ")}))"""
     override def nestedTypes: Seq[Type] = fields flatMap (_.nestedTypes) filter { _.name.parent == name  } distinct
     override def imports: Set[String] = (fields flatMap { _.imports }).toSet
   }
