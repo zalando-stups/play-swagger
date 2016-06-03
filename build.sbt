@@ -3,6 +3,8 @@ import bintray.Keys._
 val PlayVersion  = "2.4.3"
 val ScalaVersion = "2.11.7"
 
+scalaVersion := "2.10.5"
+
 // This is the API project, it gets added to the runtime dependencies of any
 // project using play-swagger
 lazy val api = (project in file("api"))
