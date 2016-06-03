@@ -42,7 +42,6 @@ object naming {
     val simple = if (parts.isEmpty) delimiter else parts.last
     val parent = if (parts.isEmpty) root else Reference(parts.init)
     override def toString: String = qualified
-    def toScalaString(pad: String): String = s"""${pad}Reference("$qualified")"""
     // FIXME helper methods to simplify migration from JsonPointer
     def /(part: String): Reference = new NameDsl(this) / part
     def /(part: Reference): Reference = new NameDsl(this) / part
@@ -92,7 +91,7 @@ object naming {
     def map[That](f: String => That) = ref.parts.map(f)
     def nonEmpty = ref.parts.nonEmpty
     def last = ref.parts.last
-    def asScala: String = s"""Path(${reference.toScalaString("")})"""
+    def asScala: String = s"""Path(Reference("${ref.qualified}"))"""
   }
 
   object Path {
