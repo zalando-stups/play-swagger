@@ -18,9 +18,11 @@ trait CallTestsStep extends EnrichmentStep[ApiCall] with ActionResults with Para
   /**
     * Puts tests related information into the denotation table
     *
-    * TODO currently, no tests are generated for secure endpoints
-    * TODO design test extension which will allow to augment test
-    * TODO requests with security-related data
+    * TODO Secure endpoints are not tested now
+    *
+    * Currently, no tests are generated for secure endpoints.
+    * Design test extension which will allow to augment test
+    * requests with security-related data
     *
     * @return
     */

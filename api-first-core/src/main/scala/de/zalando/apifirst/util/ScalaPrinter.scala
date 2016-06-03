@@ -4,7 +4,7 @@ import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.Hypermedia.{Self, State}
 import de.zalando.apifirst.Security
-import de.zalando.apifirst.naming.{Reference, TypeName}
+import de.zalando.apifirst.naming.Reference
 
 /**
   * @since 25.05.2016.

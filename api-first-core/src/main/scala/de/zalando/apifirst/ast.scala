@@ -6,7 +6,7 @@ import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst.Http.MimeType
 import de.zalando.apifirst.Hypermedia.{State, StateTransitionsTable}
 import de.zalando.apifirst.ParameterPlace.ParameterPlace
-import de.zalando.apifirst.naming.{Path, Reference, TypeName}
+import de.zalando.apifirst.naming.{Path, Reference}
 
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.parsing.input.Positional
@@ -108,6 +108,7 @@ object Hypermedia {
 
 object Domain {
 
+  type TypeName = Reference
   type ModelDefinition = Iterable[Domain.Type]
 
   case class TypeMeta(comment: Option[String], constraints: Seq[String]) {

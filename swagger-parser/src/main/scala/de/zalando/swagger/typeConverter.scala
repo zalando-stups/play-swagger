@@ -152,7 +152,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   }
 
   private def typeNameFromInlinedReference(param: Schema[_]): Option[Reference] =
-    param.vendorExtensions.get("x-$ref").map(Pointer.deref).map(Reference(base.toString, _))
+    param.vendorExtensions.get("x-$ref").map(Reference.deref).map(Reference(base.toString, _))
 
   private def fromSchemaProperties[T](name: Reference, param: SchemaProperties, required: Option[Seq[String]]): NamedTypes =
     Option(param).toSeq.flatten flatMap { p =>
@@ -188,7 +188,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 
   private def fromReference(name: Reference, ref: JsonReference, required: Option[Seq[String]]): NamedType = {
     assert(ref != null && ref.$ref != null)
-    checkRequired(name, required, name -> TypeRef(base / Pointer.deref(ref.$ref)), null: Default[String])
+    checkRequired(name, required, name -> TypeRef(base / Reference.deref(ref.$ref)), null: Default[String])
   }
 
   private def fromPrimitivesItems[T](name: Reference, items: PrimitivesItems[T]): NamedType = {

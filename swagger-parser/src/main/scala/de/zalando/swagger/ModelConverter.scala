@@ -5,7 +5,7 @@ import java.net.URI
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.Domain.Type
-import de.zalando.apifirst.Hypermedia.{NamedState, State, TransitionProperties}
+import de.zalando.apifirst.Hypermedia.{State, TransitionProperties}
 import de.zalando.apifirst.naming.Reference
 import de.zalando.swagger.strictModel.SwaggerModel
 
@@ -22,7 +22,7 @@ trait ParameterNaming {
 object ModelConverter extends ParameterNaming {
 
   def fromModel(base: URI, model: SwaggerModel, file: Option[File] = None,
-                keyPrefix: String = "x-api-first", autoConvert: Boolean = true) = {
+                keyPrefix: String = "x-api-first", autoConvert: Boolean = true): StrictModel = {
     val converter = new TypeConverter(base, model, keyPrefix)
     val typeDefs = converter.convert
     val discriminators = converter.discriminators.toMap
