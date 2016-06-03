@@ -14,7 +14,7 @@ import scala.collection.Iterable
   * @since 16.11.2015.
   */
 
-class ScalaGenerator(val strictModel: StrictModel) {
+class ScalaGenerator(val strictModel: StrictModel, customTemplateLocation: Option[String] = None) {
 
   val denotationTable = AstScalaPlayEnricher(strictModel)
 
@@ -96,7 +96,8 @@ class ScalaGenerator(val strictModel: StrictModel) {
     if (securityDefinitions.isEmpty) ""
     else apply(fileName, packageName, securityTemplateName)
 
-  private def apply(fileName: String, packageName: String, templateName: String, currentController: String = ""): String = {
+  private def apply(fileName: String, packageName: String, templateName: String,
+                    currentController: String = ""): String = {
     nonEmptyTemplate(fileName, packageName, templateName, currentController)
   }
 
@@ -192,12 +193,20 @@ class ScalaGenerator(val strictModel: StrictModel) {
     val allPackages = enrichWithStructuralInfo(rawAllPackages)
 
     renderTemplate(packages, templateName, allPackages)
-
   }
 
-  def renderTemplate(map: Map[String, Any], templateName: String, allPackages: Map[String, Any]): String = {
+  def renderTemplate(map: Map[String, Any], templateName: String,
+                     allPackages: Map[String, Any]): String = {
     import de.zalando.beard.renderer._
-    val loader = new ClasspathTemplateLoader(templatePrefix = "/", templateSuffix = ".mustache")
+    val templateSuffix = ".mustache"
+    val templatePrefix = "/"
+    val loader = customTemplateLocation flatMap { f =>
+      val targetTemplate = new java.io.File(f + templatePrefix + templateName + templateSuffix)
+      if (targetTemplate.canRead) Some(new FileTemplateLoader(f, templateSuffix)) else None
+    } getOrElse {
+      new ClasspathTemplateLoader(templatePrefix, templateSuffix)
+    }
+
     val templateCompiler = new CustomizableTemplateCompiler(loader)
     val template = templateCompiler.compile(TemplateName(templateName)).get
     val renderer = new BeardTemplateRenderer(templateCompiler)
