@@ -78,11 +78,7 @@ case class Transition(content: HttpTransaction, meta: Meta, attributes: Option[T
 }
 case class Copy(content: String) extends ResourceContent with CategoryContent
 
-sealed trait TransitionAttributes {
-  def href: String
-}
-case class HrefAttributes(href: String, hrefVariables: HrefVariables) extends TransitionAttributes
-case class BodyAttributes(href: String, data: DataStructure) extends TransitionAttributes
+case class TransitionAttributes(href: String, hrefVariables: Option[HrefVariables], data: Option[DataStructure])
 
 case class HrefVariables(content: List[Member])
 
@@ -245,7 +241,7 @@ object Decoder {
     } yield Transition(content, meta, attributes)
   ))
   implicit def resourceMetaDecode: DecodeJson[ResourceMeta] = jdecode2L(ResourceMeta.apply)("title", "description")
-  implicit def transitionAttributesDecode: DecodeJson[TransitionAttributes] = jdecode2L(HrefAttributes.apply)("href", "hrefVariables").map(x => (x: TransitionAttributes)) ||| jdecode2L(BodyAttributes.apply)("href", "data").map(x => (x: TransitionAttributes))
+  implicit def transitionAttributesDecode: DecodeJson[TransitionAttributes] = jdecode3L(TransitionAttributes.apply)("href", "hrefVariables", "data")
   implicit def hrefVariablesDecode: DecodeJson[HrefVariables] = decodeAndValidate("hrefVariables")(jdecode1L(HrefVariables.apply)("content"))
   implicit def copyDecode: DecodeJson[Copy] = jdecode1L(Copy.apply)("content")
   implicit def categoryDecode: DecodeJson[Category] = decodeAndValidate("category")(DecodeJson(c =>

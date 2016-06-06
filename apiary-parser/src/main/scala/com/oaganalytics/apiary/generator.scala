@@ -172,10 +172,8 @@ object Generator {
   }
 
   def transform(transitionAttributes: TransitionAttributes, ref: naming.Reference): List[(ParameterRef, Type)] = {
-    transitionAttributes match {
-      case h: HrefAttributes => transform(h.hrefVariables, ref)
-      case b: BodyAttributes => List(ParameterRef(ref / "requestBody") -> transform(b.data, ref))
-    }
+    (transitionAttributes.hrefVariables.map({ h => transform(h, ref)}) ++
+      transitionAttributes.data.map({ d => List(ParameterRef(ref / "requestBody") -> transform(d, ref))})).toList.flatten
   }
 
   def transform(transition: Transition, defaultPath: naming.Reference, packageName: String, controller: String):

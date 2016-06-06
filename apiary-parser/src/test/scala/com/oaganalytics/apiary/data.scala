@@ -1853,14 +1853,40 @@ object Data {
 }
 """
 
-  val postTransition = """
+  val putTransition = """
 {
   "element": "transition",
   "meta": {
-    "title": "Create an Config"
+    "title": "Save a Config Selection"
   },
   "attributes": {
-    "href": "/configs",
+    "href": "/config-selections/{selection}",
+    "hrefVariables": {
+      "element": "hrefVariables",
+      "content": [
+        {
+          "element": "member",
+          "meta": {
+            "description": "Selection ID"
+          },
+          "attributes": {
+            "typeAttributes": [
+              "required"
+            ]
+          },
+          "content": {
+            "key": {
+              "element": "string",
+              "content": "selection"
+            },
+            "value": {
+              "element": "string",
+              "content": ""
+            }
+          }
+        }
+      ]
+    },
     "data": {
       "element": "dataStructure",
       "content": [
@@ -1877,7 +1903,7 @@ object Data {
               "content": {
                 "key": {
                   "element": "string",
-                  "content": "config"
+                  "content": "configSelection"
                 },
                 "value": {
                   "element": "object",
@@ -1885,28 +1911,7 @@ object Data {
                     {
                       "element": "member",
                       "meta": {
-                        "description": ""
-                      },
-                      "attributes": {
-                        "typeAttributes": [
-                          "required"
-                        ]
-                      },
-                      "content": {
-                        "key": {
-                          "element": "string",
-                          "content": "dataVersion"
-                        },
-                        "value": {
-                          "element": "string",
-                          "content": "unique-id"
-                        }
-                      }
-                    },
-                    {
-                      "element": "member",
-                      "meta": {
-                        "description": ""
+                        "description": "Unique ID"
                       },
                       "attributes": {
                         "typeAttributes": [
@@ -1916,7 +1921,7 @@ object Data {
                       "content": {
                         "key": {
                           "element": "string",
-                          "content": "author"
+                          "content": "activeDataVersion"
                         },
                         "value": {
                           "element": "string",
@@ -1940,7 +1945,7 @@ object Data {
         {
           "element": "httpRequest",
           "attributes": {
-            "method": "POST",
+            "method": "PUT",
             "title": "",
             "headers": {
               "element": "httpHeaders",
@@ -1979,7 +1984,7 @@ object Data {
         {
           "element": "httpResponse",
           "attributes": {
-            "statusCode": "201",
+            "statusCode": "203",
             "headers": {
               "element": "httpHeaders",
               "content": [
@@ -2016,10 +2021,10 @@ object Data {
                       "content": {
                         "key": {
                           "element": "string",
-                          "content": "config"
+                          "content": "configSelection"
                         },
                         "value": {
-                          "element": " Config"
+                          "element": "Config Selection"
                         }
                       }
                     }
