@@ -5,7 +5,7 @@ import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.StringUtil
 import de.zalando.apifirst.generators.DenotationNames._
-import de.zalando.apifirst.naming.{Reference, TypeName}
+import de.zalando.apifirst.naming.Reference
 
 /**
   * @author  slasch 
@@ -110,7 +110,7 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
       case (r, TypeRef(ref)) =>
         Nil
       case (r, t: Composite) =>
-        Nil // TODO FIXME
+        Nil // TODO
     }
 
   private def typeDefConstraints(r: Reference, t: TypeDef)

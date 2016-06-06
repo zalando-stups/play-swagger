@@ -38,7 +38,8 @@ object strictModel {
   }
   trait EmailChecker extends PatternChecker {
     def email: Email
-    private val pattern = """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"""
+    private val pattern =
+      """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"""
     require(matches(pattern, email))
   }
 
@@ -262,7 +263,7 @@ object strictModel {
     parameters:           ParametersList,   // parameter list which is valid for all operations (can be overridden)
     @JsonProperty("$ref") $ref: Ref         // TODO $ref is currently not supported
   ) extends VendorExtensions with API with RefChecker {
-    def param(name: String, op: Operation) = Option(op).map(name -> _.parameters).toList
+    def param(name: String, op: Operation): List[(String, ParametersList)] = Option(op).map(name -> _.parameters).toList
     val params = (("" -> parameters) :: param("get", get) :::
       param("get", get) ::: param("put", put) ::: param("post", post) :::
       param("delete", delete) ::: param("options", options) ::: param("head", head) :::
@@ -301,8 +302,8 @@ object strictModel {
     def items: PrimitivesItems[T]
     def default: Default[T]
     def format: String
-    def isArray = `type`== ParameterType.ARRAY
-    def inPath = in == "path"
+    def isArray: Boolean = `type`== ParameterType.ARRAY
+    def inPath: Boolean = in == "path"
     def required: Boolean
     def collectionFormat: CF
     def name: String
@@ -534,7 +535,7 @@ object strictModel {
     headers: Headers,
     examples: Examples
   ) extends ResponseValue with VendorExtensions {
-    def targetState = vendorExtensions.get("x-api-first-target-state")
+    def targetState: Option[String] = vendorExtensions.get("x-api-first-target-state")
   }
 
 
@@ -724,7 +725,7 @@ object strictModel {
     require(`type` != PrimitiveType.OBJECT)
     if (isArray) require(items != null)
     if (collectionFormat != null) require(isArray)
-    def isArray = `type` == PrimitiveType.ARRAY
+    def isArray: Boolean = `type` == PrimitiveType.ARRAY
   }
 
   /**
@@ -832,13 +833,7 @@ object strictModel {
             errorMappings ++= errors
           }
         case other =>
-          throw new UnrecognizedPropertyException(
-            s"Unknown property: $key",
-            null,
-            self.getClass,
-            key,
-            null
-          )
+          throw new UnrecognizedPropertyException(s"Unknown property: $key", null, self.getClass, key, null)
       }
     }
     lazy val vendorExtensions = extensions.toMap
@@ -914,7 +909,7 @@ object strictModel {
     def minimum:                Minimum[T]
     def exclusiveMinimum:       ExclusiveMinimum
     def format: String
-    // require(multipleOf.forall(v => v.signum(v)==1)) FIXME repair this requirement
+    require(multipleOf.forall(_ > 0))
     require(exclusiveMaximum.isEmpty || maximum.isDefined)
     require(exclusiveMinimum.isEmpty || minimum.isDefined)
   }

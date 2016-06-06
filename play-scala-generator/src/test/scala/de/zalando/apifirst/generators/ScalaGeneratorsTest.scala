@@ -44,7 +44,6 @@ class ScalaGeneratorsTest extends FunSpec with MustMatchers {
           |}"""
     }
 
-    // TODO something should be done with these names
     it("should deal with overriden type definitions") {
       val model = Map(
         "definitions" / "Option" -> Opt(Lng(None), None),

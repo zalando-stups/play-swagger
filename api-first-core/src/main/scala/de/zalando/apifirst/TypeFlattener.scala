@@ -91,9 +91,9 @@ object TypeDeduplicator extends TypeAnalyzer {
     duplicates.toSeq.sortBy { p =>
       val factor =
         if (discriminators.keySet.contains(p._2.name)) 1
-        else if (p._1.pointer.isResponsePath) 100000
+        else if (p._1.isResponsePath) 100000
         else 100
-      p._1.pointer.tokens.size * factor
+      p._1.tokens.size * factor
     }.map(_._1).toList
 
 }

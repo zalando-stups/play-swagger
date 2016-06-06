@@ -12,26 +12,19 @@ import scala.language.{implicitConversions, postfixOps}
  * @since   03.11.2015.
  */
 object naming {
-  // FIXME helper types to simplify migration from JsonPointer
-  type TypeName = Reference
-  type Pointer = Reference
-  object Pointer {
-    def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
-    def deref(jstr: String) = Reference.fromUrl(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
-  }
 
   implicit def uriToReference(uri: URI): Reference = uriFragmentToReference(uri.getFragment)
 
-  def uriFragmentToReference(fragment: String): Reference = {
+  def uriFragmentToReference(fragment: String): Reference =
     Reference(Option(fragment).map(_.split("/").mkString(Reference.delimiter)).getOrElse(""))
-  }
+
   object dsl {
     import scala.language.implicitConversions
     implicit def nameToNameOps(name: Reference): NameDsl = new NameDsl(name)
     implicit def stringToName(s: String): Reference = Reference(s)
     class NameDsl(val name: Reference) {
-      def /(pp: String) = name.copy(parts = name.parts :+ pp)
-      def /(other: Reference) = merge(other)
+      def /(pp: String): Reference = name.copy(parts = name.parts :+ pp)
+      def /(other: Reference): Reference = merge(other)
       private def merge(other: Reference) = name.copy(parts = name.parts ++ other.parts)
     }
   }
@@ -41,14 +34,11 @@ object naming {
     val qualified = if (parts.isEmpty) delimiter else delimiter + parts.mkString(delimiter)
     val simple = if (parts.isEmpty) delimiter else parts.last
     val parent = if (parts.isEmpty) root else Reference(parts.init)
+    val tokens = parts
     override def toString: String = qualified
-    def toScalaString(pad: String): String = s"""${pad}Reference("$qualified")"""
-    // FIXME helper methods to simplify migration from JsonPointer
     def /(part: String): Reference = new NameDsl(this) / part
     def /(part: Reference): Reference = new NameDsl(this) / part
     def prepend(part: String): Reference = Reference(part :: parts)
-    val tokens = parts
-    val pointer = this
     lazy val isResponsePath = parts.contains(responses)
     lazy val isDefinition = parts.headOption.exists(_ == definitions)
     lazy val isTopResponsePath = parts.last == responses
@@ -59,7 +49,7 @@ object naming {
     val responses = "responses"
     val definitions = "definitions"
     val delimiter = "⌿"
-    val root: Reference = new Reference(List.empty)
+    val root: Reference = Reference(List.empty)
     def apply(base: String, s: Reference): Reference = s
     def fromUrl(url: String): Reference = parse(url, "/")
     def apply(ref: String): Reference = parse(ref, delimiter)
@@ -68,8 +58,10 @@ object naming {
     private def parse(s: String, delim: String) = {
       val normalized = s.dropWhile(_.toString == delim).split(delim, -1).toList
       val parts = if (normalized.length == 1 && normalized.head.isEmpty) List.empty else normalized
-      new Reference(parts)
+      Reference(parts)
     }
+    private def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
+    def deref(jstr: String) = Reference.fromUrl(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
   }
 
   case class Path(private val reference: Reference) {
@@ -88,24 +80,20 @@ object naming {
     }
     def prepend(prefix: String) = if (prefix != null) Path(ref.prepend(clean(prefix))) else this
     def /(suffix: String) = if (suffix != null && suffix.nonEmpty) Path(ref / clean(suffix)) else this
-    def /(suffix: Path) = Path(ref / suffix.ref)
     private def clean(prefix: String) =
       if (prefix != null && prefix.nonEmpty) prefix.dropWhile(sep).reverse.dropWhile(sep).reverse else prefix
     def map[That](f: String => That) = ref.parts.map(f)
     def nonEmpty = ref.parts.nonEmpty
     def last = ref.parts.last
-    def asScala: String = s"""Path(${reference.toScalaString("")})"""
-    def parts = ref.parts
+    def asScala: String = s"""Path(Reference("${ref.qualified}"))"""
   }
 
   object Path {
     def apply(s: String):Path = Path(Reference.fromUrl(s))
-    def apply(l: List[String]): Path = Path(Reference(l))
     def pathParam(part: String) = part != null && part.nonEmpty && part.startsWith("{") && part.endsWith("}")
     def strip(part: String) = if (pathParam(part)) part.tail.dropRight(1) else part
     def toString(prefix: String, suffix: String, transform: String => String = identity)(part: String) =
       if (pathParam(part)) s"$prefix${ScalaName.escape(transform(strip(part)))}$suffix" else transform(part)
-
   }
 }
 

@@ -77,7 +77,7 @@ object Generator {
    */
   def escape(name: String): String = escapees.foldLeft(name)({case (name, (literal, escaped)) => name.replaceAll(literal, escaped) })
 
-  def transform(element: Element, meta: TypeMeta, path: naming.TypeName): Type = {
+  def transform(element: Element, meta: TypeMeta, path: TypeName): Type = {
     element match {
       case StringElement(content, attributes) => Str(None, meta)
       case ArrayElement(content, attributes) => ArrResult(transform(content, emptyMeta, path / "array"), meta)
@@ -97,7 +97,7 @@ object Generator {
     }
   }
 
-  def transform(so: StructObject, meta: TypeMeta, path: naming.TypeName): TypeDef = {
+  def transform(so: StructObject, meta: TypeMeta, path: TypeName): TypeDef = {
     val p = so.meta.flatMap(_.id).map(id => naming.Reference.definition(escape(id))).getOrElse(path)
     TypeDef(
       p,
@@ -110,7 +110,7 @@ object Generator {
     )
   }
 
-  def transform(member: Member, path: naming.TypeName, fieldname: String): Field = {
+  def transform(member: Member, path: TypeName, fieldname: String): Field = {
     val meta = TypeMeta(member.meta.flatMap(_.description))
     // the default for an attribute is required
     val optional = member.attributes.flatMap(_.typeAttributes.find(_ == "optional").map(x => true)).getOrElse(false)
@@ -123,7 +123,7 @@ object Generator {
     Field(path / fieldname, elem)
   }
 
-  def transform(datastructure: DataStructure, path: naming.TypeName): Type = {
+  def transform(datastructure: DataStructure, path: TypeName): Type = {
     transform(datastructure.content, emptyMeta, path)
   }
 

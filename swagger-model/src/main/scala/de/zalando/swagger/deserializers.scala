@@ -17,7 +17,9 @@ object deserializers {
   import scala.collection.JavaConversions._
 
   /*
-    TODO: the error location is pointing to the wrong line and column because we are not working with the original file,
+    TODO wrong error location
+
+    the error location is pointing to the wrong line and column because we are not working with the original file,
     but with "prepared" version (needed due jackson's luck of support for some YAML features)
  */
 

@@ -22,47 +22,47 @@ object PlayScalaCompiler {
   type generatorF = (String, String, String) => Seq[String]
 
   def compileBase(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                  flatAst: StrictModel): CompilationResult = {
+                  flatAst: StrictModel, customTemplates: Option[String]): CompilationResult = {
     val places = Seq("/model/", "/validators/", "/security/", "/controllers_base/", "/marshallers/")
-    val generator = new ScalaGenerator(flatAst).generateBase
+    val generator = new ScalaGenerator(flatAst, customTemplates).generateBase
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
     CompilationResult(swaggerFiles)
   }
 
   def compileTests(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                   flatAst: StrictModel): CompilationResult = {
+                   flatAst: StrictModel, customTemplates: Option[String]): CompilationResult = {
     val places = Seq("/generators/", "/tests/")
-    val generator = new ScalaGenerator(flatAst).generateTest
+    val generator = new ScalaGenerator(flatAst, customTemplates).generateTest
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
     CompilationResult(swaggerFiles)
   }
 
   def compileControllers(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                         flatAst: StrictModel): CompilationResult = {
+                         flatAst: StrictModel, customTemplates: Option[String]): CompilationResult = {
     val places = Seq("/generated_controllers/")
-    val generator = new ScalaGenerator(flatAst).generateControllers
+    val generator = new ScalaGenerator(flatAst, customTemplates).generateControllers
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
     ControllerCompilationResult(swaggerFiles.flatten)
   }
 
   def compileMarshallers(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                         flatAst: StrictModel): CompilationResult = {
+                         flatAst: StrictModel, customTemplates: Option[String]): CompilationResult = {
     val places = Seq("/marshallers/")
-    val generator = new ScalaGenerator(flatAst).generateMarshallers
+    val generator = new ScalaGenerator(flatAst, customTemplates).generateMarshallers
     val swaggerFiles = compileSwagger(task, outputDir, places, generator, overwrite = false)(flatAst)
     ControllerCompilationResult(swaggerFiles.flatten)
   }
 
   def compileExtractors(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                        flatAst: StrictModel): CompilationResult = {
+                        flatAst: StrictModel, customTemplates: Option[String]): CompilationResult = {
     val places = Seq("/security/")
-    val generator = new ScalaGenerator(flatAst).generateExtractors
+    val generator = new ScalaGenerator(flatAst, customTemplates).generateExtractors
     val swaggerFiles = compileSwagger(task, outputDir, places, generator, overwrite = false)(flatAst)
     ControllerCompilationResult(swaggerFiles.flatten)
   }
 
   def compileRoutes(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                    flatAst: StrictModel): CompilationResult = {
+                    flatAst: StrictModel, customTemplates: Option[String]): CompilationResult = {
     val routesFiles = compileRoutes(task, outputDir, routesImport)(flatAst)
     CompilationResult(routesFiles)
   }

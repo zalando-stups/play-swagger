@@ -124,9 +124,7 @@ object DenotationNames {
   }
 
   def memberNameDenotation(table: DenotationTable, r: Reference): String = {
-    table.get(r).map(_ (COMMON)(MEMBER_NAME).toString).getOrElse {
-      r.typeAlias() // FIXME
-    }
+    table.get(r).map(_ (COMMON)(MEMBER_NAME).toString).getOrElse { r.typeAlias() }
   }
 
   def typeFields(table: DenotationTable, r: Reference): Seq[Field] = {
