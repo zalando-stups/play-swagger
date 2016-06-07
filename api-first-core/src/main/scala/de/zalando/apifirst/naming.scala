@@ -54,6 +54,7 @@ object naming {
     def fromUrl(url: String): Reference = parse(url, "/")
     def apply(ref: String): Reference = parse(ref, delimiter)
     def apply()         : Reference = Reference.root
+    def definition(ref: String): Reference = new Reference(List(definitions, ref))
     private def parse(s: String, delim: String) = {
       val normalized = s.dropWhile(_.toString == delim).split(delim, -1).toList
       val parts = if (normalized.length == 1 && normalized.head.isEmpty) List.empty else normalized
@@ -175,4 +176,5 @@ case class ScalaName(ref: Reference) {
 
   def methodName: String = escape(camelize("/", parts.last))
   def names: (String, String, String) = (packageName, className, methodName)
+  def methodName(verb: Http.Verb): String = methodName + camelize("/", verb.name.toLowerCase())
 }
