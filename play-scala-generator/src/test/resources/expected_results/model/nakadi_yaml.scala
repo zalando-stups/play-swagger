@@ -3,6 +3,7 @@ package nakadi
 package object yaml {
 
     import de.zalando.play.controllers.ArrayWrapper
+    import java.util.UUID
 
     import de.zalando.play.controllers.PlayPathBindables
 
@@ -13,6 +14,7 @@ package object yaml {
     type TopicsTopicEventsGetBatch_limit = Int
     type EventEvent_type = Option[String]
     type SimpleStreamEventEventsOpt = ArrayWrapper[Event]
+    type EventMetaDataParent_id = Option[UUID]
     type EventMetadata = Option[EventMetaDataNameClash]
     type TopicsTopicEventsPostResponses201 = Null
     type EventMetaDataScopesOpt = ArrayWrapper[String]
@@ -23,7 +25,7 @@ package object yaml {
     type TopicsGetResponses200 = Seq[Topic]
 
 
-    case class EventMetaDataNameClash(root_id: EventEvent_type, parent_id: EventEvent_type, scopes: EventMetaDataScopes, id: EventEvent_type, created: EventEvent_type) 
+    case class EventMetaDataNameClash(root_id: EventMetaDataParent_id, parent_id: EventMetaDataParent_id, scopes: EventMetaDataScopes, id: EventMetaDataParent_id, created: EventEvent_type) 
     case class Topic(name: String) 
     case class Metrics(name: EventEvent_type) 
     case class Event(event_type: EventEvent_type, partitioning_key: EventEvent_type, metadata: EventMetadata) 

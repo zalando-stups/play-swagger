@@ -60,6 +60,7 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
     case d: Password => forPasswordType
     case d: BInt => forBigIntegerType(tpe)
     case d: BDcml => forBigDecimalType(tpe)
+    case d: UUID => forUUID(tpe)
     case d: BinaryString =>
       throw new IllegalArgumentException("'type: string, format: binary' can only be used with body parameters")
   }
@@ -110,4 +111,8 @@ trait ParamBindingsStep extends EnrichmentStep[Parameter] {
   def forBigIntegerType: TypeNameToDescription = withName("BigInt")
 
   def forBigDecimalType: TypeNameToDescription = withName("BigDecimal")
+
+  def forUUID: TypeNameToDescription = withName("UUID")
+
+
 }

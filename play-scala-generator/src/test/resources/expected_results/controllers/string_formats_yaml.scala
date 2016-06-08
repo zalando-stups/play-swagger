@@ -24,8 +24,8 @@ import BinaryString._
 package string_formats.yaml {
 
     class String_formatsYaml extends String_formatsYamlBase {
-        val get = getAction { input: (BinaryString, GetBase64, GetDate, GetDate_time) =>
-            val (petId, base64, date, date_time) = input
+        val get = getAction { input: (GetDate_time, GetDate, GetBase64, GetUuid, BinaryString) =>
+            val (date_time, date, base64, uuid, petId) = input
             // ----- Start of unmanaged code area for action  String_formatsYaml.get
             NotImplementedYet
             // ----- End of unmanaged code area for action  String_formatsYaml.get

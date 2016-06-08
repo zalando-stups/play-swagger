@@ -15,10 +15,10 @@ object nakadi_yaml extends WithModel {
 	Reference("⌿definitions⌿EventMetaData") → 
 		TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-					Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-					Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+					Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+					Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 					Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(Arr(Str(None, TypeMeta(None, List())), TypeMeta(None, List()), "csv"), TypeMeta(None, List()))),
-					Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+					Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 					Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())),
 	Reference("⌿definitions⌿Topic") → 
@@ -38,10 +38,10 @@ object nakadi_yaml extends WithModel {
 					Field(Reference("⌿definitions⌿Event⌿partitioning_key"), Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List()))),
 					Field(Reference("⌿definitions⌿Event⌿metadata"), Opt(TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-						Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-						Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(Arr(Str(None, TypeMeta(None, List())), TypeMeta(None, List()), "csv"), TypeMeta(None, List()))),
-						Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 3"), List())),
@@ -77,10 +77,10 @@ object nakadi_yaml extends WithModel {
 						Field(Reference("⌿definitions⌿Event⌿partitioning_key"), Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿Event⌿metadata"), Opt(TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-							Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-							Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 							Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(Arr(Str(None, TypeMeta(None, List())), TypeMeta(None, List()), "csv"), TypeMeta(None, List()))),
-							Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 							Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 3"), List())), TypeMeta(None, List()), "csv"), TypeMeta(None, List())))
@@ -106,10 +106,10 @@ object nakadi_yaml extends WithModel {
 					Field(Reference("⌿definitions⌿Event⌿partitioning_key"), Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List()))),
 					Field(Reference("⌿definitions⌿Event⌿metadata"), Opt(TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-						Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-						Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(Arr(Str(None, TypeMeta(None, List())), TypeMeta(None, List()), "csv"), TypeMeta(None, List()))),
-						Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 3"), List())), TypeMeta(None, List())),
@@ -132,10 +132,10 @@ object nakadi_yaml extends WithModel {
 					Field(Reference("⌿definitions⌿Event⌿partitioning_key"), Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List()))),
 					Field(Reference("⌿definitions⌿Event⌿metadata"), Opt(TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-						Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-						Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(Arr(Str(None, TypeMeta(None, List())), TypeMeta(None, List()), "csv"), TypeMeta(None, List()))),
-						Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+						Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 3"), List())), TypeMeta(None, List())),
@@ -209,10 +209,10 @@ object nakadi_yaml extends WithModel {
 						Field(Reference("⌿definitions⌿Event⌿partitioning_key"), Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿Event⌿metadata"), Opt(TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-							Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-							Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 							Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(ArrResult(Str(None, TypeMeta(None, List())), TypeMeta(None, List())), TypeMeta(None, List()))),
-							Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 							Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 3"), List())), TypeMeta(None, List())), TypeMeta(None, List())))
@@ -300,10 +300,10 @@ object nakadi_yaml extends WithModel {
 						Field(Reference("⌿definitions⌿Event⌿partitioning_key"), Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List()))),
 						Field(Reference("⌿definitions⌿Event⌿metadata"), Opt(TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-							Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-							Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 							Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(ArrResult(Str(None, TypeMeta(None, List())), TypeMeta(None, List())), TypeMeta(None, List()))),
-							Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+							Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 							Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 3"), List())), TypeMeta(None, List())), TypeMeta(None, List())))
@@ -346,10 +346,10 @@ object nakadi_yaml extends WithModel {
 		Field(Reference("⌿definitions⌿Event⌿partitioning_key"), Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List()))),
 		Field(Reference("⌿definitions⌿Event⌿metadata"), Opt(TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-			Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-			Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+			Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+			Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 			Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(Arr(Str(None, TypeMeta(None, List())), TypeMeta(None, List()), "csv"), TypeMeta(None, List()))),
-			Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+			Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 			Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 3"), List())), TypeMeta(None, List())), None, None, ".+", encode = false, ParameterPlace.withName("body")),
@@ -360,10 +360,10 @@ object nakadi_yaml extends WithModel {
 		Field(Reference("⌿definitions⌿Event⌿partitioning_key"), Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List()))),
 		Field(Reference("⌿definitions⌿Event⌿metadata"), Opt(TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-			Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
-			Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+			Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+			Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 			Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), Opt(Arr(Str(None, TypeMeta(None, List())), TypeMeta(None, List()), "csv"), TypeMeta(None, List()))),
-			Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(Str(Some("uuid"), TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
+			Field(Reference("⌿definitions⌿EventMetaData⌿id"), Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List()))),
 			Field(Reference("⌿definitions⌿EventMetaData⌿created"), Opt(Str(Some("data-time"), TypeMeta(Some("data-time"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 5"), List())), TypeMeta(None, List())))
 			), TypeMeta(Some("Named types: 3"), List())), TypeMeta(None, List())), None, None, ".+", encode = false, ParameterPlace.withName("body")),
@@ -383,7 +383,7 @@ object nakadi_yaml extends WithModel {
 )
 def stateTransitions: StateTransitionsTable = Map[State, Map[State, TransitionProperties]]()
 def calls: Seq[ApiCall] = Seq(
-	ApiCall(GET, Path(Reference("⌿metrics")), 
+	ApiCall(GET, Path(Reference("⌿metrics")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -392,24 +392,24 @@ def calls: Seq[ApiCall] = Seq(
 			Seq(
 
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/metrics⌿get⌿responses⌿200")),
 			401 -> ParameterRef(Reference("⌿paths⌿/metrics⌿get⌿responses⌿401")),
 			503 -> ParameterRef(Reference("⌿paths⌿/metrics⌿get⌿responses⌿503"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self,
 					401 -> Self,
 					503 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions⌿{partition}⌿events")), 
+	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions⌿{partition}⌿events")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -425,10 +425,10 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿stream_timeout")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿batch_keep_alive_limit"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			500 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿responses⌿500")),
@@ -436,7 +436,7 @@ def calls: Seq[ApiCall] = Seq(
 			401 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿responses⌿401")),
 			400 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿responses⌿400")),
 			200 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿responses⌿200"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					500 -> Self,
@@ -444,9 +444,9 @@ def calls: Seq[ApiCall] = Seq(
 					401 -> Self,
 					400 -> Self,
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions⌿{partition}")), 
+	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions⌿{partition}")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -456,20 +456,20 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿topic")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿partition"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿responses⌿200"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics")), 
+	ApiCall(GET, Path(Reference("⌿topics")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -478,24 +478,24 @@ def calls: Seq[ApiCall] = Seq(
 			Seq(
 
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/topics⌿get⌿responses⌿200")),
 			401 -> ParameterRef(Reference("⌿paths⌿/topics⌿get⌿responses⌿401")),
 			503 -> ParameterRef(Reference("⌿paths⌿/topics⌿get⌿responses⌿503"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self,
 					401 -> Self,
 					503 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿events")), 
+	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿events")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -510,10 +510,10 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿get⌿batch_keep_alive_limit")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿get⌿topic"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			500 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿get⌿responses⌿500")),
@@ -521,7 +521,7 @@ def calls: Seq[ApiCall] = Seq(
 			401 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿get⌿responses⌿401")),
 			400 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿get⌿responses⌿400")),
 			200 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿get⌿responses⌿200"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					500 -> Self,
@@ -529,9 +529,9 @@ def calls: Seq[ApiCall] = Seq(
 					401 -> Self,
 					400 -> Self,
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(POST, Path(Reference("⌿topics⌿{topic}⌿events")), 
+	ApiCall(POST, Path(Reference("⌿topics⌿{topic}⌿events")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -541,10 +541,10 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿topic")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿event"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			201 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿responses⌿201")),
@@ -552,7 +552,7 @@ def calls: Seq[ApiCall] = Seq(
 			503 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿responses⌿503")),
 			401 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿responses⌿401")),
 			422 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿responses⌿422"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					201 -> Self,
@@ -560,9 +560,9 @@ def calls: Seq[ApiCall] = Seq(
 					503 -> Self,
 					401 -> Self,
 					422 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions")), 
+	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -571,20 +571,20 @@ def calls: Seq[ApiCall] = Seq(
 			Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions⌿get⌿topic"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions⌿get⌿responses⌿200"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(POST, Path(Reference("⌿topics⌿{topic}⌿events⌿batch")), 
+	ApiCall(POST, Path(Reference("⌿topics⌿{topic}⌿events⌿batch")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -594,10 +594,10 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events/batch⌿post⌿topic")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events/batch⌿post⌿event"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			201 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events/batch⌿post⌿responses⌿201")),
@@ -605,7 +605,7 @@ def calls: Seq[ApiCall] = Seq(
 			503 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events/batch⌿post⌿responses⌿503")),
 			401 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events/batch⌿post⌿responses⌿401")),
 			422 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events/batch⌿post⌿responses⌿422"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					201 -> Self,
@@ -613,7 +613,7 @@ def calls: Seq[ApiCall] = Seq(
 					503 -> Self,
 					401 -> Self,
 					422 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]))
 
 def packageName: Option[String] = Some("nakadi.yaml")

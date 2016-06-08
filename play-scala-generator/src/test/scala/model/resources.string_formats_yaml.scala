@@ -18,6 +18,8 @@ object string_formats_yaml extends WithModel {
 		BinaryString(TypeMeta(Some("binary"), List())),
 	Reference("⌿paths⌿/⌿get⌿date_time") → 
 		Opt(DateTime(TypeMeta(Some("date-time"), List())), TypeMeta(None, List())),
+	Reference("⌿paths⌿/⌿get⌿uuid") → 
+		Opt(UUID(TypeMeta(Some("UUID"), List())), TypeMeta(None, List())),
 	Reference("⌿paths⌿/⌿get⌿date") → 
 		Opt(Date(TypeMeta(Some("date"), List())), TypeMeta(None, List())),
 	Reference("⌿paths⌿/⌿get⌿responses⌿200") → 
@@ -25,10 +27,11 @@ object string_formats_yaml extends WithModel {
 ) 
  
  def parameters = Map[ParameterRef, Parameter](
-	ParameterRef(	Reference("⌿paths⌿/⌿get⌿petId")) → Parameter("petId", BinaryString(TypeMeta(Some("binary"), List())), None, None, ".+", encode = false, ParameterPlace.withName("body")),
-	ParameterRef(	Reference("⌿paths⌿/⌿get⌿base64")) → Parameter("base64", TypeRef(Reference("⌿paths⌿/⌿get⌿base64")), None, None, ".+", encode = true, ParameterPlace.withName("query")),
+	ParameterRef(	Reference("⌿paths⌿/⌿get⌿date_time")) → Parameter("date_time", TypeRef(Reference("⌿paths⌿/⌿get⌿date_time")), None, None, ".+", encode = true, ParameterPlace.withName("query")),
 	ParameterRef(	Reference("⌿paths⌿/⌿get⌿date")) → Parameter("date", TypeRef(Reference("⌿paths⌿/⌿get⌿date")), None, None, ".+", encode = true, ParameterPlace.withName("query")),
-	ParameterRef(	Reference("⌿paths⌿/⌿get⌿date_time")) → Parameter("date_time", TypeRef(Reference("⌿paths⌿/⌿get⌿date_time")), None, None, ".+", encode = true, ParameterPlace.withName("query"))
+	ParameterRef(	Reference("⌿paths⌿/⌿get⌿base64")) → Parameter("base64", TypeRef(Reference("⌿paths⌿/⌿get⌿base64")), None, None, ".+", encode = true, ParameterPlace.withName("query")),
+	ParameterRef(	Reference("⌿paths⌿/⌿get⌿uuid")) → Parameter("uuid", TypeRef(Reference("⌿paths⌿/⌿get⌿uuid")), None, None, ".+", encode = true, ParameterPlace.withName("query")),
+	ParameterRef(	Reference("⌿paths⌿/⌿get⌿petId")) → Parameter("petId", BinaryString(TypeMeta(Some("binary"), List())), None, None, ".+", encode = false, ParameterPlace.withName("body"))
 ) 
  def basePath: String =null
  def discriminators: DiscriminatorLookupTable = Map[Reference, Reference](
@@ -38,30 +41,31 @@ object string_formats_yaml extends WithModel {
 )
 def stateTransitions: StateTransitionsTable = Map[State, Map[State, TransitionProperties]]()
 def calls: Seq[ApiCall] = Seq(
-	ApiCall(GET, Path(Reference("⌿")), 
+	ApiCall(GET, Path(Reference("⌿")),
 		HandlerCall(
 			"string_formats.yaml",
 			"String_formatsYaml",
 			instantiate = false,
 			"get",parameters = 
 			Seq(
-				ParameterRef(Reference("⌿paths⌿/⌿get⌿petId")),
-				ParameterRef(Reference("⌿paths⌿/⌿get⌿base64")),
+				ParameterRef(Reference("⌿paths⌿/⌿get⌿date_time")),
 				ParameterRef(Reference("⌿paths⌿/⌿get⌿date")),
-				ParameterRef(Reference("⌿paths⌿/⌿get⌿date_time"))
+				ParameterRef(Reference("⌿paths⌿/⌿get⌿base64")),
+				ParameterRef(Reference("⌿paths⌿/⌿get⌿uuid")),
+				ParameterRef(Reference("⌿paths⌿/⌿get⌿petId"))
 				)
-			), 
-		Set.empty[MimeType], 
-		Set(MimeType("application/json"), MimeType("application/yaml")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set.empty[MimeType],
+		Set(MimeType("application/json"), MimeType("application/yaml")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/⌿get⌿responses⌿200"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]))
 
 def packageName: Option[String] = Some("string_formats.yaml")

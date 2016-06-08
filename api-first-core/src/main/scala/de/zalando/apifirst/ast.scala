@@ -171,6 +171,10 @@ object Domain {
     override val imports = Set("org.joda.time.DateTime")
   }
 
+  case class UUID(override val meta: TypeMeta) extends ProvidedType("UUID", meta)  with PrimitiveType {
+    override val imports = Set("java.util.UUID")
+  }
+
   case class File(override val meta: TypeMeta) extends ProvidedType("File", meta)  with PrimitiveType {
     override val imports = Set("java.io.File")
   }

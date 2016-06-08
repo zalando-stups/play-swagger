@@ -51,7 +51,7 @@ object ValidationsConverter {
       p.pattern map { p => "pattern(\"\"\"" + p + "\"\"\".r)"},
       emailConstraint
     ).flatten
-    if (result.nonEmpty && format.exists(s => s == "date-time" || s == "date")) {
+    if (result.nonEmpty && format.filter(_ != null).map(_.toLowerCase()).exists(s => s == "date-time" || s == "date" || s == "uuid" )) {
       println(s"WARN: Ignoring nonsense validations for ${format.get}: ${result.mkString(", ")}")
       Seq.empty[String]
     } else {

@@ -15,10 +15,10 @@ object nakadi_yaml extends WithModel {
 	Reference("⌿definitions⌿EventMetaData") → 
 		TypeDef(Reference("⌿definitions⌿EventMetaData"), 
 			Seq(
-					Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), TypeRef(Reference("⌿definitions⌿Event⌿event_type"))),
-					Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), TypeRef(Reference("⌿definitions⌿Event⌿event_type"))),
+					Field(Reference("⌿definitions⌿EventMetaData⌿root_id"), TypeRef(Reference("⌿definitions⌿EventMetaData⌿parent_id"))),
+					Field(Reference("⌿definitions⌿EventMetaData⌿parent_id"), TypeRef(Reference("⌿definitions⌿EventMetaData⌿parent_id"))),
 					Field(Reference("⌿definitions⌿EventMetaData⌿scopes"), TypeRef(Reference("⌿definitions⌿EventMetaData⌿scopes"))),
-					Field(Reference("⌿definitions⌿EventMetaData⌿id"), TypeRef(Reference("⌿definitions⌿Event⌿event_type"))),
+					Field(Reference("⌿definitions⌿EventMetaData⌿id"), TypeRef(Reference("⌿definitions⌿EventMetaData⌿parent_id"))),
 					Field(Reference("⌿definitions⌿EventMetaData⌿created"), TypeRef(Reference("⌿definitions⌿Event⌿event_type")))
 			), TypeMeta(Some("Named types: 5"), List())),
 	Reference("⌿definitions⌿Topic") → 
@@ -64,6 +64,8 @@ object nakadi_yaml extends WithModel {
 			), TypeMeta(Some("Named types: 2"), List())),
 	Reference("⌿definitions⌿Event⌿event_type") → 
 		Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List())),
+	Reference("⌿definitions⌿EventMetaData⌿parent_id") → 
+		Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List())),
 	Reference("⌿definitions⌿Event⌿metadata") → 
 		Opt(TypeRef(Reference("⌿definitions⌿EventMetaData")), TypeMeta(None, List())),
 	Reference("⌿definitions⌿SimpleStreamEvent⌿events") → 
@@ -122,7 +124,7 @@ object nakadi_yaml extends WithModel {
 )
 def stateTransitions: StateTransitionsTable = Map[State, Map[State, TransitionProperties]]()
 def calls: Seq[ApiCall] = Seq(
-	ApiCall(GET, Path(Reference("⌿metrics")), 
+	ApiCall(GET, Path(Reference("⌿metrics")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -131,24 +133,24 @@ def calls: Seq[ApiCall] = Seq(
 			Seq(
 
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			401 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			503 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			200 -> ParameterRef(Reference("⌿definitions⌿Metrics"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self,
 					401 -> Self,
 					503 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions⌿{partition}⌿events")), 
+	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions⌿{partition}⌿events")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -164,10 +166,10 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿stream_timeout")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿batch_keep_alive_limit"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			500 -> ParameterRef(Reference("⌿definitions⌿Problem")),
@@ -175,7 +177,7 @@ def calls: Seq[ApiCall] = Seq(
 			401 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			400 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			200 -> ParameterRef(Reference("⌿definitions⌿SimpleStreamEvent"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					500 -> Self,
@@ -183,9 +185,9 @@ def calls: Seq[ApiCall] = Seq(
 					401 -> Self,
 					400 -> Self,
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions⌿{partition}")), 
+	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions⌿{partition}")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -195,20 +197,20 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿topic")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿partition"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿definitions⌿TopicPartition"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics")), 
+	ApiCall(GET, Path(Reference("⌿topics")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -217,24 +219,24 @@ def calls: Seq[ApiCall] = Seq(
 			Seq(
 
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/topics⌿get⌿responses⌿200")),
 			401 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			503 -> ParameterRef(Reference("⌿definitions⌿Problem"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self,
 					401 -> Self,
 					503 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿events")), 
+	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿events")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -249,10 +251,10 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿get⌿batch_keep_alive_limit")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿get⌿topic"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			500 -> ParameterRef(Reference("⌿definitions⌿Problem")),
@@ -260,7 +262,7 @@ def calls: Seq[ApiCall] = Seq(
 			401 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			400 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			200 -> ParameterRef(Reference("⌿definitions⌿SimpleStreamEvent"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					500 -> Self,
@@ -268,9 +270,9 @@ def calls: Seq[ApiCall] = Seq(
 					401 -> Self,
 					400 -> Self,
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(POST, Path(Reference("⌿topics⌿{topic}⌿events")), 
+	ApiCall(POST, Path(Reference("⌿topics⌿{topic}⌿events")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -280,10 +282,10 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿topic")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿event"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			201 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿responses⌿201")),
@@ -291,7 +293,7 @@ def calls: Seq[ApiCall] = Seq(
 			503 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			401 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			422 -> ParameterRef(Reference("⌿definitions⌿Problem"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					201 -> Self,
@@ -299,9 +301,9 @@ def calls: Seq[ApiCall] = Seq(
 					503 -> Self,
 					401 -> Self,
 					422 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions")), 
+	ApiCall(GET, Path(Reference("⌿topics⌿{topic}⌿partitions")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -310,20 +312,20 @@ def calls: Seq[ApiCall] = Seq(
 			Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions⌿get⌿topic"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/partitions⌿get⌿responses⌿200"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]), 
-	ApiCall(POST, Path(Reference("⌿topics⌿{topic}⌿events⌿batch")), 
+	ApiCall(POST, Path(Reference("⌿topics⌿{topic}⌿events⌿batch")),
 		HandlerCall(
 			"nakadi.yaml",
 			"NakadiYaml",
@@ -333,10 +335,10 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events/batch⌿post⌿topic")),
 				ParameterRef(Reference("⌿paths⌿/topics/{topic}/events/batch⌿post⌿event"))
 				)
-			), 
-		Set(MimeType("application/json")), 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set(MimeType("application/json")),
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			201 -> ParameterRef(Reference("⌿paths⌿/topics/{topic}/events⌿post⌿responses⌿201")),
@@ -344,7 +346,7 @@ def calls: Seq[ApiCall] = Seq(
 			503 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			401 -> ParameterRef(Reference("⌿definitions⌿Problem")),
 			422 -> ParameterRef(Reference("⌿definitions⌿Problem"))
-		), None), 
+		), None),
 		StateResponseInfo(
 				Map[Int, State](
 					201 -> Self,
@@ -352,7 +354,7 @@ def calls: Seq[ApiCall] = Seq(
 					503 -> Self,
 					401 -> Self,
 					422 -> Self
-			), None), 
+			), None),
 		Set.empty[Security.Constraint]))
 
 def packageName: Option[String] = Some("nakadi.yaml")

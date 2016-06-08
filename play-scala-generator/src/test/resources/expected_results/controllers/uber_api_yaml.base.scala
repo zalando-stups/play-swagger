@@ -9,6 +9,7 @@ import Results.Status
 import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
 import scala.util._
+import java.util.UUID
 import scala.math.BigDecimal
 import de.zalando.play.controllers.ArrayWrapper
 
@@ -88,12 +89,12 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
     case class GetestimatesTime200(result: Seq[Product])(implicit val writer: String => Option[Writeable[Seq[Product]]]) extends GetestimatesTimeType[Seq[Product]] { val statusCode = 200 }
     
 
-    private type getestimatesTimeActionRequestType       = (Double, Double, ProfilePicture, ProfilePicture)
+    private type getestimatesTimeActionRequestType       = (Double, Double, EstimatesTimeGetCustomer_uuid, ProfilePicture)
     private type getestimatesTimeActionType[T]            = getestimatesTimeActionRequestType => GetestimatesTimeType[T] forSome { type T }
 
 
     val getestimatesTimeActionConstructor  = Action
-    def getestimatesTimeAction[T] = (f: getestimatesTimeActionType[T]) => (start_latitude: Double, start_longitude: Double, customer_uuid: ProfilePicture, product_id: ProfilePicture) => getestimatesTimeActionConstructor { request =>
+    def getestimatesTimeAction[T] = (f: getestimatesTimeActionType[T]) => (start_latitude: Double, start_longitude: Double, customer_uuid: EstimatesTimeGetCustomer_uuid, product_id: ProfilePicture) => getestimatesTimeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesTimeResponseMimeType =>

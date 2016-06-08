@@ -69,4 +69,8 @@ object Generators extends JsValueGenerators {
         content <- arbitrary[String]
     } yield de.zalando.play.controllers.PlayPathBindables.tempFileFromString(content))
     {{/if}}
+    {{if uuid_part}}
+    implicit lazy val arbUUID: Arbitrary[UUID] = Arbitrary(Gen.uuid)
+    {{/if}}
+
 }

@@ -10,6 +10,7 @@ import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper
 import PlayBodyParsing._
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
+import java.util.UUID
 
 import de.zalando.play.controllers.PlayPathBindables
 

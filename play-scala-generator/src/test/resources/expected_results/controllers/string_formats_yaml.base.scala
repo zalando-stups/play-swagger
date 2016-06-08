@@ -14,6 +14,7 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
+import java.util.UUID
 import org.joda.time.LocalDate
 
 import de.zalando.play.controllers.PlayPathBindables
@@ -28,7 +29,7 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
     case object Get200 extends EmptyReturn(200)
     
 
-    private type getActionRequestType       = (BinaryString, GetBase64, GetDate, GetDate_time)
+    private type getActionRequestType       = (GetDate_time, GetDate, GetBase64, GetUuid, BinaryString)
     private type getActionType[T]            = getActionRequestType => GetType[T] forSome { type T }
 
         private def getParser(acceptedTypes: Seq[String], maxLength: Int = parse.DefaultMaxTextLength) = {
@@ -47,7 +48,7 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
         }
 
     val getActionConstructor  = Action
-    def getAction[T] = (f: getActionType[T]) => (base64: GetBase64, date: GetDate, date_time: GetDate_time) => getActionConstructor(getParser(Seq[String]())) { request =>
+    def getAction[T] = (f: getActionType[T]) => (date_time: GetDate_time, date: GetDate, base64: GetBase64, uuid: GetUuid) => getActionConstructor(getParser(Seq[String]())) { request =>
         val providedTypes = Seq[String]("application/json", "application/yaml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
@@ -57,8 +58,8 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
             
 
                 val result =
-                        new GetValidator(petId, base64, date, date_time).errors match {
-                            case e if e.isEmpty => processValidgetRequest(f)((petId, base64, date, date_time))(getResponseMimeType)
+                        new GetValidator(date_time, date, base64, uuid, petId).errors match {
+                            case e if e.isEmpty => processValidgetRequest(f)((date_time, date, base64, uuid, petId))(getResponseMimeType)
                             case l =>
                                 implicit val marshaller: Writeable[Seq[ParsingError]] = parsingErrors2Writable(getResponseMimeType)
                                 BadRequest(l)
