@@ -236,7 +236,8 @@ class ScalaGenerator(val strictModel: StrictModel, customTemplateLocation: Optio
     "date_time_part" -> "DateTime",
     "binary_string_part" -> "BinaryString",
     "base64_string_part" -> "Base64String",
-    "file_part" -> "File"
+    "file_part" -> "File",
+    "uuid_part" -> "UUID"
   )
 
   private def neededParts(imports: Seq[String]): Map[String, Boolean] = partsMapping map {

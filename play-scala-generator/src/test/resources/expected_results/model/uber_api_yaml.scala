@@ -2,6 +2,7 @@ package uber.api
 
 package object yaml {
 
+    import java.util.UUID
     import scala.math.BigDecimal
     import de.zalando.play.controllers.ArrayWrapper
 
@@ -13,6 +14,7 @@ package object yaml {
     type ActivitiesHistory = Option[ActivitiesHistoryOpt]
     type ProfilePicture = Option[String]
     type ErrorCode = Option[Int]
+    type EstimatesTimeGetCustomer_uuid = Option[UUID]
     type ProductsGetResponses200 = Seq[Product]
     type PriceEstimateHigh_estimate = Option[BigDecimal]
     type EstimatesPriceGetResponses200 = Seq[PriceEstimate]
@@ -27,9 +29,13 @@ package object yaml {
     case class Error(code: ErrorCode, message: ProfilePicture, fields: ProfilePicture) 
 
 
+    implicit val bindable_UUIDQuery = PlayPathBindables.queryBindableUUID
+
     implicit val bindable_OptionIntQuery = PlayPathBindables.createOptionQueryBindable[Int]
 
     implicit val bindable_OptionStringQuery = PlayPathBindables.createOptionQueryBindable[String]
+
+    implicit val bindable_OptionUUIDQuery = PlayPathBindables.createOptionQueryBindable[UUID]
 
 
 }

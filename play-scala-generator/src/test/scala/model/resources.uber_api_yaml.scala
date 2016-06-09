@@ -71,6 +71,8 @@ object uber_api_yaml extends WithModel {
 		Opt(BDcml(TypeMeta(Some("Upper bound of the estimated price."), List())), TypeMeta(None, List())),
 	Reference("⌿paths⌿/estimates/price⌿get⌿end_latitude") → 
 		Dbl(TypeMeta(Some("double"), List())),
+	Reference("⌿paths⌿/estimates/time⌿get⌿customer_uuid") → 
+		Opt(UUID(TypeMeta(Some("uuid"), List())), TypeMeta(None, List())),
 	Reference("⌿definitions⌿Activities⌿history⌿Opt") → 
 		Arr(TypeRef(Reference("⌿definitions⌿Activity")), TypeMeta(None, List()), "csv"),
 	Reference("⌿paths⌿/products⌿get⌿responses⌿200") → 
@@ -83,7 +85,7 @@ object uber_api_yaml extends WithModel {
 	ParameterRef(	Reference("⌿paths⌿/estimates/price⌿get⌿start_latitude")) → Parameter("start_latitude", Dbl(TypeMeta(Some("double"), List())), None, None, ".+", encode = true, ParameterPlace.withName("query")),
 	ParameterRef(	Reference("⌿paths⌿/estimates/price⌿get⌿end_longitude")) → Parameter("end_longitude", Dbl(TypeMeta(Some("double"), List())), None, None, ".+", encode = true, ParameterPlace.withName("query")),
 	ParameterRef(	Reference("⌿paths⌿/estimates/time⌿get⌿start_longitude")) → Parameter("start_longitude", Dbl(TypeMeta(Some("double"), List())), None, None, ".+", encode = true, ParameterPlace.withName("query")),
-	ParameterRef(	Reference("⌿paths⌿/estimates/time⌿get⌿customer_uuid")) → Parameter("customer_uuid", TypeRef(Reference("⌿definitions⌿Profile⌿picture")), None, None, ".+", encode = true, ParameterPlace.withName("query")),
+	ParameterRef(	Reference("⌿paths⌿/estimates/time⌿get⌿customer_uuid")) → Parameter("customer_uuid", TypeRef(Reference("⌿paths⌿/estimates/time⌿get⌿customer_uuid")), None, None, ".+", encode = true, ParameterPlace.withName("query")),
 	ParameterRef(	Reference("⌿paths⌿/estimates/price⌿get⌿end_latitude")) → Parameter("end_latitude", Dbl(TypeMeta(Some("double"), List())), None, None, ".+", encode = true, ParameterPlace.withName("query")),
 	ParameterRef(	Reference("⌿paths⌿/estimates/time⌿get⌿start_latitude")) → Parameter("start_latitude", Dbl(TypeMeta(Some("double"), List())), None, None, ".+", encode = true, ParameterPlace.withName("query")),
 	ParameterRef(	Reference("⌿paths⌿/history⌿get⌿limit")) → Parameter("limit", TypeRef(Reference("⌿definitions⌿Error⌿code")), None, None, ".+", encode = true, ParameterPlace.withName("query")),
@@ -101,7 +103,7 @@ object uber_api_yaml extends WithModel {
 )
 def stateTransitions: StateTransitionsTable = Map[State, Map[State, TransitionProperties]]()
 def calls: Seq[ApiCall] = Seq(
-	ApiCall(GET, Path(Reference("⌿me")), 
+	ApiCall(GET, Path(Reference("⌿me")),
 		HandlerCall(
 			"uber.api.yaml",
 			"UberApiYaml",
@@ -110,20 +112,20 @@ def calls: Seq[ApiCall] = Seq(
 			Seq(
 
 				)
-			), 
-		Set.empty[MimeType], 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set.empty[MimeType],
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿definitions⌿Profile"))
-		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))), 
+		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), Some(Self)), 
+			), Some(Self)),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿products")), 
+	ApiCall(GET, Path(Reference("⌿products")),
 		HandlerCall(
 			"uber.api.yaml",
 			"UberApiYaml",
@@ -133,20 +135,20 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/products⌿get⌿latitude")),
 				ParameterRef(Reference("⌿paths⌿/products⌿get⌿longitude"))
 				)
-			), 
-		Set.empty[MimeType], 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set.empty[MimeType],
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/products⌿get⌿responses⌿200"))
-		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))), 
+		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), Some(Self)), 
+			), Some(Self)),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿estimates⌿time")), 
+	ApiCall(GET, Path(Reference("⌿estimates⌿time")),
 		HandlerCall(
 			"uber.api.yaml",
 			"UberApiYaml",
@@ -158,20 +160,20 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/estimates/time⌿get⌿customer_uuid")),
 				ParameterRef(Reference("⌿paths⌿/estimates/time⌿get⌿product_id"))
 				)
-			), 
-		Set.empty[MimeType], 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set.empty[MimeType],
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/products⌿get⌿responses⌿200"))
-		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))), 
+		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), Some(Self)), 
+			), Some(Self)),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿estimates⌿price")), 
+	ApiCall(GET, Path(Reference("⌿estimates⌿price")),
 		HandlerCall(
 			"uber.api.yaml",
 			"UberApiYaml",
@@ -183,20 +185,20 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/estimates/price⌿get⌿end_latitude")),
 				ParameterRef(Reference("⌿paths⌿/estimates/price⌿get⌿end_longitude"))
 				)
-			), 
-		Set.empty[MimeType], 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set.empty[MimeType],
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿paths⌿/estimates/price⌿get⌿responses⌿200"))
-		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))), 
+		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), Some(Self)), 
+			), Some(Self)),
 		Set.empty[Security.Constraint]), 
-	ApiCall(GET, Path(Reference("⌿history")), 
+	ApiCall(GET, Path(Reference("⌿history")),
 		HandlerCall(
 			"uber.api.yaml",
 			"UberApiYaml",
@@ -206,18 +208,18 @@ def calls: Seq[ApiCall] = Seq(
 				ParameterRef(Reference("⌿paths⌿/history⌿get⌿offset")),
 				ParameterRef(Reference("⌿paths⌿/history⌿get⌿limit"))
 				)
-			), 
-		Set.empty[MimeType], 
-		Set(MimeType("application/json")), 
-		Map.empty[String, Seq[Class[Exception]]], 
+			),
+		Set.empty[MimeType],
+		Set(MimeType("application/json")),
+		Map.empty[String, Seq[Class[Exception]]],
 		TypesResponseInfo(
 			Map[Int, ParameterRef](
 			200 -> ParameterRef(Reference("⌿definitions⌿Activities"))
-		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))), 
+		), Some(	ParameterRef(Reference("⌿definitions⌿Error")))),
 		StateResponseInfo(
 				Map[Int, State](
 					200 -> Self
-			), Some(Self)), 
+			), Some(Self)),
 		Set.empty[Security.Constraint]))
 
 def packageName: Option[String] = Some("uber.api.yaml")

@@ -27,6 +27,7 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
+import java.util.UUID
 import org.joda.time.LocalDate
 
 import Generators._
@@ -55,11 +56,11 @@ import Generators._
 
 
     "GET /" should {
-        def testInvalidInput(input: (BinaryString, GetBase64, GetDate, GetDate_time)) = {
+        def testInvalidInput(input: (GetDate_time, GetDate, GetBase64, GetUuid, BinaryString)) = {
 
-            val (petId, base64, date, date_time) = input
+            val (date_time, date, base64, uuid, petId) = input
 
-            val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
+            val url = s"""/?${toQuery("date_time", date_time)}&${toQuery("date", date)}&${toQuery("base64", base64)}&${toQuery("uuid", uuid)}"""
             val contentTypes: Seq[String] = Seq()
             val acceptHeaders: Seq[String] = Seq(
                "application/json", 
@@ -88,7 +89,7 @@ import Generators._
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
-                val errors = new GetValidator(petId, base64, date, date_time).errors
+                val errors = new GetValidator(date_time, date, base64, uuid, petId).errors
 
                 lazy val validations = errors flatMap { _.messages } map { m =>
                     s"Contains error: $m in ${contentAsString(path)}" |:(contentAsString(path).contains(m) ?= true)
@@ -104,12 +105,12 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (BinaryString, GetBase64, GetDate, GetDate_time)) = {
-            val (petId, base64, date, date_time) = input
+        def testValidInput(input: (GetDate_time, GetDate, GetBase64, GetUuid, BinaryString)) = {
+            val (date_time, date, base64, uuid, petId) = input
             
             val parsed_petId = parserConstructor("application/json").writeValueAsString(petId)
             
-            val url = s"""/?${toQuery("base64", base64)}&${toQuery("date", date)}&${toQuery("date_time", date_time)}"""
+            val url = s"""/?${toQuery("date_time", date_time)}&${toQuery("date", date)}&${toQuery("base64", base64)}&${toQuery("uuid", uuid)}"""
             val contentTypes: Seq[String] = Seq()
             val acceptHeaders: Seq[String] = Seq(
                 "application/json", 
@@ -136,7 +137,7 @@ import Generators._
                         route(request.withFormUrlEncodedBody(form:_*)).get
                     } else route(request).get
 
-                val errors = new GetValidator(petId, base64, date, date_time).errors
+                val errors = new GetValidator(date_time, date, base64, uuid, petId).errors
                 val possibleResponseTypes: Map[Int,Class[_ <: Any]] = Map(
                     200 -> classOf[Null]
                 )
@@ -161,28 +162,30 @@ import Generators._
         }
         "discard invalid data" in new WithApplication {
             val genInputs = for {
-                        petId <- BinaryStringGenerator
-                        base64 <- GetBase64Generator
-                        date <- GetDateGenerator
                         date_time <- GetDate_timeGenerator
+                        date <- GetDateGenerator
+                        base64 <- GetBase64Generator
+                        uuid <- GetUuidGenerator
+                        petId <- BinaryStringGenerator
                     
-                } yield (petId, base64, date, date_time)
-            val inputs = genInputs suchThat { case (petId, base64, date, date_time) =>
-                new GetValidator(petId, base64, date, date_time).errors.nonEmpty
+                } yield (date_time, date, base64, uuid, petId)
+            val inputs = genInputs suchThat { case (date_time, date, base64, uuid, petId) =>
+                new GetValidator(date_time, date, base64, uuid, petId).errors.nonEmpty
             }
             val props = forAll(inputs) { i => testInvalidInput(i) }
             checkResult(props)
         }
         "do something with valid data" in new WithApplication {
             val genInputs = for {
-                    petId <- BinaryStringGenerator
-                    base64 <- GetBase64Generator
-                    date <- GetDateGenerator
                     date_time <- GetDate_timeGenerator
+                    date <- GetDateGenerator
+                    base64 <- GetBase64Generator
+                    uuid <- GetUuidGenerator
+                    petId <- BinaryStringGenerator
                 
-            } yield (petId, base64, date, date_time)
-            val inputs = genInputs suchThat { case (petId, base64, date, date_time) =>
-                new GetValidator(petId, base64, date, date_time).errors.isEmpty
+            } yield (date_time, date, base64, uuid, petId)
+            val inputs = genInputs suchThat { case (date_time, date, base64, uuid, petId) =>
+                new GetValidator(date_time, date, base64, uuid, petId).errors.isEmpty
             }
             val props = forAll(inputs) { i => testValidInput(i) }
             checkResult(props)

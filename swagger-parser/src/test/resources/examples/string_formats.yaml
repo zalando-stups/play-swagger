@@ -32,6 +32,11 @@ paths:
           required: false
           type: string
           format: date-time
+        - name: uuid
+          in: query
+          required: false
+          type: string
+          format: UUID
       responses:
         200:
           description: OK

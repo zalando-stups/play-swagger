@@ -22,6 +22,7 @@ import play.api.test.Helpers.{status => requestStatusCode_}
 import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
+import java.util.UUID
 import scala.math.BigDecimal
 import de.zalando.play.controllers.ArrayWrapper
 
@@ -176,7 +177,7 @@ import Generators._
     }
 
     "GET /v1/estimates/time" should {
-        def testInvalidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
+        def testInvalidInput(input: (Double, Double, EstimatesTimeGetCustomer_uuid, ProfilePicture)) = {
 
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
 
@@ -222,7 +223,7 @@ import Generators._
             if (propertyList.isEmpty) throw new IllegalStateException(s"No 'produces' defined for the $url")
             propertyList.reduce(_ && _)
         }
-        def testValidInput(input: (Double, Double, ProfilePicture, ProfilePicture)) = {
+        def testValidInput(input: (Double, Double, EstimatesTimeGetCustomer_uuid, ProfilePicture)) = {
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
             
             val url = s"""/v1/estimates/time?${toQuery("start_latitude", start_latitude)}&${toQuery("start_longitude", start_longitude)}&${toQuery("customer_uuid", customer_uuid)}&${toQuery("product_id", product_id)}"""
@@ -277,7 +278,7 @@ import Generators._
             val genInputs = for {
                         start_latitude <- DoubleGenerator
                         start_longitude <- DoubleGenerator
-                        customer_uuid <- ProfilePictureGenerator
+                        customer_uuid <- EstimatesTimeGetCustomer_uuidGenerator
                         product_id <- ProfilePictureGenerator
                     
                 } yield (start_latitude, start_longitude, customer_uuid, product_id)
@@ -291,7 +292,7 @@ import Generators._
             val genInputs = for {
                     start_latitude <- DoubleGenerator
                     start_longitude <- DoubleGenerator
-                    customer_uuid <- ProfilePictureGenerator
+                    customer_uuid <- EstimatesTimeGetCustomer_uuidGenerator
                     product_id <- ProfilePictureGenerator
                 
             } yield (start_latitude, start_longitude, customer_uuid, product_id)

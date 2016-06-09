@@ -6,6 +6,7 @@ import PlayBodyParsing._
 import PlayValidations._
 
 import de.zalando.play.controllers.ArrayWrapper
+import java.util.UUID
 // ----- constraints and wrapper validations -----
 class TopicsTopicEventsBatchPostTopicConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -48,6 +49,13 @@ class EventEvent_typeOptConstraints(override val instance: String) extends Valid
 }
 class EventEvent_typeOptValidator(instance: String) extends RecursiveValidator {
     override val validators = Seq(new EventEvent_typeOptConstraints(instance))
+}
+class EventMetaDataParent_idOptConstraints(override val instance: UUID) extends ValidationBase[UUID] {
+    override def constraints: Seq[Constraint[UUID]] =
+        Seq()
+}
+class EventMetaDataParent_idOptValidator(instance: UUID) extends RecursiveValidator {
+    override val validators = Seq(new EventMetaDataParent_idOptConstraints(instance))
 }
 class EventMetaDataScopesOptArrConstraints(override val instance: String) extends ValidationBase[String] {
     override def constraints: Seq[Constraint[String]] =
@@ -122,10 +130,10 @@ class EventValidator(instance: Event) extends RecursiveValidator {
 }
 class EventMetaDataValidator(instance: EventMetaDataNameClash) extends RecursiveValidator {
     override val validators = Seq(
-        new EventEvent_typeValidator(instance.root_id), 
-        new EventEvent_typeValidator(instance.parent_id), 
+        new EventMetaDataParent_idValidator(instance.root_id), 
+        new EventMetaDataParent_idValidator(instance.parent_id), 
         new EventMetaDataScopesValidator(instance.scopes), 
-        new EventEvent_typeValidator(instance.id), 
+        new EventMetaDataParent_idValidator(instance.id), 
         new EventEvent_typeValidator(instance.created)
     )
 }
@@ -141,6 +149,9 @@ class EventEvent_typeValidator(instance: EventEvent_type) extends RecursiveValid
 }
 class EventMetadataValidator(instance: EventMetadata) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new EventMetaDataValidator(_) }
+}
+class EventMetaDataParent_idValidator(instance: EventMetaDataParent_id) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new EventMetaDataParent_idOptValidator(_) }
 }
 class EventMetaDataScopesValidator(instance: EventMetaDataScopes) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new EventMetaDataScopesOptValidator(_) }

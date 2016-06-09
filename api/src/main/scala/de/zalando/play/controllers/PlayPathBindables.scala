@@ -1,10 +1,11 @@
 package de.zalando.play.controllers
 
 import java.io.File
+import java.util.UUID
 
 import com.fasterxml.jackson.databind.{MappingIterator, ObjectReader, ObjectWriter}
 import com.fasterxml.jackson.dataformat.csv.{CsvMapper, CsvParser, CsvSchema}
-import org.joda.time.{LocalDate, DateTime}
+import org.joda.time.{DateTime, LocalDate}
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
 import scala.io.Source
@@ -90,6 +91,12 @@ object PlayPathBindables {
     (key: String, e: Exception) => "Cannot parse parameter %s as BigDecimal: %s".format(key, e.getMessage)
   )
 
+  implicit object pathBindableUUID extends PathBindable.Parsing[UUID](
+    str => UUID.fromString(str),
+    uuid => uuid.toString,
+    (key: String, e: Exception) => "Cannot parse parameter %s as UUID: %s".format(key, e.getMessage)
+  )
+
   implicit object queryBindableBigInt extends QueryStringBindable.Parsing[BigInt](
     str => BigInt(str),
     bInt => bInt.toString,
@@ -102,7 +109,13 @@ object PlayPathBindables {
     (key: String, e: Exception) => "Cannot parse parameter %s as BigDecimal: %s".format(key, e.getMessage)
   )
 
-  def tempFileFromString(s: String) = {
+  implicit object queryBindableUUID extends QueryStringBindable.Parsing[UUID](
+    str => UUID.fromString(str),
+    uuid => uuid.toString,
+    (key: String, e: Exception) => "Cannot parse parameter %s as UUID: %s".format(key, e.getMessage)
+  )
+
+  def tempFileFromString(s: String): File = {
     val prefix = "tmp_" + s.hashCode
     val f = File.createTempFile(prefix.toString, "")
     f.deleteOnExit()
@@ -118,7 +131,7 @@ object PlayPathBindables {
     * @tparam T
     * @return
     */
-  def createOptionPathBindable[T](implicit tBinder: PathBindable[T]) = new PathBindable[Option[T]] {
+  def createOptionPathBindable[T](implicit tBinder: PathBindable[T]): PathBindable[Option[T]] = new PathBindable[Option[T]] {
     override def bind(key: String, value: String): Either[String, Option[T]] = {
       val wrap = Option(value).map(tBinder.bind(key, _))
       val result = wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
@@ -137,7 +150,7 @@ object PlayPathBindables {
     * @tparam T
     * @return
     */
-  def createOptionQueryBindable[T](implicit tBinder: QueryStringBindable[T]) = new QueryStringBindable[Option[T]] {
+  def createOptionQueryBindable[T](implicit tBinder: QueryStringBindable[T]): QueryStringBindable[Option[T]] = new QueryStringBindable[Option[T]] {
     override def bind(key: String, values: Map[String, Seq[String]]): Option[Either[String, Option[T]]] = {
       val wrap = values.get(key).flatMap(_ => tBinder.bind(key, values))
       val result = wrap.map(_.right.map(Option.apply)).getOrElse(Right(None))
@@ -176,7 +189,7 @@ object PlayPathBindables {
     * @tparam T       the type of array items
     * @return
     */
-  def createArrPathBindable[T](wrapper: ArrayWrapper[T])(implicit tBinder: PathBindable[T]) = new PathBindable[ArrayWrapper[T]] {
+  def createArrPathBindable[T](wrapper: ArrayWrapper[T])(implicit tBinder: PathBindable[T]): PathBindable[ArrayWrapper[T]] = new PathBindable[ArrayWrapper[T]] {
 
     val mapper = createMapper
     val reader = createReader(mapper, wrapper)
@@ -207,7 +220,7 @@ object PlayPathBindables {
   }
 
 
-/**
+  /**
     * Factory method for query bindables of different types
     *
     * @param wrapper  the wrapper is used to distinguish different separator chars
@@ -215,7 +228,8 @@ object PlayPathBindables {
     * @tparam T       the type of array items
     * @return
     */
-  def createArrQueryBindable[T](wrapper: ArrayWrapper[T])(implicit tBinder: QueryStringBindable[T]) = new QueryStringBindable[ArrayWrapper[T]] {
+  def createArrQueryBindable[T](wrapper: ArrayWrapper[T])(implicit tBinder: QueryStringBindable[T]):
+    QueryStringBindable[ArrayWrapper[T]] = new QueryStringBindable[ArrayWrapper[T]] {
 
   val mapper = createMapper
   val reader = createReader(mapper, wrapper)

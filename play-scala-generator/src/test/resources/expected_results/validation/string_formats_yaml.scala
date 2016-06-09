@@ -10,6 +10,7 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
+import java.util.UUID
 import org.joda.time.LocalDate
 // ----- constraints and wrapper validations -----
 class GetBase64OptConstraints(override val instance: String) extends ValidationBase[String] {
@@ -33,6 +34,13 @@ class GetDate_timeOptConstraints(override val instance: DateTime) extends Valida
 class GetDate_timeOptValidator(instance: DateTime) extends RecursiveValidator {
     override val validators = Seq(new GetDate_timeOptConstraints(instance))
 }
+class GetUuidOptConstraints(override val instance: UUID) extends ValidationBase[UUID] {
+    override def constraints: Seq[Constraint[UUID]] =
+        Seq()
+}
+class GetUuidOptValidator(instance: UUID) extends RecursiveValidator {
+    override val validators = Seq(new GetUuidOptConstraints(instance))
+}
 class GetDateOptConstraints(override val instance: LocalDate) extends ValidationBase[LocalDate] {
     override def constraints: Seq[Constraint[LocalDate]] =
         Seq()
@@ -48,21 +56,26 @@ class GetBase64Validator(instance: GetBase64) extends RecursiveValidator {
 class GetDate_timeValidator(instance: GetDate_time) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new GetDate_timeOptValidator(_) }
 }
+class GetUuidValidator(instance: GetUuid) extends RecursiveValidator {
+    override val validators = instance.toSeq.map { new GetUuidOptValidator(_) }
+}
 class GetDateValidator(instance: GetDate) extends RecursiveValidator {
     override val validators = instance.toSeq.map { new GetDateOptValidator(_) }
 }
 // ----- array delegating validators -----
 // ----- catch all simple validators -----
 // ----- call validations -----
-class GetValidator(petId: BinaryString, base64: GetBase64, date: GetDate, date_time: GetDate_time) extends RecursiveValidator {
+class GetValidator(date_time: GetDate_time, date: GetDate, base64: GetBase64, uuid: GetUuid, petId: BinaryString) extends RecursiveValidator {
     override val validators = Seq(
-        new GetPetIdValidator(petId), 
-    
-        new GetBase64Validator(base64), 
+        new GetDate_timeValidator(date_time), 
     
         new GetDateValidator(date), 
     
-        new GetDate_timeValidator(date_time)
+        new GetBase64Validator(base64), 
+    
+        new GetUuidValidator(uuid), 
+    
+        new GetPetIdValidator(petId)
     
     )
 }

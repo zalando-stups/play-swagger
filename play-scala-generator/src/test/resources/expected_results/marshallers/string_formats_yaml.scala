@@ -12,6 +12,7 @@ import Base64String._
 import de.zalando.play.controllers.BinaryString
 import BinaryString._
 import org.joda.time.DateTime
+import java.util.UUID
 import org.joda.time.LocalDate
 
 

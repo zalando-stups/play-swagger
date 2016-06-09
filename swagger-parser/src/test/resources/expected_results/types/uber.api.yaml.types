@@ -47,7 +47,7 @@
 ⌿paths⌿/history⌿get⌿limit ->
 	Opt(Intgr)
 ⌿paths⌿/estimates/time⌿get⌿customer_uuid ->
-	Opt(Str)
+	Opt(UUID)
 ⌿paths⌿/history⌿get⌿offset ->
 	Opt(Intgr)
 ⌿paths⌿/estimates/time⌿get⌿product_id ->

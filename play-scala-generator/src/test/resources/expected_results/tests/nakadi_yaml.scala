@@ -23,6 +23,7 @@ import play.api.test.Helpers.{contentAsString => requestContentAsString_}
 import play.api.test.Helpers.{contentType => requestContentType_}
 
 import de.zalando.play.controllers.ArrayWrapper
+import java.util.UUID
 
 import Generators._
 

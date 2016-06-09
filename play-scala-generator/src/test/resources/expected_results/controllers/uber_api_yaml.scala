@@ -31,7 +31,7 @@ package uber.api.yaml {
             NotImplementedYet
             // ----- End of unmanaged code area for action  UberApiYaml.getproducts
         }
-        val getestimatesTime = getestimatesTimeAction { input: (Double, Double, ProfilePicture, ProfilePicture) =>
+        val getestimatesTime = getestimatesTimeAction { input: (Double, Double, EstimatesTimeGetCustomer_uuid, ProfilePicture) =>
             val (start_latitude, start_longitude, customer_uuid, product_id) = input
             // ----- Start of unmanaged code area for action  UberApiYaml.getestimatesTime
             NotImplementedYet

@@ -5,6 +5,7 @@ import org.scalacheck.Arbitrary
 import play.api.libs.json.scalacheck.JsValueGenerators
 import Arbitrary._
 import de.zalando.play.controllers.ArrayWrapper
+import java.util.UUID
 
 object Generators extends JsValueGenerators {
     
@@ -15,6 +16,7 @@ object Generators extends JsValueGenerators {
     def createIntGenerator = _generate(IntGenerator)
     def createEventEvent_typeGenerator = _generate(EventEvent_typeGenerator)
     def createSimpleStreamEventEventsOptGenerator = _generate(SimpleStreamEventEventsOptGenerator)
+    def createEventMetaDataParent_idGenerator = _generate(EventMetaDataParent_idGenerator)
     def createEventMetadataGenerator = _generate(EventMetadataGenerator)
     def createNullGenerator = _generate(NullGenerator)
     def createEventMetaDataScopesOptGenerator = _generate(EventMetaDataScopesOptGenerator)
@@ -31,6 +33,7 @@ object Generators extends JsValueGenerators {
     def IntGenerator = arbitrary[Int]
     def EventEvent_typeGenerator = Gen.option(arbitrary[String])
     def SimpleStreamEventEventsOptGenerator = _genList(EventGenerator, "csv")
+    def EventMetaDataParent_idGenerator = Gen.option(arbitrary[UUID])
     def EventMetadataGenerator = Gen.option(EventMetaDataNameClashGenerator)
     def NullGenerator = arbitrary[Null]
     def EventMetaDataScopesOptGenerator = _genList(arbitrary[String], "csv")
@@ -52,10 +55,10 @@ object Generators extends JsValueGenerators {
 
 
     def EventMetaDataNameClashGenerator = for {
-        root_id <- EventEvent_typeGenerator
-        parent_id <- EventEvent_typeGenerator
+        root_id <- EventMetaDataParent_idGenerator
+        parent_id <- EventMetaDataParent_idGenerator
         scopes <- EventMetaDataScopesGenerator
-        id <- EventEvent_typeGenerator
+        id <- EventMetaDataParent_idGenerator
         created <- EventEvent_typeGenerator
     } yield EventMetaDataNameClash(root_id, parent_id, scopes, id, created)
     def TopicGenerator = for {
@@ -94,4 +97,8 @@ object Generators extends JsValueGenerators {
     
     
     
+    
+    implicit lazy val arbUUID: Arbitrary[UUID] = Arbitrary(Gen.uuid)
+    
+
 }

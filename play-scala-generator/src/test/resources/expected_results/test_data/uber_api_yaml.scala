@@ -4,6 +4,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
 import play.api.libs.json.scalacheck.JsValueGenerators
 import Arbitrary._
+import java.util.UUID
 import scala.math.BigDecimal
 import de.zalando.play.controllers.ArrayWrapper
 
@@ -15,6 +16,7 @@ object Generators extends JsValueGenerators {
     def createActivitiesHistoryGenerator = _generate(ActivitiesHistoryGenerator)
     def createProfilePictureGenerator = _generate(ProfilePictureGenerator)
     def createErrorCodeGenerator = _generate(ErrorCodeGenerator)
+    def createEstimatesTimeGetCustomer_uuidGenerator = _generate(EstimatesTimeGetCustomer_uuidGenerator)
     def createProductsGetResponses200Generator = _generate(ProductsGetResponses200Generator)
     def createPriceEstimateHigh_estimateGenerator = _generate(PriceEstimateHigh_estimateGenerator)
     def createEstimatesPriceGetResponses200Generator = _generate(EstimatesPriceGetResponses200Generator)
@@ -26,6 +28,7 @@ object Generators extends JsValueGenerators {
     def ActivitiesHistoryGenerator = Gen.option(ActivitiesHistoryOptGenerator)
     def ProfilePictureGenerator = Gen.option(arbitrary[String])
     def ErrorCodeGenerator = Gen.option(arbitrary[Int])
+    def EstimatesTimeGetCustomer_uuidGenerator = Gen.option(arbitrary[UUID])
     def ProductsGetResponses200Generator = Gen.containerOf[List,Product](ProductGenerator)
     def PriceEstimateHigh_estimateGenerator = Gen.option(arbitrary[BigDecimal])
     def EstimatesPriceGetResponses200Generator = Gen.containerOf[List,PriceEstimate](PriceEstimateGenerator)
@@ -86,4 +89,8 @@ object Generators extends JsValueGenerators {
     
     
     
+    
+    implicit lazy val arbUUID: Arbitrary[UUID] = Arbitrary(Gen.uuid)
+    
+
 }

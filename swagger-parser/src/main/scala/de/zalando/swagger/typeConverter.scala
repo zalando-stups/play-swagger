@@ -230,7 +230,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   // ------------------------------------ Primitives ------------------------------------
 
   private implicit def fromParameterType(tpe: (ParameterType.Value, String)): TypeConstructor =
-    (tpe._1, Option(tpe._2)) match {
+    (tpe._1, Option(tpe._2).map(_.toLowerCase)) match {
       case (ParameterType.INTEGER, Some("int64")) => Domain.Lng
       case (ParameterType.INTEGER, Some("int32")) => Domain.Intgr
       case (ParameterType.INTEGER, _) => Domain.BInt
@@ -243,13 +243,14 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (ParameterType.STRING, Some("date")) => Domain.Date
       case (ParameterType.STRING, Some("date-time")) => Domain.DateTime
       case (ParameterType.STRING, Some("password")) => Domain.Password
+      case (ParameterType.STRING, Some("uuid")) => Domain.UUID
       case (ParameterType.STRING, fmt) => Domain.Str.curried(fmt)
       case (ParameterType.FILE, _) => Domain.File
       case (a, b) => throw new IllegalArgumentException(s"Combination if $a and $b is not supported")
     }
 
   private implicit def fromPrimitiveType(tpe: (PrimitiveType.Val, String)): TypeConstructor =
-    (tpe._1, Option(tpe._2)) match {
+    (tpe._1, Option(tpe._2).map(_.toLowerCase)) match {
       case (PrimitiveType.INTEGER, Some("int64")) => Domain.Lng
       case (PrimitiveType.INTEGER, Some("int32")) => Domain.Intgr
       case (PrimitiveType.INTEGER, _) => Domain.BInt
@@ -262,6 +263,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
       case (PrimitiveType.STRING, Some("date")) => Domain.Date
       case (PrimitiveType.STRING, Some("date-time")) => Domain.DateTime
       case (PrimitiveType.STRING, Some("password")) => Domain.Password
+      case (PrimitiveType.STRING, Some("uuid")) => Domain.UUID
       case (PrimitiveType.STRING, fmt) => Domain.Str.curried(fmt)
       case (PrimitiveType.NULL, _) => Domain.Null
       case (a, b) => throw new IllegalArgumentException(s"Combination if $a and $b is not supported")
@@ -284,7 +286,8 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
 
   // ------------------------------------ Helper methods ------------------------------------
 
-  private def paramRequired(required: Seq[String], default: Default[_]) = Some(if (default != null || required == null) Nil else required)
+  private def paramRequired(required: Seq[String], default: Default[_]) =
+    Some(if (default != null || required == null) Nil else required)
 
   private def checkRequired(name: Reference, required: Option[Seq[String]], tpe: NamedType, default: Default[_]): NamedType =
     if (isRequired(name, required, default)) tpe else wrapInOption(tpe)

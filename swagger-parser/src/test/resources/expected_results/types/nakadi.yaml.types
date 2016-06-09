@@ -1,9 +1,9 @@
 ⌿definitions⌿EventMetaData ->
 	TypeDef(⌿definitions⌿EventMetaData, Seq(
-		Field(⌿definitions⌿EventMetaData⌿root_id, Opt(Str)), 
-		Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(Str)), 
+		Field(⌿definitions⌿EventMetaData⌿root_id, Opt(UUID)), 
+		Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(UUID)), 
 		Field(⌿definitions⌿EventMetaData⌿scopes, Opt(Arr(Str))), 
-		Field(⌿definitions⌿EventMetaData⌿id, Opt(Str)), 
+		Field(⌿definitions⌿EventMetaData⌿id, Opt(UUID)), 
 		Field(⌿definitions⌿EventMetaData⌿created, Opt(Str))))
 ⌿definitions⌿Topic ->
 	TypeDef(⌿definitions⌿Topic, Seq(
@@ -16,10 +16,10 @@
 		Field(⌿definitions⌿Event⌿event_type, Opt(Str)), 
 		Field(⌿definitions⌿Event⌿partitioning_key, Opt(Str)), 
 		Field(⌿definitions⌿Event⌿metadata, Opt(TypeDef(⌿definitions⌿EventMetaData, Seq(
-			Field(⌿definitions⌿EventMetaData⌿root_id, Opt(Str)), 
-			Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(Str)), 
+			Field(⌿definitions⌿EventMetaData⌿root_id, Opt(UUID)), 
+			Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(UUID)), 
 			Field(⌿definitions⌿EventMetaData⌿scopes, Opt(Arr(Str))), 
-			Field(⌿definitions⌿EventMetaData⌿id, Opt(Str)), 
+			Field(⌿definitions⌿EventMetaData⌿id, Opt(UUID)), 
 			Field(⌿definitions⌿EventMetaData⌿created, Opt(Str))))))))
 ⌿definitions⌿Cursor ->
 	TypeDef(⌿definitions⌿Cursor, Seq(
@@ -42,10 +42,10 @@
 			Field(⌿definitions⌿Event⌿event_type, Opt(Str)), 
 			Field(⌿definitions⌿Event⌿partitioning_key, Opt(Str)), 
 			Field(⌿definitions⌿Event⌿metadata, Opt(TypeDef(⌿definitions⌿EventMetaData, Seq(
-				Field(⌿definitions⌿EventMetaData⌿root_id, Opt(Str)), 
-				Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(Str)), 
+				Field(⌿definitions⌿EventMetaData⌿root_id, Opt(UUID)), 
+				Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(UUID)), 
 				Field(⌿definitions⌿EventMetaData⌿scopes, Opt(Arr(Str))), 
-				Field(⌿definitions⌿EventMetaData⌿id, Opt(Str)), 
+				Field(⌿definitions⌿EventMetaData⌿id, Opt(UUID)), 
 				Field(⌿definitions⌿EventMetaData⌿created, Opt(Str)))))))))))))
 ⌿paths⌿/topics/{topic}/events/batch⌿post⌿topic ->
 	Str
@@ -66,10 +66,10 @@
 		Field(⌿definitions⌿Event⌿event_type, Opt(Str)), 
 		Field(⌿definitions⌿Event⌿partitioning_key, Opt(Str)), 
 		Field(⌿definitions⌿Event⌿metadata, Opt(TypeDef(⌿definitions⌿EventMetaData, Seq(
-			Field(⌿definitions⌿EventMetaData⌿root_id, Opt(Str)), 
-			Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(Str)), 
+			Field(⌿definitions⌿EventMetaData⌿root_id, Opt(UUID)), 
+			Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(UUID)), 
 			Field(⌿definitions⌿EventMetaData⌿scopes, Opt(Arr(Str))), 
-			Field(⌿definitions⌿EventMetaData⌿id, Opt(Str)), 
+			Field(⌿definitions⌿EventMetaData⌿id, Opt(UUID)), 
 			Field(⌿definitions⌿EventMetaData⌿created, Opt(Str)))))))))
 ⌿paths⌿/topics/{topic}/partitions/{partition}⌿get⌿topic ->
 	Str
@@ -88,10 +88,10 @@
 		Field(⌿definitions⌿Event⌿event_type, Opt(Str)), 
 		Field(⌿definitions⌿Event⌿partitioning_key, Opt(Str)), 
 		Field(⌿definitions⌿Event⌿metadata, Opt(TypeDef(⌿definitions⌿EventMetaData, Seq(
-			Field(⌿definitions⌿EventMetaData⌿root_id, Opt(Str)), 
-			Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(Str)), 
+			Field(⌿definitions⌿EventMetaData⌿root_id, Opt(UUID)), 
+			Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(UUID)), 
 			Field(⌿definitions⌿EventMetaData⌿scopes, Opt(Arr(Str))), 
-			Field(⌿definitions⌿EventMetaData⌿id, Opt(Str)), 
+			Field(⌿definitions⌿EventMetaData⌿id, Opt(UUID)), 
 			Field(⌿definitions⌿EventMetaData⌿created, Opt(Str)))))))))
 ⌿paths⌿/topics/{topic}/events⌿get⌿stream_limit ->
 	Opt(Intgr)
@@ -142,10 +142,10 @@
 			Field(⌿definitions⌿Event⌿event_type, Opt(Str)), 
 			Field(⌿definitions⌿Event⌿partitioning_key, Opt(Str)), 
 			Field(⌿definitions⌿Event⌿metadata, Opt(TypeDef(⌿definitions⌿EventMetaData, Seq(
-				Field(⌿definitions⌿EventMetaData⌿root_id, Opt(Str)), 
-				Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(Str)), 
+				Field(⌿definitions⌿EventMetaData⌿root_id, Opt(UUID)), 
+				Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(UUID)), 
 				Field(⌿definitions⌿EventMetaData⌿scopes, Opt(ArrResult(Str))), 
-				Field(⌿definitions⌿EventMetaData⌿id, Opt(Str)), 
+				Field(⌿definitions⌿EventMetaData⌿id, Opt(UUID)), 
 				Field(⌿definitions⌿EventMetaData⌿created, Opt(Str)))))))))))))
 ⌿paths⌿/topics/{topic}/partitions/{partition}/events⌿get⌿responses⌿404 ->
 	TypeDef(⌿definitions⌿Problem, Seq(
@@ -199,10 +199,10 @@
 			Field(⌿definitions⌿Event⌿event_type, Opt(Str)), 
 			Field(⌿definitions⌿Event⌿partitioning_key, Opt(Str)), 
 			Field(⌿definitions⌿Event⌿metadata, Opt(TypeDef(⌿definitions⌿EventMetaData, Seq(
-				Field(⌿definitions⌿EventMetaData⌿root_id, Opt(Str)), 
-				Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(Str)), 
+				Field(⌿definitions⌿EventMetaData⌿root_id, Opt(UUID)), 
+				Field(⌿definitions⌿EventMetaData⌿parent_id, Opt(UUID)), 
 				Field(⌿definitions⌿EventMetaData⌿scopes, Opt(ArrResult(Str))), 
-				Field(⌿definitions⌿EventMetaData⌿id, Opt(Str)), 
+				Field(⌿definitions⌿EventMetaData⌿id, Opt(UUID)), 
 				Field(⌿definitions⌿EventMetaData⌿created, Opt(Str)))))))))))))
 ⌿paths⌿/topics/{topic}/events⌿get⌿responses⌿400 ->
 	TypeDef(⌿definitions⌿Problem, Seq(
