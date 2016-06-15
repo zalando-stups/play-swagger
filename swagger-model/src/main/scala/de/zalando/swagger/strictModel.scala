@@ -412,7 +412,7 @@ object strictModel {
     @JsonScalaEnumeration(classOf[ParameterTypeReference]) `type`: ParameterType.Value,
     format:                 String,
     items:                  PrimitivesItems[T],
-    @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
+    @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormatWithMulti.Value,
     default:                Default[T],
     maximum:                Maximum[T],
     exclusiveMaximum:       ExclusiveMaximum,
@@ -427,7 +427,7 @@ object strictModel {
     enum:                   Enum[T],
     multipleOf:             MultipleOf[T],
     allowEmptyValue:        Boolean = false // unique for form
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value] {
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormatWithMulti.Value] {
     assert("formData".equalsIgnoreCase(in))
   }
 
