@@ -1,135 +1,108 @@
 import bintray.Keys._
+import sbt.{Resolver, UpdateLogging}
 
-val PlayVersion  = "2.4.3"
-val ScalaVersion = "2.11.7"
+val PlayVersion = "2.5.4"
+val Scala10 = "2.10.5"
+val Scala11 = "2.11.8"
+
+val deps = new Dependencies(PlayVersion)
+
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+
+lazy val common = (project in file("common"))
+  .enablePlugins(BuildInfoPlugin)
+  .settings(commonSettings: _*)
+  .settings(
+//    scalaVersion := Scala11,
+//    crossScalaVersions := Seq(Scala10, Scala11),
+    name := "play-swagger-common",
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    libraryDependencies ++= deps.jacksons
+  )
 
 // This is the API project, it gets added to the runtime dependencies of any
 // project using play-swagger
 lazy val api = (project in file("api"))
-  .settings(common: _*)
+  .enablePlugins(BuildInfoPlugin)
+  .settings(commonSettings: _*)
   .settings(
+    //    scalaVersion := Scala11,
+    //crossScalaVersions := Seq(Scala11),
     name := "play-swagger-api",
-    libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
-      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
-      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-csv" % "2.6.4",
-      "joda-time" % "joda-time" % "2.9.1",
-      "com.typesafe.play" %% "play" % PlayVersion % Provided,
-      "com.typesafe.play" %% "play-java-ws" % PlayVersion,
-      "org.scalacheck" %% "scalacheck" % "1.12.4" % "test",
-      "org.specs2" %% "specs2-scalacheck" % "3.6" % "test",
-      "me.jeffmay" %% "play-json-tests" % "1.3.0" % "test"
-    ),
-    scalaVersion :=  "2.10.5",
-    crossScalaVersions := Seq(scalaVersion.value, ScalaVersion),
-    resolvers ++= Seq(
-      "jeffmay" at "https://dl.bintray.com/jeffmay/maven"
-    )
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    libraryDependencies ++= deps.api ++ deps.test
   )
+  .dependsOn(common)
 
 lazy val swaggerModel = (project in file("swagger-model"))
   .enablePlugins(BuildInfoPlugin)
-  .settings(common: _*)
+  .settings(commonSettings: _*)
   .settings(
     name := "swagger-model",
-    scalaVersion := "2.10.5",
-    sbtPlugin := false,
-
+    //scalaVersion := Scala11,
+    //crossScalaVersions := Seq(Scala10, Scala11),
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "de.zalando",
-    libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
-      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
-      "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
-      "org.scalatest" %% "scalatest" % "2.2.6" % "test"
-    )
+    libraryDependencies ++= deps.swaggerModel ++ deps.test
   )
 
 lazy val apiFirstCore = (project in file("api-first-core"))
   .enablePlugins(BuildInfoPlugin)
-  .settings(common: _*)
+  .settings(commonSettings: _*)
   .settings(
+    //scalaVersion := Scala11,
+    //crossScalaVersions := Seq(Scala11),
     name := "api-first-core",
-    scalaVersion := "2.10.5",
-    libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-      "org.scala-lang" % "scala-library" % scalaVersion.value,
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %% "scalatest" % "2.2.3" % "test",
-      "org.scalacheck" %% "scalacheck" % "1.12.5" % "test"
-    )
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    libraryDependencies ++= deps.scala ++ deps.test
   )
-  .dependsOn(api)
 
 
 lazy val swaggerParser = (project in file("swagger-parser"))
   .enablePlugins(BuildInfoPlugin)
-  .settings(common: _*)
+  .settings(commonSettings: _*)
   .settings(
+    //scalaVersion := Scala11,
+    //crossScalaVersions := Seq(Scala11),
     name := "swagger-parser",
-    scalaVersion := "2.10.5",
-    sbtPlugin := false,
-
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "de.zalando",
-    libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
-      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.4.4",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.1",
-      "me.andrz.jackson" % "jackson-json-reference-core" % "0.2.1",
-      "org.scalatest" %% "scalatest" % "2.2.6" % "test"
-    )
+    libraryDependencies ++= deps.swaggerParser(scalaVersion.value) ++ deps.test
   )
   .dependsOn(swaggerModel, apiFirstCore)
 
-
 lazy val playScalaGenerator = (project in file("play-scala-generator"))
   .enablePlugins(BuildInfoPlugin)
-  .settings(common: _*)
+  .settings(commonSettings: _*)
   .settings(
+    //scalaVersion := Scala11,
+    //crossScalaVersions := Seq(Scala11),
     name := "play-scala-generator",
-    scalaVersion := "2.10.5",
-    sbtPlugin := false,
-
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "de.zalando",
-    libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "routes-compiler" % PlayVersion % Provided,
-      "com.typesafe.play" %% "play" % PlayVersion % Provided,
-      "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-      "org.scala-lang" % "scala-library" % scalaVersion.value,
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-      "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
-      "de.zalando" %% "beard" % "0.0.6"
-    )
+    libraryDependencies ++= deps.playScalaGenerator ++ deps.test
   ).dependsOn(apiFirstCore)
 
 // This is the sbt plugin
 lazy val plugin = (project in file("plugin"))
   .enablePlugins(BuildInfoPlugin)
-  .settings(common: _*)
+  .settings(commonSettings: _*)
   .settings(scriptedSettings: _*)
   .settings(
     name := "sbt-play-swagger",
-    scalaVersion := "2.10.5",
     sbtPlugin := true,
+
+    scalaVersion := Scala10,
 
     addSbtPlugin("com.typesafe.play" % "sbt-plugin" % PlayVersion),
 
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "de.zalando",
 
     scriptedLaunchOpts := {
       scriptedLaunchOpts.value ++
-      Seq(
-        "-Dproject.version=" + version.value,
-        "-Dscala.version=" + scalaVersion.value,
-        "-Xmx768M",
-        "-XX:ReservedCodeCacheSize=256M"
-      )
+        Seq(
+          "-Dproject.version=" + version.value,
+          "-Dscala.version=" + scalaVersion.value,
+          "-Xmx768M",
+          "-XX:ReservedCodeCacheSize=256M"
+        )
     },
     scriptedDependencies := {
       val a = (publishLocal in swaggerModel).value
@@ -141,29 +114,37 @@ lazy val plugin = (project in file("plugin"))
     },
     scriptedBufferLog := false
   )
-  .dependsOn(swaggerModel, swaggerParser, apiFirstCore, playScalaGenerator)
+  .dependsOn(apiFirstCore, playScalaGenerator, swaggerParser, common)
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
-  .enablePlugins(CrossPerProjectPlugin)
-  .settings(common: _*)
+// .enablePlugins(CrossPerProjectPlugin)
+  .settings(commonSettings: _*)
   .settings(
     name := "play-swagger-root"
   )
-  .aggregate(swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
+  .aggregate(common, swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
 
-def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
+def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
+  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
+  ivyLoggingLevel := UpdateLogging.DownloadOnly,
+  version := "0.1.11",
+  scalaVersion := Scala11,
+  sbtPlugin := false,
+  buildInfoPackage := "de.zalando",
   organization := "de.zalando",
-  version      := "0.1.10",
-  fork in ( Test, run ) := true,
+  fork in(Test, run) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
+    Resolver.typesafeRepo("releases"),
+    Resolver.typesafeIvyRepo("releases"),
+    Resolver.bintrayRepo("zalando", "sbt-plugins"),
     "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
-    "zalando-maven" at "https://dl.bintray.com/zalando/maven"
+    "zalando-maven" at "https://dl.bintray.com/zalando/maven",
+    "jeffmay" at "https://dl.bintray.com/jeffmay/maven"
   ),
-  resolvers           += Resolver.bintrayRepo("zalando", "sbt-plugins"),
-  licenses            += ("MIT", url("http://opensource.org/licenses/MIT")),
-  publishMavenStyle   := false,
+  licenses +=("MIT", url("http://opensource.org/licenses/MIT")),
+  publishMavenStyle := false,
   repository in bintray := "sbt-plugins",
   bintrayOrganization in bintray := Some("zalando"),
   scalacOptions ++= Seq(
@@ -171,16 +152,20 @@ def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
     "-encoding", "UTF-8", // yes, this is 2 args
     "-feature",
     "-unchecked",
-    "-Xfatal-warnings",
-    "-Xlint",
-    "-Yno-adapted-args",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard",
+    //    "-Xfatal-warnings",
+    //    "-Xlint",
+    "-Yno-adapted-args",
     "-Xfuture"
   ),
-  scalastyleFailOnError := true
-) ++ addMainSourcesToLintTarget ++ addSlowScalacSwitchesToLintTarget ++ addWartRemoverToLintTarget ++
-  removeWartRemoverFromCompileTarget ++ addFoursquareLinterToLintTarget ++ removeFoursquareLinterFromCompileTarget
+  scalastyleFailOnError := false
+) ++ Lint.all
+
+
+// Apply default Scalariform formatting.
+// Reformat at every compile.
+// c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
 // ++ scalariformSettings
 
 // coverageEnabled := false
@@ -194,86 +179,3 @@ coverageHighlighting := {
   else false
 }
 
-
-// Apply default Scalariform formatting.
-// Reformat at every compile.
-// c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
-
-val LintTarget = config("lint").extend(Compile)
-
-def addMainSourcesToLintTarget: Seq[_root_.sbt.Def.Setting[_]] = {
-  inConfig(LintTarget) {
-    // I posted http://stackoverflow.com/questions/27575140/ and got back the bit below as the magic necessary
-    // to create a separate lint target which we can run slow static analysis on.
-    Defaults.compileSettings ++ Seq(
-      sources in LintTarget := {
-        val lintSources = (sources in LintTarget).value
-        lintSources ++ (sources in Compile).value
-      }
-    )
-  }
-}
-
-def addSlowScalacSwitchesToLintTarget: Seq[_root_.sbt.Def.Setting[_]] = {
-  inConfig(LintTarget) {
-    // In addition to everything we normally do when we compile, we can add additional scalac switches which are
-    // normally too time consuming to run.
-    scalacOptions in LintTarget ++= Seq(
-      // As it says on the tin, detects unused imports. This is too slow to always include in the build.
-      // "-Ywarn-unused-import",
-      //This produces errors you don't want in development, but is useful.
-      "-Ywarn-dead-code"
-    )
-  }
-}
-
-def addWartRemoverToLintTarget: Seq[_root_.sbt.Def.Setting[_]] = {
-  import wartremover._
-  import Wart._
-  // I didn't simply include WartRemove in the build all the time because it roughly tripled compile time.
-  inConfig(LintTarget) {
-    wartremoverErrors ++= Seq(
-      // Ban inferring Any, Serializable, and Product because such inference usually indicates a code error.
-      Wart.Any,
-      Wart.Serializable,
-      Wart.Product,
-      // Ban calling partial methods because they behave surprisingly
-      Wart.ListOps,
-      Wart.OptionPartial,
-      Wart.EitherProjectionPartial,
-      // Ban applying Scala's implicit any2String because it usually indicates a code error.
-      Wart.Any2StringAdd
-    )
-  }
-}
-
-def removeWartRemoverFromCompileTarget: _root_.sbt.Def.Setting[_root_.sbt.Task[Seq[String]]] = {
-  // WartRemover's sbt plugin calls addCompilerPlugin which always adds directly to the Compile configuration.
-  // The bit below removes all switches that could be passed to scalac about WartRemover during a non-lint compile.
-  scalacOptions in Compile := (scalacOptions in Compile).value filterNot { switch =>
-    switch.startsWith("-P:wartremover:") ||
-      "^-Xplugin:.*/org[.]brianmckenna/.*wartremover.*[.]jar$".r.pattern.matcher(switch).find
-  }
-}
-
-def addFoursquareLinterToLintTarget: Seq[_root_.sbt.Def.Setting[_ >: _root_.sbt.Task[Seq[String]] with Seq[_root_.sbt.ModuleID] <: Equals]] = {
-  Seq(
-    addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.12"),
-    // See https://github.com/HairyFotr/linter#list-of-implemented-checks for a list of checks that foursquare linter
-    // implements
-    // By default linter enables all checks.
-    // I don't mind using match on boolean variables.
-    scalacOptions in LintTarget += "-P:linter:disable:PreferIfToBooleanMatch"
-  )
-}
-
-def removeFoursquareLinterFromCompileTarget: _root_.sbt.Def.Setting[_root_.sbt.Task[Seq[String]]] = {
-  // We call addCompilerPlugin in project/plugins.sbt to add a depenency on the foursquare linter so that sbt magically
-  // manages the JAR for us.  Unfortunately, addCompilerPlugin also adds a switch to scalacOptions in the Compile config
-  // to load the plugin.
-  // The bit below removes all switches that could be passed to scalac about Foursquare Linter during a non-lint compile.
-  scalacOptions in Compile := (scalacOptions in Compile).value filterNot { switch =>
-    switch.startsWith("-P:linter:") ||
-      "^-Xplugin:.*/org[.]psywerx[.]hairyfotr/.*linter.*[.]jar$".r.pattern.matcher(switch).find
-  }
-}
