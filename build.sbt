@@ -12,7 +12,7 @@ javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 lazy val common = (project in file("common"))
   .settings(commonSettings: _*)
   .settings(
-    scalaVersion := Scala11,
+    scalaVersion := Scala10,
     crossScalaVersions := Seq(Scala10, Scala11),
     name := "play-swagger-common",
     libraryDependencies ++= deps.jacksons
@@ -34,7 +34,7 @@ lazy val swaggerModel = (project in file("swagger-model"))
   .settings(commonSettings: _*)
   .settings(
     name := "swagger-model",
-    scalaVersion := Scala11,
+    scalaVersion := Scala10,
     crossScalaVersions := Seq(Scala10, Scala11),
     libraryDependencies ++= deps.swaggerModel ++ deps.test
   )
@@ -52,8 +52,8 @@ lazy val apiFirstCore = (project in file("api-first-core"))
 lazy val swaggerParser = (project in file("swagger-parser"))
   .settings(commonSettings: _*)
   .settings(
-    scalaVersion := Scala11,
-    crossScalaVersions := Seq(Scala10, Scala11),
+    scalaVersion := Scala10,
+    crossScalaVersions := Seq(Scala10),
     name := "swagger-parser",
     libraryDependencies ++= deps.swaggerParser(scalaVersion.value) ++ deps.test
   )
@@ -86,14 +86,14 @@ lazy val plugin = (project in file("plugin"))
       scriptedLaunchOpts.value ++
         Seq(
           "-Dproject.version=" + version.value,
-          "-Dscala.version=" + scalaVersion.value,
+          "-Dscala.version=" + Scala11,
           "-Xmx768M",
           "-XX:ReservedCodeCacheSize=256M"
         )
     },
     scriptedDependencies := {
       val a = (publishLocal in swaggerModel).value
-      val b = (publishLocal in api).value
+      val b = (publishLocal in common).value
       val c = (publishLocal in apiFirstCore).value
       val d = (publishLocal in swaggerParser).value
       val e = (publishLocal in playScalaGenerator).value
@@ -101,7 +101,7 @@ lazy val plugin = (project in file("plugin"))
     },
     scriptedBufferLog := false
   )
-  .dependsOn(apiFirstCore, playScalaGenerator, swaggerParser, common)
+  .dependsOn(apiFirstCore, playScalaGenerator, swaggerParser, swaggerModel, common)
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions

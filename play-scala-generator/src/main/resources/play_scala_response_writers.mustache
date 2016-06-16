@@ -6,6 +6,7 @@ import play.api.libs.iteratee.Execution.Implicits.trampoline
 import play.api.mvc.RequestHeader
 import de.zalando.play.controllers._
 import WriteableWrapper.writeable2wrapper
+import akka.util.ByteString
 
 {{for import in imports}}
 import {{import.name}}
@@ -20,6 +21,7 @@ import play.api.libs.iteratee.Execution.Implicits.trampoline
 import play.api.mvc.RequestHeader
 import de.zalando.play.controllers._
 import WriteableWrapper.writeable2wrapper
+import akka.util.ByteString
 
 {{for import in imports}}
 import {{import.name}}
@@ -76,7 +78,7 @@ object WrappedBodyParsers extends WrappedBodyParsersBase {
     */
     {{for data in unmarshallers.data}}
     val {{data.reader_name}}: Parser[{{data.result_type}}] =
-        (requestHeader: RequestHeader, byteArray: Array[Byte]) => ???
+        (content: ByteString) => ???
     {{/for}}
     /**
     * This collection contains all {@Writeable}s which could be used in
