@@ -15,12 +15,12 @@ object AstScalaPlayEnricher {
 
   val emptyTable = Map.empty[Reference, Denotation].withDefaultValue(empty)
 
-  def apply(app: StrictModel): DenotationTable = {
+  def apply(app: StrictModel, providedWriterFactories: Set[String]): DenotationTable = {
     val transformations = Seq(
       new ScalaPlayTypeEnricher(app),
       new ScalaPlayParameterEnricher(app),
-      new ScalaPlayCallEnricher(app),
-      new ScalaPlaySpecEnricher(app)
+      new ScalaPlayCallEnricher(app, providedWriterFactories),
+      new ScalaPlaySpecEnricher(app, providedWriterFactories)
     )
     val denotationTable = (emptyTable /: transformations) { (table, transformation) =>
       transformation enrich table
@@ -67,7 +67,8 @@ class ScalaPlayTypeEnricher(val app: StrictModel) extends Transformation[Type] w
 /**
   * Enriches AST with information related to the specification as whole
   */
-class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictModel]
+class ScalaPlaySpecEnricher(val app: StrictModel,
+                            override val providedWriterFactories: Set[String]) extends Transformation[StrictModel]
   with MarshallersStep with SecurityStep {
 
   override def data: Seq[(Reference, StrictModel)] = Seq(Reference.root -> app)
@@ -76,7 +77,8 @@ class ScalaPlaySpecEnricher(val app: StrictModel) extends Transformation[StrictM
 /**
   * Enriches AST with information related to ApiCalls
   */
-class ScalaPlayCallEnricher(val app: StrictModel) extends Transformation[ApiCall]
+class ScalaPlayCallEnricher(val app: StrictModel,
+                            override val providedWriterFactories: Set[String]) extends Transformation[ApiCall]
   with CallControllersStep with CallTestsStep with CallValidatorsStep with CommonCallDataStep {
 
   override def data: Seq[(Reference, ApiCall)] = app.calls map { c => c.asReference -> c }

@@ -8,7 +8,9 @@ import de.zalando.apifirst.Application.StrictModel
 import de.zalando.play.apifirst.sbt.ApiFirstCore
 import de.zalando.play.apifirst.sbt.ApiFirstCore.autoImport._
 import de.zalando.play.compiler.{CompilationResult, PlayScalaCompilationTask, PlayScalaCompiler}
-import play.routes.compiler.RoutesGenerator
+import de.zalando.play.controllers.WriterFactories
+import de.zalando.play.generator.routes.PlayScalaRoutesCompiler
+import play.routes.compiler.{InjectedRoutesGenerator, RoutesGenerator}
 import play.sbt.routes.RoutesCompiler
 import sbt.Keys._
 import sbt.{Def, Defaults, Task, TaskKey, _}
@@ -23,7 +25,6 @@ object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
 
   object autoImport {
     lazy val playScalaCustomTemplateLocation = settingKey[Option[File]]("The location of custom templates (if needed)")
-    lazy val playScalaRoutesGenerator = settingKey[RoutesGenerator]("Play's generator to be used for play routes generation")
     lazy val playScalaTarget = settingKey[File]("Target folder to save generated files")
     lazy val playScalaAutogenerateControllers = settingKey[Boolean]("Auto - generate Play controllers")
 
@@ -70,8 +71,6 @@ object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
     sourcePositionMappers := Seq(),
 
     playScalaAutogenerateControllers := true,
-
-    playScalaRoutesGenerator := RoutesCompiler.autoImport.routesGenerator.value,
 
     playScalaCompilationTasks <<= apiFirstPreparedData map { task =>
       val version = if (BuildInfo.version.endsWith("-SNAPSHOT")) {
@@ -135,20 +134,22 @@ object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
       if (playScalaAutogenerateControllers.value) {
         val cont = playScalaControllers.value
       }
-      playScalaGenerateRoutes.value
+      playScalaGenerateRoutes(InjectedRoutesGenerator).value
     },
     managedSources ++= playScalaRoutes.value
   )
 
+  val providedWriterFactories = WriterFactories.factories.keySet
+
   val playScalaGenerateBase = commonPlayScalaCompile(PlayScalaCompiler.compileBase, playScalaBase, playScalaCompilationTasks)
-  val playScalaGenerateRoutes = commonPlayScalaCompile(PlayScalaCompiler.compileRoutes, playScalaRoutes, playScalaCompilationTasks)
+  def playScalaGenerateRoutes(generator: RoutesGenerator) = commonPlayScalaCompile(PlayScalaRoutesCompiler.compileRoutes(generator), playScalaRoutes, playScalaCompilationTasks)
   val playScalaGenerateTests = commonPlayScalaCompile(PlayScalaCompiler.compileTests, playScalaTests, playScalaCompilationTasks)
   val playScalaGenerateControllers = commonPlayScalaCompile(PlayScalaCompiler.compileControllers, playScalaControllers, playScalaCompilationTasks)
   val playScalaGenerateMarshallers = commonPlayScalaCompile(PlayScalaCompiler.compileMarshallers, playScalaMarshallers, playScalaCompilationTasks)
   val playScalaGenerateSecurity = commonPlayScalaCompile(PlayScalaCompiler.compileExtractors, playScalaSecurity, playScalaCompilationTasks)
 
   private def commonPlayScalaCompile: (
-    (PlayScalaCompilationTask, File, Seq[String], StrictModel, Option[String]) => CompilationResult,
+    (PlayScalaCompilationTask, File, Seq[String], StrictModel, Option[String], Set[String]) => CompilationResult,
       TaskKey[scala.Seq[sbt.File]],
       TaskKey[scala.Seq[(File, String, StrictModel)]]
     ) => Def.Initialize[Task[Seq[File]]] =
@@ -157,15 +158,14 @@ object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
       val cacheDirectory = streams.value.cacheDirectory
       val taskModelPairs = filesAndModels.value
       val outputDirectory = (target in config).value
-      val generator = playScalaRoutesGenerator.value
       val templateDirectory = playScalaCustomTemplateLocation.value
 
       // Read the detailed scaladoc for syncIncremental to see how it works
       val (products, errors) = syncIncremental(cacheDirectory, taskModelPairs) { fileVersionAndModel: Seq[(File, String, StrictModel)] =>
         val results = fileVersionAndModel map { case (file, ver, model) =>
-          val task = PlayScalaCompilationTask(file, generator)
+          val task = PlayScalaCompilationTask(file)
           (file, ver, model) -> Try {
-            compiler(task, outputDirectory, routesImport, model, templateDirectory.map(_.getAbsolutePath))
+            compiler(task, outputDirectory, routesImport, model, templateDirectory.map(_.getAbsolutePath), providedWriterFactories)
           }
         }
         // Collect the results into a map of task to OpResult for syncIncremental

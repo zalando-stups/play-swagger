@@ -3,7 +3,6 @@ package de.zalando.apifirst.generators
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.{ParameterPlace, ScalaName}
 import de.zalando.apifirst.generators.DenotationNames._
-import de.zalando.play.controllers.WriterFactories
 
 /**
   * @author  slasch
@@ -11,8 +10,9 @@ import de.zalando.play.controllers.WriterFactories
   */
 trait MarshallersStep extends EnrichmentStep[StrictModel] {
 
-  override def steps = readersAndWriteables +: super.steps
+  override def steps: Seq[SingleStep] = readersAndWriteables +: super.steps
 
+  val providedWriterFactories: Set[String]
   /**
     * Puts marshaller and parser related information into the denotation table
     *
@@ -26,10 +26,10 @@ trait MarshallersStep extends EnrichmentStep[StrictModel] {
       (if (unMarshallers.nonEmpty) Map("unmarshallers" -> Map("data" -> unMarshallers)) else Map.empty)
   }
 
-  def specMarshallers(spec: StrictModel)(table: DenotationTable) = {
+  def specMarshallers(spec: StrictModel)(table: DenotationTable): Seq[Map[String, String]] = {
     val requiredPairs = for {
       call <- spec.calls
-      mime <- call.mimeOut.map(_.name).diff(WriterFactories.factories.keys.toSet)
+      mime <- call.mimeOut.map(_.name).diff(providedWriterFactories)
       resultTypeRef <- call.resultTypes.results.values ++ call.resultTypes.default.toSeq
       resultType = typeNameDenotation(table, resultTypeRef.name)
     } yield (mime, resultType)
@@ -43,10 +43,10 @@ trait MarshallersStep extends EnrichmentStep[StrictModel] {
     }
   }
 
-  def specUnMarshallers(spec: StrictModel)(table: DenotationTable) = {
+  def specUnMarshallers(spec: StrictModel)(table: DenotationTable): Seq[Map[String, String]] = {
     val inputPairs = for {
       call <- spec.calls
-      mime <- call.mimeIn.map(_.name).diff(WriterFactories.factories.keys.toSet)
+      mime <- call.mimeIn.map(_.name).diff(providedWriterFactories)
       param <- call.handler.parameters
       bodyParam = app.findParameter(param) if bodyParam.place == ParameterPlace.BODY
       inputType = typeNameDenotation(table, bodyParam.typeName.name)

@@ -2,6 +2,7 @@ package de.zalando.play.controllers
 
 import java.net.{URLDecoder, URLEncoder}
 
+import akka.util.ByteString
 import play.api.http._
 import play.api.libs.json.JsValue
 import play.api.mvc.{ActionBuilder, Request, RequestHeader, Result}
@@ -113,7 +114,7 @@ trait OAuthResourceOwnerPasswordCredentialsFlow extends OAuthCommon {
       if (tokenUrl.contains(placeHolder)) (HttpVerbs.GET, tokenUrl.replaceAllLiterally(placeHolder, escapedToken), "")
       else (HttpVerbs.POST, tokenUrl, s"token=$escapedToken")
     val request = WS.url(url).withMethod(method).withFollowRedirects(true).
-      withBody(InMemoryBody(body.getBytes)).withHeaders(HeaderNames.ACCEPT -> MimeTypes.JSON, HeaderNames.CONTENT_TYPE -> MimeTypes.FORM)
+      withBody(InMemoryBody(ByteString(body.getBytes))).withHeaders(HeaderNames.ACCEPT -> MimeTypes.JSON, HeaderNames.CONTENT_TYPE -> MimeTypes.FORM)
     request.execute().map(_.json).map { json =>
       val active = (json \ "active").asOpt[Boolean].getOrElse(true)
       lazy val scope = (json \ "scope").asOpt[String]

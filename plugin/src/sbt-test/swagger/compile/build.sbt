@@ -6,7 +6,7 @@ import play.sbt.PlayScala
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala, ApiFirstCore, ApiFirstPlayScalaCodeGenerator, ApiFirstSwaggerParser)
 
-scalaVersion := sys.props.get("scala.version").getOrElse("2.11.7")
+scalaVersion := sys.props.get("scala.version").getOrElse("2.11.8")
 
 crossPaths := false
 

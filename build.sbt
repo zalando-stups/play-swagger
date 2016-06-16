@@ -10,75 +10,64 @@ val deps = new Dependencies(PlayVersion)
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
 lazy val common = (project in file("common"))
-  .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings: _*)
   .settings(
-//    scalaVersion := Scala11,
-//    crossScalaVersions := Seq(Scala10, Scala11),
+    scalaVersion := Scala11,
+    crossScalaVersions := Seq(Scala10, Scala11),
     name := "play-swagger-common",
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     libraryDependencies ++= deps.jacksons
   )
 
 // This is the API project, it gets added to the runtime dependencies of any
 // project using play-swagger
 lazy val api = (project in file("api"))
-  .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings: _*)
   .settings(
-    //    scalaVersion := Scala11,
-    //crossScalaVersions := Seq(Scala11),
+    scalaVersion := Scala11,
+    crossScalaVersions := Seq(Scala11),
     name := "play-swagger-api",
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     libraryDependencies ++= deps.api ++ deps.test
   )
   .dependsOn(common)
 
 lazy val swaggerModel = (project in file("swagger-model"))
-  .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "swagger-model",
-    //scalaVersion := Scala11,
-    //crossScalaVersions := Seq(Scala10, Scala11),
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    scalaVersion := Scala11,
+    crossScalaVersions := Seq(Scala10, Scala11),
     libraryDependencies ++= deps.swaggerModel ++ deps.test
   )
 
 lazy val apiFirstCore = (project in file("api-first-core"))
-  .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings: _*)
   .settings(
-    //scalaVersion := Scala11,
-    //crossScalaVersions := Seq(Scala11),
+    scalaVersion := Scala10,
+    crossScalaVersions := Seq(Scala10),
     name := "api-first-core",
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     libraryDependencies ++= deps.scala ++ deps.test
   )
 
 
 lazy val swaggerParser = (project in file("swagger-parser"))
-  .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings: _*)
   .settings(
-    //scalaVersion := Scala11,
-    //crossScalaVersions := Seq(Scala11),
+    scalaVersion := Scala11,
+    crossScalaVersions := Seq(Scala10, Scala11),
     name := "swagger-parser",
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     libraryDependencies ++= deps.swaggerParser(scalaVersion.value) ++ deps.test
   )
   .dependsOn(swaggerModel, apiFirstCore)
 
 lazy val playScalaGenerator = (project in file("play-scala-generator"))
-  .enablePlugins(BuildInfoPlugin)
   .settings(commonSettings: _*)
   .settings(
-    //scalaVersion := Scala11,
-    //crossScalaVersions := Seq(Scala11),
+    scalaVersion := Scala10,
+    crossScalaVersions := Seq(Scala10),
     name := "play-scala-generator",
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     libraryDependencies ++= deps.playScalaGenerator ++ deps.test
-  ).dependsOn(apiFirstCore)
+  )
+  .dependsOn(apiFirstCore)
 
 // This is the sbt plugin
 lazy val plugin = (project in file("plugin"))
@@ -86,11 +75,9 @@ lazy val plugin = (project in file("plugin"))
   .settings(commonSettings: _*)
   .settings(scriptedSettings: _*)
   .settings(
+    libraryDependencies ++= deps.test,
     name := "sbt-play-swagger",
     sbtPlugin := true,
-
-    scalaVersion := Scala10,
-
     addSbtPlugin("com.typesafe.play" % "sbt-plugin" % PlayVersion),
 
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
@@ -118,18 +105,18 @@ lazy val plugin = (project in file("plugin"))
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
-// .enablePlugins(CrossPerProjectPlugin)
+  .enablePlugins(CrossPerProjectPlugin)
   .settings(commonSettings: _*)
   .settings(
-    name := "play-swagger-root"
+    name := "play-swagger-root",
+      aggregate in update := false
   )
   .aggregate(common, swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
 
 def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   ivyLoggingLevel := UpdateLogging.DownloadOnly,
-  version := "0.1.11",
-  scalaVersion := Scala11,
+  version := "0.1.12",
   sbtPlugin := false,
   buildInfoPackage := "de.zalando",
   organization := "de.zalando",

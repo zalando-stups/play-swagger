@@ -9,7 +9,6 @@ import de.zalando.apifirst.ParameterPlace.ParameterPlace
 import de.zalando.apifirst.naming.{Path, Reference}
 
 import scala.language.{implicitConversions, postfixOps}
-import scala.util.parsing.input.Positional
 
 sealed trait Expr
 
@@ -342,7 +341,7 @@ object Application {
     default: Option[String],
     constraint: String,
     encode: Boolean,
-    place: ParameterPlace.Value) extends Expr with Positional
+    place: ParameterPlace.Value) extends Expr
 
   case class HandlerCall(
     packageName: String,

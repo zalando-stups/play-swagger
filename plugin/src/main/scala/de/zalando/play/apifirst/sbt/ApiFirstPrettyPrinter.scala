@@ -12,7 +12,7 @@ import de.zalando.apifirst.util.PrettyPrinter
 object ApiFirstPrettyPrinter extends PrettyPrinter {
 
   def denotations(file: File, ast: StrictModel): Seq[String] = {
-    val play = AstScalaPlayEnricher(ast)
+    val play = AstScalaPlayEnricher(ast, Set.empty[String])
     val lines = play.toSeq.map {case (ref, den) =>
       formatText(ref.toString)(dyellow, black) + " → " + den
     }

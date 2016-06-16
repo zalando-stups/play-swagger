@@ -1,14 +1,14 @@
 package de.zalando.swagger
 
 /**
- * @author  slasch 
- * @since   12.10.2015.
- */
+  * @author slasch
+  * @since 12.10.2015.
+  */
 
 import java.io.File
 import java.net.{URI, URL}
 
-import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.core.{JsonParseException, JsonParser}
 import com.fasterxml.jackson.databind.{DeserializationFeature, JsonMappingException, ObjectMapper}
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml
@@ -45,7 +45,7 @@ class JsonObjectMapperFactory extends ObjectMapperFactory {
     configure(mapper)
   }
 
-  def configure(mapper:ObjectMapper): ObjectMapper = {
+  def configure(mapper: ObjectMapper): ObjectMapper = {
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
     mapper.configure(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, true)
   }
@@ -61,7 +61,7 @@ class YamlObjectMapperFactory extends JsonObjectMapperFactory {
 private[swagger] abstract class StrictSwaggerParser extends StrictParser {
 
   import scala.util.control.Exception._
-  import scala.collection.JavaConversions._
+  import scala.collection.JavaConverters._
 
   def mapperFactory: ObjectMapperFactory
 
@@ -69,8 +69,9 @@ private[swagger] abstract class StrictSwaggerParser extends StrictParser {
     val input = prepareFile(file)
     val node = processor.process(new TransientJsonContext(file, input, mapperFactory))
     val model = handling(classOf[JsonMappingException]) by { case ex: JsonMappingException =>
-      val path = ex.getPath.map(_.getFieldName).mkString(" → ")
+      val path = ex.getPath.asScala.map(_.getFieldName).mkString(" → ")
       val msg = if (path.nonEmpty) " through reference chain: " + path else ""
+
       throw new JsonParseException(ex.getOriginalMessage + msg, ex.getLocation)
     } apply {
       mapper(file.toURI.toURL).treeToValue(node, classOf[SwaggerModel])
@@ -98,8 +99,13 @@ private[swagger] abstract class StrictSwaggerParser extends StrictParser {
     p
   }
 
-  def prepareFile(file: File): String =
-    Source.fromFile(file).getLines().mkString("\n")
+  def prepareFile(file: File): String = {
+    val stream = Source.fromFile(file)
+    try {
+      stream.getLines().mkString("\n")
+    } finally stream.close()
+  }
+
 
 }
 

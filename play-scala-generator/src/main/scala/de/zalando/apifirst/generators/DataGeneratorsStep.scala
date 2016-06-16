@@ -4,7 +4,6 @@ import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.naming.Reference
 import DenotationNames._
-import de.zalando.play.controllers.ArrayWrapper
 
 /**
   * @author slasch
@@ -13,7 +12,7 @@ import de.zalando.play.controllers.ArrayWrapper
 
 trait DataGeneratorsStep extends EnrichmentStep[Type] {
 
-  override def steps = dataGenerators +: super.steps
+  override def steps: Seq[SingleStep] = dataGenerators +: super.steps
 
   /**
     * Puts data generators related information into the denotation table

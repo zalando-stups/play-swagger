@@ -49,9 +49,9 @@ class Dependencies(playVersion: String, scalaVersion: String = "2.11") {
 
   val api = Seq(jodaTime, play, playClient) ++ jacksons
 
-  val playScalaGenerator = playRoutes +: commonsIO +: beard +: scala
+  val playScalaGenerator = commonsIO +: beard +: scala
 
   val swaggerModel = jsonRef +: jacksons
 
-  def swaggerParser(scalaVersion: String) = swaggerModel ++ scalaParserCombinators(scalaVersion)
+  def swaggerParser(scalaVersion: String): Seq[ModuleID] = swaggerModel ++ scalaParserCombinators(scalaVersion)
 }

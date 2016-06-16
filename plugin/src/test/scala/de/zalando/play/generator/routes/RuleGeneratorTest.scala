@@ -1,4 +1,4 @@
-package de.zalando.play.compiler
+package de.zalando.play.generator.routes
 
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.naming.Path

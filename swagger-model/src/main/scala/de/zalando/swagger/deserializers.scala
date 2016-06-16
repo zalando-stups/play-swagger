@@ -13,8 +13,9 @@ import com.fasterxml.jackson.core.{JsonParser => JParser, _}
   * @author  slasch
   * @since   09.10.2015.
   */
+//noinspection ScalaStyle
 object deserializers {
-  import scala.collection.JavaConversions._
+  import scala.collection.JavaConverters._
 
   /*
     TODO wrong error location
@@ -37,7 +38,7 @@ object deserializers {
 
       if (root == null || root == NullNode.instance) null
       else {
-        val fields = root.fields.toSeq
+        val fields = root.fields.asScala.toSeq
         val typeField = getFieldValue(fields, "type")
         lazy val parser = root.traverse
         val instance = typeField match {
@@ -51,9 +52,9 @@ object deserializers {
                 if (name != null && name.nonEmpty)
                   mapper.readValue(parser, classOf[ApiKeySecurity])
                 else
-                  throw new JsonParseException(s"Name should not be empty for apiKey", jp.getTokenLocation)
+                  throw new JsonParseException(parser, "Name should not be empty for apiKey", jp.getTokenLocation)
               case other =>
-                throw new JsonParseException(s"Wrong in value '$other', expected one of [header, query]", jp.getTokenLocation)
+                throw new JsonParseException(parser, s"Wrong in value '$other', expected one of [header, query]", jp.getTokenLocation)
             }
           case "oauth2" =>
             val flow = getFieldValue(fields, "flow")
@@ -64,31 +65,31 @@ object deserializers {
                 if (authorizationUrl != null && authorizationUrl.nonEmpty)
                   mapper.readValue(parser, classOf[Oauth2ImplicitSecurity])
                 else
-                  throw new JsonParseException(s"authorizationUrl should not be empty for implicit oauth2", jp.getTokenLocation)
+                  throw new JsonParseException(parser, "authorizationUrl should not be empty for implicit oauth2", jp.getTokenLocation)
 
               case "password" =>
                 if (tokenUrl != null && tokenUrl.nonEmpty)
                   mapper.readValue(parser, classOf[Oauth2PasswordSecurity])
                 else
-                  throw new JsonParseException(s"tokenUrl should not be empty for password oauth2", jp.getTokenLocation)
+                  throw new JsonParseException(parser, "tokenUrl should not be empty for password oauth2", jp.getTokenLocation)
 
               case "application" =>
                 if (tokenUrl != null && tokenUrl.nonEmpty)
                   mapper.readValue(parser, classOf[Oauth2ApplicationSecurity])
                 else
-                  throw new JsonParseException(s"tokenUrl should not be empty for application oauth2", jp.getTokenLocation)
+                  throw new JsonParseException(parser, "tokenUrl should not be empty for application oauth2", jp.getTokenLocation)
 
               case "accessCode" =>
                 if (tokenUrl != null && tokenUrl.nonEmpty)
                   mapper.readValue(parser, classOf[Oauth2AccessCodeSecurity])
                 else
-                  throw new JsonParseException(s"tokenUrl should not be empty for accessCode oauth2", jp.getTokenLocation)
+                  throw new JsonParseException(parser, "tokenUrl should not be empty for accessCode oauth2", jp.getTokenLocation)
 
               case other =>
-                throw new JsonParseException(s"Wrong oauth2 value '$other', expected one of [implicit, password, application, accessCode]", jp.getTokenLocation)
+                throw new JsonParseException(parser, s"Wrong oauth2 value '$other', expected one of [implicit, password, application, accessCode]", jp.getTokenLocation)
             }
           case other =>
-            throw new JsonParseException(s"Wrong type value '$other', expected one of [basic, apiKey, oauth2]", jp.getTokenLocation)
+            throw new JsonParseException(parser, s"Wrong type value '$other', expected one of [basic, apiKey, oauth2]", jp.getTokenLocation)
         }
         instance.asInstanceOf[SecurityDefinition]
       }
@@ -117,8 +118,8 @@ object deserializers {
 
       val instance = if (root == null || root == NullNode.instance) null
       else {
-        val fields = root.fields.toSeq
-        val refField = getFieldValue(fields, "$ref")
+        val fields = root.fields.asScala.toSeq
+        val refField = getFieldValue(fields, "$"+"ref")
         lazy val parser = root.traverse
         refField match {
           case someRef if someRef != null && someRef.trim.nonEmpty =>
@@ -126,7 +127,7 @@ object deserializers {
           case otherRef =>
             val in = getFieldValue(fields, "in")
             if (in == null || in.trim.isEmpty)
-              throw new JsonParseException("Parameter should have '$ref' or 'in' defined, but neither was found", jp.getTokenLocation)
+              throw new JsonParseException(parser, "Parameter should have '$ ref' or 'in' defined, but neither was found", jp.getTokenLocation)
             in.toLowerCase match {
               case "header" =>
                 checkTypeIsNotFile(fields, parser)
@@ -134,7 +135,7 @@ object deserializers {
               case "path" =>
                 checkTypeIsNotFile(fields, parser)
                 if ("true" != getFieldValue(fields, "required"))
-                  throw new JsonParseException("Path parameter MUST be required", jp.getTokenLocation)
+                  throw new JsonParseException(parser, "Path parameter MUST be required", jp.getTokenLocation)
                 mapper.convertValue(root, classOf[PathParameter[_]])
               case "formdata" =>
                 mapper.convertValue(root, classOf[FormDataParameter[_]])
@@ -161,7 +162,7 @@ object deserializers {
 
       if (root == null || root == NullNode.instance) null
       else {
-        val fields = root.fields.toSeq
+        val fields = root.fields.asScala.toSeq
         val typeField = getFieldValue(fields, "type")
         typeField match {
           case "file" =>
@@ -199,8 +200,8 @@ object deserializers {
   }
 
   def schemaOrReference[T](mapper: ObjectMapper, root: BaseJsonNode): SchemaOrReference[T] = {
-    val fields = root.fields.toSeq
-    val ref = getFieldValue(fields, "$ref")
+    val fields = root.fields.asScala.toSeq
+    val ref = getFieldValue(fields, "$"+"ref")
     if (ref == null || ref.trim.isEmpty)
       Left(mapper.convertValue(root, classOf[Schema[T]]))
     else
@@ -219,9 +220,9 @@ object deserializers {
       else if (root.isArray) {
         val array = mapper.convertValue(root, classOf[Array[String]])
         if (array.distinct.length == array.length) array.toSet.asInstanceOf[JsonSchemaType]
-        else throw new JsonParseException(s"'JsonSchemaType array must contain unique values", jp.getTokenLocation)
+        else throw new JsonParseException(jp, "'JsonSchemaType array must contain unique values", jp.getTokenLocation)
       } else
-        throw new JsonParseException(s"'JsonSchemaType must be array or primitive type", jp.getTokenLocation)
+        throw new JsonParseException(jp, "'JsonSchemaType must be array or primitive type", jp.getTokenLocation)
     }
   }
 
@@ -235,14 +236,14 @@ object deserializers {
       if (root == null || root == NullNode.instance) null
       else if (root.isBoolean) Right(root.asBoolean())
       else if (root.isObject) Left(schemaOrReference(mapper, root))
-      else throw new JsonParseException(s"'Could not recognize boolean or Schema", jp.getTokenLocation)
+      else throw new JsonParseException(jp, "'Could not recognize boolean or Schema", jp.getTokenLocation)
     }
   }
 
 
   private def checkTypeIsNotFile(fields: Seq[Entry[SimpleTag, JsonNode]], jp: JParser): Unit =
     if ("File".equalsIgnoreCase(getFieldValue(fields, "type")))
-      throw new JsonParseException(s"'File' type is not allowed here", jp.getTokenLocation)
+      throw new JsonParseException(jp, "'File' type is not allowed here", jp.getTokenLocation)
 
   private def getFieldValue(fields: Seq[Entry[String, JsonNode]], name: String, default: String = ""): String =
     fields find (_.getKey == name) map (_.getValue.asText) getOrElse default

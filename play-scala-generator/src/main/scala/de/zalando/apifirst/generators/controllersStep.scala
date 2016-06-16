@@ -9,7 +9,6 @@ import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.StringUtil._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
-import de.zalando.play.controllers.WriterFactories
 
 /**
   * @author slasch
@@ -19,6 +18,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
   with ControllersCommons with SecurityCommons with ActionResults with ParameterData {
 
   override def steps: Seq[SingleStep] = controllers +: super.steps
+
+  def providedWriterFactories: Set[String]
 
   val nameMapping = Map(
     "action" -> controllersSuffix,
@@ -141,10 +142,10 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
   }
 
   private def needsCustom(mimeTypes: Set[Http.MimeType]): Boolean =
-    mimeTypes.map(_.name).diff(WriterFactories.factories.keySet).nonEmpty
+    mimeTypes.map(_.name).diff(providedWriterFactories).nonEmpty
 
   private def mimeTypes2StringList(in: Set[Http.MimeType]): String =
-    in.map(_.name).map("\"" + _ + "\"").mkString("Seq[String](", ", ", ")")
+    in.map("\"" + _.name + "\"").mkString("Seq[String](", ", ", ")")
 
   private def nameWithSuffix(call: ApiCall, suffix: String): String =
     escape(call.handler.method + suffix)

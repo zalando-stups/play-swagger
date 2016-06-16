@@ -98,7 +98,7 @@ object ScalaString {
     case constraint: Security.OAuth2Constraint => oauth2Constraint(pad, constraint)
     case constraint: Security.Constraint => securityConstraint(pad, constraint)
     case definition: Security.ApiKey => apiKey(pad, definition)
-    case definition: Security.OAuth2Definition => oauthDef(pad, definition)
+    case definition: Security.OAuth2Definition => oauthDef(definition)
     case definition: Security.Definition => securityDef(pad, definition)
 
     case t: EnumTrait => enumTrait(pad, t)
@@ -150,7 +150,7 @@ object ScalaString {
     val errorStr = if (call.errorMapping.isEmpty)
       "Map.empty[String, Seq[Class[Exception]]]"
     else call.errorMapping.map { case (k, v) =>
-      "\"" + k + "\" -> Seq(" + v.map(_.getCanonicalName).map("classOf[" + _ + "]").mkString(", ") + ")"
+      "\"" + k + "\" -> Seq(" + v.map("classOf[" + _.getCanonicalName + "]").mkString(", ") + ")"
     }.mkString("Map(", ", ", ")")
 
     val mimeInStr = set(call.mimeIn)
@@ -173,7 +173,7 @@ object ScalaString {
   private def apiKey(pad: String, k: Security.ApiKey): String =
     s"""ApiKey(${toScalaString("")(k.description)}, "${k.name}", ParameterPlace.withName("${k.in}"))"""
 
-  private def oauthDef(pad: String, d: Security.OAuth2Definition): String = {
+  private def oauthDef(d: Security.OAuth2Definition): String = {
     val scopesStr = d.scopes.map{case (k,v) => s""" "$k" -> "${v.replace('\n', ' ')}" """}.mkString(", ")
     s"""OAuth2Definition(${toScalaString("")(d.description)}, ${d.validationURL.map("new URL(\"" + _ + "\")")}, Map[String, String]($scopesStr))""".stripMargin
   }
@@ -239,7 +239,7 @@ object ScalaString {
       s"""Parameter("${p.name}", ${toScalaString("")(p.typeName)}, ${toScalaString("")(p.fixed)}, ${toScalaString("")(p.default)}, "${p.constraint}", encode = ${p.encode}, ParameterPlace.withName("${p.place}"))"""
 
   private def handlerCall(pad: String, c: HandlerCall): String =
-      s"""HandlerCall(\n$pad\t"${c.packageName}",\n$pad\t"${c.controller}",\n$pad\tinstantiate = ${c.instantiate},\n$pad\t"${c.method}",parameters = ${c.parameters.map(toScalaString(pad + "\t\t")).mkString(s"\n$pad\tSeq(\n", s",\n", s"\n$pad\t\t)\n")}$pad\t)"""
+      s"""HandlerCall(\n$pad\t"${c.packageName}",\n$pad\t"${c.controller}",\n$pad\tinstantiate = ${c.instantiate},\n$pad\t"${c.method}",parameters = ${c.parameters.map(toScalaString(pad + "\t\t")).mkString(s"\n$pad\tSeq(\n", ",\n", s"\n$pad\t\t)\n")}$pad\t)"""
 
   private def stateResponseInfo(pad: String, t: StateResponseInfo): String = {
       val resStr =

@@ -14,7 +14,7 @@ object HandlerParser extends HandlerParser
 trait HandlerParser extends JavaTokenParsers {
   import scala.language.{implicitConversions, postfixOps}
 
-  override def skipWhitespace = false
+  override def skipWhitespace: Boolean = false
 
   override val whiteSpace = """[ \t]+""".r
 

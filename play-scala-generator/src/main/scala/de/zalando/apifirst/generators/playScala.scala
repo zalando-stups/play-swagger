@@ -14,9 +14,12 @@ import scala.collection.Iterable
   * @since 16.11.2015.
   */
 
-class ScalaGenerator(val strictModel: StrictModel, customTemplateLocation: Option[String] = None) {
+class ScalaGenerator(
+                      val strictModel: StrictModel,
+                      providedWriterFactories: Set[String] = Set.empty,
+                      customTemplateLocation: Option[String] = None) {
 
-  val denotationTable = AstScalaPlayEnricher(strictModel)
+  val denotationTable = AstScalaPlayEnricher(strictModel, providedWriterFactories)
 
   val StrictModel(modelCalls, modelTypes, modelParameters, discriminators, _, overridenPackageName, stateTransitions, securityDefinitions) = strictModel
 

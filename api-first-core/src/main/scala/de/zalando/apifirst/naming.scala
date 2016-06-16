@@ -61,7 +61,7 @@ object naming {
       Reference(parts)
     }
     private def unescape(str: String) = str.replace("~1", "/").replace("~0", "~")
-    def deref(jstr: String) = Reference.fromUrl(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
+    def deref(jstr: String): Reference = Reference.fromUrl(unescape(jstr.reverse.takeWhile(_ != '#').reverse))
   }
 
   case class Path(private val reference: Reference) {

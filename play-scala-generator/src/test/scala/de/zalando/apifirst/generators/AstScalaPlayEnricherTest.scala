@@ -20,7 +20,7 @@ class AstScalaPlayEnricherTest extends FunSpec with MustMatchers {
 
   describe("AstScalaPlayEnricher") {
     it("should generate nothing for empty model") {
-      AstScalaPlayEnricher(Map.empty[Reference, Domain.Type]) mustBe empty
+      AstScalaPlayEnricher(Map.empty[Reference, Domain.Type], Set.empty[String]) mustBe empty
     }
 
     it("should generate a complex polymorphic hierarchy") {
@@ -60,7 +60,7 @@ class AstScalaPlayEnricherTest extends FunSpec with MustMatchers {
       )
       val strictModel = StrictModel(Nil, model, Map.empty, discriminators, "", None, Map.empty, Map.empty)
 
-      val result = AstScalaPlayEnricher(strictModel)
+      val result = AstScalaPlayEnricher(strictModel, Set.empty[String])
 
       val expected = Map(
         "definitions"/"Cat"/"AllOf1" -> Map("common" -> Map("type_name" -> "CatAllOf1", "fields" -> List(Field("definitions"/"Cat"/"huntingSkill",Str(None,TypeMeta(None, List())))), "member_name" -> "CatAllOf1")),

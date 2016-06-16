@@ -117,7 +117,7 @@ object PlayPathBindables {
 
   def tempFileFromString(s: String): File = {
     val prefix = "tmp_" + s.hashCode
-    val f = File.createTempFile(prefix.toString, "")
+    val f = File.createTempFile(prefix, "")
     f.deleteOnExit()
     import java.nio.file.{Paths, Files}
     import java.nio.charset.StandardCharsets

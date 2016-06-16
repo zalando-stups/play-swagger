@@ -1,13 +1,12 @@
 package {{main_package}}
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 {{for import in imports}}
 import {{import.name}}
@@ -55,16 +54,16 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
             import de.zalando.play.controllers.WrappedBodyParsers
             {{/if}}
             val customParsers = WrappedBodyParsers.{{body.body_parser}}[{{body.parser_type}}]
-            {{body.body_parser}}[{{body.parser_type}}](bodyMimeType, customParsers, "Invalid {{body.type_name}}", maxLength)
+            {{body.body_parser}}[{{body.parser_type}}](bodyMimeType, customParsers, "Invalid {{body.type_name}}", maxLength) _
         }
     {{/for}}
 
     val {{m.action_constructor}}  = {{if m.needs_security}}{{if m.security_instance}}new {{/if}}{{m.secure_action}}{{for check in m.security_checks}}{{if check.params}}({{for param in check.params}}{{param.name}}{{if param.isNotLast}}, {{/if}}{{/for}}){{/if}}{{/for}}{{else}}Action{{/if}}
-    def {{m.action}}[T] = (f: {{m.action_type}}[T]) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} {{m.action_constructor}}{{if m.body_param}}({{m.parser_name}}({{m.consumes}})){{/if}} { request =>
+
+def {{m.action}}[T] = (f: {{m.action_type}}[T]) =>{{if m.non_body_params}} ({{/if}}{{for p in m.non_body_params}}{{p.field_name}}: {{p.type_name}}{{if p.isNotLast}}, {{/if}}{{/for}}{{if m.non_body_params}}) =>{{/if}} {{m.action_constructor}}{{if m.body_param}}(BodyParsers.parse.using({{m.parser_name}}({{m.consumes}}))){{/if}} { request =>
         val providedTypes = {{m.produces}}
 
         negotiateContent(request.acceptedTypes, providedTypes).map { {{m.response_mime_type_name}} =>
-
             {{for body in m.body_param}}
             val {{body.field_name}} = request.body
             {{/for}}

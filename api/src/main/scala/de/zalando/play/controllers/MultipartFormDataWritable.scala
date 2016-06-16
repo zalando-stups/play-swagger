@@ -2,6 +2,7 @@ package de.zalando.play.controllers
 
 import java.nio.file.{Files, Paths}
 
+import akka.util.ByteString
 import play.api.http.{HeaderNames, Writeable}
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.FilePart
@@ -14,21 +15,21 @@ import play.api.mvc.{Codec, MultipartFormData}
   * taken from <a href="http://tech.fongmun.com/post/125479939452/test-multipartformdata-in-play">here</a>
   */
 object MultipartFormDataWritable {
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   val boundary = "--------ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
-  def formatDataParts(data: Map[String, Seq[String]]): Array[Byte] = {
+  def formatDataParts(data: Map[String, Seq[String]]): ByteString = {
     val dataParts = data.flatMap { case (key, values) =>
       values.map { value =>
         val name = s""""$key""""
         s"--$boundary\r\n${HeaderNames.CONTENT_DISPOSITION}: form-data; name=$name\r\n\r\n$value\r\n"
       }
     }.mkString("")
-    Codec.utf_8.encode(dataParts)
+    val bytes: ByteString = Codec.utf_8.encode(dataParts)
+    bytes
   }
 
-  def filePartHeader(file: FilePart[TemporaryFile]): Array[Byte] = {
+  def filePartHeader(file: FilePart[TemporaryFile]): ByteString = {
     val name = s""""${file.key}""""
     val filename = s""""${file.filename}""""
     val contentType = file.contentType.map { ct =>
