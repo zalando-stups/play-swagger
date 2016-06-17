@@ -67,6 +67,7 @@ object strictModel {
    * @param definitions         One or more JSON objects describing the schemas being consumed and produced by the API.
    * @param parameters          One or more JSON representations for parameters
    * @param responses           One or more JSON representations for responses
+   * @param externalDocs        Reference an external documentation resource
    * @param securityDefinitions
    * @param security
    * @param tags
@@ -86,7 +87,8 @@ object strictModel {
     responses:            ResponseDefinitions,  // Default response definition, can be overridden
     securityDefinitions:  SecurityDefinitions,
     security:             Security,
-    tags:                 Tags
+    tags:                 Tags,
+    externalDocs:         ExternalDocs
   ) extends VendorExtensions with API with PatternChecker {
     require(matches("^/.*", basePath), "Base path should start with a slash (/)")
     require(matches("^[^{}/ :\\\\]+(?::\\d+)?$", host), s"Host name is expected, but got $host")
@@ -410,7 +412,7 @@ object strictModel {
     @JsonScalaEnumeration(classOf[ParameterTypeReference]) `type`: ParameterType.Value,
     format:                 String,
     items:                  PrimitivesItems[T],
-    @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormat.Value,
+    @JsonScalaEnumeration(classOf[CollectionFormatReference]) collectionFormat: CollectionFormatWithMulti.Value,
     default:                Default[T],
     maximum:                Maximum[T],
     exclusiveMaximum:       ExclusiveMaximum,
@@ -425,7 +427,7 @@ object strictModel {
     enum:                   Enum[T],
     multipleOf:             MultipleOf[T],
     allowEmptyValue:        Boolean = false // unique for form
-  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormat.Value] {
+  ) extends NonBodyParameter[T] with VendorExtensions with AllValidations[T] with NonBodyParameterCommons[T, CollectionFormatWithMulti.Value] {
     assert("formData".equalsIgnoreCase(in))
   }
 
