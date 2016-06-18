@@ -109,7 +109,7 @@ lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(
     name := "play-swagger-root",
-      aggregate in update := false
+    aggregate in update := false
   )
   .aggregate(common, swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
 
