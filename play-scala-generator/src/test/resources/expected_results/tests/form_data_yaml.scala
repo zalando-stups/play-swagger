@@ -75,7 +75,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Nil
                         val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -121,7 +121,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Nil
                         val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -208,7 +208,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Seq(FilePart("ringtone", ringtone.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(ringtone))) ++ Nil
                         val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq        
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -256,7 +256,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = avatar.toSeq.map { m => FilePart("avatar", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ Seq(FilePart("ringtone", ringtone.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(ringtone))) ++ Nil
                         val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq        
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -343,7 +343,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = Seq(FilePart("avatar", avatar.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(avatar))) ++ Nil
                         val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -389,7 +389,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = Seq(FilePart("avatar", avatar.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(avatar))) ++ Nil
                         val data = Map.empty[String, Seq[String]]   ++ Seq("name" -> Seq(name.toString))     ++ year.map(m => "year" -> Seq(m.toString)).toSeq     
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {

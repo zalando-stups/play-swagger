@@ -1,13 +1,12 @@
 package echo
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 
 import de.zalando.play.controllers.PlayPathBindables
@@ -30,11 +29,11 @@ trait EchoHandlerBase extends Controller with PlayBodyParsing {
 
 
     val methodActionConstructor  = Action
-    def methodAction[T] = (f: methodActionType[T]) => methodActionConstructor { request =>
+
+def methodAction[T] = (f: methodActionType[T]) => methodActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { methodResponseMimeType =>
-
             
             
 
@@ -62,11 +61,11 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val postActionConstructor  = Action
-    def postAction[T] = (f: postActionType[T]) => postActionConstructor { request =>
+
+def postAction[T] = (f: postActionType[T]) => postActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
-
             
             val eitherFormParameters = FormDataParser.postParseForm(request)
             eitherFormParameters match {
@@ -107,11 +106,11 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val gettest_pathByIdActionConstructor  = Action
-    def gettest_pathByIdAction[T] = (f: gettest_pathByIdActionType[T]) => (id: String) => gettest_pathByIdActionConstructor { request =>
+
+def gettest_pathByIdAction[T] = (f: gettest_pathByIdActionType[T]) => (id: String) => gettest_pathByIdActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gettest_pathByIdResponseMimeType =>
-
             
             
 

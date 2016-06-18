@@ -1,13 +1,12 @@
 package error_in_array.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 import scala.math.BigInt
@@ -39,15 +38,15 @@ trait Error_in_arrayYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[ModelSchemaRoot]
-            anyParser[ModelSchemaRoot](bodyMimeType, customParsers, "Invalid ModelSchemaRoot", maxLength)
+            anyParser[ModelSchemaRoot](bodyMimeType, customParsers, "Invalid ModelSchemaRoot", maxLength) _
         }
 
     val getschemaModelActionConstructor  = Action
-    def getschemaModelAction[T] = (f: getschemaModelActionType[T]) => getschemaModelActionConstructor(getschemaModelParser(Seq[String]())) { request =>
+
+def getschemaModelAction[T] = (f: getschemaModelActionType[T]) => getschemaModelActionConstructor(BodyParsers.parse.using(getschemaModelParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getschemaModelResponseMimeType =>
-
             val root = request.body
             
             

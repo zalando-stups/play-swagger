@@ -1,13 +1,12 @@
 package heroku.petstore.api.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import scala.math.BigInt
 
@@ -27,11 +26,11 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val getActionConstructor  = Action
-    def getAction[T] = (f: getActionType[T]) => (limit: BigInt) => getActionConstructor { request =>
+
+def getAction[T] = (f: getActionType[T]) => (limit: BigInt) => getActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
-
             
             
 
@@ -71,15 +70,15 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             
             
             val customParsers = WrappedBodyParsers.optionParser[Pet]
-            optionParser[Pet](bodyMimeType, customParsers, "Invalid PutPet", maxLength)
+            optionParser[Pet](bodyMimeType, customParsers, "Invalid PutPet", maxLength) _
         }
 
     val putActionConstructor  = Action
-    def putAction[T] = (f: putActionType[T]) => putActionConstructor(putParser(Seq[String]("application/json", "text/xml"))) { request =>
+
+def putAction[T] = (f: putActionType[T]) => putActionConstructor(BodyParsers.parse.using(putParser(Seq[String]("application/json", "text/xml")))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putResponseMimeType =>
-
             val pet = request.body
             
             
@@ -120,15 +119,15 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             
             
             val customParsers = WrappedBodyParsers.anyParser[Pet]
-            anyParser[Pet](bodyMimeType, customParsers, "Invalid Pet", maxLength)
+            anyParser[Pet](bodyMimeType, customParsers, "Invalid Pet", maxLength) _
         }
 
     val postActionConstructor  = Action
-    def postAction[T] = (f: postActionType[T]) => postActionConstructor(postParser(Seq[String]("application/json", "text/xml"))) { request =>
+
+def postAction[T] = (f: postActionType[T]) => postActionConstructor(BodyParsers.parse.using(postParser(Seq[String]("application/json", "text/xml")))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
-
             val pet = request.body
             
             
@@ -160,11 +159,11 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val getbyPetIdActionConstructor  = Action
-    def getbyPetIdAction[T] = (f: getbyPetIdActionType[T]) => (petId: String) => getbyPetIdActionConstructor { request =>
+
+def getbyPetIdAction[T] = (f: getbyPetIdActionType[T]) => (petId: String) => getbyPetIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getbyPetIdResponseMimeType =>
-
             
             
 

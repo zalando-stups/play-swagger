@@ -1,13 +1,12 @@
 package full.petstore.api.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 import org.joda.time.DateTime
@@ -32,11 +31,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val findPetsByTagsActionConstructor  = new findPetsByTagsSecureAction("write_pets", "read_pets")
-    def findPetsByTagsAction[T] = (f: findPetsByTagsActionType[T]) => (tags: PetsFindByStatusGetStatus) => findPetsByTagsActionConstructor { request =>
+
+def findPetsByTagsAction[T] = (f: findPetsByTagsActionType[T]) => (tags: PetsFindByStatusGetStatus) => findPetsByTagsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsByTagsResponseMimeType =>
-
             
             
 
@@ -80,15 +79,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.optionParser[Order]
-            optionParser[Order](bodyMimeType, customParsers, "Invalid StoresOrderPostBody", maxLength)
+            optionParser[Order](bodyMimeType, customParsers, "Invalid StoresOrderPostBody", maxLength) _
         }
 
     val placeOrderActionConstructor  = Action
-    def placeOrderAction[T] = (f: placeOrderActionType[T]) => placeOrderActionConstructor(placeOrderParser(Seq[String]())) { request =>
+
+def placeOrderAction[T] = (f: placeOrderActionType[T]) => placeOrderActionConstructor(BodyParsers.parse.using(placeOrderParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { placeOrderResponseMimeType =>
-
             val body = request.body
             
             
@@ -130,15 +129,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.optionParser[User]
-            optionParser[User](bodyMimeType, customParsers, "Invalid UsersUsernamePutBody", maxLength)
+            optionParser[User](bodyMimeType, customParsers, "Invalid UsersUsernamePutBody", maxLength) _
         }
 
     val createUserActionConstructor  = Action
-    def createUserAction[T] = (f: createUserActionType[T]) => createUserActionConstructor(createUserParser(Seq[String]())) { request =>
+
+def createUserAction[T] = (f: createUserActionType[T]) => createUserActionConstructor(BodyParsers.parse.using(createUserParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { createUserResponseMimeType =>
-
             val body = request.body
             
             
@@ -180,15 +179,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.optionParser[UsersCreateWithListPostBodyOpt]
-            optionParser[UsersCreateWithListPostBodyOpt](bodyMimeType, customParsers, "Invalid UsersCreateWithListPostBody", maxLength)
+            optionParser[UsersCreateWithListPostBodyOpt](bodyMimeType, customParsers, "Invalid UsersCreateWithListPostBody", maxLength) _
         }
 
     val createUsersWithListInputActionConstructor  = Action
-    def createUsersWithListInputAction[T] = (f: createUsersWithListInputActionType[T]) => createUsersWithListInputActionConstructor(createUsersWithListInputParser(Seq[String]())) { request =>
+
+def createUsersWithListInputAction[T] = (f: createUsersWithListInputActionType[T]) => createUsersWithListInputActionConstructor(BodyParsers.parse.using(createUsersWithListInputParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { createUsersWithListInputResponseMimeType =>
-
             val body = request.body
             
             
@@ -225,11 +224,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val getUserByNameActionConstructor  = Action
-    def getUserByNameAction[T] = (f: getUserByNameActionType[T]) => (username: String) => getUserByNameActionConstructor { request =>
+
+def getUserByNameAction[T] = (f: getUserByNameActionType[T]) => (username: String) => getUserByNameActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getUserByNameResponseMimeType =>
-
             
             
 
@@ -274,15 +273,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.optionParser[User]
-            optionParser[User](bodyMimeType, customParsers, "Invalid UsersUsernamePutBody", maxLength)
+            optionParser[User](bodyMimeType, customParsers, "Invalid UsersUsernamePutBody", maxLength) _
         }
 
     val updateUserActionConstructor  = Action
-    def updateUserAction[T] = (f: updateUserActionType[T]) => (username: String) => updateUserActionConstructor(updateUserParser(Seq[String]())) { request =>
+
+def updateUserAction[T] = (f: updateUserActionType[T]) => (username: String) => updateUserActionConstructor(BodyParsers.parse.using(updateUserParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { updateUserResponseMimeType =>
-
             val body = request.body
             
             
@@ -318,11 +317,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val deleteUserActionConstructor  = Action
-    def deleteUserAction[T] = (f: deleteUserActionType[T]) => (username: String) => deleteUserActionConstructor { request =>
+
+def deleteUserAction[T] = (f: deleteUserActionType[T]) => (username: String) => deleteUserActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteUserResponseMimeType =>
-
             
             
 
@@ -368,15 +367,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             
             
             val customParsers = WrappedBodyParsers.optionParser[Pet]
-            optionParser[Pet](bodyMimeType, customParsers, "Invalid PetsPostBody", maxLength)
+            optionParser[Pet](bodyMimeType, customParsers, "Invalid PetsPostBody", maxLength) _
         }
 
     val updatePetActionConstructor  = new updatePetSecureAction("write_pets", "read_pets")
-    def updatePetAction[T] = (f: updatePetActionType[T]) => updatePetActionConstructor(updatePetParser(Seq[String]("application/json", "application/xml"))) { request =>
+
+def updatePetAction[T] = (f: updatePetActionType[T]) => updatePetActionConstructor(BodyParsers.parse.using(updatePetParser(Seq[String]("application/json", "application/xml")))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { updatePetResponseMimeType =>
-
             val body = request.body
             
             
@@ -419,15 +418,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             
             
             val customParsers = WrappedBodyParsers.optionParser[Pet]
-            optionParser[Pet](bodyMimeType, customParsers, "Invalid PetsPostBody", maxLength)
+            optionParser[Pet](bodyMimeType, customParsers, "Invalid PetsPostBody", maxLength) _
         }
 
     val addPetActionConstructor  = new addPetSecureAction("write_pets", "read_pets")
-    def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(addPetParser(Seq[String]("application/json", "application/xml"))) { request =>
+
+def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(BodyParsers.parse.using(addPetParser(Seq[String]("application/json", "application/xml")))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
-
             val body = request.body
             
             
@@ -469,15 +468,15 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.optionParser[UsersCreateWithListPostBodyOpt]
-            optionParser[UsersCreateWithListPostBodyOpt](bodyMimeType, customParsers, "Invalid UsersCreateWithListPostBody", maxLength)
+            optionParser[UsersCreateWithListPostBodyOpt](bodyMimeType, customParsers, "Invalid UsersCreateWithListPostBody", maxLength) _
         }
 
     val createUsersWithArrayInputActionConstructor  = Action
-    def createUsersWithArrayInputAction[T] = (f: createUsersWithArrayInputActionType[T]) => createUsersWithArrayInputActionConstructor(createUsersWithArrayInputParser(Seq[String]())) { request =>
+
+def createUsersWithArrayInputAction[T] = (f: createUsersWithArrayInputActionType[T]) => createUsersWithArrayInputActionConstructor(BodyParsers.parse.using(createUsersWithArrayInputParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { createUsersWithArrayInputResponseMimeType =>
-
             val body = request.body
             
             
@@ -514,11 +513,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val getOrderByIdActionConstructor  = Action
-    def getOrderByIdAction[T] = (f: getOrderByIdActionType[T]) => (orderId: String) => getOrderByIdActionConstructor { request =>
+
+def getOrderByIdAction[T] = (f: getOrderByIdActionType[T]) => (orderId: String) => getOrderByIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getOrderByIdResponseMimeType =>
-
             
             
 
@@ -553,11 +552,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val deleteOrderActionConstructor  = Action
-    def deleteOrderAction[T] = (f: deleteOrderActionType[T]) => (orderId: String) => deleteOrderActionConstructor { request =>
+
+def deleteOrderAction[T] = (f: deleteOrderActionType[T]) => (orderId: String) => deleteOrderActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteOrderResponseMimeType =>
-
             
             
 
@@ -588,11 +587,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val logoutUserActionConstructor  = Action
-    def logoutUserAction[T] = (f: logoutUserActionType[T]) => logoutUserActionConstructor { request =>
+
+def logoutUserAction[T] = (f: logoutUserActionType[T]) => logoutUserActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { logoutUserResponseMimeType =>
-
             
             
 
@@ -622,11 +621,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val getPetByIdActionConstructor  = new getPetByIdSecureAction("write_pets", "read_pets")
-    def getPetByIdAction[T] = (f: getPetByIdActionType[T]) => (petId: Long) => getPetByIdActionConstructor { request =>
+
+def getPetByIdAction[T] = (f: getPetByIdActionType[T]) => (petId: Long) => getPetByIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getPetByIdResponseMimeType =>
-
             
             
 
@@ -659,11 +658,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val updatePetWithFormActionConstructor  = new updatePetWithFormSecureAction("write_pets", "read_pets")
-    def updatePetWithFormAction[T] = (f: updatePetWithFormActionType[T]) => (petId: String) => updatePetWithFormActionConstructor { request =>
+
+def updatePetWithFormAction[T] = (f: updatePetWithFormActionType[T]) => (petId: String) => updatePetWithFormActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { updatePetWithFormResponseMimeType =>
-
             
             val eitherFormParameters = FormDataParser.updatePetWithFormParseForm(request)
             eitherFormParameters match {
@@ -706,11 +705,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val deletePetActionConstructor  = new deletePetSecureAction("write_pets", "read_pets")
-    def deletePetAction[T] = (f: deletePetActionType[T]) => (petId: Long) => deletePetActionConstructor { request =>
+
+def deletePetAction[T] = (f: deletePetActionType[T]) => (petId: Long) => deletePetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>
-
             
             val api_key: Either[String,String] =
                 fromParameters[String]("header")("api_key", request.headers.toMap)
@@ -755,11 +754,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val findPetsByStatusActionConstructor  = new findPetsByStatusSecureAction("write_pets", "read_pets")
-    def findPetsByStatusAction[T] = (f: findPetsByStatusActionType[T]) => (status: PetsFindByStatusGetStatus) => findPetsByStatusActionConstructor { request =>
+
+def findPetsByStatusAction[T] = (f: findPetsByStatusActionType[T]) => (status: PetsFindByStatusGetStatus) => findPetsByStatusActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsByStatusResponseMimeType =>
-
             
             
 
@@ -793,11 +792,11 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
 
 
     val loginUserActionConstructor  = Action
-    def loginUserAction[T] = (f: loginUserActionType[T]) => (username: OrderStatus, password: OrderStatus) => loginUserActionConstructor { request =>
+
+def loginUserAction[T] = (f: loginUserActionType[T]) => (username: OrderStatus, password: OrderStatus) => loginUserActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { loginUserResponseMimeType =>
-
             
             
 

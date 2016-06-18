@@ -1,21 +1,17 @@
 package expanded
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 
 import de.zalando.play.controllers.PlayPathBindables
 
-
-
-import de.zalando.play.controllers.ResponseWriters
 
 
 
@@ -31,11 +27,11 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
 
 
     val findPetsActionConstructor  = Action
-    def findPetsAction[T] = (f: findPetsActionType[T]) => (tags: PetsGetTags, limit: PetsGetLimit) => findPetsActionConstructor { request =>
+
+def findPetsAction[T] = (f: findPetsActionType[T]) => (tags: PetsGetTags, limit: PetsGetLimit) => findPetsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsResponseMimeType =>
-
             
             
 
@@ -73,18 +69,17 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                 negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
             }
             
-            import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[NewPet]
-            anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength)
+            anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength) _
         }
 
     val addPetActionConstructor  = Action
-    def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
+
+def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(BodyParsers.parse.using(addPetParser(Seq[String]("application/json")))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
-
             val pet = request.body
             
             
@@ -117,11 +112,11 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
 
 
     val deletePetActionConstructor  = Action
-    def deletePetAction[T] = (f: deletePetActionType[T]) => (id: Long) => deletePetActionConstructor { request =>
+
+def deletePetAction[T] = (f: deletePetActionType[T]) => (id: Long) => deletePetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>
-
             
             
 

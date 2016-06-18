@@ -1,13 +1,12 @@
 package string_formats.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import de.zalando.play.controllers.Base64String
 import Base64String._
@@ -44,15 +43,15 @@ trait String_formatsYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[BinaryString]
-            anyParser[BinaryString](bodyMimeType, customParsers, "Invalid BinaryString", maxLength)
+            anyParser[BinaryString](bodyMimeType, customParsers, "Invalid BinaryString", maxLength) _
         }
 
     val getActionConstructor  = Action
-    def getAction[T] = (f: getActionType[T]) => (date_time: GetDate_time, date: GetDate, base64: GetBase64, uuid: GetUuid) => getActionConstructor(getParser(Seq[String]())) { request =>
+
+def getAction[T] = (f: getActionType[T]) => (date_time: GetDate_time, date: GetDate, base64: GetBase64, uuid: GetUuid) => getActionConstructor(BodyParsers.parse.using(getParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json", "application/yaml")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
-
             val petId = request.body
             
             

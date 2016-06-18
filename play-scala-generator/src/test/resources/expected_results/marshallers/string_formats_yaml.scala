@@ -6,6 +6,7 @@ import play.api.libs.iteratee.Execution.Implicits.trampoline
 import play.api.mvc.RequestHeader
 import de.zalando.play.controllers._
 import WriteableWrapper.writeable2wrapper
+import akka.util.ByteString
 
 import de.zalando.play.controllers.Base64String
 import Base64String._
@@ -31,6 +32,9 @@ object ResponseWriters extends ResponseWritersBase {
     * in order for play-swagger to be able to provide safety net for
     * different response types
     */
+    val writable_application_json_Null_esc: Writeable[Null] =
+        Writeable(a => ???, Some("application/json"))
+
     val writable_application_yaml_Null_esc: Writeable[Null] =
         Writeable(a => ???, Some("application/yaml"))
 
@@ -39,6 +43,7 @@ object ResponseWriters extends ResponseWritersBase {
     * as a marshaller for different mime types and types of response
     */
     override val custom: Seq[WriteableWrapper[_]] = Seq(
+        writable_application_json_Null_esc, 
         writable_application_yaml_Null_esc
     )
 }

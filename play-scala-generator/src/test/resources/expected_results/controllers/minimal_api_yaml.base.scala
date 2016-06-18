@@ -1,13 +1,12 @@
 package admin
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 
 
@@ -28,11 +27,11 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
 
     val indexActionConstructor  = Action
-    def indexAction[T] = (f: indexActionType[T]) => indexActionConstructor { request =>
+
+def indexAction[T] = (f: indexActionType[T]) => indexActionConstructor { request =>
         val providedTypes = Seq[String]()
 
         negotiateContent(request.acceptedTypes, providedTypes).map { indexResponseMimeType =>
-
             
             
 

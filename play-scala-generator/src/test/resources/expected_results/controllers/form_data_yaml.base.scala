@@ -1,22 +1,18 @@
 package form_data.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import java.io.File
 import scala.math.BigInt
 
 import de.zalando.play.controllers.PlayPathBindables
 
-
-
-import de.zalando.play.controllers.ResponseWriters
 
 
 
@@ -31,11 +27,11 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
 
     val postmultipartActionConstructor  = Action
-    def postmultipartAction[T] = (f: postmultipartActionType[T]) => postmultipartActionConstructor { request =>
+
+def postmultipartAction[T] = (f: postmultipartActionType[T]) => postmultipartActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmultipartResponseMimeType =>
-
             
             val eitherFormParameters = FormDataParser.postmultipartParseForm(request)
             eitherFormParameters match {
@@ -75,11 +71,11 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
 
     val posturl_encodedActionConstructor  = Action
-    def posturl_encodedAction[T] = (f: posturl_encodedActionType[T]) => posturl_encodedActionConstructor { request =>
+
+def posturl_encodedAction[T] = (f: posturl_encodedActionType[T]) => posturl_encodedActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { posturl_encodedResponseMimeType =>
-
             
             val eitherFormParameters = FormDataParser.posturl_encodedParseForm(request)
             eitherFormParameters match {
@@ -119,11 +115,11 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
 
     val postbothActionConstructor  = Action
-    def postbothAction[T] = (f: postbothActionType[T]) => postbothActionConstructor { request =>
+
+def postbothAction[T] = (f: postbothActionType[T]) => postbothActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postbothResponseMimeType =>
-
             
             val eitherFormParameters = FormDataParser.postbothParseForm(request)
             eitherFormParameters match {

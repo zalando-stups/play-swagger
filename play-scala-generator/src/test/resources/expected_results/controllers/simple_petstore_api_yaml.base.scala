@@ -1,13 +1,12 @@
 package simple_petstore_api_yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 
@@ -34,18 +33,17 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
                 negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
             }
             
-            import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[NewPet]
-            anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength)
+            anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength) _
         }
 
     val addPetActionConstructor  = Action
-    def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
+
+def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(BodyParsers.parse.using(addPetParser(Seq[String]("application/json")))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
-
             val pet = request.body
             
             
@@ -80,11 +78,11 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
 
     val methodLevelActionConstructor  = Action
-    def methodLevelAction[T] = (f: methodLevelActionType[T]) => (tags: PetsGetTags, limit: PetsGetLimit) => methodLevelActionConstructor { request =>
+
+def methodLevelAction[T] = (f: methodLevelActionType[T]) => (tags: PetsGetTags, limit: PetsGetLimit) => methodLevelActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml", "text/xml", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { methodLevelResponseMimeType =>
-
             
             
 
@@ -114,11 +112,11 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
 
     val pathLevelGetActionConstructor  = Action
-    def pathLevelGetAction[T] = (f: pathLevelGetActionType[T]) => (id: Long) => pathLevelGetActionConstructor { request =>
+
+def pathLevelGetAction[T] = (f: pathLevelGetActionType[T]) => (id: Long) => pathLevelGetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "application/xml", "text/xml", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { pathLevelGetResponseMimeType =>
-
             
             
 
@@ -149,11 +147,11 @@ trait DashboardBase extends Controller with PlayBodyParsing {
 
 
     val pathLevelDeleteActionConstructor  = Action
-    def pathLevelDeleteAction[T] = (f: pathLevelDeleteActionType[T]) => (id: Long) => pathLevelDeleteActionConstructor { request =>
+
+def pathLevelDeleteAction[T] = (f: pathLevelDeleteActionType[T]) => (id: Long) => pathLevelDeleteActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { pathLevelDeleteResponseMimeType =>
-
             
             
 
