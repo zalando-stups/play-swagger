@@ -99,7 +99,7 @@ lazy val plugin = (project in file("plugin"))
       val e = (publishLocal in playScalaGenerator).value
       val f = publishLocal.value
     },
-    scriptedBufferLog := false
+    scriptedBufferLog := true
   )
   .dependsOn(apiFirstCore, playScalaGenerator, swaggerParser, swaggerModel, common)
 
