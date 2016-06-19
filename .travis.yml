@@ -21,24 +21,24 @@ addons:
     packages:
       - oracle-java8-installer
 
-before_install:
-  - pip install --user codecov
+# before_install:
+#  - pip install --user codecov
 
-after_success:
-  - codecov
+# after_success:
+#  - codecov
 
 script:
   - sbt -jvm-opts travis/jvmopts clean compile test
   - sbt -jvm-opts travis/jvmopts scripted
-  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
+#  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
 
 
-# cache:
-#  directories:
-#    - $HOME/.ivy2/cache
-#    - $HOME/.sbt/boot/
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
 
-#before_cache:
-#  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
-#  - find $HOME/.sbt -name "*.lock" -delete
-#  - find $HOME/.sbt -name "de.zalando" -delete
+before_cache:
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt -name "*.lock" -delete
+  - find $HOME/.sbt -name "de.zalando" -delete
