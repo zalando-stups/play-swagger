@@ -5,7 +5,7 @@
             <pattern>%logger - %message%n%xException</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>WARN</level>
+            <level>INFO</level>
         </filter>
     </appender>
 
@@ -15,10 +15,9 @@
     -->
     <logger name="play" level="WARN" />
     <logger name="application" level="WARN" />
-    <logger name="me.andrz.jackson" level="ERROR" />
-    <logger name="m.a.jackson" level="ERROR" />
-    <logger name="de.zalando.beard" level="ERROR" />
-    <logger name="ch.qos.logback" level="ERROR" />
+    <logger name="me.andrz.jackson" level="WARN" />
+    <logger name="de.zalando.beard" level="WARN" />
+    <logger name="ch.qos.logback" level="WARN" />
 
     <root level="WARN">
         <appender-ref ref="STDOUT" />
