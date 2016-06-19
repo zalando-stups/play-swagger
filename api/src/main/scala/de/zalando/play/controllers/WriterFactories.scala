@@ -3,7 +3,8 @@ package de.zalando.play.controllers
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 /**
-  * @since 02.09.2015
+  * FIXME this is duplicate of WriterFactories defined in common.
+  * Remove this file as soon as correct sbt dependency management is in place
   */
 object WriterFactories {
   private val jsonFactory = new JsonFactory()

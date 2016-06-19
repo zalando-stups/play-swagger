@@ -4,8 +4,9 @@ import sbt.{Resolver, UpdateLogging}
 val PlayVersion = "2.5.4"
 val Scala10 = "2.10.5"
 val Scala11 = "2.11.8"
+val ProjectVersion = "0.1.12"
 
-val deps = new Dependencies(PlayVersion)
+val deps = new Dependencies(PlayVersion, ProjectVersion)
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
@@ -13,9 +14,8 @@ lazy val common = (project in file("common"))
   .settings(commonSettings: _*)
   .settings(
     scalaVersion := Scala10,
-    crossScalaVersions := Seq(Scala10, Scala11),
     name := "play-swagger-common",
-    libraryDependencies ++= deps.jacksons
+    libraryDependencies ++= deps.jacksonsJava
   )
 
 // This is the API project, it gets added to the runtime dependencies of any
@@ -24,11 +24,9 @@ lazy val api = (project in file("api"))
   .settings(commonSettings: _*)
   .settings(
     scalaVersion := Scala11,
-    crossScalaVersions := Seq(Scala11),
     name := "play-swagger-api",
     libraryDependencies ++= deps.api ++ deps.test
   )
-  .dependsOn(common)
 
 lazy val swaggerModel = (project in file("swagger-model"))
   .settings(commonSettings: _*)
@@ -43,7 +41,6 @@ lazy val apiFirstCore = (project in file("api-first-core"))
   .settings(commonSettings: _*)
   .settings(
     scalaVersion := Scala10,
-    crossScalaVersions := Seq(Scala10),
     name := "api-first-core",
     libraryDependencies ++= deps.scala ++ deps.test
   )
@@ -53,7 +50,6 @@ lazy val swaggerParser = (project in file("swagger-parser"))
   .settings(commonSettings: _*)
   .settings(
     scalaVersion := Scala10,
-    crossScalaVersions := Seq(Scala10),
     name := "swagger-parser",
     libraryDependencies ++= deps.swaggerParser(scalaVersion.value) ++ deps.test
   )
@@ -63,7 +59,6 @@ lazy val playScalaGenerator = (project in file("play-scala-generator"))
   .settings(commonSettings: _*)
   .settings(
     scalaVersion := Scala10,
-    crossScalaVersions := Seq(Scala10),
     name := "play-scala-generator",
     libraryDependencies ++= deps.playScalaGenerator ++ deps.test
   )
@@ -92,6 +87,7 @@ lazy val plugin = (project in file("plugin"))
         )
     },
     scriptedDependencies := {
+      val ap = (publishLocal in api).value
       val a = (publishLocal in swaggerModel).value
       val b = (publishLocal in common).value
       val c = (publishLocal in apiFirstCore).value
@@ -99,9 +95,12 @@ lazy val plugin = (project in file("plugin"))
       val e = (publishLocal in playScalaGenerator).value
       val f = publishLocal.value
     },
-    scriptedBufferLog := true
+    scriptedBufferLog := false,
+    coverageExcludedPackages := "<empty>;de\\.zalando\\.play\\.apifirst\\.sbt\\.ApiFirstCore"
   )
-  .dependsOn(apiFirstCore, playScalaGenerator, swaggerParser, swaggerModel, common)
+  .dependsOn(common)
+  .dependsOn(apiFirstCore, playScalaGenerator, swaggerParser, swaggerModel)
+
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
@@ -116,7 +115,7 @@ lazy val root = (project in file("."))
 def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   ivyLoggingLevel := UpdateLogging.DownloadOnly,
-  version := "0.1.12",
+  version := ProjectVersion,
   sbtPlugin := false,
   buildInfoPackage := "de.zalando",
   organization := "de.zalando",
@@ -146,7 +145,8 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
     "-Yno-adapted-args",
     "-Xfuture"
   ),
-  scalastyleFailOnError := false
+  scalastyleFailOnError := false,
+  coverageEnabled := false
 ) ++ Lint.all
 
 
@@ -154,8 +154,6 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
 // Reformat at every compile.
 // c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
 // ++ scalariformSettings
-
-// coverageEnabled := false
 
 coverageMinimum := 80
 

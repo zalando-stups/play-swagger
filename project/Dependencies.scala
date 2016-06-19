@@ -1,18 +1,23 @@
 import sbt.Keys._
 import sbt._
 
-class Dependencies(playVersion: String, scalaVersion: String = "2.11") {
+class Dependencies(playVersion: String, projectVersion: String, scalaVersion: String = "2.11") {
 
-  val jacksons = Seq(
+  val commonSelf = "de.zalando" % "play-swagger-common_2.10" % projectVersion
+
+  val jacksonsJava = Seq(
     "com.fasterxml.jackson.core"        % "jackson-core",
     "com.fasterxml.jackson.core"        % "jackson-annotations",
     "com.fasterxml.jackson.core"        % "jackson-databind",
     "com.fasterxml.jackson.datatype"    % "jackson-datatype-jdk8",
     "com.fasterxml.jackson.datatype"    % "jackson-datatype-jsr310",
     "com.fasterxml.jackson.dataformat"  % "jackson-dataformat-yaml",
-    "com.fasterxml.jackson.dataformat"  % "jackson-dataformat-csv",
-    "com.fasterxml.jackson.module"      %% "jackson-module-scala"
+    "com.fasterxml.jackson.dataformat"  % "jackson-dataformat-csv"
   ).map(_ % "2.7.4")
+
+  val jacksonScala = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.7.4"
+
+  val jacksons = jacksonScala +: jacksonsJava
 
   val scala = Seq(
 /*
