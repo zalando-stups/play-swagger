@@ -16,6 +16,6 @@ libraryDependencies ++= Seq(
 
 apiFirstParsers := Seq(ApiFirstSwaggerParser.swaggerSpec2Ast.value).flatten
 
-logLevel := Level.Error
+logLevel := sbt.Level.Warn
 
 crossPaths := false
