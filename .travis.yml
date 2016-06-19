@@ -28,8 +28,7 @@ after_success:
   - codecov
 
 script:
-  - sbt -jvm-opts travis/jvmopts +publishLocal
-  - sbt -jvm-opts travis/jvmopts +compile +test
+  - sbt -jvm-opts travis/jvmopts clean compile test
   - sbt -jvm-opts travis/jvmopts scripted
   - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
 
