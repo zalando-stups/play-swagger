@@ -35,7 +35,7 @@ class Dependencies(playVersion: String, projectVersion: String, scalaVersion: St
 
   val play        = "com.typesafe.play" %% "play"             % playVersion % Provided
   val playRoutes  = "com.typesafe.play" %% "routes-compiler"  % playVersion % Provided
-  val playClient  = "com.typesafe.play" %% "play-java-ws"     % playVersion
+  val playClient  = "com.typesafe.play" %% "play-java-ws"     % playVersion % Provided
 
   def scalaParserCombinators(scalaVersion: String): Seq[ModuleID] =
     CrossVersion.partialVersion(scalaVersion) match {

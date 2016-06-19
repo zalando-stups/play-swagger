@@ -1,5 +1,5 @@
 import bintray.Keys._
-import sbt.{Resolver, UpdateLogging}
+import sbt.{Level, Resolver, UpdateLogging}
 
 val PlayVersion = "2.5.4"
 val Scala10 = "2.10.5"
@@ -96,6 +96,7 @@ lazy val plugin = (project in file("plugin"))
       val f = publishLocal.value
     },
     scriptedBufferLog := false,
+    logLevel := Level.Warn,
     coverageExcludedPackages := "<empty>;de\\.zalando\\.play\\.apifirst\\.sbt\\.ApiFirstCore"
   )
   .dependsOn(common)
