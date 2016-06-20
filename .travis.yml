@@ -36,10 +36,9 @@ script:
   - sbt -jvm-opts travis/jvmopts '++ 2.10.5 swaggerParser/compile' '++ 2.10.5 swaggerParser/publishLocal'
   - sbt -jvm-opts travis/jvmopts '++ 2.10.5 playScalaGenerator/compile' '++ 2.10.5 playScalaGenerator/publishLocal'
   - sbt -jvm-opts travis/jvmopts '++ 2.10.5 plugin/compile' '++ 2.10.5 plugin/publishLocal'
-
 #  - sbt -jvm-opts travis/jvmopts clean compile
-#  - sbt -jvm-opts travis/jvmopts test
-#  - sbt -jvm-opts travis/jvmopts_scripted scripted
+  - sbt -jvm-opts travis/jvmopts test
+  - sbt -jvm-opts travis/jvmopts_scripted scripted
 #  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
 
 
