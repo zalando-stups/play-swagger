@@ -103,7 +103,7 @@ lazy val plugin = (project in file("plugin"))
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
-  // .enablePlugins(CrossPerProjectPlugin)
+  .enablePlugins(CrossPerProjectPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "play-swagger-root",
