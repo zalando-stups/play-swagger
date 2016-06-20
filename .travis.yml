@@ -28,7 +28,12 @@ jdk:
 #  - codecov
 
 script:
-  - sbt -jvm-opts travis/jvmopts clean compile
+  - sbt -jvm-opts travis/jvmopts clean
+  - sbt -jvm-opts travis/jvmopts '++ 2.11.8 api/compile'
+  - sbt -jvm-opts travis/jvmopts '++ 2.10.5 common/compile' '++ 2.10.5 common/publishLocal'
+  - sbt -jvm-opts travis/jvmopts '++ 2.10.5 swaggerModel/compile' '++ 2.10.5 swaggerModel/publishLocal'
+  - sbt -jvm-opts travis/jvmopts '++ 2.10.5 apiFirstCore/compile' '++ 2.10.5 apiFirstCore/publishLocal'
+#  - sbt -jvm-opts travis/jvmopts clean compile
 #  - sbt -jvm-opts travis/jvmopts test
 #  - sbt -jvm-opts travis/jvmopts_scripted scripted
 #  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
