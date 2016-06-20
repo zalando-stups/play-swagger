@@ -45,7 +45,6 @@ lazy val apiFirstCore = (project in file("api-first-core"))
     libraryDependencies ++= deps.logback +: deps.test
   )
 
-
 lazy val swaggerParser = (project in file("swagger-parser"))
   .settings(commonSettings: _*)
   .settings(
@@ -99,13 +98,12 @@ lazy val plugin = (project in file("plugin"))
     logLevel := Level.Warn,
     coverageExcludedPackages := "<empty>;de\\.zalando\\.play\\.apifirst\\.sbt\\.ApiFirstCore"
   )
-  .dependsOn(common)
-  .dependsOn(apiFirstCore, playScalaGenerator, swaggerParser, swaggerModel)
+  .dependsOn(common, apiFirstCore, playScalaGenerator, swaggerParser, swaggerModel)
 
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
-  .enablePlugins(CrossPerProjectPlugin)
+  // .enablePlugins(CrossPerProjectPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "play-swagger-root",
