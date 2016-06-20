@@ -15,7 +15,7 @@ lazy val common = (project in file("common"))
   .settings(
     scalaVersion := Scala10,
     name := "play-swagger-common",
-    libraryDependencies ++= deps.logback +: deps.jacksonsJava
+    libraryDependencies ++= deps.logback +: (deps.jacksonsJava ++ deps.test)
   )
 
 // This is the API project, it gets added to the runtime dependencies of any
