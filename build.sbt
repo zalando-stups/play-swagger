@@ -70,6 +70,7 @@ lazy val plugin = (project in file("plugin"))
   .settings(commonSettings: _*)
   .settings(scriptedSettings: _*)
   .settings(
+    scalaVersion := Scala10,
     libraryDependencies ++= deps.test,
     name := "sbt-play-swagger",
     sbtPlugin := true,
@@ -104,12 +105,14 @@ lazy val plugin = (project in file("plugin"))
 lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(
+    scalaVersion := Scala10,
     name := "play-swagger-root",
     aggregate in update := false
   )
   .aggregate(common, swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
 
 def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
+  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   ivyLoggingLevel := UpdateLogging.DownloadOnly,
   version := ProjectVersion,
   sbtPlugin := false,
