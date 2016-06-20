@@ -101,8 +101,6 @@ lazy val plugin = (project in file("plugin"))
 
 
 lazy val root = (project in file("."))
-  // Use sbt-doge cross building since we have different projects with different scala versions
-  // .enablePlugins(CrossPerProjectPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "play-swagger-root",
@@ -111,7 +109,7 @@ lazy val root = (project in file("."))
   .aggregate(common, swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
 
 def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
-//  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
+  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   ivyLoggingLevel := UpdateLogging.DownloadOnly,
   version := ProjectVersion,
   sbtPlugin := false,
@@ -145,20 +143,13 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   ),
   scalastyleFailOnError := false,
   coverageEnabled := false
-) ++ Lint.all
+) ++ Lint.all ++ scalariformSettings
 
 
-// Apply default Scalariform formatting.
-// Reformat at every compile.
-// c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
-// ++ scalariformSettings
+// https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
+
+excludeFilter in scalariformFormat := (excludeFilter in scalariformFormat).value || "model/*"
 
 coverageMinimum := 80
-
 coverageFailOnMinimum := false
-
-coverageHighlighting := {
-  if (scalaBinaryVersion.value == "2.10") false
-  else false
-}
-
+coverageHighlighting := false
