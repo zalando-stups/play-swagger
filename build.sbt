@@ -112,7 +112,7 @@ lazy val root = (project in file("."))
   .aggregate(common, swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
 
 def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
-  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
+//  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   ivyLoggingLevel := UpdateLogging.DownloadOnly,
   version := ProjectVersion,
   sbtPlugin := false,
