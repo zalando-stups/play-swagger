@@ -52,7 +52,7 @@ lazy val swaggerParser = (project in file("swagger-parser"))
     name := "swagger-parser",
     libraryDependencies ++= deps.swaggerParser(scalaVersion.value) ++ deps.test
   )
-  .dependsOn(swaggerModel, apiFirstCore)
+  .dependsOn(swaggerModel % "compile->compile", apiFirstCore % "compile->compile")
 
 lazy val playScalaGenerator = (project in file("play-scala-generator"))
   .settings(commonSettings: _*)
@@ -61,7 +61,7 @@ lazy val playScalaGenerator = (project in file("play-scala-generator"))
     name := "play-scala-generator",
     libraryDependencies ++= deps.playScalaGenerator ++ deps.test
   )
-  .dependsOn(apiFirstCore)
+  .dependsOn(apiFirstCore % "compile->compile")
 
 // This is the sbt plugin
 lazy val plugin = (project in file("plugin"))
