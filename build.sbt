@@ -94,7 +94,7 @@ lazy val plugin = (project in file("plugin"))
       val f = publishLocal.value
     },
     scriptedBufferLog := false,
-//    logLevel := Level.Warn,
+    logLevel := Level.Warn,
     coverageExcludedPackages := "<empty>;de\\.zalando\\.play\\.apifirst\\.sbt\\.ApiFirstCore"
   )
   .dependsOn(common, apiFirstCore, playScalaGenerator, swaggerParser, swaggerModel)
