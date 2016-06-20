@@ -36,7 +36,7 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers with ExpectedR
       implicit val (uri, swagger) = StrictYamlParser.parse(hypermediaOk)
       val expected = Map(
         "resource created" ->
-        Map("resource updated" -> Map("condition" -> "some rule to show the transition"), "subresource added" -> null),
+          Map("resource updated" -> Map("condition" -> "some rule to show the transition"), "subresource added" -> null),
         "resource updated" -> Map(
           "subresource added" -> Map("condition" -> ""),
           "self" -> Map("condition" -> "non-empty rule")

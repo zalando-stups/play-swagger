@@ -139,7 +139,7 @@ case class ControllerCompilationResult(controllerFiles: Seq[File]) extends Compi
   def allFiles: Set[File] = controllerFiles.toSet
 }
 case class TestCompilationResult(
-  testDataGeneratorFiles: Seq[File],
+    testDataGeneratorFiles: Seq[File],
     testFiles: Seq[File]
 ) extends CompilationResult {
   def allFiles: Set[File] = (testDataGeneratorFiles ++ testFiles).toSet

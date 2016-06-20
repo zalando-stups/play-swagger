@@ -270,7 +270,7 @@ object Domain {
   }
 
   case class TypeDef(
-    override val name: TypeName,
+      override val name: TypeName,
       fields: Seq[Field],
       override val meta: TypeMeta
   ) extends Type(name, meta) {
@@ -390,7 +390,7 @@ object Application {
   type SecurityDefinitionsTable = Map[String, Security.Definition]
 
   case class StrictModel(
-    calls: Seq[ApiCall],
+      calls: Seq[ApiCall],
       typeDefs: TypeLookupTable,
       params: ParameterLookupTable,
       discriminators: DiscriminatorLookupTable,

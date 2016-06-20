@@ -105,7 +105,7 @@ lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(
     name := "play-swagger-root",
-    aggregate in update := true
+    aggregate in update := false
   )
   .aggregate(common, swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
 
@@ -143,14 +143,16 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
     "-Xfuture"
   ),
   scalastyleFailOnError := false,
-  coverageEnabled := false
-) ++ Lint.all
+  coverageEnabled := false,
+  excludeFilter in scalariformFormat := (excludeFilter in scalariformFormat).value || dontFormatTestModels
+) ++ Lint.all ++ scalariformSettings
 
 
-// Apply default Scalariform formatting.
-// Reformat at every compile.
-// c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
-// ++ scalariformSettings
+// https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
+
+val dontFormatTestModels = new sbt.FileFilter {
+  def accept(f: File) = ".*/model/.*".r.pattern.matcher(f.getAbsolutePath).matches
+}
 
 coverageMinimum := 80
 
