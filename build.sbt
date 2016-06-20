@@ -120,7 +120,7 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   sbtPlugin := false,
   buildInfoPackage := "de.zalando",
   organization := "de.zalando",
-  fork in(Test, run) := false,
+  fork in(Test, run) := true,
   autoScalaLibrary := true,
   resolvers ++= Seq(
     Resolver.typesafeRepo("releases"),
