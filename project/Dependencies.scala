@@ -3,8 +3,6 @@ import sbt._
 
 class Dependencies(playVersion: String, projectVersion: String, scalaVersion: String = "2.11") {
 
-  val commonSelf = "de.zalando" % "play-swagger-common_2.10" % projectVersion
-
   val jacksonsJava = Seq(
     "com.fasterxml.jackson.core"        % "jackson-core",
     "com.fasterxml.jackson.core"        % "jackson-annotations",
@@ -19,14 +17,7 @@ class Dependencies(playVersion: String, projectVersion: String, scalaVersion: St
 
   val jacksons = jacksonScala +: jacksonsJava
 
-  val scala = Seq(
-/*
-    "org.scala-lang" % "scala-compiler" % "2.10.5",
-    "org.scala-lang" % "scala-library" % "2.10.5",
-*/
-//    "org.scala-lang" % "scala-reflect" % "2.11.8"
-  )
-
+  val logback     = "ch.qos.logback"    % "logback-classic" % "1.0.13"
   val jsonRef     = "me.andrz.jackson"  % "jackson-json-reference-core" % "0.2.1"
   val jodaTime    = "joda-time"         % "joda-time"         % "2.9.1"
   val commonsIO   = "commons-io"        % "commons-io"        % "2.5"
@@ -45,16 +36,18 @@ class Dependencies(playVersion: String, projectVersion: String, scalaVersion: St
       Nil
   }
 
-  val test = Seq(
+  val testLibs = Seq(
     "org.scalacheck"  %% "scalacheck"         % "1.12.4",
     "org.scalatest"   %% "scalatest"          % "2.2.6",
     "org.specs2"      %% "specs2-scalacheck"  % "3.6",
     "me.jeffmay"      %% "play-json-tests"    % "1.3.0"
   ).map(_ % "test")
 
+  val test = logback +: testLibs
+
   val api = Seq(jodaTime, play, playClient) ++ jacksons
 
-  val playScalaGenerator = commonsIO +: beard +: scala
+  val playScalaGenerator = Seq(commonsIO, beard)
 
   val swaggerModel = jsonRef +: jacksons
 

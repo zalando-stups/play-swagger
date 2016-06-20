@@ -16,10 +16,10 @@ notifications:
 jdk:
   - oraclejdk8
 
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
+#addons:
+#  apt:
+#    packages:
+#      - oracle-java8-installer
 
 # before_install:
 #  - pip install --user codecov
@@ -28,7 +28,8 @@ addons:
 #  - codecov
 
 script:
-  - sbt -jvm-opts travis/jvmopts clean compile # test
+  - sbt -jvm-opts travis/jvmopts clean compile
+  - sbt -jvm-opts travis/jvmopts test
   - sbt -jvm-opts travis/jvmopts scripted
 #  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
 

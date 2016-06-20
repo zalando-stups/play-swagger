@@ -15,7 +15,7 @@ lazy val common = (project in file("common"))
   .settings(
     scalaVersion := Scala10,
     name := "play-swagger-common",
-    libraryDependencies ++= deps.jacksonsJava
+    libraryDependencies ++= deps.logback +: deps.jacksonsJava
   )
 
 // This is the API project, it gets added to the runtime dependencies of any
@@ -42,7 +42,7 @@ lazy val apiFirstCore = (project in file("api-first-core"))
   .settings(
     scalaVersion := Scala10,
     name := "api-first-core",
-    libraryDependencies ++= deps.scala ++ deps.test
+    libraryDependencies ++= deps.logback +: deps.test
   )
 
 
@@ -120,7 +120,7 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   sbtPlugin := false,
   buildInfoPackage := "de.zalando",
   organization := "de.zalando",
-  fork in(Test, run) := true,
+  fork in(Test, run) := false,
   autoScalaLibrary := true,
   resolvers ++= Seq(
     Resolver.typesafeRepo("releases"),
