@@ -1,3 +1,4 @@
+
 import bintray.Keys._
 import sbt.{Level, Resolver, UpdateLogging}
 
@@ -148,7 +149,10 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
 
 // https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
 
-excludeFilter in scalariformFormat := (excludeFilter in scalariformFormat).value || "model/*"
+val dontFormatTestModels = new sbt.FileFilter {
+  def accept(f: File) = ".*/model/.*".r.pattern.matcher(f.getAbsolutePath).matches
+}
+excludeFilter in scalariformFormat := (excludeFilter in scalariformFormat).value || dontFormatTestModels
 
 coverageMinimum := 80
 coverageFailOnMinimum := false
