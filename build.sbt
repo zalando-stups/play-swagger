@@ -2,7 +2,7 @@ import bintray.Keys._
 import sbt.{Level, Resolver, UpdateLogging}
 
 val PlayVersion = "2.5.4"
-val Scala10 = "2.10.5"
+val Scala10 = "2.10.6"
 val Scala11 = "2.11.8"
 val ProjectVersion = "0.1.12"
 
