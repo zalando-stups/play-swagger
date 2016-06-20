@@ -28,9 +28,9 @@ jdk:
 #  - codecov
 
 script:
-  - sbt -jvm-opts travis/jvmopts clean +compile
-  - sbt -jvm-opts travis/jvmopts +test
-  - sbt -jvm-opts travis/jvmopts +scripted
+  - sbt -jvm-opts travis/jvmopts clean compile
+#  - sbt -jvm-opts travis/jvmopts +test
+#  - sbt -jvm-opts travis/jvmopts scripted
 #  - sbt -jvm-opts travis/jvmopts < travis_coverage_script.txt
 
 
