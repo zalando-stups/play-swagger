@@ -2,24 +2,24 @@ package de.zalando.play.generator.sbt
 
 import java.io.File
 
-import com.typesafe.sbt.web.incremental.{OpSuccess, _}
+import com.typesafe.sbt.web.incremental.{ OpSuccess, _ }
 import de.zalando.BuildInfo
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.play.apifirst.sbt.ApiFirstCore
 import de.zalando.play.apifirst.sbt.ApiFirstCore.autoImport._
-import de.zalando.play.compiler.{CompilationResult, PlayScalaCompilationTask, PlayScalaCompiler}
+import de.zalando.play.compiler.{ CompilationResult, PlayScalaCompilationTask, PlayScalaCompiler }
 import de.zalando.play.controllers.WriterFactories
 import de.zalando.play.generator.routes.PlayScalaRoutesCompiler
-import play.routes.compiler.{InjectedRoutesGenerator, RoutesGenerator}
+import play.routes.compiler.{ InjectedRoutesGenerator, RoutesGenerator }
 import play.sbt.routes.RoutesCompiler
 import sbt.Keys._
-import sbt.{Def, Defaults, Task, TaskKey, _}
+import sbt.{ Def, Defaults, Task, TaskKey, _ }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 /**
-  * @since 24.05.2016.
-  */
+ * @since 24.05.2016.
+ */
 //noinspection ScalaStyle
 object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
 
@@ -54,18 +54,18 @@ object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
       "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Test
     )
   ) ++ Seq(
-    managedSourceDirectories in Compile += crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
-    managedSourceDirectories in Test += crossTarget.value / "routes" / Defaults.nameForSrc(Test.name),
-    playScalaCustomTemplateLocation := None
+      managedSourceDirectories in Compile += crossTarget.value / "routes" / Defaults.nameForSrc(Compile.name),
+      managedSourceDirectories in Test += crossTarget.value / "routes" / Defaults.nameForSrc(Test.name),
+      playScalaCustomTemplateLocation := None
 
-  ) ++ inConfig(Compile)(playScalaGeneratorSettings) ++
-    inConfig(Test)(playScalaGeneratorSettings) ++
-    inConfig(Compile)(playScalaBaseSettings) ++
-    inConfig(Compile)(playScalaMarshallerSettings) ++
-    inConfig(Compile)(playScalaSecuritySettings) ++
-    inConfig(Compile)(playScalaControllerSettings) ++
-    inConfig(Compile)(playScalaRoutesSettings) ++
-    inConfig(Test)(playScalaTestSettings)
+    ) ++ inConfig(Compile)(playScalaGeneratorSettings) ++
+      inConfig(Test)(playScalaGeneratorSettings) ++
+      inConfig(Compile)(playScalaBaseSettings) ++
+      inConfig(Compile)(playScalaMarshallerSettings) ++
+      inConfig(Compile)(playScalaSecuritySettings) ++
+      inConfig(Compile)(playScalaControllerSettings) ++
+      inConfig(Compile)(playScalaRoutesSettings) ++
+      inConfig(Test)(playScalaTestSettings)
 
   def playScalaGeneratorSettings: Seq[Setting[_]] = Seq(
     sourcePositionMappers := Seq(),
@@ -109,7 +109,7 @@ object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
       val comp = playScalaBase.value
       playScalaGenerateControllers.value
     }
-    // managedSources in Compile in playScalaControllers ++= playScalaControllers.value
+  // managedSources in Compile in playScalaControllers ++= playScalaControllers.value
   )
 
   def playScalaMarshallerSettings: Seq[Setting[_]] = Seq(
@@ -148,11 +148,7 @@ object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
   val playScalaGenerateMarshallers = commonPlayScalaCompile(PlayScalaCompiler.compileMarshallers, playScalaMarshallers, playScalaCompilationTasks)
   val playScalaGenerateSecurity = commonPlayScalaCompile(PlayScalaCompiler.compileExtractors, playScalaSecurity, playScalaCompilationTasks)
 
-  private def commonPlayScalaCompile: (
-    (PlayScalaCompilationTask, File, Seq[String], StrictModel, Option[String], Set[String]) => CompilationResult,
-      TaskKey[scala.Seq[sbt.File]],
-      TaskKey[scala.Seq[(File, String, StrictModel)]]
-    ) => Def.Initialize[Task[Seq[File]]] =
+  private def commonPlayScalaCompile: ((PlayScalaCompilationTask, File, Seq[String], StrictModel, Option[String], Set[String]) => CompilationResult, TaskKey[scala.Seq[sbt.File]], TaskKey[scala.Seq[(File, String, StrictModel)]]) => Def.Initialize[Task[Seq[File]]] =
     (compiler, config, filesAndModels) => Def.task {
       val routesImport = RoutesCompiler.autoImport.routesImport.value
       val cacheDirectory = streams.value.cacheDirectory
@@ -162,11 +158,12 @@ object ApiFirstPlayScalaCodeGenerator extends AutoPlugin {
 
       // Read the detailed scaladoc for syncIncremental to see how it works
       val (products, errors) = syncIncremental(cacheDirectory, taskModelPairs) { fileVersionAndModel: Seq[(File, String, StrictModel)] =>
-        val results = fileVersionAndModel map { case (file, ver, model) =>
-          val task = PlayScalaCompilationTask(file)
-          (file, ver, model) -> Try {
-            compiler(task, outputDirectory, routesImport, model, templateDirectory.map(_.getAbsolutePath), providedWriterFactories)
-          }
+        val results = fileVersionAndModel map {
+          case (file, ver, model) =>
+            val task = PlayScalaCompilationTask(file)
+            (file, ver, model) -> Try {
+              compiler(task, outputDirectory, routesImport, model, templateDirectory.map(_.getAbsolutePath), providedWriterFactories)
+            }
         }
         // Collect the results into a map of task to OpResult for syncIncremental
         val taskResults = results.map {

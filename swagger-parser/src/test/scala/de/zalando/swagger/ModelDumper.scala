@@ -3,12 +3,12 @@ package de.zalando.swagger
 import java.io.File
 
 import de.zalando.apifirst.util.ScalaPrinter
-import de.zalando.apifirst.{ScalaName, TypeNormaliser}
-import org.scalatest.{FunSpec, Ignore, MustMatchers}
+import de.zalando.apifirst.{ ScalaName, TypeNormaliser }
+import org.scalatest.{ FunSpec, Ignore, MustMatchers }
 
 /**
-  * @since 18.11.2015.
-  */
+ * @since 18.11.2015.
+ */
 @Ignore
 class ModelDumper extends FunSpec with MustMatchers with ExpectedResults {
 
@@ -36,7 +36,7 @@ class ModelDumper extends FunSpec with MustMatchers with ExpectedResults {
       val flatAst = TypeNormaliser.flatten(ast)
 
       val root = file.getParentFile.getParentFile
-      dump(ScalaPrinter.asScala(file.getName, flatAst), root, file.getName.replace('.','_') + ".scala")
+      dump(ScalaPrinter.asScala(file.getName, flatAst), root, file.getName.replace('.', '_') + ".scala")
 
     }
   }

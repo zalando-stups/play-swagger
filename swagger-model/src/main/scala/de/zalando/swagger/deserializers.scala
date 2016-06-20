@@ -3,16 +3,16 @@ package de.zalando.swagger
 import java.util.Map.Entry
 
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.node.{NullNode, BaseJsonNode}
+import com.fasterxml.jackson.databind.node.{ NullNode, BaseJsonNode }
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import de.zalando.swagger.strictModel._
-import com.fasterxml.jackson.core.{JsonParser => JParser, _}
+import com.fasterxml.jackson.core.{ JsonParser => JParser, _ }
 
 /**
-  * @author  slasch
-  * @since   09.10.2015.
-  */
+ * @author  slasch
+ * @since   09.10.2015.
+ */
 //noinspection ScalaStyle
 object deserializers {
   import scala.collection.JavaConverters._
@@ -25,10 +25,10 @@ object deserializers {
  */
 
   /**
-    * Deserializer class for SecurityDefinitions
-    * Creates right instance based on the data included in the specification
-    *
-    */
+   * Deserializer class for SecurityDefinitions
+   * Creates right instance based on the data included in the specification
+   *
+   */
   private class SecurityDefinitionDeserializer extends StdDeserializer[SecurityDefinition](classOf[SecurityDefinition]) {
 
     @Override
@@ -97,18 +97,18 @@ object deserializers {
   }
 
   /**
-    * Deserializer class for ParametersListItem
-    *
-    * Creates right instance based on the data included in the specification for one of following parameter list items:
-    *
-    * - JsonRef($ref)
-    * - BodyParameter(in: body)
-    * - PathParameter(in: path)
-    * - FormDataParameter(in: formData)
-    * - QueryParameter(in: query)
-    * - HeaderParameter(in: header)
-    *
-    */
+   * Deserializer class for ParametersListItem
+   *
+   * Creates right instance based on the data included in the specification for one of following parameter list items:
+   *
+   * - JsonRef($ref)
+   * - BodyParameter(in: body)
+   * - PathParameter(in: path)
+   * - FormDataParameter(in: formData)
+   * - QueryParameter(in: query)
+   * - HeaderParameter(in: header)
+   *
+   */
   private class ParametersListItemDeserializer[ParamType <: ParametersListItem] extends StdDeserializer[ParamType](classOf[ParametersListItem]) {
 
     @Override
@@ -119,7 +119,7 @@ object deserializers {
       val instance = if (root == null || root == NullNode.instance) null
       else {
         val fields = root.fields.asScala.toSeq
-        val refField = getFieldValue(fields, "$"+"ref")
+        val refField = getFieldValue(fields, "$" + "ref")
         lazy val parser = root.traverse
         refField match {
           case someRef if someRef != null && someRef.trim.nonEmpty =>
@@ -151,7 +151,6 @@ object deserializers {
       instance.asInstanceOf[ParamType]
     }
   }
-
 
   private class SchemaOrFileSchemaDeserializer[T] extends StdDeserializer[SchemaOrFileSchema[T]](classOf[SchemaOrFileSchema[T]]) {
 
@@ -201,7 +200,7 @@ object deserializers {
 
   def schemaOrReference[T](mapper: ObjectMapper, root: BaseJsonNode): SchemaOrReference[T] = {
     val fields = root.fields.asScala.toSeq
-    val ref = getFieldValue(fields, "$"+"ref")
+    val ref = getFieldValue(fields, "$" + "ref")
     if (ref == null || ref.trim.isEmpty)
       Left(mapper.convertValue(root, classOf[Schema[T]]))
     else
@@ -239,7 +238,6 @@ object deserializers {
       else throw new JsonParseException(jp, "'Could not recognize boolean or Schema", jp.getTokenLocation)
     }
   }
-
 
   private def checkTypeIsNotFile(fields: Seq[Entry[SimpleTag, JsonNode]], jp: JParser): Unit =
     if ("File".equalsIgnoreCase(getFieldValue(fields, "type")))

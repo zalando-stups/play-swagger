@@ -3,21 +3,21 @@ package de.zalando.swagger
 import java.net.URI
 
 import de.zalando.apifirst.Application._
-import de.zalando.apifirst.Http.{MimeType, Verb}
-import de.zalando.apifirst.Hypermedia.{NamedState, Self, State}
+import de.zalando.apifirst.Http.{ MimeType, Verb }
+import de.zalando.apifirst.Hypermedia.{ NamedState, Self, State }
 import de.zalando.apifirst.Security.Constraint
 import de.zalando.apifirst._
-import de.zalando.apifirst.naming.{Path, Reference}
+import de.zalando.apifirst.naming.{ Path, Reference }
 import de.zalando.swagger.strictModel._
 
 /**
-  * @author  slasch 
-  * @since   20.10.2015.
-  */
+ * @author  slasch
+ * @since   20.10.2015.
+ */
 class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String,
-                     params: ParameterLookupTable, securityDefinitions: SecurityDefinitionsTable,
-                     val definitionFileName: Option[String] = None, val useFileNameAsPackage: Boolean = true)
-  extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
+  params: ParameterLookupTable, securityDefinitions: SecurityDefinitionsTable,
+  val definitionFileName: Option[String] = None, val useFileNameAsPackage: Boolean = true)
+    extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
   lazy val convert = fromPaths(model.paths, model.basePath)
 
@@ -26,17 +26,17 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
   private def fromPath(basePath: BasePath)(pathDef: (String, PathItem)) = {
     implicit val (url, path) = pathDef
     for {
-      operationName       <- path.operationNames
-      verb                <- verbFromOperationName(operationName)
-      operation           = path.operation(operationName)
-      namePrefix          = base / "paths" / url / operationName
-      astPath             = uriFragmentToReference(url)
-      params              = parameters(path, operation, namePrefix)
-      handlerCall         <- handler(operation, path, params, operationName, astPath).toSeq
-      (types, states)     = resultTypes(namePrefix, operation)
-      (mimeIn, mimeOut)   = mimeTypes(operation)
-      errMappings         = errorMappings(path, operation)
-      security            = securityRequirements(operation)
+      operationName <- path.operationNames
+      verb <- verbFromOperationName(operationName)
+      operation = path.operation(operationName)
+      namePrefix = base / "paths" / url / operationName
+      astPath = uriFragmentToReference(url)
+      params = parameters(path, operation, namePrefix)
+      handlerCall <- handler(operation, path, params, operationName, astPath).toSeq
+      (types, states) = resultTypes(namePrefix, operation)
+      (mimeIn, mimeOut) = mimeTypes(operation)
+      errMappings = errorMappings(path, operation)
+      security = securityRequirements(operation)
     } yield ApiCall(verb, Path(astPath), handlerCall, mimeIn, mimeOut, errMappings, types, states, security.toSet)
   }
 
@@ -50,7 +50,8 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
   }
 
   private def securityDefinitionByName(name: String): Security.Definition =
-    securityDefinitions.getOrElse(name,
+    securityDefinitions.getOrElse(
+      name,
       throw new scala.IllegalArgumentException(s"Could not find security definition with name $name")
     )
 
@@ -58,13 +59,13 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
 
   private def resultTypes(prefix: Reference, operation: Operation): (TypesResponseInfo, StateResponseInfo) = {
     val default = operation.responses collectFirst {
-      case ("default", definition)  =>
+      case ("default", definition) =>
         ParameterRef(prefix / Reference.responses / "default") -> targetState(definition)
     }
     val responses = operation.responses collect {
       case (code, definition) if code.forall(_.isDigit) =>
         Some((code.toInt, (ParameterRef(prefix / Reference.responses / code), targetState(definition))))
-      case ("default", definition)  => None
+      case ("default", definition) => None
       case (other, _) =>
         println(s"Expected numeric error code or 'default' for response, but was $other")
         None
@@ -78,9 +79,9 @@ class PathsConverter(val base: URI, val model: SwaggerModel, val keyPrefix: Stri
   def targetState(definition: Response[_]): State = definition.targetState.map(NamedState.apply).getOrElse(Self)
 
   private def parameters(path: PathItem, operation: Operation, namePrefix: Reference) = {
-    val pathParams        = fromParameterList(path.parameters, namePrefix)
-    val operationParams   = fromParameterList(operation.parameters, namePrefix)
-    val simpleNames       = operationParams map (_.simple)
+    val pathParams = fromParameterList(path.parameters, namePrefix)
+    val operationParams = fromParameterList(operation.parameters, namePrefix)
+    val simpleNames = operationParams map (_.simple)
     pathParams.filterNot { p => simpleNames.contains(p.simple) } ++ operationParams.toSet
   }
 

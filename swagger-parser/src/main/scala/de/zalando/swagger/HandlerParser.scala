@@ -12,7 +12,7 @@ object HandlerParser extends HandlerParser
 // handler related part of the play's parser
 // we can use it if we won't change handler definition syntax
 trait HandlerParser extends JavaTokenParsers {
-  import scala.language.{implicitConversions, postfixOps}
+  import scala.language.{ implicitConversions, postfixOps }
 
   override def skipWhitespace: Boolean = false
 
@@ -34,11 +34,11 @@ trait HandlerParser extends JavaTokenParsers {
       val p0 = p // avoid repeatedly re-evaluating by-name parser
       @scala.annotation.tailrec
       def applyp(in0: Input): ParseResult[List[T]] = p0(in0) match {
-          case Success(x, rest) =>
-            elems += x; applyp(rest)
-          case Failure(_, _) => Success(elems.toList, in0)
-          case err: Error => err
-        }
+        case Success(x, rest) =>
+          elems += x; applyp(rest)
+        case Failure(_, _) => Success(elems.toList, in0)
+        case err: Error => err
+      }
       applyp(in)
     }
     continue(in)

@@ -6,19 +6,19 @@ import de.zalando.apifirst.naming.Reference
 import DenotationNames._
 
 /**
-  * @author slasch
-  * @since 28.12.2015.
-  */
+ * @author slasch
+ * @since 28.12.2015.
+ */
 
 trait DataGeneratorsStep extends EnrichmentStep[Type] {
 
   override def steps: Seq[SingleStep] = dataGenerators +: super.steps
 
   /**
-    * Puts data generators related information into the denotation table
-    *
-    * @return
-    */
+   * Puts data generators related information into the denotation table
+   *
+   * @return
+   */
   protected val dataGenerators: SingleStep = typeDef => table =>
     generatorProps(typeDef._1, typeDef._2)(table)
 
@@ -87,7 +87,7 @@ trait DataGeneratorsStep extends EnrichmentStep[Type] {
       case EnumTrait(tpe, _, leaves) =>
         val choice = leaves.map { l => memberNameDenotation(t, l.name) }.mkString(", ")
         s"""Gen.oneOf(Seq($choice))"""
-      case c@CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
+      case c @ CatchAll(tpe, _) => s"_genMap[String,$className](arbitrary[String], $innerGenerator)"
     }
   }
 

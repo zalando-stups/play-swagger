@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import java.net.URL
 
-import com.fasterxml.jackson.annotation.{JsonAnySetter, JsonProperty}
+import com.fasterxml.jackson.annotation.{ JsonAnySetter, JsonProperty }
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration

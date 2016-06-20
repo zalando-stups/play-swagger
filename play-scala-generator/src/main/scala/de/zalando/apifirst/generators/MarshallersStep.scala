@@ -1,23 +1,23 @@
 package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application.StrictModel
-import de.zalando.apifirst.{ParameterPlace, ScalaName}
+import de.zalando.apifirst.{ ParameterPlace, ScalaName }
 import de.zalando.apifirst.generators.DenotationNames._
 
 /**
-  * @author  slasch
-  * @since   30.12.2015.
-  */
+ * @author  slasch
+ * @since   30.12.2015.
+ */
 trait MarshallersStep extends EnrichmentStep[StrictModel] {
 
   override def steps: Seq[SingleStep] = readersAndWriteables +: super.steps
 
   val providedWriterFactories: Set[String]
   /**
-    * Puts marshaller and parser related information into the denotation table
-    *
-    * @return
-    */
+   * Puts marshaller and parser related information into the denotation table
+   *
+   * @return
+   */
   protected val readersAndWriteables: SingleStep = spec => table => {
     val marshallers = specMarshallers(spec._2)(table)
     val unMarshallers = specUnMarshallers(spec._2)(table)

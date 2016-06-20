@@ -2,8 +2,8 @@ package de.zalando.play.controllers
 
 import akka.util.ByteString
 import play.api.http.Writeable
-import play.api.mvc.Results.{Redirect, Status}
-import play.api.mvc.{AnyContentAsMultipartFormData, RequestHeader, Results}
+import play.api.mvc.Results.{ Redirect, Status }
+import play.api.mvc.{ AnyContentAsMultipartFormData, RequestHeader, Results }
 
 import scala.language.implicitConversions
 
@@ -18,8 +18,8 @@ object WriteableWrapper {
 }
 
 /**
-  * @since 28.02.2016.
-  */
+ * @since 28.02.2016.
+ */
 object ResponseWriters extends ResponseWritersBase
 
 trait ResponseWritersBase {
@@ -34,9 +34,9 @@ trait ResponseWritersBase {
         _.w.contentType.exists(_ == mimeType)
       } find { p =>
         m.runtimeClass.isAssignableFrom(p.m.runtimeClass)
-      } map  {
+      } map {
         _.asInstanceOf[WriteableWrapper[R]]
-      } map(_.w)
+      } map (_.w)
   }
 
 }
@@ -50,7 +50,8 @@ trait WrappedBodyParsersBase {
   val custom: Seq[(String, ParserWrapper[_])] = Seq.empty
   def anyParser[T](implicit manifest: Manifest[T]): Seq[(String, Parser[T])] =
     custom.filter(_._2.m.runtimeClass.isAssignableFrom(manifest.runtimeClass)).map { e =>
-      e.copy(_2 = e._2.asInstanceOf[ParserWrapper[T]].p) }
+      e.copy(_2 = e._2.asInstanceOf[ParserWrapper[T]].p)
+    }
   def optionParser[T](implicit manifest: Manifest[T]): Seq[(String, Parser[Option[T]])] = anyParser[Option[T]]
 }
 

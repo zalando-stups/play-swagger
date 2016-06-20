@@ -1,6 +1,6 @@
 package de.zalando
 
-import java.io.{File, FileOutputStream}
+import java.io.{ File, FileOutputStream }
 
 import de.zalando.apifirst.util.ScalaPrinter
 import de.zalando.model._

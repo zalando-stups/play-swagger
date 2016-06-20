@@ -1,11 +1,11 @@
 package de.zalando.play.controllers
 
-import java.net.{URLDecoder, URLEncoder}
+import java.net.{ URLDecoder, URLEncoder }
 
 import akka.util.ByteString
 import play.api.http._
 import play.api.libs.json.JsValue
-import play.api.mvc.{ActionBuilder, Request, RequestHeader, Result}
+import play.api.mvc.{ ActionBuilder, Request, RequestHeader, Result }
 import play.api.mvc.Security.AuthenticatedRequest
 import sun.misc.BASE64Decoder
 
@@ -25,7 +25,8 @@ import scala.language.implicitConversions
  */
 class FutureAuthenticatedBuilder[U](
   userinfo: RequestHeader => Future[Option[U]],
-  onUnauthorized: RequestHeader => Result)
+  onUnauthorized: RequestHeader => Result
+)
     extends ActionBuilder[({ type R[A] = AuthenticatedRequest[A, U] })#R] {
 
   override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A, U]) => Future[Result]): Future[Result] =

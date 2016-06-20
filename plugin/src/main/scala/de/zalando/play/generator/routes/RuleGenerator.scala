@@ -1,18 +1,18 @@
 package de.zalando.play.generator.routes
 
-import de.zalando.apifirst.Application.{ApiCall, StrictModel}
-import de.zalando.apifirst.{Domain, ParameterPlace, ScalaName, StringUtil}
+import de.zalando.apifirst.Application.{ ApiCall, StrictModel }
+import de.zalando.apifirst.{ Domain, ParameterPlace, ScalaName, StringUtil }
 import de.zalando.apifirst.ScalaName._
-import de.zalando.apifirst.naming.{Path, Reference}
+import de.zalando.apifirst.naming.{ Path, Reference }
 import play.routes.compiler._
 
 /**
-  * @author  slasch 
-  * @since   27.11.2015.
-  *
-  * TODO this generator is a copy of the prototypical implementation
-  * It must be refactored after FullPath implementation is removed
-  */
+ * @author  slasch
+ * @since   27.11.2015.
+ *
+ * TODO this generator is a copy of the prototypical implementation
+ * It must be refactored after FullPath implementation is removed
+ */
 object RuleGenerator {
 
   def apiCalls2PlayRules(calls: ApiCall*)(implicit model: StrictModel): Seq[Rule] = calls map { call =>
@@ -45,26 +45,28 @@ object RuleGenerator {
   }
 
   /**
-    * See `RuleGeneratorTest` for Play path conversion rules:
-    *
-    * @param path   a path to convert
-    * @param model  the model used to look up parameters
-    * @return
-    */
+   * See `RuleGeneratorTest` for Play path conversion rules:
+   *
+   * @param path   a path to convert
+   * @param model  the model used to look up parameters
+   * @return
+   */
   def convertPath(path: Path)(implicit model: StrictModel): PathPattern = {
-    val playParts = path.ref.parts.foldLeft(Seq.empty[PathPart]) { case (url, current) => url match {
-      case Nil => Seq(convertSingle(current))
-      case head :: tail => head match {
-        case StaticPart(value) if ! Path.pathParam(current) =>
-          convertSingle(value + "/" + current) :: tail
-        case StaticPart(value) => convertSingle(current) :: convertSingle(value + "/") :: tail
-        case DynamicPart(name, constraint, encode) if ! Path.pathParam(current) =>
-          convertSingle("/" + current) :: head :: tail
-        case DynamicPart(name, constraint, encode) =>
-          convertSingle(current) :: StaticPart("/") :: head :: tail
-      }
+    val playParts = path.ref.parts.foldLeft(Seq.empty[PathPart]) {
+      case (url, current) => url match {
+        case Nil => Seq(convertSingle(current))
+        case head :: tail => head match {
+          case StaticPart(value) if !Path.pathParam(current) =>
+            convertSingle(value + "/" + current) :: tail
+          case StaticPart(value) => convertSingle(current) :: convertSingle(value + "/") :: tail
+          case DynamicPart(name, constraint, encode) if !Path.pathParam(current) =>
+            convertSingle("/" + current) :: head :: tail
+          case DynamicPart(name, constraint, encode) =>
+            convertSingle(current) :: StaticPart("/") :: head :: tail
+        }
 
-    }}
+      }
+    }
     if (playParts == Seq(StaticPart(""))) PathPattern(Nil) else PathPattern(playParts.reverse)
   }
 

@@ -2,13 +2,13 @@ package de.zalando.apifirst.util
 
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.Hypermedia.{Self, State}
+import de.zalando.apifirst.Hypermedia.{ Self, State }
 import de.zalando.apifirst.Security
 import de.zalando.apifirst.naming.Reference
 
 /**
-  * @since 25.05.2016.
-  */
+ * @since 25.05.2016.
+ */
 object ScalaPrinter {
   import ScalaString._
 
@@ -27,9 +27,9 @@ object ScalaPrinter {
     "Security._"
   ).map("import " + _).mkString("\n")
 
-  def asScala(fileName:String, ast: StrictModel): String = {
+  def asScala(fileName: String, ast: StrictModel): String = {
     "package de.zalando.model\n" +
-    imports +
+      imports +
       s" \n//noinspection ScalaStyle\nobject ${fileName.replace('.', '_')} extends WithModel {\n" +
       types(ast) +
       "\n" +
@@ -42,20 +42,21 @@ object ScalaPrinter {
       security(ast) +
       "\n" +
       transitions(ast) +
-    s"""
+      s"""
       |def calls: Seq[ApiCall] = ${ast.calls.map(toScalaString("\t\t")).map("\n\t" + _).mkString("Seq(", ", ", ")")}
       |
       |def packageName: Option[String] = ${ast.packageName.map("\"" + _ + "\"")}
       |
       |def model = new StrictModel(calls, types, parameters, discriminators, basePath, packageName, stateTransitions, securityDefinitions)
     """.stripMargin +
-    "\n} "
+      "\n} "
   }
 
   def transitions(ast: StrictModel): String = {
     val transStr = ast.stateTransitions.map {
-      case (k, v) => "\"" + k + "\" -> " + v.map { case (kk, vv) =>
-        "\"" + kk + "\" -> TransitionProperties(" + vv.condition.map("\"" + _ + "\"") + ")"
+      case (k, v) => "\"" + k + "\" -> " + v.map {
+        case (kk, vv) =>
+          "\"" + kk + "\" -> TransitionProperties(" + vv.condition.map("\"" + _ + "\"") + ")"
       }.mkString("Map[State, TransitionProperties](", ", ", ")")
     }.mkString(", ")
     s"""def stateTransitions: StateTransitionsTable = Map[State, Map[State, TransitionProperties]]($transStr)"""
@@ -69,7 +70,7 @@ object ScalaPrinter {
   }
 
   def discriminators(ast: StrictModel): String = {
-    val discStr = s"""${ast.discriminators.map{case (k, v) => toScalaString("\t")(k) -> toScalaString("")(v)}.mkString(",\n")}"""
+    val discStr = s"""${ast.discriminators.map { case (k, v) => toScalaString("\t")(k) -> toScalaString("")(v) }.mkString(",\n")}"""
     s" def discriminators: DiscriminatorLookupTable = Map[Reference, Reference](\n\t$discStr)"
   }
   def basePath(ast: StrictModel): String = {
@@ -84,8 +85,8 @@ object ScalaPrinter {
     s" \n def types = Map[Reference, Type](\n${lines.mkString(",\n")}\n) "
   }
   def parameters(ast: StrictModel): String = {
-    val params      = ast.params
-    val lines       = params.toSeq.sortBy(_._1.name.parts.size).map(p => "\tParameterRef(" + toScalaString("\t")(p._1.name) + ") → " + toScalaString("")(p._2))
+    val params = ast.params
+    val lines = params.toSeq.sortBy(_._1.name.parts.size).map(p => "\tParameterRef(" + toScalaString("\t")(p._1.name) + ") → " + toScalaString("")(p._2))
     s" \n def parameters = Map[ParameterRef, Parameter](\n${lines.mkString(",\n")}\n) "
   }
 
@@ -134,13 +135,13 @@ object ScalaString {
     case other => pad + other.toString
   }
 
-  private def set[T <: AnyRef : Manifest](set: Set[T], tpe: Option[String] = None): String = {
+  private def set[T <: AnyRef: Manifest](set: Set[T], tpe: Option[String] = None): String = {
     val tpeStr = tpe.getOrElse(manifest.runtimeClass.getSimpleName)
     if (set.isEmpty) s"Set.empty[$tpeStr]"
     else set.map(a => toScalaString("")(a)).mkString("Set(", ", ", ")")
   }
 
-  private def paddedSet[T <: AnyRef : Manifest](set: Set[T], pad: String, tpe: Option[String] = None): String = {
+  private def paddedSet[T <: AnyRef: Manifest](set: Set[T], pad: String, tpe: Option[String] = None): String = {
     val tpeStr = tpe.getOrElse(manifest.runtimeClass.getSimpleName)
     if (set.isEmpty) s"Set.empty[$tpeStr]"
     else set.map(a => toScalaString(pad)(a)).mkString(s"Set($pad\t", s",$pad\t", s"$pad)")
@@ -149,8 +150,9 @@ object ScalaString {
   private def apiCall(pad: String, call: ApiCall): String = {
     val errorStr = if (call.errorMapping.isEmpty)
       "Map.empty[String, Seq[Class[Exception]]]"
-    else call.errorMapping.map { case (k, v) =>
-      "\"" + k + "\" -> Seq(" + v.map("classOf[" + _.getCanonicalName + "]").mkString(", ") + ")"
+    else call.errorMapping.map {
+      case (k, v) =>
+        "\"" + k + "\" -> Seq(" + v.map("classOf[" + _.getCanonicalName + "]").mkString(", ") + ")"
     }.mkString("Map(", ", ", ")")
 
     val mimeInStr = set(call.mimeIn)
@@ -174,7 +176,7 @@ object ScalaString {
     s"""ApiKey(${toScalaString("")(k.description)}, "${k.name}", ParameterPlace.withName("${k.in}"))"""
 
   private def oauthDef(d: Security.OAuth2Definition): String = {
-    val scopesStr = d.scopes.map{case (k,v) => s""" "$k" -> "${v.replace('\n', ' ')}" """}.mkString(", ")
+    val scopesStr = d.scopes.map { case (k, v) => s""" "$k" -> "${v.replace('\n', ' ')}" """ }.mkString(", ")
     s"""OAuth2Definition(${toScalaString("")(d.description)}, ${d.validationURL.map("new URL(\"" + _ + "\")")}, Map[String, String]($scopesStr))""".stripMargin
   }
 
@@ -187,7 +189,7 @@ object ScalaString {
   private def typeResponseInfo(pad: String, i: TypesResponseInfo): String = {
     val resStr =
       if (i.results.isEmpty) "Map.empty[Int, ParameterRef]"
-      else s"\n$pad\tMap[Int, ParameterRef](" + i.results.map{case(k,v) => s"\n$pad\t$k -> " + toScalaString("")(v)}.mkString(",") + s"\n$pad)"
+      else s"\n$pad\tMap[Int, ParameterRef](" + i.results.map { case (k, v) => s"\n$pad\t$k -> " + toScalaString("")(v) }.mkString(",") + s"\n$pad)"
     s"""${pad}TypesResponseInfo($resStr, ${i.default.map(toScalaString("\t"))})"""
   }
 
@@ -201,7 +203,7 @@ object ScalaString {
     s"""${pad}Reference("${r.qualified}")"""
 
   private def composite(pad: String, c: Composite): String = {
-    val descStr = s""" Seq(${c.descendants.map(toScalaString(pad + "\t")).mkString(s"\n$pad",s",\n$pad","")}) """
+    val descStr = s""" Seq(${c.descendants.map(toScalaString(pad + "\t")).mkString(s"\n$pad", s",\n$pad", "")}) """
     s"$pad${c.getClass.getSimpleName}(${toScalaString("")(c.name)}, ${c.meta}, $descStr, ${toScalaString("")(c.root)})"
   }
 
@@ -213,7 +215,6 @@ object ScalaString {
 
   private def typeStr(pad: String, t: Type): String =
     t.getClass.getSimpleName + "(" + t.name + ", " + t.meta + ")"
-
 
   private def arr(pad: String, a: Arr): String =
     s"""Arr(${toScalaString(pad)(a.tpe)}, ${a.meta}, "${a.format}")"""
@@ -228,7 +229,7 @@ object ScalaString {
     s"""TypeDef(${toScalaString("")(t.name)}, \n\t\t\tSeq(${t.fields.map(toScalaString(pad)).mkString("\n\t\t", ",\n\t\t", "")}\n\t\t\t), ${t.meta})"""
 
   private def enumTrait(pad: String, t: EnumTrait): String = {
-    val leavesStr = t.leaves.map(toScalaString(pad + "\t\t")).mkString("\n", ",\n","\n")
+    val leavesStr = t.leaves.map(toScalaString(pad + "\t\t")).mkString("\n", ",\n", "\n")
     s"""${pad}EnumTrait(${toScalaString("")(t.tpe)}, ${t.meta}, \n$pad\tSet($leavesStr\n$pad\t))"""
   }
 
@@ -236,17 +237,17 @@ object ScalaString {
     s"""${pad}EnumObject(${toScalaString("")(t.tpe)}, "${t.fieldValue}", ${t.meta})"""
 
   private def parameter(pad: String, p: Parameter): String =
-      s"""Parameter("${p.name}", ${toScalaString("")(p.typeName)}, ${toScalaString("")(p.fixed)}, ${toScalaString("")(p.default)}, "${p.constraint}", encode = ${p.encode}, ParameterPlace.withName("${p.place}"))"""
+    s"""Parameter("${p.name}", ${toScalaString("")(p.typeName)}, ${toScalaString("")(p.fixed)}, ${toScalaString("")(p.default)}, "${p.constraint}", encode = ${p.encode}, ParameterPlace.withName("${p.place}"))"""
 
   private def handlerCall(pad: String, c: HandlerCall): String =
-      s"""HandlerCall(\n$pad\t"${c.packageName}",\n$pad\t"${c.controller}",\n$pad\tinstantiate = ${c.instantiate},\n$pad\t"${c.method}",parameters = ${c.parameters.map(toScalaString(pad + "\t\t")).mkString(s"\n$pad\tSeq(\n", ",\n", s"\n$pad\t\t)\n")}$pad\t)"""
+    s"""HandlerCall(\n$pad\t"${c.packageName}",\n$pad\t"${c.controller}",\n$pad\tinstantiate = ${c.instantiate},\n$pad\t"${c.method}",parameters = ${c.parameters.map(toScalaString(pad + "\t\t")).mkString(s"\n$pad\tSeq(\n", ",\n", s"\n$pad\t\t)\n")}$pad\t)"""
 
   private def stateResponseInfo(pad: String, t: StateResponseInfo): String = {
-      val resStr =
-        if (t.results.isEmpty) "Map.empty[Int, State]"
-        else s"\n$pad\tMap[Int, State](" + t.results.map{case(k,v) => s"\n$pad\t\t$k -> " + toScalaString("")(v)}.mkString(",") + s"\n$pad)"
-      s"""StateResponseInfo($resStr, ${toScalaString("")(t.default)})"""
-    }
+    val resStr =
+      if (t.results.isEmpty) "Map.empty[Int, State]"
+      else s"\n$pad\tMap[Int, State](" + t.results.map { case (k, v) => s"\n$pad\t\t$k -> " + toScalaString("")(v) }.mkString(",") + s"\n$pad)"
+    s"""StateResponseInfo($resStr, ${toScalaString("")(t.default)})"""
+  }
 
   private def str(pad: String, s: Str): String =
     s"""Str(${toScalaString("")(s.format)}, ${s.meta})"""

@@ -10,14 +10,15 @@ import de.zalando.apifirst.StringUtil
 import scala.collection.Iterable
 
 /**
-  * @author slasch
-  * @since 16.11.2015.
-  */
+ * @author slasch
+ * @since 16.11.2015.
+ */
 
 class ScalaGenerator(
-                      val strictModel: StrictModel,
-                      providedWriterFactories: Set[String] = Set.empty,
-                      customTemplateLocation: Option[String] = None) {
+    val strictModel: StrictModel,
+    providedWriterFactories: Set[String] = Set.empty,
+    customTemplateLocation: Option[String] = None
+) {
 
   val denotationTable = AstScalaPlayEnricher(strictModel, providedWriterFactories)
 
@@ -100,7 +101,7 @@ class ScalaGenerator(
     else apply(fileName, packageName, securityTemplateName)
 
   private def apply(fileName: String, packageName: String, templateName: String,
-                    currentController: String = ""): String = {
+    currentController: String = ""): String = {
     nonEmptyTemplate(fileName, packageName, templateName, currentController)
   }
 
@@ -114,7 +115,7 @@ class ScalaGenerator(
     val bindings = ReShaper.filterByType("bindings", denotationTable)
     val grouppedBindings = ReShaper.groupByType(bindings.toSeq.distinct)
     val sortedBindings = grouppedBindings.map {
-      case (x, y: Seq[Map[String, Any]@unchecked]) =>
+      case (x, y: Seq[Map[String, Any] @unchecked]) =>
         val sorted = y.sortWith { (a, b) =>
           (a.get("dependencies"), b.get("dependencies")) match {
             case (Some(aa: Int), Some(bb: Int)) => aa < bb
@@ -128,7 +129,7 @@ class ScalaGenerator(
     val bindingsByType = sortedBindings.toMap
     val modelBindings = bindingsByType.flatMap {
       case (k, b) =>
-        b.map(_ ("format"))
+        b.map(_("format"))
     }.toSeq.distinct.map { b => Map("full_name" -> b) }
 
     val forms = ReShaper.filterByType("form_data", denotationTable)
@@ -148,15 +149,16 @@ class ScalaGenerator(
 
     val deadCode = codeParts.filterNot { cp =>
       unmanagedParts.keys.map(asMarker).exists(_ == cp._1)
-    }.map { case (k,v) =>
-      k -> v.mkString("\n")
+    }.map {
+      case (k, v) =>
+        k -> v.mkString("\n")
     }
 
     val userImports = unmanagedImports(currentController, modelTypes)
 
     val pckg = overridenPackageName.getOrElse(packageName)
 
-    val formParsersRequired = forms.exists(_ ("form_parameters").asInstanceOf[Seq[_]].nonEmpty)
+    val formParsersRequired = forms.exists(_("form_parameters").asInstanceOf[Seq[_]].nonEmpty)
 
     val packages = Map(
       "main_package" -> pckg,
@@ -199,7 +201,7 @@ class ScalaGenerator(
   }
 
   def renderTemplate(map: Map[String, Any], templateName: String,
-                     allPackages: Map[String, Any]): String = {
+    allPackages: Map[String, Any]): String = {
     import de.zalando.beard.renderer._
     val templateSuffix = ".mustache"
     val templatePrefix = "/"
@@ -214,10 +216,12 @@ class ScalaGenerator(
     val template = templateCompiler.compile(TemplateName(templateName)).get
     val renderer = new BeardTemplateRenderer(templateCompiler)
 
-    renderer.render(template,
+    renderer.render(
+      template,
       StringWriterRenderResult(),
       map ++ allPackages,
-      None).toString
+      None
+    ).toString
   }
 
   def enrichWithStructuralInfo(rawAllPackages: Map[String, Iterable[Any]]): Map[String, Any] = {
@@ -254,8 +258,7 @@ object PlayScalaControllersGenerator {
   val baseControllersSuffix = "Base"
   val securityTraitSuffix = "Security"
 
-  def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart], packageName: String, deadCode: Map[String, String])
-                 (table: DenotationTable): Iterable[Map[String, Object]] = {
+  def controllers(allCalls: Seq[ApiCall], unmanagedParts: Map[ApiCall, UnmanagedPart], packageName: String, deadCode: Map[String, String])(table: DenotationTable): Iterable[Map[String, Object]] = {
     allCalls groupBy { c =>
       (c.handler.packageName, c.handler.controller)
     } map {
@@ -269,8 +272,9 @@ object PlayScalaControllersGenerator {
             "Play's route files will fail to compile.")
         }
         val securityTrait = calls.find(_.security.nonEmpty).map(_ => escape(controller._2 + securityTraitSuffix))
-        val deadCodeParts = deadCode.toSeq.map { case (k,v) =>
-          Map("name" -> k, "code" -> v)
+        val deadCodeParts = deadCode.toSeq.map {
+          case (k, v) =>
+            Map("name" -> k, "code" -> v)
         }
         Map(
           "effective_package" -> packageName,

@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import java.io.File
 
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{ FunSpec, MustMatchers }
 
 class JSONParserTest extends FunSpec with MustMatchers with ExpectedResults {
 

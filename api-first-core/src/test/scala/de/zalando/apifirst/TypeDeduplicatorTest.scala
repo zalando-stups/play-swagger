@@ -4,12 +4,12 @@ import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.naming.dsl._
 import de.zalando.apifirst.naming.Reference
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{ FunSpec, MustMatchers }
 
 /**
-  * @author  slasch
-  * @since   12.11.2015.
-  */
+ * @author  slasch
+ * @since   12.11.2015.
+ */
 class TypeDeduplicatorTest extends FunSpec with MustMatchers {
 
   describe("TypeDeduplicator") {

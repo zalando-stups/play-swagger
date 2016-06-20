@@ -4,7 +4,7 @@ import java.io.File
 
 import de.zalando.apifirst.Hypermedia.State
 import de.zalando.swagger.strictModel.SwaggerModel
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{ FunSpec, MustMatchers }
 
 class HypermediaConverterTest extends FunSpec with MustMatchers with ExpectedResults {
 

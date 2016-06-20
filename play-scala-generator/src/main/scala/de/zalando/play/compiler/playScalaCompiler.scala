@@ -20,7 +20,7 @@ object PlayScalaCompiler {
   type generatorF = (String, String, String) => Seq[String]
 
   def compileBase(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                  flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
+    flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
     val places = Seq("/model/", "/validators/", "/security/", "/controllers_base/", "/marshallers/")
     val generator = new ScalaGenerator(flatAst, customTemplateLocation = customTemplates).generateBase
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
@@ -28,7 +28,7 @@ object PlayScalaCompiler {
   }
 
   def compileTests(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                   flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
+    flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
     val places = Seq("/generators/", "/tests/")
     val generator = new ScalaGenerator(flatAst, customTemplateLocation = customTemplates).generateTest
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
@@ -36,7 +36,7 @@ object PlayScalaCompiler {
   }
 
   def compileControllers(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                         flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
+    flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
     val places = Seq("/generated_controllers/")
     val generator = new ScalaGenerator(flatAst, customTemplateLocation = customTemplates).generateControllers
     val swaggerFiles = compileSwagger(task, outputDir, places, generator)(flatAst)
@@ -44,7 +44,7 @@ object PlayScalaCompiler {
   }
 
   def compileMarshallers(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                         flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
+    flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
     val places = Seq("/marshallers/")
     val generator = new ScalaGenerator(flatAst, customTemplateLocation = customTemplates).generateMarshallers
     val swaggerFiles = compileSwagger(task, outputDir, places, generator, overwrite = false)(flatAst)
@@ -52,7 +52,7 @@ object PlayScalaCompiler {
   }
 
   def compileExtractors(task: PlayScalaCompilationTask, outputDir: File, routesImport: Seq[String],
-                        flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
+    flatAst: StrictModel, customTemplates: Option[String], providedWriters: Set[String]): CompilationResult = {
     val places = Seq("/security/")
     val generator = new ScalaGenerator(flatAst, customTemplateLocation = customTemplates).generateExtractors
     val swaggerFiles = compileSwagger(task, outputDir, places, generator, overwrite = false)(flatAst)
@@ -60,7 +60,7 @@ object PlayScalaCompiler {
   }
 
   private def compileSwagger(task: PlayScalaCompilationTask, outputDir: File, places: Seq[String],
-                             generator: generatorF, overwrite: Boolean = true)(implicit flatAst: StrictModel) = {
+    generator: generatorF, overwrite: Boolean = true)(implicit flatAst: StrictModel) = {
     val currentCtrlr = readFile(outputDir, fullFileName(Option(task.definitionFile), places.last))
     val packageName = flatAst.packageName.getOrElse(taskPackageName(task))
     val artifacts = places zip generator(task.definitionFile.getName, packageName, currentCtrlr)
@@ -138,7 +138,9 @@ case class RoutesCompilationResult(routesFiles: Seq[File]) extends CompilationRe
 case class ControllerCompilationResult(controllerFiles: Seq[File]) extends CompilationResult {
   def allFiles: Set[File] = controllerFiles.toSet
 }
-case class TestCompilationResult(testDataGeneratorFiles: Seq[File],
-    testFiles: Seq[File]) extends CompilationResult {
+case class TestCompilationResult(
+  testDataGeneratorFiles: Seq[File],
+    testFiles: Seq[File]
+) extends CompilationResult {
   def allFiles: Set[File] = (testDataGeneratorFiles ++ testFiles).toSet
 }

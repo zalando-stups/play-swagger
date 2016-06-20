@@ -4,14 +4,14 @@ import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.naming.Reference
 import de.zalando.apifirst.naming.dsl._
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{ FunSpec, MustMatchers }
 
 import scala.language.implicitConversions
 
 /**
-  * @author  slasch
-  * @since   15.11.2015.
-  */
+ * @author  slasch
+ * @since   15.11.2015.
+ */
 class TypeFlattenerTest extends FunSpec with MustMatchers {
 
   implicit def types2model(types: TypeLookupTable): StrictModel =
@@ -39,7 +39,8 @@ class TypeFlattenerTest extends FunSpec with MustMatchers {
       flat.typeDefs.size mustBe 2
       flat.typeDefs mustBe Map(
         reference1 -> Opt(TypeRef(reference1 / "Opt"), noMeta),
-        reference1 / "Opt" -> Opt(Intgr(noMeta), noMeta))
+        reference1 / "Opt" -> Opt(Intgr(noMeta), noMeta)
+      )
     }
 
     it("should flatten nested Arr types") {
@@ -51,7 +52,8 @@ class TypeFlattenerTest extends FunSpec with MustMatchers {
       flat.typeDefs mustBe Map(
         reference1 -> Arr(TypeRef(reference1 / "Arr"), noMeta, "pipes"),
         reference1 / "Arr" -> Arr(TypeRef(reference1 / "Arr" / "Arr"), noMeta, "csv"),
-        reference1 / "Arr" / "Arr" -> Arr(Intgr(noMeta), noMeta, "tsv"))
+        reference1 / "Arr" / "Arr" -> Arr(Intgr(noMeta), noMeta, "tsv")
+      )
     }
 
     it("should flatten CatchAll types") {
@@ -72,8 +74,8 @@ class TypeFlattenerTest extends FunSpec with MustMatchers {
           Seq(
             Opt(Intgr(None), noMeta),
             Arr(Str(None, None), noMeta, "csv")
-          )
-        ))
+          ))
+      )
       val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 3
       flat.typeDefs mustBe Map(
@@ -81,8 +83,7 @@ class TypeFlattenerTest extends FunSpec with MustMatchers {
           Seq(
             TypeRef(reference1 / "OneOf0"),
             TypeRef(reference1 / "OneOf1")
-          )
-        ),
+          )),
         reference1 / "OneOf0" -> Opt(Intgr(None), noMeta),
         reference1 / "OneOf1" -> Arr(Str(None, None), noMeta, "csv")
       )
@@ -91,20 +92,22 @@ class TypeFlattenerTest extends FunSpec with MustMatchers {
     it("should flatten AllOf types") {
       val nested = Map[Reference, Type](
         reference1 -> AllOf(reference1, noMeta,
-          Seq(wohooo2, TypeDef("wohooo3", fields, noMeta))
-        ))
+          Seq(wohooo2, TypeDef("wohooo3", fields, noMeta)))
+      )
       val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 5
       flat.typeDefs mustBe Map(
         reference1 -> AllOf(reference1, noMeta, List(TypeRef(reference1 / "AllOf0"), TypeRef(reference1 / "AllOf1"))),
         reference1 / "AllOf0" -> wohooo2,
         reference1 / "AllOf1" ->
-          TypeDef("wohooo3",
+          TypeDef(
+            "wohooo3",
             Seq(
               Field(Reference("a"), Lng(noMeta)),
               Field(Reference("b"), TypeRef("wohooo3" / "b")),
               Field(Reference("c"), TypeRef("wohooo3" / "c"))
-            ), noMeta),
+            ), noMeta
+          ),
         "wohooo3" / "b" -> Opt(Str(None, noMeta), noMeta),
         "wohooo3" / "c" -> wohooo2
       )
@@ -118,12 +121,14 @@ class TypeFlattenerTest extends FunSpec with MustMatchers {
       val flat = TypeFlattener(nested)
       flat.typeDefs.size mustBe 3
       flat.typeDefs mustBe Map(
-        reference1 -> TypeDef("wohooo1",
+        reference1 -> TypeDef(
+          "wohooo1",
           Seq(
             Field("a", Lng(noMeta)),
             Field("b", TypeRef("wohooo1" / "b")),
             Field("c", TypeRef("wohooo1" / "c"))
-          ), noMeta),
+          ), noMeta
+        ),
         "wohooo1" / "b" -> Opt(Str(None, TypeMeta(None, List())), TypeMeta(None, List())),
         "wohooo1" / "c" -> wohooo2
       )

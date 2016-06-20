@@ -6,7 +6,7 @@ import de.zalando.apifirst.naming.Reference
 import de.zalando.apifirst.naming.dsl.NameDsl
 
 import scala.annotation.tailrec
-import scala.language.{implicitConversions, postfixOps}
+import scala.language.{ implicitConversions, postfixOps }
 
 /**
  * @since   03.11.2015.
@@ -44,7 +44,6 @@ object naming {
     lazy val isTopResponsePath = parts.last == responses
   }
 
-
   object Reference {
     val responses = "responses"
     val definitions = "definitions"
@@ -53,7 +52,7 @@ object naming {
     def apply(base: String, s: Reference): Reference = s
     def fromUrl(url: String): Reference = parse(url, "/")
     def apply(ref: String): Reference = parse(ref, delimiter)
-    def apply()         : Reference = Reference.root
+    def apply(): Reference = Reference.root
     def definition(ref: String): Reference = new Reference(List(definitions, ref))
     private def parse(s: String, delim: String) = {
       val normalized = s.dropWhile(_.toString == delim).split(delim, -1).toList
@@ -74,7 +73,7 @@ object naming {
     lazy val asSwagger = ref.parts.mkString("/", "/", "")
     val interpolated = (ref.parts map Path.toString("${toPath(", ")}")).mkString("/", "/", "")
     val asMethod = {
-      val newParts = ref.parts map { p => Path.toString("By", "", s => s.capitalize)(p).replace('-','_') }
+      val newParts = ref.parts map { p => Path.toString("By", "", s => s.capitalize)(p).replace('-', '_') }
       val method = newParts.mkString
       if (method.nonEmpty) method.head.toLower + method.tail else method
     }
@@ -89,7 +88,7 @@ object naming {
   }
 
   object Path {
-    def apply(s: String):Path = Path(Reference.fromUrl(s))
+    def apply(s: String): Path = Path(Reference.fromUrl(s))
     def pathParam(part: String) = part != null && part.nonEmpty && part.startsWith("{") && part.endsWith("}")
     def strip(part: String) = if (pathParam(part)) part.tail.dropRight(1) else part
     def toString(prefix: String, suffix: String, transform: String => String = identity)(part: String) =
@@ -97,25 +96,23 @@ object naming {
   }
 }
 
-
-
 /**
-  * Represents scala name converted from the ast pointer
-  * This implementation makes heavily use of swagger internal
-  * naming model. Probably it should be refactored to support
-  * other specification formats
-  */
+ * Represents scala name converted from the ast pointer
+ * This implementation makes heavily use of swagger internal
+ * naming model. Probably it should be refactored to support
+ * other specification formats
+ */
 object ScalaName {
   implicit def reference2ScalaName(r: Reference): ScalaName = ScalaName(r)
   private val scalaNames = Seq(
     "abstract", "case", "do", "for", "import", "lazy", "object", "override", "return",
     "var", "while", "class", "false", "if", "new", "package", "sealed", "trait", "try",
-    "private", "super", "this", "true", "type",  "def", "final", "implicit", "null",
+    "private", "super", "this", "true", "type", "def", "final", "implicit", "null",
     "protected", "throw", "val", "_", "catch", "else", "extends", "finally", "forSome",
     "match", "with", "yield", "case"
   )
 
-  private val scalaPartNames = Seq(",", ";", ":", "=", "=>", "<-", "<:", "<%", ">:", "#", "@", "⇒", "←","+","-","[", ")", "]", "}")
+  private val scalaPartNames = Seq(",", ";", ":", "=", "=>", "<-", "<:", "<%", ">:", "#", "@", "⇒", "←", "+", "-", "[", ")", "]", "}")
 
   @tailrec
   def escape(name: String): String =
@@ -150,7 +147,6 @@ object StringUtil {
   def quoteIfNeeded(str: String): String =
     if (doubleQuoted.matcher(str).matches()) str else "\"" + str + "\""
 
-
 }
 
 case class ScalaName(ref: Reference) {
@@ -162,7 +158,7 @@ case class ScalaName(ref: Reference) {
     case single :: Nil => "" :: removeVars(single) :: Nil
     case many => many.map(removeVars)
   }
-  private def removeVars(s: String) = if (s.startsWith("{") && s.endsWith("}")) s.substring(1,s.length-1) else s
+  private def removeVars(s: String) = if (s.startsWith("{") && s.endsWith("}")) s.substring(1, s.length - 1) else s
   def packageName: String = parts.head.toLowerCase.split("/").filter(_.nonEmpty).map(escape).mkString(".")
   def qualifiedName(prefix: String, suffix: String): (String, String) = (packageName + suffix, typeAlias(prefix, suffix))
   def fullName(prefix: String, suffix: String): String = packageName + suffix + "." + typeAlias(prefix, suffix)

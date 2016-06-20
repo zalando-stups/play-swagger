@@ -151,11 +151,7 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
 // https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
 
 val dontFormatTestModels = new sbt.FileFilter {
-  def accept(f: File) = {
-    val result = ".*/model/.*".r.pattern.matcher(f.getAbsolutePath).matches
-    println(f.getAbsolutePath + " - " + result)
-    result
-  }
+  def accept(f: File) = ".*/model/.*".r.pattern.matcher(f.getAbsolutePath).matches
 }
 
 coverageMinimum := 80
