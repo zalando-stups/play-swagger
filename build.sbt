@@ -1,9 +1,8 @@
-
 import bintray.Keys._
 import sbt.{Level, Resolver, UpdateLogging}
 
 val PlayVersion = "2.5.4"
-val Scala10 = "2.10.6"
+val Scala10 = "2.10.5"
 val Scala11 = "2.11.8"
 val ProjectVersion = "0.1.12"
 
@@ -70,7 +69,6 @@ lazy val plugin = (project in file("plugin"))
   .settings(commonSettings: _*)
   .settings(scriptedSettings: _*)
   .settings(
-    scalaVersion := Scala10,
     libraryDependencies ++= deps.test,
     name := "sbt-play-swagger",
     sbtPlugin := true,
@@ -103,9 +101,9 @@ lazy val plugin = (project in file("plugin"))
 
 
 lazy val root = (project in file("."))
+  // Use sbt-doge cross building since we have different projects with different scala versions
   .settings(commonSettings: _*)
   .settings(
-    scalaVersion := Scala10,
     name := "play-swagger-root",
     aggregate in update := false
   )
@@ -145,17 +143,21 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
     "-Xfuture"
   ),
   scalastyleFailOnError := false,
-  coverageEnabled := false,
-  excludeFilter in scalariformFormat := (excludeFilter in scalariformFormat).value || dontFormatTestModels
-) ++ Lint.all ++ scalariformSettings
+  coverageEnabled := false
+) ++ Lint.all
 
 
-// https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
-
-val dontFormatTestModels = new sbt.FileFilter {
-  def accept(f: File) = ".*/model/.*".r.pattern.matcher(f.getAbsolutePath).matches
-}
+// Apply default Scalariform formatting.
+// Reformat at every compile.
+// c.f. https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
+// ++ scalariformSettings
 
 coverageMinimum := 80
+
 coverageFailOnMinimum := false
-coverageHighlighting := false
+
+coverageHighlighting := {
+  if (scalaBinaryVersion.value == "2.10") false
+  else false
+}
+
