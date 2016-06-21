@@ -56,6 +56,7 @@ trait WrappedBodyParsersBase {
 }
 
 trait ResultWrapper[ResultT] {
+  val emptyByteString = akka.util.CompactByteString.empty
   def statusCode: Int
   def result: ResultT
   def writer: String => Option[Writeable[ResultT]]

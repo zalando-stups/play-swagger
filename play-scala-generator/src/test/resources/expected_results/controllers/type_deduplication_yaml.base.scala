@@ -55,9 +55,9 @@ def getplantsByPlant_idWateringsByWatering_idAction[T] = (f: getplantsByPlant_id
     sealed trait PutplantsByPlant_idWateringsByWatering_idType[T] extends ResultWrapper[T]
     case class PutplantsByPlant_idWateringsByWatering_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends PutplantsByPlant_idWateringsByWatering_idType[Error] { val statusCode = 404 }
     
-    case object PutplantsByPlant_idWateringsByWatering_id200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idWateringsByWatering_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idWateringsByWatering_id201 extends EmptyReturn(201)
+    case class PutplantsByPlant_idWateringsByWatering_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putplantsByPlant_idWateringsByWatering_idActionRequestType       = (String, String)
@@ -121,7 +121,7 @@ def getusersMeAction[T] = (f: getusersMeActionType[T]) => getusersMeActionConstr
     sealed trait GetplantsByPlant_idSunlight_needsType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idSunlight_needs200(result: SunlightNeeds)(implicit val writer: String => Option[Writeable[SunlightNeeds]]) extends GetplantsByPlant_idSunlight_needsType[SunlightNeeds] { val statusCode = 200 }
     
-    case object GetplantsByPlant_idSunlight_needs404 extends EmptyReturn(404)
+    case class GetplantsByPlant_idSunlight_needs404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getplantsByPlant_idSunlight_needsActionRequestType       = (String)
@@ -156,9 +156,9 @@ def getplantsByPlant_idSunlight_needsAction[T] = (f: getplantsByPlant_idSunlight
     }
     sealed trait PutplantsByPlant_idSunlight_needsType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_idSunlight_needs200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idSunlight_needs200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idSunlight_needs404 extends EmptyReturn(404)
+    case class PutplantsByPlant_idSunlight_needs404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type putplantsByPlant_idSunlight_needsActionRequestType       = (String, SunlightNeeds)
@@ -242,7 +242,7 @@ def getusersAction[T] = (f: getusersActionType[T]) => (limit: UsersGetLimit, off
     }
     sealed trait PostusersType[T] extends ResultWrapper[T]
     
-    case object Postusers200 extends EmptyReturn(200)
+    case class Postusers200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type postusersActionRequestType       = (SigninData)
@@ -326,9 +326,9 @@ def getareasByArea_idAction[T] = (f: getareasByArea_idActionType[T]) => (area_id
     }
     sealed trait PutareasByArea_idType[T] extends ResultWrapper[T]
     
-    case object PutareasByArea_id200 extends EmptyReturn(200)
+    case class PutareasByArea_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutareasByArea_id201 extends EmptyReturn(201)
+    case class PutareasByArea_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putareasByArea_idActionRequestType       = (String)
@@ -363,7 +363,7 @@ def putareasByArea_idAction[T] = (f: putareasByArea_idActionType[T]) => (area_id
     }
     sealed trait DeleteareasByArea_idType[T] extends ResultWrapper[T]
     
-    case object DeleteareasByArea_id200 extends EmptyReturn(200)
+    case class DeleteareasByArea_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteareasByArea_idActionRequestType       = (String)
@@ -433,7 +433,7 @@ def getplantsAction[T] = (f: getplantsActionType[T]) => (limit: PlantsGetLimit, 
     sealed trait GetuserByUser_idPlantsType[T] extends ResultWrapper[T]
     case class GetuserByUser_idPlants200(result: Seq[Plant])(implicit val writer: String => Option[Writeable[Seq[Plant]]]) extends GetuserByUser_idPlantsType[Seq[Plant]] { val statusCode = 200 }
     
-    case object GetuserByUser_idPlants404 extends EmptyReturn(404)
+    case class GetuserByUser_idPlants404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getuserByUser_idPlantsActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
@@ -503,9 +503,9 @@ def getusersByUser_idAction[T] = (f: getusersByUser_idActionType[T]) => (user_id
     }
     sealed trait PutusersByUser_idType[T] extends ResultWrapper[T]
     
-    case object PutusersByUser_id200 extends EmptyReturn(200)
+    case class PutusersByUser_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutusersByUser_id201 extends EmptyReturn(201)
+    case class PutusersByUser_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putusersByUser_idActionRequestType       = (String, User)
@@ -556,7 +556,7 @@ def putusersByUser_idAction[T] = (f: putusersByUser_idActionType[T]) => (user_id
     sealed trait DeleteusersByUser_idType[T] extends ResultWrapper[T]
     case class DeleteusersByUser_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteusersByUser_idType[Error] { val statusCode = 404 }
     
-    case object DeleteusersByUser_id200 extends EmptyReturn(200)
+    case class DeleteusersByUser_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteusersByUser_idActionRequestType       = (String, User)
@@ -641,7 +641,7 @@ def getareasAction[T] = (f: getareasActionType[T]) => (limit: UsersGetLimit, off
     sealed trait GetplantsByPlant_idLocationType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idLocation200(result: Location)(implicit val writer: String => Option[Writeable[Location]]) extends GetplantsByPlant_idLocationType[Location] { val statusCode = 200 }
     
-    case object GetplantsByPlant_idLocation404 extends EmptyReturn(404)
+    case class GetplantsByPlant_idLocation404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getplantsByPlant_idLocationActionRequestType       = (String)
@@ -676,9 +676,9 @@ def getplantsByPlant_idLocationAction[T] = (f: getplantsByPlant_idLocationAction
     }
     sealed trait PutplantsByPlant_idLocationType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_idLocation200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idLocation200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idLocation404 extends EmptyReturn(404)
+    case class PutplantsByPlant_idLocation404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type putplantsByPlant_idLocationActionRequestType       = (String, Location)
@@ -728,9 +728,9 @@ def putplantsByPlant_idLocationAction[T] = (f: putplantsByPlant_idLocationAction
     }
     sealed trait DeleteplantsByPlant_idLocationType[T] extends ResultWrapper[T]
     
-    case object DeleteplantsByPlant_idLocation200 extends EmptyReturn(200)
+    case class DeleteplantsByPlant_idLocation200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object DeleteplantsByPlant_idLocation404 extends EmptyReturn(404)
+    case class DeleteplantsByPlant_idLocation404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type deleteplantsByPlant_idLocationActionRequestType       = (String)
@@ -766,7 +766,7 @@ def deleteplantsByPlant_idLocationAction[T] = (f: deleteplantsByPlant_idLocation
     sealed trait GetusersByUser_idPictureType[T] extends ResultWrapper[T]
     case class GetusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetusersByUser_idPictureType[Error] { val statusCode = 404 }
     
-    case object GetusersByUser_idPicture200 extends EmptyReturn(200)
+    case class GetusersByUser_idPicture200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type getusersByUser_idPictureActionRequestType       = (String)
@@ -802,9 +802,9 @@ def getusersByUser_idPictureAction[T] = (f: getusersByUser_idPictureActionType[T
     sealed trait PutusersByUser_idPictureType[T] extends ResultWrapper[T]
     case class PutusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends PutusersByUser_idPictureType[Error] { val statusCode = 404 }
     
-    case object PutusersByUser_idPicture200 extends EmptyReturn(200)
+    case class PutusersByUser_idPicture200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutusersByUser_idPicture201 extends EmptyReturn(201)
+    case class PutusersByUser_idPicture201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putusersByUser_idPictureActionRequestType       = (String)
@@ -840,7 +840,7 @@ def putusersByUser_idPictureAction[T] = (f: putusersByUser_idPictureActionType[T
     sealed trait DeleteusersByUser_idPictureType[T] extends ResultWrapper[T]
     case class DeleteusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteusersByUser_idPictureType[Error] { val statusCode = 404 }
     
-    case object DeleteusersByUser_idPicture200 extends EmptyReturn(200)
+    case class DeleteusersByUser_idPicture200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteusersByUser_idPictureActionRequestType       = (String)
@@ -876,7 +876,7 @@ def deleteusersByUser_idPictureAction[T] = (f: deleteusersByUser_idPictureAction
     sealed trait GetplantsByPlant_idPicturesType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idPictures200(result: Seq[String])(implicit val writer: String => Option[Writeable[Seq[String]]]) extends GetplantsByPlant_idPicturesType[Seq[String]] { val statusCode = 200 }
     
-    case object GetplantsByPlant_idPictures404 extends EmptyReturn(404)
+    case class GetplantsByPlant_idPictures404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getplantsByPlant_idPicturesActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
@@ -946,11 +946,11 @@ def getplantsByPlant_idAction[T] = (f: getplantsByPlant_idActionType[T]) => (pla
     }
     sealed trait PutplantsByPlant_idType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_id200 extends EmptyReturn(200)
+    case class PutplantsByPlant_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_id201 extends EmptyReturn(201)
+    case class PutplantsByPlant_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
-    case object PutplantsByPlant_id404 extends EmptyReturn(404)
+    case class PutplantsByPlant_id404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type putplantsByPlant_idActionRequestType       = (String, Plant)
@@ -1001,7 +1001,7 @@ def putplantsByPlant_idAction[T] = (f: putplantsByPlant_idActionType[T]) => (pla
     sealed trait DeleteplantsByPlant_idType[T] extends ResultWrapper[T]
     case class DeleteplantsByPlant_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteplantsByPlant_idType[Error] { val statusCode = 404 }
     
-    case object DeleteplantsByPlant_id200 extends EmptyReturn(200)
+    case class DeleteplantsByPlant_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteplantsByPlant_idActionRequestType       = (String)
@@ -1037,7 +1037,7 @@ def deleteplantsByPlant_idAction[T] = (f: deleteplantsByPlant_idActionType[T]) =
     sealed trait GetplantsByPlant_idWateringsType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idWaterings200(result: Seq[Watering])(implicit val writer: String => Option[Writeable[Seq[Watering]]]) extends GetplantsByPlant_idWateringsType[Seq[Watering]] { val statusCode = 200 }
     
-    case object GetplantsByPlant_idWaterings404 extends EmptyReturn(404)
+    case class GetplantsByPlant_idWaterings404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getplantsByPlant_idWateringsActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
@@ -1073,7 +1073,7 @@ def getplantsByPlant_idWateringsAction[T] = (f: getplantsByPlant_idWateringsActi
     sealed trait GetplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idPicturesByPicture_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetplantsByPlant_idPicturesByPicture_idType[Error] { val statusCode = 404 }
     
-    case object GetplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
+    case class GetplantsByPlant_idPicturesByPicture_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type getplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
@@ -1108,11 +1108,11 @@ def getplantsByPlant_idPicturesByPicture_idAction[T] = (f: getplantsByPlant_idPi
     }
     sealed trait PutplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_idPicturesByPicture_id404 extends EmptyReturn(404)
+    case class PutplantsByPlant_idPicturesByPicture_id404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
-    case object PutplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idPicturesByPicture_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idPicturesByPicture_id201 extends EmptyReturn(201)
+    case class PutplantsByPlant_idPicturesByPicture_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
@@ -1148,7 +1148,7 @@ def putplantsByPlant_idPicturesByPicture_idAction[T] = (f: putplantsByPlant_idPi
     sealed trait DeleteplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
     case class DeleteplantsByPlant_idPicturesByPicture_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteplantsByPlant_idPicturesByPicture_idType[Error] { val statusCode = 404 }
     
-    case object DeleteplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
+    case class DeleteplantsByPlant_idPicturesByPicture_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
@@ -1217,9 +1217,9 @@ def getplantsByPlant_idWater_needsAction[T] = (f: getplantsByPlant_idWater_needs
     }
     sealed trait PutplantsByPlant_idWater_needsType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_idWater_needs200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idWater_needs200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idWater_needs404 extends EmptyReturn(404)
+    case class PutplantsByPlant_idWater_needs404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type putplantsByPlant_idWater_needsActionRequestType       = (String, WaterNeeds)
@@ -1267,6 +1267,6 @@ def putplantsByPlant_idWater_needsAction[T] = (f: putplantsByPlant_idWater_needs
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with PutplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with GetusersMeType[Results.EmptyContent] with GetplantsByPlant_idSunlight_needsType[Results.EmptyContent] with PutplantsByPlant_idSunlight_needsType[Results.EmptyContent] with GetusersType[Results.EmptyContent] with PostusersType[Results.EmptyContent] with GetareasByArea_idType[Results.EmptyContent] with PutareasByArea_idType[Results.EmptyContent] with DeleteareasByArea_idType[Results.EmptyContent] with GetplantsType[Results.EmptyContent] with GetuserByUser_idPlantsType[Results.EmptyContent] with GetusersByUser_idType[Results.EmptyContent] with PutusersByUser_idType[Results.EmptyContent] with DeleteusersByUser_idType[Results.EmptyContent] with GetareasType[Results.EmptyContent] with GetplantsByPlant_idLocationType[Results.EmptyContent] with PutplantsByPlant_idLocationType[Results.EmptyContent] with DeleteplantsByPlant_idLocationType[Results.EmptyContent] with GetusersByUser_idPictureType[Results.EmptyContent] with PutusersByUser_idPictureType[Results.EmptyContent] with DeleteusersByUser_idPictureType[Results.EmptyContent] with GetplantsByPlant_idPicturesType[Results.EmptyContent] with GetplantsByPlant_idType[Results.EmptyContent] with PutplantsByPlant_idType[Results.EmptyContent] with DeleteplantsByPlant_idType[Results.EmptyContent] with GetplantsByPlant_idWateringsType[Results.EmptyContent] with GetplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with PutplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with DeleteplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with GetplantsByPlant_idWater_needsType[Results.EmptyContent] with PutplantsByPlant_idWater_needsType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with GetplantsByPlant_idWateringsByWatering_idType[Result] with PutplantsByPlant_idWateringsByWatering_idType[Result] with GetusersMeType[Result] with GetplantsByPlant_idSunlight_needsType[Result] with PutplantsByPlant_idSunlight_needsType[Result] with GetusersType[Result] with PostusersType[Result] with GetareasByArea_idType[Result] with PutareasByArea_idType[Result] with DeleteareasByArea_idType[Result] with GetplantsType[Result] with GetuserByUser_idPlantsType[Result] with GetusersByUser_idType[Result] with PutusersByUser_idType[Result] with DeleteusersByUser_idType[Result] with GetareasType[Result] with GetplantsByPlant_idLocationType[Result] with PutplantsByPlant_idLocationType[Result] with DeleteplantsByPlant_idLocationType[Result] with GetusersByUser_idPictureType[Result] with PutusersByUser_idPictureType[Result] with DeleteusersByUser_idPictureType[Result] with GetplantsByPlant_idPicturesType[Result] with GetplantsByPlant_idType[Result] with PutplantsByPlant_idType[Result] with DeleteplantsByPlant_idType[Result] with GetplantsByPlant_idWateringsType[Result] with GetplantsByPlant_idPicturesByPicture_idType[Result] with PutplantsByPlant_idPicturesByPicture_idType[Result] with DeleteplantsByPlant_idPicturesByPicture_idType[Result] with GetplantsByPlant_idWater_needsType[Result] with PutplantsByPlant_idWater_needsType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with PutplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with GetusersMeType[Results.EmptyContent] with GetplantsByPlant_idSunlight_needsType[Results.EmptyContent] with PutplantsByPlant_idSunlight_needsType[Results.EmptyContent] with GetusersType[Results.EmptyContent] with PostusersType[Results.EmptyContent] with GetareasByArea_idType[Results.EmptyContent] with PutareasByArea_idType[Results.EmptyContent] with DeleteareasByArea_idType[Results.EmptyContent] with GetplantsType[Results.EmptyContent] with GetuserByUser_idPlantsType[Results.EmptyContent] with GetusersByUser_idType[Results.EmptyContent] with PutusersByUser_idType[Results.EmptyContent] with DeleteusersByUser_idType[Results.EmptyContent] with GetareasType[Results.EmptyContent] with GetplantsByPlant_idLocationType[Results.EmptyContent] with PutplantsByPlant_idLocationType[Results.EmptyContent] with DeleteplantsByPlant_idLocationType[Results.EmptyContent] with GetusersByUser_idPictureType[Results.EmptyContent] with PutusersByUser_idPictureType[Results.EmptyContent] with DeleteusersByUser_idPictureType[Results.EmptyContent] with GetplantsByPlant_idPicturesType[Results.EmptyContent] with GetplantsByPlant_idType[Results.EmptyContent] with PutplantsByPlant_idType[Results.EmptyContent] with DeleteplantsByPlant_idType[Results.EmptyContent] with GetplantsByPlant_idWateringsType[Results.EmptyContent] with GetplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with PutplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with DeleteplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with GetplantsByPlant_idWater_needsType[Results.EmptyContent] with PutplantsByPlant_idWater_needsType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

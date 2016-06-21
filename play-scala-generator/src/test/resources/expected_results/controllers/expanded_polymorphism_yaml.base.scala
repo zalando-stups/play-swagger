@@ -103,7 +103,7 @@ def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(BodyPa
     }
     sealed trait DeletePetType[T] extends ResultWrapper[T]
     
-    case object DeletePet204 extends EmptyReturn(204)
+    case class DeletePet204(headers: Seq[(String, String)] = Nil) extends EmptyReturn(204, headers)
     
     case class DeletePetNoSuchElementException(result: java.util.NoSuchElementException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeletePetType[java.util.NoSuchElementException] { val statusCode = 404 }
 
@@ -137,6 +137,6 @@ def deletePetAction[T] = (f: deletePetActionType[T]) => (id: Long) => deletePetA
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with FindPetsType[Results.EmptyContent] with AddPetType[Results.EmptyContent] with DeletePetType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with FindPetsType[Result] with AddPetType[Result] with DeletePetType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with FindPetsType[Results.EmptyContent] with AddPetType[Results.EmptyContent] with DeletePetType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

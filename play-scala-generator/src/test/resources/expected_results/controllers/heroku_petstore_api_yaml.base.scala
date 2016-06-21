@@ -53,7 +53,7 @@ def getAction[T] = (f: getActionType[T]) => (limit: BigInt) => getActionConstruc
     }
     sealed trait PutType[T] extends ResultWrapper[T]
     
-    case object Put200 extends EmptyReturn(200)
+    case class Put200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type putActionRequestType       = (PutPet)
@@ -102,7 +102,7 @@ def putAction[T] = (f: putActionType[T]) => putActionConstructor(BodyParsers.par
     }
     sealed trait PostType[T] extends ResultWrapper[T]
     
-    case object Post200 extends EmptyReturn(200)
+    case class Post200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type postActionRequestType       = (Pet)
@@ -151,7 +151,7 @@ def postAction[T] = (f: postActionType[T]) => postActionConstructor(BodyParsers.
     }
     sealed trait GetbyPetIdType[T] extends ResultWrapper[T]
     
-    case object GetbyPetId200 extends EmptyReturn(200)
+    case class GetbyPetId200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type getbyPetIdActionRequestType       = (String)
@@ -184,6 +184,6 @@ def getbyPetIdAction[T] = (f: getbyPetIdActionType[T]) => (petId: String) => get
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetType[Results.EmptyContent] with PutType[Results.EmptyContent] with PostType[Results.EmptyContent] with GetbyPetIdType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with GetType[Result] with PutType[Result] with PostType[Result] with GetbyPetIdType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetType[Results.EmptyContent] with PutType[Results.EmptyContent] with PostType[Results.EmptyContent] with GetbyPetIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

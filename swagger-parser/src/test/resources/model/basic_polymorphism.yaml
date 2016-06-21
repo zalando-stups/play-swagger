@@ -61,3 +61,11 @@ definitions:
     allOf:
     - $ref: '#/definitions/Dog'
     - $ref: '#/definitions/Cat'
+  Zoo:
+    description: Many tiers
+    properties:
+      tiers:
+        type: array
+        items:
+          $ref: '#/definitions/Pet'
+
