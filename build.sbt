@@ -1,5 +1,5 @@
 import bintray.Keys._
-import sbt.{Level, Resolver, UpdateLogging}
+import sbt._
 
 val PlayVersion = "2.5.4"
 val Scala10 = "2.10.5"
@@ -99,7 +99,6 @@ lazy val plugin = (project in file("plugin"))
   )
   .dependsOn(common, apiFirstCore, playScalaGenerator, swaggerParser, swaggerModel)
 
-
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
   .settings(commonSettings: _*)
@@ -146,7 +145,6 @@ def commonSettings: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   coverageEnabled := false,
   excludeFilter in scalariformFormat := (excludeFilter in scalariformFormat).value || dontFormatTestModels
 ) ++ Lint.all ++ scalariformSettings
-
 
 // https://github.com/sbt/sbt-scalariform#advanced-configuration for more options.
 
