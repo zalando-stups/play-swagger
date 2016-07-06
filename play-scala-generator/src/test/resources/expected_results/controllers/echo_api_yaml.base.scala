@@ -41,7 +41,7 @@ trait EchoHandlerBase extends Controller with PlayBodyParsing {
                 val result = processValidmethodRequest(f)()(methodResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidmethodRequest[T](f: methodActionType[T])(request: methodActionRequestType)(mimeType: String) = {
@@ -89,7 +89,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
             
             }
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpostRequest[T](f: postActionType[T])(request: postActionRequestType)(mimeType: String) = {
@@ -124,7 +124,7 @@ trait EchoApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgettest_pathByIdRequest[T](f: gettest_pathByIdActionType[T])(request: gettest_pathByIdActionRequestType)(mimeType: String) = {

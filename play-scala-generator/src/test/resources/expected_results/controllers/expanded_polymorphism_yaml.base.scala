@@ -48,7 +48,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidfindPetsRequest[T](f: findPetsActionType[T])(request: findPetsActionRequestType)(mimeType: String) = {
@@ -98,7 +98,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidaddPetRequest[T](f: addPetActionType[T])(request: addPetActionRequestType)(mimeType: String) = {
@@ -134,7 +134,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeletePetRequest[T](f: deletePetActionType[T])(request: deletePetActionRequestType)(mimeType: String) = {

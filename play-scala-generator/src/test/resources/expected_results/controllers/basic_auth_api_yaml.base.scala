@@ -39,7 +39,7 @@ trait BasicAuthApiYamlBase extends Controller with PlayBodyParsing  with BasicAu
                 val result = processValidgetRequest(f)()(getResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetRequest[T](f: getActionType[T])(request: getActionRequestType)(mimeType: String) = {

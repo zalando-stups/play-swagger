@@ -49,7 +49,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidfindPetsByTagsRequest[T](f: findPetsByTagsActionType[T])(request: findPetsByTagsActionRequestType)(mimeType: String) = {
@@ -102,7 +102,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidplaceOrderRequest[T](f: placeOrderActionType[T])(request: placeOrderActionRequestType)(mimeType: String) = {
@@ -152,7 +152,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidcreateUserRequest[T](f: createUserActionType[T])(request: createUserActionRequestType)(mimeType: String) = {
@@ -202,7 +202,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidcreateUsersWithListInputRequest[T](f: createUsersWithListInputActionType[T])(request: createUsersWithListInputActionRequestType)(mimeType: String) = {
@@ -242,7 +242,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetUserByNameRequest[T](f: getUserByNameActionType[T])(request: getUserByNameActionRequestType)(mimeType: String) = {
@@ -296,7 +296,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidupdateUserRequest[T](f: updateUserActionType[T])(request: updateUserActionRequestType)(mimeType: String) = {
@@ -335,7 +335,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeleteUserRequest[T](f: deleteUserActionType[T])(request: deleteUserActionRequestType)(mimeType: String) = {
@@ -390,7 +390,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidupdatePetRequest[T](f: updatePetActionType[T])(request: updatePetActionRequestType)(mimeType: String) = {
@@ -441,7 +441,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidaddPetRequest[T](f: addPetActionType[T])(request: addPetActionRequestType)(mimeType: String) = {
@@ -491,7 +491,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidcreateUsersWithArrayInputRequest[T](f: createUsersWithArrayInputActionType[T])(request: createUsersWithArrayInputActionRequestType)(mimeType: String) = {
@@ -531,7 +531,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetOrderByIdRequest[T](f: getOrderByIdActionType[T])(request: getOrderByIdActionRequestType)(mimeType: String) = {
@@ -570,7 +570,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeleteOrderRequest[T](f: deleteOrderActionType[T])(request: deleteOrderActionRequestType)(mimeType: String) = {
@@ -599,7 +599,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                 val result = processValidlogoutUserRequest(f)()(logoutUserResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidlogoutUserRequest[T](f: logoutUserActionType[T])(request: logoutUserActionRequestType)(mimeType: String) = {
@@ -639,7 +639,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetPetByIdRequest[T](f: getPetByIdActionType[T])(request: getPetByIdActionRequestType)(mimeType: String) = {
@@ -686,7 +686,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
             
             }
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidupdatePetWithFormRequest[T](f: updatePetWithFormActionType[T])(request: updatePetWithFormActionRequestType)(mimeType: String) = {
@@ -734,7 +734,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                     BadRequest(msg)
                 }
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeletePetRequest[T](f: deletePetActionType[T])(request: deletePetActionRequestType)(mimeType: String) = {
@@ -772,7 +772,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidfindPetsByStatusRequest[T](f: findPetsByStatusActionType[T])(request: findPetsByStatusActionRequestType)(mimeType: String) = {
@@ -810,7 +810,7 @@ trait FullPetstoreApiYamlBase extends Controller with PlayBodyParsing  with Full
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidloginUserRequest[T](f: loginUserActionType[T])(request: loginUserActionRequestType)(mimeType: String) = {

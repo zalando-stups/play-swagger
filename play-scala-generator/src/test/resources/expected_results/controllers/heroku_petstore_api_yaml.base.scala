@@ -44,7 +44,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetRequest[T](f: getActionType[T])(request: getActionRequestType)(mimeType: String) = {
@@ -93,7 +93,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputRequest[T](f: putActionType[T])(request: putActionRequestType)(mimeType: String) = {
@@ -142,7 +142,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpostRequest[T](f: postActionType[T])(request: postActionRequestType)(mimeType: String) = {
@@ -177,7 +177,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetbyPetIdRequest[T](f: getbyPetIdActionType[T])(request: getbyPetIdActionRequestType)(mimeType: String) = {

@@ -43,7 +43,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                 val result = processValidgetmeRequest(f)()(getmeResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetmeRequest[T](f: getmeActionType[T])(request: getmeActionRequestType)(mimeType: String) = {
@@ -77,7 +77,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetproductsRequest[T](f: getproductsActionType[T])(request: getproductsActionRequestType)(mimeType: String) = {
@@ -111,7 +111,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetestimatesTimeRequest[T](f: getestimatesTimeActionType[T])(request: getestimatesTimeActionRequestType)(mimeType: String) = {
@@ -145,7 +145,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetestimatesPriceRequest[T](f: getestimatesPriceActionType[T])(request: getestimatesPriceActionRequestType)(mimeType: String) = {
@@ -179,7 +179,7 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgethistoryRequest[T](f: gethistoryActionType[T])(request: gethistoryActionRequestType)(mimeType: String) = {

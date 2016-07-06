@@ -59,7 +59,7 @@ trait SimplePetstoreApiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidaddPetRequest[T](f: addPetActionType[T])(request: addPetActionRequestType)(mimeType: String) = {
@@ -97,7 +97,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidmethodLevelRequest[T](f: methodLevelActionType[T])(request: methodLevelActionRequestType)(mimeType: String) = {
@@ -131,7 +131,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpathLevelGetRequest[T](f: pathLevelGetActionType[T])(request: pathLevelGetActionRequestType)(mimeType: String) = {
@@ -166,7 +166,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpathLevelDeleteRequest[T](f: pathLevelDeleteActionType[T])(request: pathLevelDeleteActionRequestType)(mimeType: String) = {

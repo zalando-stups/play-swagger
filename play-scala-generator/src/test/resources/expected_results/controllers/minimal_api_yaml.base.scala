@@ -39,7 +39,7 @@ trait DashboardBase extends Controller with PlayBodyParsing {
                 val result = processValidindexRequest(f)()(indexResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidindexRequest[T](f: indexActionType[T])(request: indexActionRequestType)(mimeType: String) = {
