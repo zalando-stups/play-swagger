@@ -61,7 +61,7 @@ trait Cross_spec_referencesYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpostRequest[T](f: postActionType[T])(request: postActionRequestType)(mimeType: String) = {

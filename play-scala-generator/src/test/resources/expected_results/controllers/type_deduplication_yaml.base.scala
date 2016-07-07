@@ -48,7 +48,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsByPlant_idWateringsByWatering_idRequest[T](f: getplantsByPlant_idWateringsByWatering_idActionType[T])(request: getplantsByPlant_idWateringsByWatering_idActionRequestType)(mimeType: String) = {
@@ -86,7 +86,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputplantsByPlant_idWateringsByWatering_idRequest[T](f: putplantsByPlant_idWateringsByWatering_idActionType[T])(request: putplantsByPlant_idWateringsByWatering_idActionRequestType)(mimeType: String) = {
@@ -114,7 +114,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                 val result = processValidgetusersMeRequest(f)()(getusersMeResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersMeRequest[T](f: getusersMeActionType[T])(request: getusersMeActionRequestType)(mimeType: String) = {
@@ -150,7 +150,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsByPlant_idSunlight_needsRequest[T](f: getplantsByPlant_idSunlight_needsActionType[T])(request: getplantsByPlant_idSunlight_needsActionRequestType)(mimeType: String) = {
@@ -202,7 +202,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputplantsByPlant_idSunlight_needsRequest[T](f: putplantsByPlant_idSunlight_needsActionType[T])(request: putplantsByPlant_idSunlight_needsActionRequestType)(mimeType: String) = {
@@ -236,7 +236,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersRequest[T](f: getusersActionType[T])(request: getusersActionRequestType)(mimeType: String) = {
@@ -286,7 +286,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpostusersRequest[T](f: postusersActionType[T])(request: postusersActionRequestType)(mimeType: String) = {
@@ -320,7 +320,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetareasByArea_idRequest[T](f: getareasByArea_idActionType[T])(request: getareasByArea_idActionRequestType)(mimeType: String) = {
@@ -357,7 +357,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputareasByArea_idRequest[T](f: putareasByArea_idActionType[T])(request: putareasByArea_idActionRequestType)(mimeType: String) = {
@@ -392,7 +392,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeleteareasByArea_idRequest[T](f: deleteareasByArea_idActionType[T])(request: deleteareasByArea_idActionRequestType)(mimeType: String) = {
@@ -426,7 +426,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsRequest[T](f: getplantsActionType[T])(request: getplantsActionRequestType)(mimeType: String) = {
@@ -462,7 +462,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetuserByUser_idPlantsRequest[T](f: getuserByUser_idPlantsActionType[T])(request: getuserByUser_idPlantsActionRequestType)(mimeType: String) = {
@@ -497,7 +497,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersByUser_idRequest[T](f: getusersByUser_idActionType[T])(request: getusersByUser_idActionRequestType)(mimeType: String) = {
@@ -549,7 +549,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputusersByUser_idRequest[T](f: putusersByUser_idActionType[T])(request: putusersByUser_idActionRequestType)(mimeType: String) = {
@@ -600,7 +600,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeleteusersByUser_idRequest[T](f: deleteusersByUser_idActionType[T])(request: deleteusersByUser_idActionRequestType)(mimeType: String) = {
@@ -634,7 +634,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetareasRequest[T](f: getareasActionType[T])(request: getareasActionRequestType)(mimeType: String) = {
@@ -670,7 +670,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsByPlant_idLocationRequest[T](f: getplantsByPlant_idLocationActionType[T])(request: getplantsByPlant_idLocationActionRequestType)(mimeType: String) = {
@@ -722,7 +722,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputplantsByPlant_idLocationRequest[T](f: putplantsByPlant_idLocationActionType[T])(request: putplantsByPlant_idLocationActionRequestType)(mimeType: String) = {
@@ -759,7 +759,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeleteplantsByPlant_idLocationRequest[T](f: deleteplantsByPlant_idLocationActionType[T])(request: deleteplantsByPlant_idLocationActionRequestType)(mimeType: String) = {
@@ -795,7 +795,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersByUser_idPictureRequest[T](f: getusersByUser_idPictureActionType[T])(request: getusersByUser_idPictureActionRequestType)(mimeType: String) = {
@@ -833,7 +833,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputusersByUser_idPictureRequest[T](f: putusersByUser_idPictureActionType[T])(request: putusersByUser_idPictureActionRequestType)(mimeType: String) = {
@@ -869,7 +869,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeleteusersByUser_idPictureRequest[T](f: deleteusersByUser_idPictureActionType[T])(request: deleteusersByUser_idPictureActionRequestType)(mimeType: String) = {
@@ -905,7 +905,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsByPlant_idPicturesRequest[T](f: getplantsByPlant_idPicturesActionType[T])(request: getplantsByPlant_idPicturesActionRequestType)(mimeType: String) = {
@@ -940,7 +940,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsByPlant_idRequest[T](f: getplantsByPlant_idActionType[T])(request: getplantsByPlant_idActionRequestType)(mimeType: String) = {
@@ -994,7 +994,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputplantsByPlant_idRequest[T](f: putplantsByPlant_idActionType[T])(request: putplantsByPlant_idActionRequestType)(mimeType: String) = {
@@ -1030,7 +1030,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeleteplantsByPlant_idRequest[T](f: deleteplantsByPlant_idActionType[T])(request: deleteplantsByPlant_idActionRequestType)(mimeType: String) = {
@@ -1066,7 +1066,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsByPlant_idWateringsRequest[T](f: getplantsByPlant_idWateringsActionType[T])(request: getplantsByPlant_idWateringsActionRequestType)(mimeType: String) = {
@@ -1102,7 +1102,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsByPlant_idPicturesByPicture_idRequest[T](f: getplantsByPlant_idPicturesByPicture_idActionType[T])(request: getplantsByPlant_idPicturesByPicture_idActionRequestType)(mimeType: String) = {
@@ -1141,7 +1141,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputplantsByPlant_idPicturesByPicture_idRequest[T](f: putplantsByPlant_idPicturesByPicture_idActionType[T])(request: putplantsByPlant_idPicturesByPicture_idActionRequestType)(mimeType: String) = {
@@ -1177,7 +1177,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeleteplantsByPlant_idPicturesByPicture_idRequest[T](f: deleteplantsByPlant_idPicturesByPicture_idActionType[T])(request: deleteplantsByPlant_idPicturesByPicture_idActionRequestType)(mimeType: String) = {
@@ -1211,7 +1211,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetplantsByPlant_idWater_needsRequest[T](f: getplantsByPlant_idWater_needsActionType[T])(request: getplantsByPlant_idWater_needsActionRequestType)(mimeType: String) = {
@@ -1263,7 +1263,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidputplantsByPlant_idWater_needsRequest[T](f: putplantsByPlant_idWater_needsActionType[T])(request: putplantsByPlant_idWater_needsActionRequestType)(mimeType: String) = {

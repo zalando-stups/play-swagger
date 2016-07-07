@@ -61,7 +61,7 @@ trait HackweekYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetschemaModelRequest[T](f: getschemaModelActionType[T])(request: getschemaModelActionRequestType)(mimeType: String) = {

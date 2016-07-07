@@ -48,7 +48,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetmediaByMedia_idLikesRequest[T](f: getmediaByMedia_idLikesActionType[T])(request: getmediaByMedia_idLikesActionRequestType)(mimeType: String) = {
@@ -82,7 +82,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpostmediaByMedia_idLikesRequest[T](f: postmediaByMedia_idLikesActionType[T])(request: postmediaByMedia_idLikesActionRequestType)(mimeType: String) = {
@@ -116,7 +116,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeletemediaByMedia_idLikesRequest[T](f: deletemediaByMedia_idLikesActionType[T])(request: deletemediaByMedia_idLikesActionRequestType)(mimeType: String) = {
@@ -150,7 +150,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersByUser_idFollowsRequest[T](f: getusersByUser_idFollowsActionType[T])(request: getusersByUser_idFollowsActionRequestType)(mimeType: String) = {
@@ -184,7 +184,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetlocationsByLocation_idRequest[T](f: getlocationsByLocation_idActionType[T])(request: getlocationsByLocation_idActionRequestType)(mimeType: String) = {
@@ -218,7 +218,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersSearchRequest[T](f: getusersSearchActionType[T])(request: getusersSearchActionRequestType)(mimeType: String) = {
@@ -252,7 +252,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersSelfMediaLikedRequest[T](f: getusersSelfMediaLikedActionType[T])(request: getusersSelfMediaLikedActionRequestType)(mimeType: String) = {
@@ -286,7 +286,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgettagsByTag_nameRequest[T](f: gettagsByTag_nameActionType[T])(request: gettagsByTag_nameActionRequestType)(mimeType: String) = {
@@ -320,7 +320,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgettagsSearchRequest[T](f: gettagsSearchActionType[T])(request: gettagsSearchActionRequestType)(mimeType: String) = {
@@ -354,7 +354,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersByUser_idFollowed_byRequest[T](f: getusersByUser_idFollowed_byActionType[T])(request: getusersByUser_idFollowed_byActionRequestType)(mimeType: String) = {
@@ -388,7 +388,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetmediaByMedia_idCommentsRequest[T](f: getmediaByMedia_idCommentsActionType[T])(request: getmediaByMedia_idCommentsActionRequestType)(mimeType: String) = {
@@ -437,7 +437,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpostmediaByMedia_idCommentsRequest[T](f: postmediaByMedia_idCommentsActionType[T])(request: postmediaByMedia_idCommentsActionRequestType)(mimeType: String) = {
@@ -471,7 +471,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValiddeletemediaByMedia_idCommentsRequest[T](f: deletemediaByMedia_idCommentsActionType[T])(request: deletemediaByMedia_idCommentsActionRequestType)(mimeType: String) = {
@@ -505,7 +505,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgettagsByTag_nameMediaRecentRequest[T](f: gettagsByTag_nameMediaRecentActionType[T])(request: gettagsByTag_nameMediaRecentActionRequestType)(mimeType: String) = {
@@ -554,7 +554,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidpostusersByUser_idRelationshipRequest[T](f: postusersByUser_idRelationshipActionType[T])(request: postusersByUser_idRelationshipActionRequestType)(mimeType: String) = {
@@ -588,7 +588,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersSelfFeedRequest[T](f: getusersSelfFeedActionType[T])(request: getusersSelfFeedActionRequestType)(mimeType: String) = {
@@ -622,7 +622,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersByUser_idRequest[T](f: getusersByUser_idActionType[T])(request: getusersByUser_idActionRequestType)(mimeType: String) = {
@@ -656,7 +656,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetmediaSearchRequest[T](f: getmediaSearchActionType[T])(request: getmediaSearchActionRequestType)(mimeType: String) = {
@@ -691,7 +691,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetgeographiesByGeo_idMediaRecentRequest[T](f: getgeographiesByGeo_idMediaRecentActionType[T])(request: getgeographiesByGeo_idMediaRecentActionRequestType)(mimeType: String) = {
@@ -725,7 +725,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetmediaByShortcodeRequest[T](f: getmediaByShortcodeActionType[T])(request: getmediaByShortcodeActionRequestType)(mimeType: String) = {
@@ -759,7 +759,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetlocationsSearchRequest[T](f: getlocationsSearchActionType[T])(request: getlocationsSearchActionRequestType)(mimeType: String) = {
@@ -787,7 +787,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                 val result = processValidgetusersSelfRequested_byRequest(f)()(getusersSelfRequested_byResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersSelfRequested_byRequest[T](f: getusersSelfRequested_byActionType[T])(request: getusersSelfRequested_byActionRequestType)(mimeType: String) = {
@@ -821,7 +821,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetmediaByMedia_idRequest[T](f: getmediaByMedia_idActionType[T])(request: getmediaByMedia_idActionRequestType)(mimeType: String) = {
@@ -855,7 +855,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetlocationsByLocation_idMediaRecentRequest[T](f: getlocationsByLocation_idMediaRecentActionType[T])(request: getlocationsByLocation_idMediaRecentActionRequestType)(mimeType: String) = {
@@ -889,7 +889,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetusersByUser_idMediaRecentRequest[T](f: getusersByUser_idMediaRecentActionType[T])(request: getusersByUser_idMediaRecentActionRequestType)(mimeType: String) = {
@@ -917,7 +917,7 @@ trait InstagramApiYamlBase extends Controller with PlayBodyParsing  with Instagr
                 val result = processValidgetmediaPopularRequest(f)()(getmediaPopularResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidgetmediaPopularRequest[T](f: getmediaPopularActionType[T])(request: getmediaPopularActionRequestType)(mimeType: String) = {

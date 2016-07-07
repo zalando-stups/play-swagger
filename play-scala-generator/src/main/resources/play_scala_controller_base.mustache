@@ -107,7 +107,7 @@ trait {{controller.base}} extends Controller with PlayBodyParsing {{if controlle
             {{if m.form_parameters}}
             }
             {{/if}}
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def {{m.process_valid_request}}[T](f: {{m.action_type}}[T])(request: {{m.action_request_type}})(mimeType: String) = {

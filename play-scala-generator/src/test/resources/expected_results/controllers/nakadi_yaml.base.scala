@@ -44,7 +44,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                 val result = processValidnakadiHackGet_metricsRequest(f)()(nakadiHackGet_metricsResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidnakadiHackGet_metricsRequest[T](f: nakadiHackGet_metricsActionType[T])(request: nakadiHackGet_metricsActionRequestType)(mimeType: String) = {
@@ -82,7 +82,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidnakadiHackGet_events_from_single_partitionRequest[T](f: nakadiHackGet_events_from_single_partitionActionType[T])(request: nakadiHackGet_events_from_single_partitionActionRequestType)(mimeType: String) = {
@@ -116,7 +116,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidnakadiHackGet_partitionRequest[T](f: nakadiHackGet_partitionActionType[T])(request: nakadiHackGet_partitionActionRequestType)(mimeType: String) = {
@@ -146,7 +146,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                 val result = processValidnakadiHackGet_topicsRequest(f)()(nakadiHackGet_topicsResponseMimeType)
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidnakadiHackGet_topicsRequest[T](f: nakadiHackGet_topicsActionType[T])(request: nakadiHackGet_topicsActionRequestType)(mimeType: String) = {
@@ -195,7 +195,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                     BadRequest(msg)
                 }
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidnakadiHackGet_events_from_multiple_partitionsRequest[T](f: nakadiHackGet_events_from_multiple_partitionsActionType[T])(request: nakadiHackGet_events_from_multiple_partitionsActionRequestType)(mimeType: String) = {
@@ -249,7 +249,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidnakadiHackPost_eventRequest[T](f: nakadiHackPost_eventActionType[T])(request: nakadiHackPost_eventActionRequestType)(mimeType: String) = {
@@ -283,7 +283,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidnakadiHackGet_partitionsRequest[T](f: nakadiHackGet_partitionsActionType[T])(request: nakadiHackGet_partitionsActionRequestType)(mimeType: String) = {
@@ -337,7 +337,7 @@ trait NakadiYamlBase extends Controller with PlayBodyParsing {
                         }
                 result
             
-        }.getOrElse(Status(415)("The server doesn't support any of the requested mime types"))
+        }.getOrElse(Status(406)("The server doesn't support any of the requested mime types"))
     }
 
     private def processValidnakadiHackPost_eventsRequest[T](f: nakadiHackPost_eventsActionType[T])(request: nakadiHackPost_eventsActionRequestType)(mimeType: String) = {
