@@ -1,7 +1,5 @@
-# The Play-Swagger plugin is now renamed to [api-first-hand](https://github.com/zalando/api-first-hand).
-# This version is no longer under active development.
-# The Api-First-Hand is actively mantained and offers full functionality of Play-Swagger with an exception of Play 2.4 support.
-# Please navigate to [api-first-hand](https://github.com/zalando/api-first-hand) repository if you like to check out Play-Swagger or create an issue.
+## The Play-Swagger plugin is now renamed [api-first-hand](https://github.com/zalando/api-first-hand). This version is no longer under active development.
+## Api-First-Hand is actively mantained and offers full functionality of Play-Swagger with an exception of Play 2.4 support. Please navigate to [api-first-hand](https://github.com/zalando/api-first-hand) if you'd like to check out Play-Swagger or create an issue.
 
 --
 --
