@@ -1,9 +1,11 @@
 package de.zalando.play.controllers
 
+import akka.util.ByteString
 import de.zalando.play.controllers.ResponseWriters.choose
 import org.specs2.mutable.Specification
 import play.api.http.Writeable
 import play.api.mvc.RequestHeader
+
 import scala.concurrent.ExecutionContext.Implicits
 
 /**
@@ -43,7 +45,7 @@ class WrappedBodyParsersTest extends Specification {
 
   val binaryString = new WrappedBodyParsersBase {
     val binaryString: Parser[BinaryString] =
-      (requestHeader: RequestHeader, byteArray: Array[Byte]) => BinaryString(byteArray)
+      byteArray => BinaryString(byteArray.toArray)
     /**
      * This collection contains all {@Writeable}s which could be used in
      * as a marshaller for different mime types and types of response
@@ -54,8 +56,7 @@ class WrappedBodyParsersTest extends Specification {
   }
 
   val catchAll = new WrappedBodyParsersBase {
-    val any: Parser[Any] =
-      (requestHeader: RequestHeader, byteArray: Array[Byte]) => BinaryString(byteArray)
+    val any: Parser[Any] = byteArray => BinaryString(byteArray.toArray)
     /**
      * This collection contains all {@Writeable}s which could be used in
      * as a marshaller for different mime types and types of response
@@ -84,8 +85,8 @@ class WrappedBodyParsersTest extends Specification {
 
 object TestEnvironment {
   import Implicits.global
-  val transformSeq: Seq[Any] => Array[Byte] = a => a.toString.getBytes("UTF-8")
-  val transformStr: String => Array[Byte] = a => a.getBytes("UTF-8")
+  val transformSeq: Seq[Any] => ByteString = a => ByteString.fromString(a.toString)
+  val transformStr: String => ByteString = ByteString.fromString
 
   val seqText: WriteableWrapper[Seq[Any]] = Writeable(transformSeq, Some("text/plain"))
 

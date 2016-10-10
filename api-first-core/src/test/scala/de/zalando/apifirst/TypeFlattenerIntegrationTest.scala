@@ -3,7 +3,7 @@ package de.zalando.apifirst
 import java.io.File
 
 import de.zalando.apifirst.util.ScalaPrinter
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{ FunSpec, MustMatchers }
 
 import scala.io.Source
 

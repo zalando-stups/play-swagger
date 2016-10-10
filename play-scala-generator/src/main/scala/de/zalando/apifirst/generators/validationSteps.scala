@@ -1,6 +1,6 @@
 package de.zalando.apifirst.generators
 
-import de.zalando.apifirst.Application.{ApiCall, Parameter, ParameterRef, StrictModel}
+import de.zalando.apifirst.Application.{ ApiCall, Parameter, ParameterRef, StrictModel }
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.StringUtil
@@ -8,18 +8,18 @@ import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
 
 /**
-  * @author  slasch 
-  * @since   28.12.2015.
-  */
+ * @author  slasch
+ * @since   28.12.2015.
+ */
 trait CallValidatorsStep extends EnrichmentStep[ApiCall] with ValidatorsCommon {
 
   override def steps: Seq[SingleStep] = callValidators +: super.steps
 
   /**
-    * Puts validation related information into the denotation table
-    *
-    * @return
-    */
+   * Puts validation related information into the denotation table
+   *
+   * @return
+   */
   protected val callValidators: SingleStep = call => table =>
     Map("validators" -> callValidatorsProps(call._1, call._2)(table))
 
@@ -33,13 +33,13 @@ trait CallValidatorsStep extends EnrichmentStep[ApiCall] with ValidatorsCommon {
   }
 
   /**
-    * Creates validations for ApiCall parameters.
-    *
-    * At this point all api call parameters validations should already be generated and only
-    * needed to be sequenced together
-    *
-    * @return
-    */
+   * Creates validations for ApiCall parameters.
+   *
+   * At this point all api call parameters validations should already be generated and only
+   * needed to be sequenced together
+   *
+   * @return
+   */
   private def callValidations(r: Reference, call: ApiCall)(table: DenotationTable): Map[String, Object] =
     Map(
       "validation_name" -> validator(r, table),
@@ -59,36 +59,36 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
   override def steps: Seq[SingleStep] = callValidators +: super.steps
 
   /**
-    * Puts validation related information into the denotation table
-    *
-    * @return
-    */
+   * Puts validation related information into the denotation table
+   *
+   * @return
+   */
   protected val callValidators: SingleStep = parameter => table =>
     parameterValidatorsProps(parameter._1, parameter._2)(table)
 
   private def parameterValidatorsProps(ref: Reference, parameter: Parameter)(table: DenotationTable): Denotation = {
     val result = parametersValidations(table)(ref, parameter)
-    val byType = result.groupBy(_._1).map { case (k,v) => k -> v.map(_._2) }
+    val byType = result.groupBy(_._1).map { case (k, v) => k -> v.map(_._2) }
     Map("validators" -> byType)
   }
 
   /**
-    * Wrapper method for real constraints generator
-    * Needed to generate different constraints for different parameter types
-    *
-    * @return
-    */
+   * Wrapper method for real constraints generator
+   * Needed to generate different constraints for different parameter types
+   *
+   * @return
+   */
   private def parametersValidations(table: DenotationTable)(ref: Reference, param: Parameter) =
     constraints0(ref, param.typeName)(table)
 
   /**
-    * Depending upon, what we want to validate, we can have one of following situations:
-    * - Primitive types only need to be validated themself
-    * - Options does not need any constraints, only primitive contents, recursive
-    * - Arrays need to validate {maxItems, minItems, uniqueItems, enum} and elements recursive
-    * - CatchAll need to validate {MaxProperties} and {MinProperties}
-    * - TypeDefs does not need to constraint anything and fields recursive
-    */
+   * Depending upon, what we want to validate, we can have one of following situations:
+   * - Primitive types only need to be validated themself
+   * - Options does not need any constraints, only primitive contents, recursive
+   * - Arrays need to validate {maxItems, minItems, uniqueItems, enum} and elements recursive
+   * - CatchAll need to validate {MaxProperties} and {MinProperties}
+   * - TypeDefs does not need to constraint anything and fields recursive
+   */
   def constraints0(types: (Reference, Type))(implicit table: DenotationTable): Validations =
     types match {
       case (r: Reference, t: PrimitiveType) =>
@@ -105,7 +105,7 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
         Nil
       case (r, t: TypeDef) =>
         typeDefConstraints(r, t)
-      case (r, TypeRef(ref)) if ! app.findType(ref).isInstanceOf[TypeRef] =>
+      case (r, TypeRef(ref)) if !app.findType(ref).isInstanceOf[TypeRef] =>
         constraints0(ref -> app.findType(ref))
       case (r, TypeRef(ref)) =>
         Nil
@@ -113,15 +113,13 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
         Nil // TODO
     }
 
-  private def typeDefConstraints(r: Reference, t: TypeDef)
-                                (implicit table: DenotationTable): Seq[(String, Map[String, Any])] = {
+  private def typeDefConstraints(r: Reference, t: TypeDef)(implicit table: DenotationTable): Seq[(String, Map[String, Any])] = {
     val fields = t.fields.flatMap { f => constraints0(f.name -> f.tpe) }
     val mainType = "typedef_validations" -> typeDefValidations(r, t)
     mainType +: fields
   }
 
-  private def tpeConstraints(r: Reference, t: Container, suffix: String, key: String)
-                            (implicit table: DenotationTable): Validations = {
+  private def tpeConstraints(r: Reference, t: Container, suffix: String, key: String)(implicit table: DenotationTable): Validations = {
     val delegate = delegateName(r, t, suffix)
     val constraints = constraints0(delegate -> t.tpe)
     if (constraints.nonEmpty)
@@ -153,8 +151,9 @@ trait ParametersValidatorsStep extends EnrichmentStep[Parameter] with Validators
 
   private def optValidations(r: Reference, t: Container, delegateName: Reference)(implicit table: DenotationTable) =
     Map(
-      "restrictions" -> t.meta.constraints.filterNot(_.isEmpty).zipWithIndex.map { case (c, i) =>
-        Map("name" -> c, "last" -> (i == t.meta.constraints.length - 1))
+      "restrictions" -> t.meta.constraints.filterNot(_.isEmpty).zipWithIndex.map {
+        case (c, i) =>
+          Map("name" -> c, "last" -> (i == t.meta.constraints.length - 1))
       },
       "constraint_name" -> constraint(r, table), // restrictions and constraint_name are needed for Arr, not needed for Opt
       "delegate_validation_name" -> validator(delegateName, table),

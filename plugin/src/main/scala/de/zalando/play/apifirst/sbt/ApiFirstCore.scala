@@ -6,11 +6,11 @@ import de.zalando.BuildInfo
 import de.zalando.apifirst.Application.StrictModel
 import de.zalando.apifirst.AstNormaliser
 import sbt.Keys._
-import sbt.{Types, _}
+import sbt.{ Types, _ }
 
 /**
-  * @since 28.07.2015
-  */
+ * @since 28.07.2015
+ */
 //noinspection ScalaStyle
 object ApiFirstCore extends AutoPlugin {
 
@@ -72,8 +72,7 @@ object ApiFirstCore extends AutoPlugin {
     apiFirstStateDiagram <<= (apiFirstPreparedData, streams) map prettyPrint(ApiFirstPrettyPrinter.states)
   )
 
-  def prettyPrint(printer: (File, StrictModel) => Seq[String]):
-  (Types.Id[Seq[(File, StrictModel)]], Types.Id[TaskStreams]) => Unit = {
+  def prettyPrint(printer: (File, StrictModel) => Seq[String]): (Types.Id[Seq[(File, StrictModel)]], Types.Id[TaskStreams]) => Unit = {
     case (r, s) => r map { case (a, b) => printer(a, b) } foreach {
       _ foreach { m => s.log.info(m) }
     }

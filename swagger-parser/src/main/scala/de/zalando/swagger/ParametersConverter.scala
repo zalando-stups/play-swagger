@@ -2,10 +2,10 @@ package de.zalando.swagger
 
 import java.net.URI
 
-import de.zalando.apifirst.Application.{ParameterLookupTable, ParameterRef}
+import de.zalando.apifirst.Application.{ ParameterLookupTable, ParameterRef }
 import de.zalando.apifirst.Domain.Type
 import de.zalando.apifirst._
-import de.zalando.apifirst.naming.{Reference, uriToReference}
+import de.zalando.apifirst.naming.{ Reference, uriToReference }
 import de.zalando.swagger.strictModel._
 
 import scala.language.postfixOps
@@ -15,8 +15,8 @@ import scala.language.postfixOps
  * @since   03.11.2015.
  */
 class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix: String,
-                          typeDefs: ParameterNaming#NamedTypes, val useFileNameAsPackage: Boolean)
-  extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
+  typeDefs: ParameterNaming#NamedTypes, val useFileNameAsPackage: Boolean)
+    extends ParameterNaming with HandlerGenerator with ParameterReferenceGenerator {
 
   private val FIXED = None // There is no way to define fixed parameters in swagger spec
 
@@ -55,7 +55,7 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
   private def fromParametersListItem(prefix: Reference)(li: ParametersListItem): (Application.ParameterRef, Application.Parameter) = {
     val paramRef = refFromParametersListItem(prefix)(li)
     li match {
-      case jr@JsonReference(ref) =>
+      case jr @ JsonReference(ref) =>
         paramRef -> fromExplicitParameter(prefix, ref)
       case bp: BodyParameter[_] =>
         paramRef -> fromBodyParameter(prefix, bp)
@@ -68,8 +68,9 @@ class ParametersConverter(val base: URI, val model: SwaggerModel, val keyPrefix:
 
   private def fromExplicitParameter(prefix: Reference, ref: String): Application.Parameter = {
     val default = None
-    val parameter = model.parameters.find { case (paramName, _) =>
-      paramName == Reference.deref(ref).simple
+    val parameter = model.parameters.find {
+      case (paramName, _) =>
+        paramName == Reference.deref(ref).simple
     } map {
       _._2
     } getOrElse {
@@ -133,7 +134,7 @@ object Constraints {
 
 trait ParameterReferenceGenerator {
   protected def refFromParametersListItem(prefix: Reference)(li: ParametersListItem): ParameterRef = li match {
-    case jr@JsonReference(ref) =>
+    case jr @ JsonReference(ref) =>
       ParameterRef(prefix / Reference.deref(ref).simple)
     case p: BodyParameter[_] =>
       ParameterRef(prefix / p.name)

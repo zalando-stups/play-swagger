@@ -3,11 +3,11 @@ package de.zalando.swagger
 import java.net.URL
 
 import de.zalando.apifirst.Application.SecurityDefinitionsTable
-import de.zalando.apifirst.{ParameterPlace, Security}
+import de.zalando.apifirst.{ ParameterPlace, Security }
 import de.zalando.swagger.strictModel._
 
 /**
- * @author  slasch 
+ * @author  slasch
  * @since   05.03.2016
  */
 object SecurityConverter {
@@ -28,7 +28,4 @@ object SecurityConverter {
         name -> Security.OAuth2Definition(Option(oauth.description), validationURL, oauth.scopes)
     }
 }
-
-
-
 

@@ -1,22 +1,18 @@
 package form_data.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import java.io.File
 import scala.math.BigInt
 
 import de.zalando.play.controllers.PlayPathBindables
 
-
-
-import de.zalando.play.controllers.ResponseWriters
 
 
 
@@ -31,11 +27,11 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
 
     val postmultipartActionConstructor  = Action
-    def postmultipartAction[T] = (f: postmultipartActionType[T]) => postmultipartActionConstructor { request =>
+
+def postmultipartAction[T] = (f: postmultipartActionType[T]) => postmultipartActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postmultipartResponseMimeType =>
-
             
             val eitherFormParameters = FormDataParser.postmultipartParseForm(request)
             eitherFormParameters match {
@@ -75,11 +71,11 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
 
     val posturl_encodedActionConstructor  = Action
-    def posturl_encodedAction[T] = (f: posturl_encodedActionType[T]) => posturl_encodedActionConstructor { request =>
+
+def posturl_encodedAction[T] = (f: posturl_encodedActionType[T]) => posturl_encodedActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { posturl_encodedResponseMimeType =>
-
             
             val eitherFormParameters = FormDataParser.posturl_encodedParseForm(request)
             eitherFormParameters match {
@@ -119,11 +115,11 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
 
 
     val postbothActionConstructor  = Action
-    def postbothAction[T] = (f: postbothActionType[T]) => postbothActionConstructor { request =>
+
+def postbothAction[T] = (f: postbothActionType[T]) => postbothActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postbothResponseMimeType =>
-
             
             val eitherFormParameters = FormDataParser.postbothParseForm(request)
             eitherFormParameters match {
@@ -154,6 +150,6 @@ trait Form_dataYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with PostmultipartType[Results.EmptyContent] with Posturl_encodedType[Results.EmptyContent] with PostbothType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with PostmultipartType[Result] with Posturl_encodedType[Result] with PostbothType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with PostmultipartType[Results.EmptyContent] with Posturl_encodedType[Results.EmptyContent] with PostbothType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

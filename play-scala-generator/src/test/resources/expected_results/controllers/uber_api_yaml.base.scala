@@ -1,13 +1,12 @@
 package uber.api.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import java.util.UUID
 import scala.math.BigDecimal
@@ -15,9 +14,6 @@ import de.zalando.play.controllers.ArrayWrapper
 
 import de.zalando.play.controllers.PlayPathBindables
 
-
-
-import de.zalando.play.controllers.ResponseWriters
 
 
 
@@ -32,11 +28,11 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val getmeActionConstructor  = Action
-    def getmeAction[T] = (f: getmeActionType[T]) => getmeActionConstructor { request =>
+
+def getmeAction[T] = (f: getmeActionType[T]) => getmeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getmeResponseMimeType =>
-
             
             
 
@@ -60,11 +56,11 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val getproductsActionConstructor  = Action
-    def getproductsAction[T] = (f: getproductsActionType[T]) => (latitude: Double, longitude: Double) => getproductsActionConstructor { request =>
+
+def getproductsAction[T] = (f: getproductsActionType[T]) => (latitude: Double, longitude: Double) => getproductsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getproductsResponseMimeType =>
-
             
             
 
@@ -94,11 +90,11 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val getestimatesTimeActionConstructor  = Action
-    def getestimatesTimeAction[T] = (f: getestimatesTimeActionType[T]) => (start_latitude: Double, start_longitude: Double, customer_uuid: EstimatesTimeGetCustomer_uuid, product_id: ProfilePicture) => getestimatesTimeActionConstructor { request =>
+
+def getestimatesTimeAction[T] = (f: getestimatesTimeActionType[T]) => (start_latitude: Double, start_longitude: Double, customer_uuid: EstimatesTimeGetCustomer_uuid, product_id: ProfilePicture) => getestimatesTimeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesTimeResponseMimeType =>
-
             
             
 
@@ -128,11 +124,11 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val getestimatesPriceActionConstructor  = Action
-    def getestimatesPriceAction[T] = (f: getestimatesPriceActionType[T]) => (start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) => getestimatesPriceActionConstructor { request =>
+
+def getestimatesPriceAction[T] = (f: getestimatesPriceActionType[T]) => (start_latitude: Double, start_longitude: Double, end_latitude: Double, end_longitude: Double) => getestimatesPriceActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getestimatesPriceResponseMimeType =>
-
             
             
 
@@ -162,11 +158,11 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val gethistoryActionConstructor  = Action
-    def gethistoryAction[T] = (f: gethistoryActionType[T]) => (offset: ErrorCode, limit: ErrorCode) => gethistoryActionConstructor { request =>
+
+def gethistoryAction[T] = (f: gethistoryActionType[T]) => (offset: ErrorCode, limit: ErrorCode) => gethistoryActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { gethistoryResponseMimeType =>
-
             
             
 
@@ -187,6 +183,6 @@ trait UberApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetmeType[Results.EmptyContent] with GetproductsType[Results.EmptyContent] with GetestimatesTimeType[Results.EmptyContent] with GetestimatesPriceType[Results.EmptyContent] with GethistoryType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with GetmeType[Result] with GetproductsType[Result] with GetestimatesTimeType[Result] with GetestimatesPriceType[Result] with GethistoryType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetmeType[Results.EmptyContent] with GetproductsType[Results.EmptyContent] with GetestimatesTimeType[Results.EmptyContent] with GetestimatesPriceType[Results.EmptyContent] with GethistoryType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

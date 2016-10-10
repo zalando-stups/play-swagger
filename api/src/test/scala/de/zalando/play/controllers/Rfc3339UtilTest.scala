@@ -1,12 +1,12 @@
 package de.zalando.play.controllers
 
-import org.joda.time.{DateTime, DateTimeZone}
-import org.scalatest.{FunSpec, MustMatchers}
+import org.joda.time.{ DateTime, DateTimeZone }
+import org.scalatest.{ FunSpec, MustMatchers }
 
 /**
-  * @author slasch 
-  * @since 04.01.2016.
-  */
+ * @author slasch
+ * @since 04.01.2016.
+ */
 class Rfc3339UtilTest extends FunSpec with MustMatchers {
 
   val dtz = DateTimeZone.UTC

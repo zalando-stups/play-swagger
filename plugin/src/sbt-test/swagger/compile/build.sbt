@@ -1,16 +1,11 @@
 import de.zalando.play.apifirst.sbt.ApiFirstCore
 import de.zalando.play.generator.sbt.ApiFirstPlayScalaCodeGenerator
 import de.zalando.play.swagger.sbt._
-import play.routes.compiler.InjectedRoutesGenerator
 import play.sbt.PlayScala
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala, ApiFirstCore, ApiFirstPlayScalaCodeGenerator, ApiFirstSwaggerParser)
 
-scalaVersion := sys.props.get("scala.version").getOrElse("2.11.7")
-
-crossPaths := false
-
-routesGenerator := InjectedRoutesGenerator
+scalaVersion := sys.props.get("scala.version").getOrElse("2.11.8")
 
 libraryDependencies ++= Seq(
   specs2 % "test",
@@ -20,3 +15,7 @@ libraryDependencies ++= Seq(
 )
 
 apiFirstParsers := Seq(ApiFirstSwaggerParser.swaggerSpec2Ast.value).flatten
+
+logLevel := sbt.Level.Warn
+
+crossPaths := false

@@ -5,14 +5,14 @@ import de.zalando.apifirst.Domain
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.naming.Reference
 import de.zalando.apifirst.naming.dsl._
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{ FunSpec, MustMatchers }
 
 import scala.language.implicitConversions
 
 /**
-  * @author  slasch 
-  * @since   16.11.2015.
-  */
+ * @author  slasch
+ * @since   16.11.2015.
+ */
 class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
 
   implicit def types2model(types: TypeLookupTable): StrictModel =
@@ -125,33 +125,45 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
       val model = Map(
         "definitions" / "Cat" ->
           AllOf("definitions" / "Cat", None,
-            Seq(TypeRef("definitions" / "Pet"),
-              TypeRef("definitions" / "Cat" / "AllOf1")), Some("definitions" / "Pet")),
+            Seq(
+              TypeRef("definitions" / "Pet"),
+              TypeRef("definitions" / "Cat" / "AllOf1")
+            ), Some("definitions" / "Pet")),
         "definitions" / "Dog" ->
           AllOf("definitions" / "Dog", None,
-            Seq(TypeRef("definitions" / "Pet"),
-              TypeRef("definitions" / "Dog" / "AllOf1")), Some("definitions" / "Pet")),
+            Seq(
+              TypeRef("definitions" / "Pet"),
+              TypeRef("definitions" / "Dog" / "AllOf1")
+            ), Some("definitions" / "Pet")),
         "definitions" / "CatNDog" ->
           AllOf("definitions" / "CatNDog", None,
-            Seq(TypeRef("definitions" / "Dog"),
-              TypeRef("definitions" / "Cat")), Some("definitions" / "Pet")),
+            Seq(
+              TypeRef("definitions" / "Dog"),
+              TypeRef("definitions" / "Cat")
+            ), Some("definitions" / "Pet")),
         "definitions" / "Pet" ->
           TypeDef("definitions" / "Pet", Seq(
             Field("definitions" / "Pet" / "name", Str(None, None)),
-            Field("definitions" / "Pet" / "petType", Str(None, None))), None),
+            Field("definitions" / "Pet" / "petType", Str(None, None))
+          ), None),
         "definitions" / "Labrador" ->
           AllOf("definitions" / "Labrador", None,
-            Seq(TypeRef("definitions" / "Dog"),
-              TypeRef("definitions" / "Labrador" / "AllOf1")), Some("definitions" / "Pet")),
+            Seq(
+              TypeRef("definitions" / "Dog"),
+              TypeRef("definitions" / "Labrador" / "AllOf1")
+            ), Some("definitions" / "Pet")),
         "definitions" / "Cat" / "AllOf1" ->
           TypeDef("definitions" / "Cat", Seq(
-            Field("definitions" / "Cat" / "huntingSkill", Str(None, None))), None),
+            Field("definitions" / "Cat" / "huntingSkill", Str(None, None))
+          ), None),
         "definitions" / "Dog" / "AllOf1" ->
           TypeDef("definitions" / "Dog", Seq(
-            Field("definitions" / "Dog" / "packSize", Intgr(None))), None),
+            Field("definitions" / "Dog" / "packSize", Intgr(None))
+          ), None),
         "definitions" / "Labrador" / "AllOf1" ->
           TypeDef("definitions" / "Labrador", Seq(
-            Field("definitions" / "Labrador" / "cuteness", Intgr(None))), None)
+            Field("definitions" / "Labrador" / "cuteness", Intgr(None))
+          ), None)
       )
       val discriminators: DiscriminatorLookupTable = Map(
         "definitions" / "Pet" -> "definitions" / "Pet" / "petType"
@@ -186,14 +198,17 @@ class ScalaModelGeneratorTest extends FunSpec with MustMatchers {
         "definitions" / "ErrorModel" ->
           TypeDef("definitions" / "ErrorModel", Seq(
             Field("definitions" / "ErrorModel" / "message", Str(None, None)),
-            Field("definitions" / "ErrorModel" / "code", Intgr(None))), None),
+            Field("definitions" / "ErrorModel" / "code", Intgr(None))
+          ), None),
         "definitions" / "ExtendedErrorModel" ->
           AllOf("definitions" / "ExtendedErrorModel", None, Seq(
             TypeRef("definitions" / "ErrorModel"),
-            TypeRef("definitions" / "ExtendedErrorModel" / "AllOf1"))),
+            TypeRef("definitions" / "ExtendedErrorModel" / "AllOf1")
+          )),
         "definitions" / "ExtendedErrorModel" / "AllOf1" ->
           TypeDef("definitions" / "ExtendedErrorModel", Seq(
-            Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))), None)
+            Field("definitions" / "ExtendedErrorModel" / "rootCause", Str(None, None))
+          ), None)
       )
       new ScalaGenerator(model).generateModel("test.scala", "test.scala") mustBeAs
         """package test

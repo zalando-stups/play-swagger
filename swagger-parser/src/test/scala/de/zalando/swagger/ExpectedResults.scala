@@ -1,6 +1,6 @@
 package de.zalando.swagger
 
-import java.io.{File, FileOutputStream}
+import java.io.{ File, FileOutputStream }
 
 import scala.io.Source
 

@@ -7,11 +7,11 @@ import de.zalando.apifirst.Application.StrictModel
 import de.zalando.swagger.SwaggerParser
 import de.zalando.swagger.strictModel.SwaggerModel
 import sbt.Keys._
-import sbt.{Defaults, _}
+import sbt.{ Defaults, _ }
 
 /**
-  * @since 24.05.2016.
-  */
+ * @since 24.05.2016.
+ */
 //noinspection ScalaStyle
 object ApiFirstSwaggerParser extends AutoPlugin {
 
@@ -21,7 +21,7 @@ object ApiFirstSwaggerParser extends AutoPlugin {
   }
   private lazy val swaggerParseSpec = taskKey[Seq[(java.net.URI, SwaggerModel)]]("Parse API specifications (swaggerDefinitions)")
 
-  lazy val swaggerSpec2Ast = taskKey[Seq[(File,StrictModel)]]("Convert API specifications (swaggerDefinitions) to AST")
+  lazy val swaggerSpec2Ast = taskKey[Seq[(File, StrictModel)]]("Convert API specifications (swaggerDefinitions) to AST")
 
   // Users have to explicitly enable it
   override def trigger: PluginTrigger = noTrigger
@@ -39,9 +39,9 @@ object ApiFirstSwaggerParser extends AutoPlugin {
   ) ++ inConfig(Compile)(swaggerParserSettings)
 
   /**
-    * We define these unscoped, and then scope later using inConfig, this means we could define different definitions
-    * to be compiled in compile and test, for example.
-    */
+   * We define these unscoped, and then scope later using inConfig, this means we could define different definitions
+   * to be compiled in compile and test, for example.
+   */
   private def swaggerParserSettings: Seq[Setting[_]] = Seq(
 
     sourcePositionMappers := Seq(),

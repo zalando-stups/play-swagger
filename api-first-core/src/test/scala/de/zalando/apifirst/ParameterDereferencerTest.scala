@@ -3,12 +3,12 @@ package de.zalando.apifirst
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.naming.Reference
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{ FunSpec, MustMatchers }
 
 /**
-  * @author  slasch
-  * @since   15.11.2015.
-  */
+ * @author  slasch
+ * @since   15.11.2015.
+ */
 class ParameterDereferencerTest extends FunSpec with MustMatchers {
 
   describe("ParameterDereferencer") {
@@ -91,7 +91,7 @@ class ParameterDereferencerTest extends FunSpec with MustMatchers {
     val model = StrictModel(Nil, types, params, Map.empty, "", None, Map.empty, Map.empty)
     val result = ParameterDereferencer(model)
     types.foreach { t => result.typeDefs.contains(t._1) mustBe true }
-    result.typeDefs.size mustBe (types.size + params.count(! _._2.typeName.isInstanceOf[TypeRef]))
+    result.typeDefs.size mustBe (types.size + params.count(!_._2.typeName.isInstanceOf[TypeRef]))
     result.params.foreach(_._2.typeName.isInstanceOf[TypeRef] mustBe true)
     result.params.size mustBe 2
   }

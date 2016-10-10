@@ -84,7 +84,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = {{for p in test.form_parameters}}{{if p.is_file}}{{if p.optional}}{{p.field_name}}.toSeq.map { m => FilePart("{{p.field_name}}", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ {{else}}Seq(FilePart("{{p.field_name}}", {{p.field_name}}.getName, Some("Content-Type: multipart/form-data"), TemporaryFile({{p.field_name}}))) ++ {{/if}}{{/if}}{{/for}}Nil
                         val data = Map.empty[String, Seq[String]] {{for p in test.form_parameters}} {{if p.is_file}} {{else}} {{if p.optional}}++ {{p.field_name}}.map(m => "{{p.field_name}}" -> Seq(m.toString)).toSeq{{else}}++ Seq("{{p.field_name}}" -> Seq({{p.field_name}}.toString)) {{/if}} {{/if}} {{/for}}
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -136,7 +136,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = {{for p in test.form_parameters}}{{if p.is_file}}{{if p.optional}}{{p.field_name}}.toSeq.map { m => FilePart("{{p.field_name}}", m.getName, Some("Content-Type: multipart/form-data"), TemporaryFile(m)) } ++ {{else}}Seq(FilePart("{{p.field_name}}", {{p.field_name}}.getName, Some("Content-Type: multipart/form-data"), TemporaryFile({{p.field_name}}))) ++ {{/if}}{{/if}}{{/for}}Nil
                         val data = Map.empty[String, Seq[String]] {{for p in test.form_parameters}} {{if p.is_file}} {{else}} {{if p.optional}}++ {{p.field_name}}.map(m => "{{p.field_name}}" -> Seq(m.toString)).toSeq{{else}}++ Seq("{{p.field_name}}" -> Seq({{p.field_name}}.toString)) {{/if}} {{/if}} {{/for}}
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {

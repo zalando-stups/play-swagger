@@ -1,6 +1,6 @@
 package de.zalando.apifirst.generators
 
-import de.zalando.apifirst.Application.{StrictModel, ApiCall, Parameter}
+import de.zalando.apifirst.Application.{ StrictModel, ApiCall, Parameter }
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.naming.Reference
 
@@ -10,18 +10,18 @@ import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.generators.DenotationNames._
 
 /**
-  * @author slasch 
-  * @since 30.12.2015.
-  */
+ * @author slasch
+ * @since 30.12.2015.
+ */
 trait CommonParamDataStep extends EnrichmentStep[Parameter] with CommonData {
 
   override def steps: Seq[SingleStep] = types +: super.steps
 
   /**
-    * Puts type information into the denotation table
-    *
-    * @return
-    */
+   * Puts type information into the denotation table
+   *
+   * @return
+   */
   protected def types: SingleStep = parameter => table => singleParameter(parameter)
 
   private def singleParameter(paramPair: (Reference, Parameter)) = {
@@ -37,10 +37,10 @@ trait CommonCallDataStep extends EnrichmentStep[ApiCall] with CommonData {
   override def steps: Seq[SingleStep] = types +: super.steps
 
   /**
-    * Puts type information into the denotation table
-    *
-    * @return
-    */
+   * Puts type information into the denotation table
+   *
+   * @return
+   */
   protected def types: SingleStep = parameter => table => singleParameter(parameter)
 
   private def singleParameter(paramPair: (Reference, ApiCall)) = {
@@ -56,15 +56,14 @@ trait CommonDataStep extends EnrichmentStep[Type] with CommonData {
   override def steps: Seq[SingleStep] = types +: super.steps
 
   @tailrec
-  private def avoidClashes(table: DenotationTable, name: String)
-                          (names: Iterable[String] = table.values.map(_ (COMMON)(TYPE_NAME).toString)): String =
+  private def avoidClashes(table: DenotationTable, name: String)(names: Iterable[String] = table.values.map(_(COMMON)(TYPE_NAME).toString)): String =
     if (names.exists(_.equalsIgnoreCase(name))) avoidClashes(table, name + "NameClash")(names) else name
 
   /**
-    * Puts type information into the denotation table
-    *
-    * @return
-    */
+   * Puts type information into the denotation table
+   *
+   * @return
+   */
   protected def types: SingleStep = typeDef => table => typeDef match {
     case (ref, t) =>
       val name = avoidClashes(table, typeName(t, ref))()
@@ -85,14 +84,14 @@ trait CommonData {
         case _ => useType(ref, suffix, "")
       }
     case p: PrimitiveType => useType(t.name, suffix, "")
-    case TypeDef(name, _, _) if name.isDefinition  && ! r.isDefinition =>
+    case TypeDef(name, _, _) if name.isDefinition && !r.isDefinition =>
       useType(name, suffix, "")
     case _ => useType(r, suffix, "")
   }
 
   @tailrec
   protected final def memberName(t: Type, r: Reference, suffix: String = ""): String = t match {
-    case TypeRef(ref) if ! app.findType(ref).isInstanceOf[TypeRef] => memberName(app.findType(ref), ref, suffix)
+    case TypeRef(ref) if !app.findType(ref).isInstanceOf[TypeRef] => memberName(app.findType(ref), ref, suffix)
     case TypeRef(ref) => useType(ref, suffix, "")
     case p: PrimitiveType => useType(r, suffix, "")
     case _ => useType(r, suffix, "")

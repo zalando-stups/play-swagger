@@ -2,23 +2,24 @@ package de.zalando.apifirst.generators
 
 import de.zalando.apifirst.Application._
 import de.zalando.apifirst.Domain._
-import de.zalando.apifirst.Http.{ApplicationFormUrlEncoded, MultipartFormData}
-import de.zalando.apifirst.Security.{Constraint, OAuth2Constraint}
-import de.zalando.apifirst.{Http, ParameterPlace}
+import de.zalando.apifirst.Http.{ ApplicationFormUrlEncoded, MultipartFormData }
+import de.zalando.apifirst.Security.{ Constraint, OAuth2Constraint }
+import de.zalando.apifirst.{ Http, ParameterPlace }
 import de.zalando.apifirst.ScalaName._
 import de.zalando.apifirst.StringUtil._
 import de.zalando.apifirst.generators.DenotationNames._
 import de.zalando.apifirst.naming.Reference
-import de.zalando.play.controllers.WriterFactories
 
 /**
-  * @author slasch
-  * @since 31.12.2015.
-  */
+ * @author slasch
+ * @since 31.12.2015.
+ */
 trait CallControllersStep extends EnrichmentStep[ApiCall]
-  with ControllersCommons with SecurityCommons with ActionResults with ParameterData {
+    with ControllersCommons with SecurityCommons with ActionResults with ParameterData {
 
   override def steps: Seq[SingleStep] = controllers +: super.steps
+
+  def providedWriterFactories: Set[String]
 
   val nameMapping = Map(
     "action" -> controllersSuffix,
@@ -35,10 +36,10 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
   )
 
   /**
-    * Puts controllers related information into the denotation table
-    *
-    * @return
-    */
+   * Puts controllers related information into the denotation table
+   *
+   * @return
+   */
   protected val controllers: SingleStep = call => table =>
     Map(
       "controller" -> controllerProps(call._1, call._2)(table),
@@ -122,7 +123,8 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
     security.map(s => Map("name" -> securityCheck(s.name), "params" -> securityParamValue(s)))
 
   override def actionResults(call: ApiCall)(table: DenotationTable): (Seq[Map[String, Any]], Option[String]) = {
-    val resultTypes = call.resultTypes.results.toSeq map { case(code, ref) =>
+    val resultTypes = call.resultTypes.results.toSeq map {
+      case (code, ref) =>
         Map("code" -> code, "type" -> singleResultType(table)(ref))
     }
     val default = call.resultTypes.default.map(singleResultType(table))
@@ -141,16 +143,17 @@ trait CallControllersStep extends EnrichmentStep[ApiCall]
   }
 
   private def needsCustom(mimeTypes: Set[Http.MimeType]): Boolean =
-    mimeTypes.map(_.name).diff(WriterFactories.factories.keySet).nonEmpty
+    mimeTypes.map(_.name).diff(providedWriterFactories).nonEmpty
 
   private def mimeTypes2StringList(in: Set[Http.MimeType]): String =
-    in.map(_.name).map("\"" + _ + "\"").mkString("Seq[String](", ", ", ")")
+    in.map("\"" + _.name + "\"").mkString("Seq[String](", ", ", ")")
 
   private def nameWithSuffix(call: ApiCall, suffix: String): String =
     escape(call.handler.method + suffix)
 
   private def errorMappings(call: ApiCall): Iterable[Map[String, String]] =
-    call.errorMapping.flatMap { case (k, v) => v.map { ex =>
+    call.errorMapping.flatMap {
+      case (k, v) => v.map { ex =>
         Map(
           "exception_name" -> ex.getCanonicalName,
           "simple_exception_name" -> ex.getSimpleName,
@@ -212,10 +215,11 @@ object PlayScalaControllerAnalyzer extends ControllersCommons {
 
   def collectImplementations(currentVersion: Seq[String], start: String, end: String): Map[String, Seq[String]] = {
     val actionIndexes = currentVersion.zipWithIndex.filter(_._1.trim.startsWith(start)).map { case (line, idx) => line.replace(start, "") -> idx }
-    val codeParts = actionIndexes map { case (action, idx) =>
-      val fromStart = currentVersion.drop(idx)
-      val endIdx = fromStart.takeWhile(!_.trim.startsWith(end)).size + 1
-      action.trim -> fromStart.take(endIdx)
+    val codeParts = actionIndexes map {
+      case (action, idx) =>
+        val fromStart = currentVersion.drop(idx)
+        val endIdx = fromStart.takeWhile(!_.trim.startsWith(end)).size + 1
+        action.trim -> fromStart.take(endIdx)
     }
     codeParts.toMap
   }

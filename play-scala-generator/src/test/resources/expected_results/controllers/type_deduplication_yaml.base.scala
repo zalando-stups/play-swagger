@@ -1,21 +1,17 @@
 package type_deduplication.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import scala.math.BigInt
 
 import de.zalando.play.controllers.PlayPathBindables
 
-
-
-import de.zalando.play.controllers.ResponseWriters
 
 
 
@@ -31,11 +27,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsByPlant_idWateringsByWatering_idActionConstructor  = Action
-    def getplantsByPlant_idWateringsByWatering_idAction[T] = (f: getplantsByPlant_idWateringsByWatering_idActionType[T]) => (plant_id: String, watering_id: String) => getplantsByPlant_idWateringsByWatering_idActionConstructor { request =>
+
+def getplantsByPlant_idWateringsByWatering_idAction[T] = (f: getplantsByPlant_idWateringsByWatering_idActionType[T]) => (plant_id: String, watering_id: String) => getplantsByPlant_idWateringsByWatering_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idWateringsByWatering_idResponseMimeType =>
-
             
             
 
@@ -59,9 +55,9 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait PutplantsByPlant_idWateringsByWatering_idType[T] extends ResultWrapper[T]
     case class PutplantsByPlant_idWateringsByWatering_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends PutplantsByPlant_idWateringsByWatering_idType[Error] { val statusCode = 404 }
     
-    case object PutplantsByPlant_idWateringsByWatering_id200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idWateringsByWatering_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idWateringsByWatering_id201 extends EmptyReturn(201)
+    case class PutplantsByPlant_idWateringsByWatering_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putplantsByPlant_idWateringsByWatering_idActionRequestType       = (String, String)
@@ -69,11 +65,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val putplantsByPlant_idWateringsByWatering_idActionConstructor  = Action
-    def putplantsByPlant_idWateringsByWatering_idAction[T] = (f: putplantsByPlant_idWateringsByWatering_idActionType[T]) => (plant_id: String, watering_id: String) => putplantsByPlant_idWateringsByWatering_idActionConstructor { request =>
+
+def putplantsByPlant_idWateringsByWatering_idAction[T] = (f: putplantsByPlant_idWateringsByWatering_idActionType[T]) => (plant_id: String, watering_id: String) => putplantsByPlant_idWateringsByWatering_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putplantsByPlant_idWateringsByWatering_idResponseMimeType =>
-
             
             
 
@@ -103,11 +99,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getusersMeActionConstructor  = Action
-    def getusersMeAction[T] = (f: getusersMeActionType[T]) => getusersMeActionConstructor { request =>
+
+def getusersMeAction[T] = (f: getusersMeActionType[T]) => getusersMeActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersMeResponseMimeType =>
-
             
             
 
@@ -125,7 +121,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait GetplantsByPlant_idSunlight_needsType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idSunlight_needs200(result: SunlightNeeds)(implicit val writer: String => Option[Writeable[SunlightNeeds]]) extends GetplantsByPlant_idSunlight_needsType[SunlightNeeds] { val statusCode = 200 }
     
-    case object GetplantsByPlant_idSunlight_needs404 extends EmptyReturn(404)
+    case class GetplantsByPlant_idSunlight_needs404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getplantsByPlant_idSunlight_needsActionRequestType       = (String)
@@ -133,11 +129,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsByPlant_idSunlight_needsActionConstructor  = Action
-    def getplantsByPlant_idSunlight_needsAction[T] = (f: getplantsByPlant_idSunlight_needsActionType[T]) => (plant_id: String) => getplantsByPlant_idSunlight_needsActionConstructor { request =>
+
+def getplantsByPlant_idSunlight_needsAction[T] = (f: getplantsByPlant_idSunlight_needsActionType[T]) => (plant_id: String) => getplantsByPlant_idSunlight_needsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idSunlight_needsResponseMimeType =>
-
             
             
 
@@ -160,9 +156,9 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PutplantsByPlant_idSunlight_needsType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_idSunlight_needs200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idSunlight_needs200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idSunlight_needs404 extends EmptyReturn(404)
+    case class PutplantsByPlant_idSunlight_needs404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type putplantsByPlant_idSunlight_needsActionRequestType       = (String, SunlightNeeds)
@@ -180,15 +176,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[SunlightNeeds]
-            anyParser[SunlightNeeds](bodyMimeType, customParsers, "Invalid SunlightNeeds", maxLength)
+            anyParser[SunlightNeeds](bodyMimeType, customParsers, "Invalid SunlightNeeds", maxLength) _
         }
 
     val putplantsByPlant_idSunlight_needsActionConstructor  = Action
-    def putplantsByPlant_idSunlight_needsAction[T] = (f: putplantsByPlant_idSunlight_needsActionType[T]) => (plant_id: String) => putplantsByPlant_idSunlight_needsActionConstructor(putplantsByPlant_idSunlight_needsParser(Seq[String]())) { request =>
+
+def putplantsByPlant_idSunlight_needsAction[T] = (f: putplantsByPlant_idSunlight_needsActionType[T]) => (plant_id: String) => putplantsByPlant_idSunlight_needsActionConstructor(BodyParsers.parse.using(putplantsByPlant_idSunlight_needsParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putplantsByPlant_idSunlight_needsResponseMimeType =>
-
             val sunlight_needs = request.body
             
             
@@ -219,11 +215,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getusersActionConstructor  = Action
-    def getusersAction[T] = (f: getusersActionType[T]) => (limit: UsersGetLimit, offset: UsersGetLimit) => getusersActionConstructor { request =>
+
+def getusersAction[T] = (f: getusersActionType[T]) => (limit: UsersGetLimit, offset: UsersGetLimit) => getusersActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersResponseMimeType =>
-
             
             
 
@@ -246,7 +242,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PostusersType[T] extends ResultWrapper[T]
     
-    case object Postusers200 extends EmptyReturn(200)
+    case class Postusers200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type postusersActionRequestType       = (SigninData)
@@ -264,15 +260,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[SigninData]
-            anyParser[SigninData](bodyMimeType, customParsers, "Invalid SigninData", maxLength)
+            anyParser[SigninData](bodyMimeType, customParsers, "Invalid SigninData", maxLength) _
         }
 
     val postusersActionConstructor  = Action
-    def postusersAction[T] = (f: postusersActionType[T]) => postusersActionConstructor(postusersParser(Seq[String]())) { request =>
+
+def postusersAction[T] = (f: postusersActionType[T]) => postusersActionConstructor(BodyParsers.parse.using(postusersParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postusersResponseMimeType =>
-
             val signin_data = request.body
             
             
@@ -303,11 +299,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getareasByArea_idActionConstructor  = Action
-    def getareasByArea_idAction[T] = (f: getareasByArea_idActionType[T]) => (area_id: String) => getareasByArea_idActionConstructor { request =>
+
+def getareasByArea_idAction[T] = (f: getareasByArea_idActionType[T]) => (area_id: String) => getareasByArea_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getareasByArea_idResponseMimeType =>
-
             
             
 
@@ -330,9 +326,9 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PutareasByArea_idType[T] extends ResultWrapper[T]
     
-    case object PutareasByArea_id200 extends EmptyReturn(200)
+    case class PutareasByArea_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutareasByArea_id201 extends EmptyReturn(201)
+    case class PutareasByArea_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putareasByArea_idActionRequestType       = (String)
@@ -340,11 +336,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val putareasByArea_idActionConstructor  = Action
-    def putareasByArea_idAction[T] = (f: putareasByArea_idActionType[T]) => (area_id: String) => putareasByArea_idActionConstructor { request =>
+
+def putareasByArea_idAction[T] = (f: putareasByArea_idActionType[T]) => (area_id: String) => putareasByArea_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putareasByArea_idResponseMimeType =>
-
             
             
 
@@ -367,7 +363,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait DeleteareasByArea_idType[T] extends ResultWrapper[T]
     
-    case object DeleteareasByArea_id200 extends EmptyReturn(200)
+    case class DeleteareasByArea_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteareasByArea_idActionRequestType       = (String)
@@ -375,11 +371,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val deleteareasByArea_idActionConstructor  = Action
-    def deleteareasByArea_idAction[T] = (f: deleteareasByArea_idActionType[T]) => (area_id: String) => deleteareasByArea_idActionConstructor { request =>
+
+def deleteareasByArea_idAction[T] = (f: deleteareasByArea_idActionType[T]) => (area_id: String) => deleteareasByArea_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteareasByArea_idResponseMimeType =>
-
             
             
 
@@ -409,11 +405,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsActionConstructor  = Action
-    def getplantsAction[T] = (f: getplantsActionType[T]) => (limit: PlantsGetLimit, offset: PlantsGetOffset) => getplantsActionConstructor { request =>
+
+def getplantsAction[T] = (f: getplantsActionType[T]) => (limit: PlantsGetLimit, offset: PlantsGetOffset) => getplantsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsResponseMimeType =>
-
             
             
 
@@ -437,7 +433,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait GetuserByUser_idPlantsType[T] extends ResultWrapper[T]
     case class GetuserByUser_idPlants200(result: Seq[Plant])(implicit val writer: String => Option[Writeable[Seq[Plant]]]) extends GetuserByUser_idPlantsType[Seq[Plant]] { val statusCode = 200 }
     
-    case object GetuserByUser_idPlants404 extends EmptyReturn(404)
+    case class GetuserByUser_idPlants404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getuserByUser_idPlantsActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
@@ -445,11 +441,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getuserByUser_idPlantsActionConstructor  = Action
-    def getuserByUser_idPlantsAction[T] = (f: getuserByUser_idPlantsActionType[T]) => (user_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getuserByUser_idPlantsActionConstructor { request =>
+
+def getuserByUser_idPlantsAction[T] = (f: getuserByUser_idPlantsActionType[T]) => (user_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getuserByUser_idPlantsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getuserByUser_idPlantsResponseMimeType =>
-
             
             
 
@@ -480,11 +476,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getusersByUser_idActionConstructor  = Action
-    def getusersByUser_idAction[T] = (f: getusersByUser_idActionType[T]) => (user_id: String) => getusersByUser_idActionConstructor { request =>
+
+def getusersByUser_idAction[T] = (f: getusersByUser_idActionType[T]) => (user_id: String) => getusersByUser_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idResponseMimeType =>
-
             
             
 
@@ -507,9 +503,9 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PutusersByUser_idType[T] extends ResultWrapper[T]
     
-    case object PutusersByUser_id200 extends EmptyReturn(200)
+    case class PutusersByUser_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutusersByUser_id201 extends EmptyReturn(201)
+    case class PutusersByUser_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putusersByUser_idActionRequestType       = (String, User)
@@ -527,15 +523,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[User]
-            anyParser[User](bodyMimeType, customParsers, "Invalid User", maxLength)
+            anyParser[User](bodyMimeType, customParsers, "Invalid User", maxLength) _
         }
 
     val putusersByUser_idActionConstructor  = Action
-    def putusersByUser_idAction[T] = (f: putusersByUser_idActionType[T]) => (user_id: String) => putusersByUser_idActionConstructor(putusersByUser_idParser(Seq[String]())) { request =>
+
+def putusersByUser_idAction[T] = (f: putusersByUser_idActionType[T]) => (user_id: String) => putusersByUser_idActionConstructor(BodyParsers.parse.using(putusersByUser_idParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putusersByUser_idResponseMimeType =>
-
             val user = request.body
             
             
@@ -560,7 +556,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait DeleteusersByUser_idType[T] extends ResultWrapper[T]
     case class DeleteusersByUser_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteusersByUser_idType[Error] { val statusCode = 404 }
     
-    case object DeleteusersByUser_id200 extends EmptyReturn(200)
+    case class DeleteusersByUser_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteusersByUser_idActionRequestType       = (String, User)
@@ -578,15 +574,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[User]
-            anyParser[User](bodyMimeType, customParsers, "Invalid User", maxLength)
+            anyParser[User](bodyMimeType, customParsers, "Invalid User", maxLength) _
         }
 
     val deleteusersByUser_idActionConstructor  = Action
-    def deleteusersByUser_idAction[T] = (f: deleteusersByUser_idActionType[T]) => (user_id: String) => deleteusersByUser_idActionConstructor(deleteusersByUser_idParser(Seq[String]())) { request =>
+
+def deleteusersByUser_idAction[T] = (f: deleteusersByUser_idActionType[T]) => (user_id: String) => deleteusersByUser_idActionConstructor(BodyParsers.parse.using(deleteusersByUser_idParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteusersByUser_idResponseMimeType =>
-
             val user = request.body
             
             
@@ -617,11 +613,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getareasActionConstructor  = Action
-    def getareasAction[T] = (f: getareasActionType[T]) => (limit: UsersGetLimit, offset: UsersGetLimit) => getareasActionConstructor { request =>
+
+def getareasAction[T] = (f: getareasActionType[T]) => (limit: UsersGetLimit, offset: UsersGetLimit) => getareasActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getareasResponseMimeType =>
-
             
             
 
@@ -645,7 +641,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait GetplantsByPlant_idLocationType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idLocation200(result: Location)(implicit val writer: String => Option[Writeable[Location]]) extends GetplantsByPlant_idLocationType[Location] { val statusCode = 200 }
     
-    case object GetplantsByPlant_idLocation404 extends EmptyReturn(404)
+    case class GetplantsByPlant_idLocation404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getplantsByPlant_idLocationActionRequestType       = (String)
@@ -653,11 +649,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsByPlant_idLocationActionConstructor  = Action
-    def getplantsByPlant_idLocationAction[T] = (f: getplantsByPlant_idLocationActionType[T]) => (plant_id: String) => getplantsByPlant_idLocationActionConstructor { request =>
+
+def getplantsByPlant_idLocationAction[T] = (f: getplantsByPlant_idLocationActionType[T]) => (plant_id: String) => getplantsByPlant_idLocationActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idLocationResponseMimeType =>
-
             
             
 
@@ -680,9 +676,9 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PutplantsByPlant_idLocationType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_idLocation200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idLocation200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idLocation404 extends EmptyReturn(404)
+    case class PutplantsByPlant_idLocation404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type putplantsByPlant_idLocationActionRequestType       = (String, Location)
@@ -700,15 +696,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[Location]
-            anyParser[Location](bodyMimeType, customParsers, "Invalid Location", maxLength)
+            anyParser[Location](bodyMimeType, customParsers, "Invalid Location", maxLength) _
         }
 
     val putplantsByPlant_idLocationActionConstructor  = Action
-    def putplantsByPlant_idLocationAction[T] = (f: putplantsByPlant_idLocationActionType[T]) => (plant_id: String) => putplantsByPlant_idLocationActionConstructor(putplantsByPlant_idLocationParser(Seq[String]())) { request =>
+
+def putplantsByPlant_idLocationAction[T] = (f: putplantsByPlant_idLocationActionType[T]) => (plant_id: String) => putplantsByPlant_idLocationActionConstructor(BodyParsers.parse.using(putplantsByPlant_idLocationParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putplantsByPlant_idLocationResponseMimeType =>
-
             val location = request.body
             
             
@@ -732,9 +728,9 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait DeleteplantsByPlant_idLocationType[T] extends ResultWrapper[T]
     
-    case object DeleteplantsByPlant_idLocation200 extends EmptyReturn(200)
+    case class DeleteplantsByPlant_idLocation200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object DeleteplantsByPlant_idLocation404 extends EmptyReturn(404)
+    case class DeleteplantsByPlant_idLocation404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type deleteplantsByPlant_idLocationActionRequestType       = (String)
@@ -742,11 +738,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val deleteplantsByPlant_idLocationActionConstructor  = Action
-    def deleteplantsByPlant_idLocationAction[T] = (f: deleteplantsByPlant_idLocationActionType[T]) => (plant_id: String) => deleteplantsByPlant_idLocationActionConstructor { request =>
+
+def deleteplantsByPlant_idLocationAction[T] = (f: deleteplantsByPlant_idLocationActionType[T]) => (plant_id: String) => deleteplantsByPlant_idLocationActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteplantsByPlant_idLocationResponseMimeType =>
-
             
             
 
@@ -770,7 +766,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait GetusersByUser_idPictureType[T] extends ResultWrapper[T]
     case class GetusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetusersByUser_idPictureType[Error] { val statusCode = 404 }
     
-    case object GetusersByUser_idPicture200 extends EmptyReturn(200)
+    case class GetusersByUser_idPicture200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type getusersByUser_idPictureActionRequestType       = (String)
@@ -778,11 +774,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getusersByUser_idPictureActionConstructor  = Action
-    def getusersByUser_idPictureAction[T] = (f: getusersByUser_idPictureActionType[T]) => (user_id: String) => getusersByUser_idPictureActionConstructor { request =>
+
+def getusersByUser_idPictureAction[T] = (f: getusersByUser_idPictureActionType[T]) => (user_id: String) => getusersByUser_idPictureActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getusersByUser_idPictureResponseMimeType =>
-
             
             
 
@@ -806,9 +802,9 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait PutusersByUser_idPictureType[T] extends ResultWrapper[T]
     case class PutusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends PutusersByUser_idPictureType[Error] { val statusCode = 404 }
     
-    case object PutusersByUser_idPicture200 extends EmptyReturn(200)
+    case class PutusersByUser_idPicture200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutusersByUser_idPicture201 extends EmptyReturn(201)
+    case class PutusersByUser_idPicture201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putusersByUser_idPictureActionRequestType       = (String)
@@ -816,11 +812,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val putusersByUser_idPictureActionConstructor  = Action
-    def putusersByUser_idPictureAction[T] = (f: putusersByUser_idPictureActionType[T]) => (user_id: String) => putusersByUser_idPictureActionConstructor { request =>
+
+def putusersByUser_idPictureAction[T] = (f: putusersByUser_idPictureActionType[T]) => (user_id: String) => putusersByUser_idPictureActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putusersByUser_idPictureResponseMimeType =>
-
             
             
 
@@ -844,7 +840,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait DeleteusersByUser_idPictureType[T] extends ResultWrapper[T]
     case class DeleteusersByUser_idPicture404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteusersByUser_idPictureType[Error] { val statusCode = 404 }
     
-    case object DeleteusersByUser_idPicture200 extends EmptyReturn(200)
+    case class DeleteusersByUser_idPicture200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteusersByUser_idPictureActionRequestType       = (String)
@@ -852,11 +848,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val deleteusersByUser_idPictureActionConstructor  = Action
-    def deleteusersByUser_idPictureAction[T] = (f: deleteusersByUser_idPictureActionType[T]) => (user_id: String) => deleteusersByUser_idPictureActionConstructor { request =>
+
+def deleteusersByUser_idPictureAction[T] = (f: deleteusersByUser_idPictureActionType[T]) => (user_id: String) => deleteusersByUser_idPictureActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteusersByUser_idPictureResponseMimeType =>
-
             
             
 
@@ -880,7 +876,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait GetplantsByPlant_idPicturesType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idPictures200(result: Seq[String])(implicit val writer: String => Option[Writeable[Seq[String]]]) extends GetplantsByPlant_idPicturesType[Seq[String]] { val statusCode = 200 }
     
-    case object GetplantsByPlant_idPictures404 extends EmptyReturn(404)
+    case class GetplantsByPlant_idPictures404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getplantsByPlant_idPicturesActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
@@ -888,11 +884,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsByPlant_idPicturesActionConstructor  = Action
-    def getplantsByPlant_idPicturesAction[T] = (f: getplantsByPlant_idPicturesActionType[T]) => (plant_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getplantsByPlant_idPicturesActionConstructor { request =>
+
+def getplantsByPlant_idPicturesAction[T] = (f: getplantsByPlant_idPicturesActionType[T]) => (plant_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getplantsByPlant_idPicturesActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idPicturesResponseMimeType =>
-
             
             
 
@@ -923,11 +919,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsByPlant_idActionConstructor  = Action
-    def getplantsByPlant_idAction[T] = (f: getplantsByPlant_idActionType[T]) => (plant_id: String) => getplantsByPlant_idActionConstructor { request =>
+
+def getplantsByPlant_idAction[T] = (f: getplantsByPlant_idActionType[T]) => (plant_id: String) => getplantsByPlant_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idResponseMimeType =>
-
             
             
 
@@ -950,11 +946,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PutplantsByPlant_idType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_id200 extends EmptyReturn(200)
+    case class PutplantsByPlant_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_id201 extends EmptyReturn(201)
+    case class PutplantsByPlant_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
-    case object PutplantsByPlant_id404 extends EmptyReturn(404)
+    case class PutplantsByPlant_id404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type putplantsByPlant_idActionRequestType       = (String, Plant)
@@ -972,15 +968,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[Plant]
-            anyParser[Plant](bodyMimeType, customParsers, "Invalid Plant", maxLength)
+            anyParser[Plant](bodyMimeType, customParsers, "Invalid Plant", maxLength) _
         }
 
     val putplantsByPlant_idActionConstructor  = Action
-    def putplantsByPlant_idAction[T] = (f: putplantsByPlant_idActionType[T]) => (plant_id: String) => putplantsByPlant_idActionConstructor(putplantsByPlant_idParser(Seq[String]())) { request =>
+
+def putplantsByPlant_idAction[T] = (f: putplantsByPlant_idActionType[T]) => (plant_id: String) => putplantsByPlant_idActionConstructor(BodyParsers.parse.using(putplantsByPlant_idParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putplantsByPlant_idResponseMimeType =>
-
             val plant = request.body
             
             
@@ -1005,7 +1001,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait DeleteplantsByPlant_idType[T] extends ResultWrapper[T]
     case class DeleteplantsByPlant_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteplantsByPlant_idType[Error] { val statusCode = 404 }
     
-    case object DeleteplantsByPlant_id200 extends EmptyReturn(200)
+    case class DeleteplantsByPlant_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteplantsByPlant_idActionRequestType       = (String)
@@ -1013,11 +1009,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val deleteplantsByPlant_idActionConstructor  = Action
-    def deleteplantsByPlant_idAction[T] = (f: deleteplantsByPlant_idActionType[T]) => (plant_id: String) => deleteplantsByPlant_idActionConstructor { request =>
+
+def deleteplantsByPlant_idAction[T] = (f: deleteplantsByPlant_idActionType[T]) => (plant_id: String) => deleteplantsByPlant_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteplantsByPlant_idResponseMimeType =>
-
             
             
 
@@ -1041,7 +1037,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait GetplantsByPlant_idWateringsType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idWaterings200(result: Seq[Watering])(implicit val writer: String => Option[Writeable[Seq[Watering]]]) extends GetplantsByPlant_idWateringsType[Seq[Watering]] { val statusCode = 200 }
     
-    case object GetplantsByPlant_idWaterings404 extends EmptyReturn(404)
+    case class GetplantsByPlant_idWaterings404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type getplantsByPlant_idWateringsActionRequestType       = (String, UsersGetLimit, UsersGetLimit)
@@ -1049,11 +1045,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsByPlant_idWateringsActionConstructor  = Action
-    def getplantsByPlant_idWateringsAction[T] = (f: getplantsByPlant_idWateringsActionType[T]) => (plant_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getplantsByPlant_idWateringsActionConstructor { request =>
+
+def getplantsByPlant_idWateringsAction[T] = (f: getplantsByPlant_idWateringsActionType[T]) => (plant_id: String, limit: UsersGetLimit, offset: UsersGetLimit) => getplantsByPlant_idWateringsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idWateringsResponseMimeType =>
-
             
             
 
@@ -1077,7 +1073,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait GetplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
     case class GetplantsByPlant_idPicturesByPicture_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends GetplantsByPlant_idPicturesByPicture_idType[Error] { val statusCode = 404 }
     
-    case object GetplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
+    case class GetplantsByPlant_idPicturesByPicture_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type getplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
@@ -1085,11 +1081,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsByPlant_idPicturesByPicture_idActionConstructor  = Action
-    def getplantsByPlant_idPicturesByPicture_idAction[T] = (f: getplantsByPlant_idPicturesByPicture_idActionType[T]) => (plant_id: String, picture_id: String) => getplantsByPlant_idPicturesByPicture_idActionConstructor { request =>
+
+def getplantsByPlant_idPicturesByPicture_idAction[T] = (f: getplantsByPlant_idPicturesByPicture_idActionType[T]) => (plant_id: String, picture_id: String) => getplantsByPlant_idPicturesByPicture_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idPicturesByPicture_idResponseMimeType =>
-
             
             
 
@@ -1112,11 +1108,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PutplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_idPicturesByPicture_id404 extends EmptyReturn(404)
+    case class PutplantsByPlant_idPicturesByPicture_id404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
-    case object PutplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idPicturesByPicture_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idPicturesByPicture_id201 extends EmptyReturn(201)
+    case class PutplantsByPlant_idPicturesByPicture_id201(headers: Seq[(String, String)] = Nil) extends EmptyReturn(201, headers)
     
 
     private type putplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
@@ -1124,11 +1120,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val putplantsByPlant_idPicturesByPicture_idActionConstructor  = Action
-    def putplantsByPlant_idPicturesByPicture_idAction[T] = (f: putplantsByPlant_idPicturesByPicture_idActionType[T]) => (plant_id: String, picture_id: String) => putplantsByPlant_idPicturesByPicture_idActionConstructor { request =>
+
+def putplantsByPlant_idPicturesByPicture_idAction[T] = (f: putplantsByPlant_idPicturesByPicture_idActionType[T]) => (plant_id: String, picture_id: String) => putplantsByPlant_idPicturesByPicture_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putplantsByPlant_idPicturesByPicture_idResponseMimeType =>
-
             
             
 
@@ -1152,7 +1148,7 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     sealed trait DeleteplantsByPlant_idPicturesByPicture_idType[T] extends ResultWrapper[T]
     case class DeleteplantsByPlant_idPicturesByPicture_id404(result: Error)(implicit val writer: String => Option[Writeable[Error]]) extends DeleteplantsByPlant_idPicturesByPicture_idType[Error] { val statusCode = 404 }
     
-    case object DeleteplantsByPlant_idPicturesByPicture_id200 extends EmptyReturn(200)
+    case class DeleteplantsByPlant_idPicturesByPicture_id200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type deleteplantsByPlant_idPicturesByPicture_idActionRequestType       = (String, String)
@@ -1160,11 +1156,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val deleteplantsByPlant_idPicturesByPicture_idActionConstructor  = Action
-    def deleteplantsByPlant_idPicturesByPicture_idAction[T] = (f: deleteplantsByPlant_idPicturesByPicture_idActionType[T]) => (plant_id: String, picture_id: String) => deleteplantsByPlant_idPicturesByPicture_idActionConstructor { request =>
+
+def deleteplantsByPlant_idPicturesByPicture_idAction[T] = (f: deleteplantsByPlant_idPicturesByPicture_idActionType[T]) => (plant_id: String, picture_id: String) => deleteplantsByPlant_idPicturesByPicture_idActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deleteplantsByPlant_idPicturesByPicture_idResponseMimeType =>
-
             
             
 
@@ -1194,11 +1190,11 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
 
 
     val getplantsByPlant_idWater_needsActionConstructor  = Action
-    def getplantsByPlant_idWater_needsAction[T] = (f: getplantsByPlant_idWater_needsActionType[T]) => (plant_id: String) => getplantsByPlant_idWater_needsActionConstructor { request =>
+
+def getplantsByPlant_idWater_needsAction[T] = (f: getplantsByPlant_idWater_needsActionType[T]) => (plant_id: String) => getplantsByPlant_idWater_needsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getplantsByPlant_idWater_needsResponseMimeType =>
-
             
             
 
@@ -1221,9 +1217,9 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PutplantsByPlant_idWater_needsType[T] extends ResultWrapper[T]
     
-    case object PutplantsByPlant_idWater_needs200 extends EmptyReturn(200)
+    case class PutplantsByPlant_idWater_needs200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
-    case object PutplantsByPlant_idWater_needs404 extends EmptyReturn(404)
+    case class PutplantsByPlant_idWater_needs404(headers: Seq[(String, String)] = Nil) extends EmptyReturn(404, headers)
     
 
     private type putplantsByPlant_idWater_needsActionRequestType       = (String, WaterNeeds)
@@ -1241,15 +1237,15 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
             import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[WaterNeeds]
-            anyParser[WaterNeeds](bodyMimeType, customParsers, "Invalid WaterNeeds", maxLength)
+            anyParser[WaterNeeds](bodyMimeType, customParsers, "Invalid WaterNeeds", maxLength) _
         }
 
     val putplantsByPlant_idWater_needsActionConstructor  = Action
-    def putplantsByPlant_idWater_needsAction[T] = (f: putplantsByPlant_idWater_needsActionType[T]) => (plant_id: String) => putplantsByPlant_idWater_needsActionConstructor(putplantsByPlant_idWater_needsParser(Seq[String]())) { request =>
+
+def putplantsByPlant_idWater_needsAction[T] = (f: putplantsByPlant_idWater_needsActionType[T]) => (plant_id: String) => putplantsByPlant_idWater_needsActionConstructor(BodyParsers.parse.using(putplantsByPlant_idWater_needsParser(Seq[String]()))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putplantsByPlant_idWater_needsResponseMimeType =>
-
             val water_needs = request.body
             
             
@@ -1271,6 +1267,6 @@ trait Type_deduplicationYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with PutplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with GetusersMeType[Results.EmptyContent] with GetplantsByPlant_idSunlight_needsType[Results.EmptyContent] with PutplantsByPlant_idSunlight_needsType[Results.EmptyContent] with GetusersType[Results.EmptyContent] with PostusersType[Results.EmptyContent] with GetareasByArea_idType[Results.EmptyContent] with PutareasByArea_idType[Results.EmptyContent] with DeleteareasByArea_idType[Results.EmptyContent] with GetplantsType[Results.EmptyContent] with GetuserByUser_idPlantsType[Results.EmptyContent] with GetusersByUser_idType[Results.EmptyContent] with PutusersByUser_idType[Results.EmptyContent] with DeleteusersByUser_idType[Results.EmptyContent] with GetareasType[Results.EmptyContent] with GetplantsByPlant_idLocationType[Results.EmptyContent] with PutplantsByPlant_idLocationType[Results.EmptyContent] with DeleteplantsByPlant_idLocationType[Results.EmptyContent] with GetusersByUser_idPictureType[Results.EmptyContent] with PutusersByUser_idPictureType[Results.EmptyContent] with DeleteusersByUser_idPictureType[Results.EmptyContent] with GetplantsByPlant_idPicturesType[Results.EmptyContent] with GetplantsByPlant_idType[Results.EmptyContent] with PutplantsByPlant_idType[Results.EmptyContent] with DeleteplantsByPlant_idType[Results.EmptyContent] with GetplantsByPlant_idWateringsType[Results.EmptyContent] with GetplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with PutplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with DeleteplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with GetplantsByPlant_idWater_needsType[Results.EmptyContent] with PutplantsByPlant_idWater_needsType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with GetplantsByPlant_idWateringsByWatering_idType[Result] with PutplantsByPlant_idWateringsByWatering_idType[Result] with GetusersMeType[Result] with GetplantsByPlant_idSunlight_needsType[Result] with PutplantsByPlant_idSunlight_needsType[Result] with GetusersType[Result] with PostusersType[Result] with GetareasByArea_idType[Result] with PutareasByArea_idType[Result] with DeleteareasByArea_idType[Result] with GetplantsType[Result] with GetuserByUser_idPlantsType[Result] with GetusersByUser_idType[Result] with PutusersByUser_idType[Result] with DeleteusersByUser_idType[Result] with GetareasType[Result] with GetplantsByPlant_idLocationType[Result] with PutplantsByPlant_idLocationType[Result] with DeleteplantsByPlant_idLocationType[Result] with GetusersByUser_idPictureType[Result] with PutusersByUser_idPictureType[Result] with DeleteusersByUser_idPictureType[Result] with GetplantsByPlant_idPicturesType[Result] with GetplantsByPlant_idType[Result] with PutplantsByPlant_idType[Result] with DeleteplantsByPlant_idType[Result] with GetplantsByPlant_idWateringsType[Result] with GetplantsByPlant_idPicturesByPicture_idType[Result] with PutplantsByPlant_idPicturesByPicture_idType[Result] with DeleteplantsByPlant_idPicturesByPicture_idType[Result] with GetplantsByPlant_idWater_needsType[Result] with PutplantsByPlant_idWater_needsType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with PutplantsByPlant_idWateringsByWatering_idType[Results.EmptyContent] with GetusersMeType[Results.EmptyContent] with GetplantsByPlant_idSunlight_needsType[Results.EmptyContent] with PutplantsByPlant_idSunlight_needsType[Results.EmptyContent] with GetusersType[Results.EmptyContent] with PostusersType[Results.EmptyContent] with GetareasByArea_idType[Results.EmptyContent] with PutareasByArea_idType[Results.EmptyContent] with DeleteareasByArea_idType[Results.EmptyContent] with GetplantsType[Results.EmptyContent] with GetuserByUser_idPlantsType[Results.EmptyContent] with GetusersByUser_idType[Results.EmptyContent] with PutusersByUser_idType[Results.EmptyContent] with DeleteusersByUser_idType[Results.EmptyContent] with GetareasType[Results.EmptyContent] with GetplantsByPlant_idLocationType[Results.EmptyContent] with PutplantsByPlant_idLocationType[Results.EmptyContent] with DeleteplantsByPlant_idLocationType[Results.EmptyContent] with GetusersByUser_idPictureType[Results.EmptyContent] with PutusersByUser_idPictureType[Results.EmptyContent] with DeleteusersByUser_idPictureType[Results.EmptyContent] with GetplantsByPlant_idPicturesType[Results.EmptyContent] with GetplantsByPlant_idType[Results.EmptyContent] with PutplantsByPlant_idType[Results.EmptyContent] with DeleteplantsByPlant_idType[Results.EmptyContent] with GetplantsByPlant_idWateringsType[Results.EmptyContent] with GetplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with PutplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with DeleteplantsByPlant_idPicturesByPicture_idType[Results.EmptyContent] with GetplantsByPlant_idWater_needsType[Results.EmptyContent] with PutplantsByPlant_idWater_needsType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

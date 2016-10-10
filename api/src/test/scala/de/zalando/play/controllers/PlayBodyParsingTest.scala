@@ -4,8 +4,8 @@ import org.specs2.mutable.Specification
 import play.api.http.MediaRange
 
 /**
-  * @since 26.02.2016.
-  */
+ * @since 26.02.2016.
+ */
 class PlayBodyParsingTest extends Specification {
 
   val acceptedTypes = MediaRange.parse("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
@@ -32,7 +32,7 @@ class PlayBodyParsingTest extends Specification {
       PlayBodyParsing.negotiateContent(MediaRange.parse("*/*"), Seq("image/web", "text/plain")) must_== Some("image/web")
     }
     "negotiateContent as text/plain" in {
-      PlayBodyParsing.negotiateContent(MediaRange.parse("*/*"), Seq("text/plain","image/web")) must_== Some("text/plain")
+      PlayBodyParsing.negotiateContent(MediaRange.parse("*/*"), Seq("text/plain", "image/web")) must_== Some("text/plain")
     }
 
   }

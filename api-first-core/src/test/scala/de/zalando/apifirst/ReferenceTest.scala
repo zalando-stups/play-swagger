@@ -3,7 +3,7 @@ package de.zalando.apifirst
 import de.zalando.apifirst.Domain._
 import de.zalando.apifirst.naming._
 import de.zalando.apifirst.naming.dsl._
-import org.scalatest.{FunSpec, MustMatchers}
+import org.scalatest.{ FunSpec, MustMatchers }
 
 class ReferenceTest extends FunSpec with MustMatchers {
   describe("Reference") {
@@ -48,10 +48,12 @@ class ReferenceTest extends FunSpec with MustMatchers {
     it("must ignore starting # while comparing references") {
       val one = TypeDef(Reference("/definitions/ErrorModel"), Seq(
         new Field(Reference("/definitions/ErrorModel/message"), Str(None, TypeMeta(None))),
-        new Field(Reference("/definitions/ErrorModel/code"), Intgr(TypeMeta(None)))), TypeMeta(None))
+        new Field(Reference("/definitions/ErrorModel/code"), Intgr(TypeMeta(None)))
+      ), TypeMeta(None))
       val two = TypeDef(Reference("#/definitions/ErrorModel"), Seq(
         new Field(Reference("#/definitions/ErrorModel/message"), Str(None, TypeMeta(None))),
-        new Field(Reference("#/definitions/ErrorModel/code"), Intgr(TypeMeta(None)))), TypeMeta(None))
+        new Field(Reference("#/definitions/ErrorModel/code"), Intgr(TypeMeta(None)))
+      ), TypeMeta(None))
 
     }
   }

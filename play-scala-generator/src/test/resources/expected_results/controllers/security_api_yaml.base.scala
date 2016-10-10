@@ -1,13 +1,12 @@
 package security.api.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 
@@ -27,11 +26,11 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with Security
 
 
     val getPetsByIdActionConstructor  = new getPetsByIdSecureAction("user")
-    def getPetsByIdAction[T] = (f: getPetsByIdActionType[T]) => (id: PetsIdGetId) => getPetsByIdActionConstructor { request =>
+
+def getPetsByIdAction[T] = (f: getPetsByIdActionType[T]) => (id: PetsIdGetId) => getPetsByIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getPetsByIdResponseMimeType =>
-
             
             
 
@@ -52,6 +51,6 @@ trait SecurityApiYamlBase extends Controller with PlayBodyParsing  with Security
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetPetsByIdType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with GetPetsByIdType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetPetsByIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

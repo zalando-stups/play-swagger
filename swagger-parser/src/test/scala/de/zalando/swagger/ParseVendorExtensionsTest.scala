@@ -5,8 +5,8 @@ import java.io.File
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.parser.ParserException
 import de.zalando.apifirst.Application.ApiCall
-import de.zalando.apifirst.Http.{GET, POST, PUT}
-import org.scalatest.{FunSpec, MustMatchers}
+import de.zalando.apifirst.Http.{ GET, POST, PUT }
+import org.scalatest.{ FunSpec, MustMatchers }
 
 class ParseVendorExtensionsTest extends FunSpec with MustMatchers with ExpectedResults {
 
@@ -34,11 +34,15 @@ class ParseVendorExtensionsTest extends FunSpec with MustMatchers with ExpectedR
     }
     it("should read hypermedia definitions") {
       implicit val (uri, swagger) = StrictYamlParser.parse(hypermediaOk)
-      val expected = Map("resource created" ->
-        Map("resource updated" -> Map("condition" -> "some rule to show the transition"), "subresource added" -> null),
-        "resource updated" -> Map("subresource added" -> Map("condition" -> ""),
-          "self" -> Map("condition" -> "non-empty rule")), "resource deleted" -> Map("self" -> null),
-        "subresource added" -> Map("resource updated" -> null, "self" -> null, "resource deleted" -> null))
+      val expected = Map(
+        "resource created" ->
+          Map("resource updated" -> Map("condition" -> "some rule to show the transition"), "subresource added" -> null),
+        "resource updated" -> Map(
+          "subresource added" -> Map("condition" -> ""),
+          "self" -> Map("condition" -> "non-empty rule")
+        ), "resource deleted" -> Map("self" -> null),
+        "subresource added" -> Map("resource updated" -> null, "self" -> null, "resource deleted" -> null)
+      )
       swagger.transitions.nonEmpty mustBe true
       swagger.transitions mustEqual expected
       swagger.paths("/").get.responses("200").targetState mustEqual Some("resource created")

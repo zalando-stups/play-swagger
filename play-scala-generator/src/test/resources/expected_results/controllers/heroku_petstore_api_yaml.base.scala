@@ -1,13 +1,12 @@
 package heroku.petstore.api.yaml
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import scala.math.BigInt
 
@@ -27,11 +26,11 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val getActionConstructor  = Action
-    def getAction[T] = (f: getActionType[T]) => (limit: BigInt) => getActionConstructor { request =>
+
+def getAction[T] = (f: getActionType[T]) => (limit: BigInt) => getActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getResponseMimeType =>
-
             
             
 
@@ -54,7 +53,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PutType[T] extends ResultWrapper[T]
     
-    case object Put200 extends EmptyReturn(200)
+    case class Put200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type putActionRequestType       = (PutPet)
@@ -71,15 +70,15 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             
             
             val customParsers = WrappedBodyParsers.optionParser[Pet]
-            optionParser[Pet](bodyMimeType, customParsers, "Invalid PutPet", maxLength)
+            optionParser[Pet](bodyMimeType, customParsers, "Invalid PutPet", maxLength) _
         }
 
     val putActionConstructor  = Action
-    def putAction[T] = (f: putActionType[T]) => putActionConstructor(putParser(Seq[String]("application/json", "text/xml"))) { request =>
+
+def putAction[T] = (f: putActionType[T]) => putActionConstructor(BodyParsers.parse.using(putParser(Seq[String]("application/json", "text/xml")))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { putResponseMimeType =>
-
             val pet = request.body
             
             
@@ -103,7 +102,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait PostType[T] extends ResultWrapper[T]
     
-    case object Post200 extends EmptyReturn(200)
+    case class Post200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type postActionRequestType       = (Pet)
@@ -120,15 +119,15 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
             
             
             val customParsers = WrappedBodyParsers.anyParser[Pet]
-            anyParser[Pet](bodyMimeType, customParsers, "Invalid Pet", maxLength)
+            anyParser[Pet](bodyMimeType, customParsers, "Invalid Pet", maxLength) _
         }
 
     val postActionConstructor  = Action
-    def postAction[T] = (f: postActionType[T]) => postActionConstructor(postParser(Seq[String]("application/json", "text/xml"))) { request =>
+
+def postAction[T] = (f: postActionType[T]) => postActionConstructor(BodyParsers.parse.using(postParser(Seq[String]("application/json", "text/xml")))) { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { postResponseMimeType =>
-
             val pet = request.body
             
             
@@ -152,7 +151,7 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait GetbyPetIdType[T] extends ResultWrapper[T]
     
-    case object GetbyPetId200 extends EmptyReturn(200)
+    case class GetbyPetId200(headers: Seq[(String, String)] = Nil) extends EmptyReturn(200, headers)
     
 
     private type getbyPetIdActionRequestType       = (String)
@@ -160,11 +159,11 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
 
 
     val getbyPetIdActionConstructor  = Action
-    def getbyPetIdAction[T] = (f: getbyPetIdActionType[T]) => (petId: String) => getbyPetIdActionConstructor { request =>
+
+def getbyPetIdAction[T] = (f: getbyPetIdActionType[T]) => (petId: String) => getbyPetIdActionConstructor { request =>
         val providedTypes = Seq[String]("application/json", "text/html")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { getbyPetIdResponseMimeType =>
-
             
             
 
@@ -185,6 +184,6 @@ trait HerokuPetstoreApiYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with GetType[Results.EmptyContent] with PutType[Results.EmptyContent] with PostType[Results.EmptyContent] with GetbyPetIdType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with GetType[Result] with PutType[Result] with PostType[Result] with GetbyPetIdType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with GetType[Results.EmptyContent] with PutType[Results.EmptyContent] with PostType[Results.EmptyContent] with GetbyPetIdType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

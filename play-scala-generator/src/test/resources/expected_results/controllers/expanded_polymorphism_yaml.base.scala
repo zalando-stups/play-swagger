@@ -1,21 +1,17 @@
 package expanded
 
 import scala.language.existentials
-
-import play.api.mvc.{Action, Controller, Results}
+import play.api.mvc._
 import play.api.http._
+import de.zalando.play.controllers._
 import Results.Status
-
-import de.zalando.play.controllers.{PlayBodyParsing, ParsingError, ResultWrapper}
 import PlayBodyParsing._
+
 import scala.util._
 import de.zalando.play.controllers.ArrayWrapper
 
 import de.zalando.play.controllers.PlayPathBindables
 
-
-
-import de.zalando.play.controllers.ResponseWriters
 
 
 
@@ -31,11 +27,11 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
 
 
     val findPetsActionConstructor  = Action
-    def findPetsAction[T] = (f: findPetsActionType[T]) => (tags: PetsGetTags, limit: PetsGetLimit) => findPetsActionConstructor { request =>
+
+def findPetsAction[T] = (f: findPetsActionType[T]) => (tags: PetsGetTags, limit: PetsGetLimit) => findPetsActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { findPetsResponseMimeType =>
-
             
             
 
@@ -73,18 +69,17 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
                 negotiateContent(requestType, acceptedTypes).orElse(acceptedTypes.headOption).getOrElse("application/json")
             }
             
-            import de.zalando.play.controllers.WrappedBodyParsers
             
             val customParsers = WrappedBodyParsers.anyParser[NewPet]
-            anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength)
+            anyParser[NewPet](bodyMimeType, customParsers, "Invalid NewPet", maxLength) _
         }
 
     val addPetActionConstructor  = Action
-    def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(addPetParser(Seq[String]("application/json"))) { request =>
+
+def addPetAction[T] = (f: addPetActionType[T]) => addPetActionConstructor(BodyParsers.parse.using(addPetParser(Seq[String]("application/json")))) { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { addPetResponseMimeType =>
-
             val pet = request.body
             
             
@@ -108,7 +103,7 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
     }
     sealed trait DeletePetType[T] extends ResultWrapper[T]
     
-    case object DeletePet204 extends EmptyReturn(204)
+    case class DeletePet204(headers: Seq[(String, String)] = Nil) extends EmptyReturn(204, headers)
     
     case class DeletePetNoSuchElementException(result: java.util.NoSuchElementException)(implicit val writer: String => Option[Writeable[java.lang.Exception]]) extends DeletePetType[java.util.NoSuchElementException] { val statusCode = 404 }
 
@@ -117,11 +112,11 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
 
 
     val deletePetActionConstructor  = Action
-    def deletePetAction[T] = (f: deletePetActionType[T]) => (id: Long) => deletePetActionConstructor { request =>
+
+def deletePetAction[T] = (f: deletePetActionType[T]) => (id: Long) => deletePetActionConstructor { request =>
         val providedTypes = Seq[String]("application/json")
 
         negotiateContent(request.acceptedTypes, providedTypes).map { deletePetResponseMimeType =>
-
             
             
 
@@ -142,6 +137,6 @@ trait Expanded_polymorphismYamlBase extends Controller with PlayBodyParsing {
         Results.NotAcceptable
       }
     }
-    abstract class EmptyReturn(override val statusCode: Int = 204) extends ResultWrapper[Results.EmptyContent]  with FindPetsType[Results.EmptyContent] with AddPetType[Results.EmptyContent] with DeletePetType[Results.EmptyContent] { val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NoContent) }
+    abstract class EmptyReturn(override val statusCode: Int, headers: Seq[(String, String)]) extends ResultWrapper[Result]  with FindPetsType[Result] with AddPetType[Result] with DeletePetType[Result] { val result = Results.Status(204).withHeaders(headers:_*); val writer = (x: String) => Some(new Writeable((_:Any) => emptyByteString, None)); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.Status(204)) }
     case object NotImplementedYet extends ResultWrapper[Results.EmptyContent]  with FindPetsType[Results.EmptyContent] with AddPetType[Results.EmptyContent] with DeletePetType[Results.EmptyContent] { val statusCode = 501; val result = Results.EmptyContent(); val writer = (x: String) => Some(new DefaultWriteables{}.writeableOf_EmptyContent); override def toResult(mimeType: String): Option[play.api.mvc.Result] = Some(Results.NotImplemented) }
 }

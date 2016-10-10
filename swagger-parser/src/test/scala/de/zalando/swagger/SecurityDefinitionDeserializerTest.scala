@@ -3,10 +3,10 @@ package de.zalando.swagger
 import java.io.File
 
 import de.zalando.swagger.strictModel._
-import org.scalatest.{MustMatchers, FunSpec}
+import org.scalatest.{ MustMatchers, FunSpec }
 
 /**
- * @author  slasch 
+ * @author  slasch
  * @since   09.10.2015.
  */
 class SecurityDefinitionDeserializerTest extends FunSpec with MustMatchers with ExpectedResults {

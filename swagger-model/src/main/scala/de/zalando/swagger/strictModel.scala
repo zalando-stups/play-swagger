@@ -2,7 +2,7 @@ package de.zalando.swagger
 
 import java.net.URL
 
-import com.fasterxml.jackson.annotation.{JsonAnySetter, JsonProperty}
+import com.fasterxml.jackson.annotation.{ JsonAnySetter, JsonProperty }
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
@@ -17,6 +17,9 @@ import scala.language.implicitConversions
  */
 object strictModel {
 
+  //noinspection ScalaStyle
+  private final val NULL = null
+
   import NumberValidation._
   import StringValidation._
   import ArrayValidation._
@@ -30,11 +33,11 @@ object strictModel {
    */
   trait PatternChecker {
     def matches(pattern: String, value: String): Boolean =
-      value == null || pattern.r.unapplySeq(value).nonEmpty
+      value == NULL || pattern.r.unapplySeq(value).nonEmpty
   }
   trait UriChecker {
     def url: Uri
-    require(url == null || Try(new URL(url)).isSuccess, s"Valid URI was expected, but got $url")
+    require(url == NULL || Try(new URL(url)).isSuccess, s"Valid URI was expected, but got $url")
   }
   trait EmailChecker extends PatternChecker {
     def email: Email
@@ -92,7 +95,7 @@ object strictModel {
   ) extends VendorExtensions with API with PatternChecker {
     require(matches("^/.*", basePath), "Base path should start with a slash (/)")
     require(matches("^[^{}/ :\\\\]+(?::\\d+)?$", host), s"Host name is expected, but got $host")
-    require(paths == null || paths.keySet.forall(matches("^/.*", _)), "Paths should start with a slash (/)")
+    require(paths == NULL || paths.keySet.forall(matches("^/.*", _)), "Paths should start with a slash (/)")
   }
 
   private[swagger] class SchemeType extends TypeReference[Scheme.type]
@@ -275,7 +278,7 @@ object strictModel {
     def operationNames: Set[String] =
       getClass.getDeclaredFields.
       filter(_.getType == classOf[Operation]).
-      filter { f => f.setAccessible(true); f.get(this) != null }.
+      filter { f => f.setAccessible(true); f.get(this) != NULL }.
         map(_.getName).toSet
     def operation(name: String): Operation =
       getClass.getDeclaredField(name).get(this).asInstanceOf[Operation]
@@ -310,9 +313,9 @@ object strictModel {
     def collectionFormat: CF
     def name: String
     def in: String
-    if (collectionFormat != null) require(isArray)
-    if (default != null) require(!required)
-    if (isArray) require(items != null)
+    if (collectionFormat != NULL) require(isArray)
+    if (default != NULL) require(!required)
+    if (isArray) require(items != NULL)
   }
 
   /**
@@ -675,13 +678,15 @@ object strictModel {
   ) extends VendorExtensions with AllValidations[T] with ObjectValidation {
     require(allOf.forall(_.nonEmpty))
     // TODO this could be handled with a Map[String, Any]
-    require(`type`!=PrimitiveType.OBJECT || properties != null || additionalProperties != null,
+    require(`type`!=PrimitiveType.OBJECT || properties != NULL || additionalProperties != NULL,
       "Support for object definitions without properties is not implemented yet")
     validateSchemaArray(items)
     validateSchemaArray(allOf)
-    private def validateSchemaArray(a: Option[_]) =
-      a.isEmpty || a.get.isInstanceOf[SchemaOrFileSchema[_]] ||
-        (a.get.isInstanceOf[SchemaArray] && a.get.asInstanceOf[SchemaArray].nonEmpty)
+    private def validateSchemaArray(a: Option[_]) = {
+      lazy val content: Any = a.get
+      a.isEmpty || content.isInstanceOf[SchemaOrFileSchema[_]] ||
+        (content.isInstanceOf[List[_]] && content.asInstanceOf[SchemaArray].nonEmpty)
+    }
   }
 
   /**
@@ -725,8 +730,8 @@ object strictModel {
   ) extends VendorExtensions with AllValidations[T] {
     require(`type` != PrimitiveType.NULL)
     require(`type` != PrimitiveType.OBJECT)
-    if (isArray) require(items != null)
-    if (collectionFormat != null) require(isArray)
+    if (isArray) require(items != NULL)
+    if (collectionFormat != NULL) require(isArray)
     def isArray: Boolean = `type` == PrimitiveType.ARRAY
   }
 
@@ -835,7 +840,7 @@ object strictModel {
             errorMappings ++= errors
           }
         case other =>
-          throw new UnrecognizedPropertyException(s"Unknown property: $key", null, self.getClass, key, null)
+          throw new UnrecognizedPropertyException(s"Unknown property: $key", NULL, self.getClass, key, NULL)
       }
     }
     lazy val vendorExtensions = extensions.toMap

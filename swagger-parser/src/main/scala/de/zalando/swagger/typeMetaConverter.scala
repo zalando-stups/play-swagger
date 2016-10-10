@@ -5,7 +5,7 @@ import de.zalando.swagger.strictModel._
 
 import scala.language.implicitConversions
 /**
- * @author  slasch 
+ * @author  slasch
  * @since   15.10.2015.
  */
 object TypeMetaConverter extends ParameterNaming {
@@ -32,7 +32,7 @@ object TypeMetaConverter extends ParameterNaming {
   implicit def enumTypeMeta(enumSize: Int): TypeMeta =
     TypeMeta(Some(s"Enum type : $enumSize"), Nil)
 
-  implicit def parametersListItemMeta(item:ParametersListItem): TypeMeta =
+  implicit def parametersListItemMeta(item: ParametersListItem): TypeMeta =
     item match {
       case r @ JsonReference(ref) =>
         TypeMeta(Some(ref))

@@ -3,17 +3,17 @@ package de.zalando.play.controllers
 import java.io.File
 import java.util.UUID
 
-import com.fasterxml.jackson.databind.{MappingIterator, ObjectReader, ObjectWriter}
-import com.fasterxml.jackson.dataformat.csv.{CsvMapper, CsvParser, CsvSchema}
-import org.joda.time.{DateTime, LocalDate}
-import play.api.mvc.{PathBindable, QueryStringBindable}
+import com.fasterxml.jackson.databind.{ MappingIterator, ObjectReader, ObjectWriter }
+import com.fasterxml.jackson.dataformat.csv.{ CsvMapper, CsvParser, CsvSchema }
+import org.joda.time.{ DateTime, LocalDate }
+import play.api.mvc.{ PathBindable, QueryStringBindable }
 
 import scala.io.Source
 
 /**
-  * @author slasch 
-  * @since 03.01.2016.
-  */
+ * @author slasch
+ * @since 03.01.2016.
+ */
 object PlayPathBindables {
 
   private def schema[T](wrapper: ArrayWrapper[T]) =
@@ -117,20 +117,20 @@ object PlayPathBindables {
 
   def tempFileFromString(s: String): File = {
     val prefix = "tmp_" + s.hashCode
-    val f = File.createTempFile(prefix.toString, "")
+    val f = File.createTempFile(prefix, "")
     f.deleteOnExit()
-    import java.nio.file.{Paths, Files}
+    import java.nio.file.{ Paths, Files }
     import java.nio.charset.StandardCharsets
     Files.write(Paths.get(f.getAbsolutePath), s.getBytes(StandardCharsets.UTF_8))
     f
   }
   /**
-    * Factory to create PathBindable for optional values of any type
-    *
-    * @param tBinder
-    * @tparam T
-    * @return
-    */
+   * Factory to create PathBindable for optional values of any type
+   *
+   * @param tBinder
+   * @tparam T
+   * @return
+   */
   def createOptionPathBindable[T](implicit tBinder: PathBindable[T]): PathBindable[Option[T]] = new PathBindable[Option[T]] {
     override def bind(key: String, value: String): Either[String, Option[T]] = {
       val wrap = Option(value).map(tBinder.bind(key, _))
@@ -144,12 +144,12 @@ object PlayPathBindables {
     }
   }
   /**
-    * Factory to create QueryBindable for optional values of any type
-    *
-    * @param tBinder
-    * @tparam T
-    * @return
-    */
+   * Factory to create QueryBindable for optional values of any type
+   *
+   * @param tBinder
+   * @tparam T
+   * @return
+   */
   def createOptionQueryBindable[T](implicit tBinder: QueryStringBindable[T]): QueryStringBindable[Option[T]] = new QueryStringBindable[Option[T]] {
     override def bind(key: String, values: Map[String, Seq[String]]): Option[Either[String, Option[T]]] = {
       val wrap = values.get(key).flatMap(_ => tBinder.bind(key, values))
@@ -164,31 +164,31 @@ object PlayPathBindables {
   }
 
   /**
-    * Constructor for ArrayWrapper with specific format
-    *
-    * @param tBinder  this binder should be available from Play
-    * @return
-    */
+   * Constructor for ArrayWrapper with specific format
+   *
+   * @param tBinder  this binder should be available from Play
+   * @return
+   */
   def createArrayWrapperPathBindable[T](format: String)(implicit tBinder: PathBindable[T]): PathBindable[ArrayWrapper[T]] =
     createArrPathBindable(ArrayWrapper[T](format)(Nil))
 
   /**
-    * Constructor for ArrayWrapper with specific format
-    *
-    * @param tBinder  this binder should be available from Play
-    * @return
-    */
+   * Constructor for ArrayWrapper with specific format
+   *
+   * @param tBinder  this binder should be available from Play
+   * @return
+   */
   def createArrayWrapperQueryBindable[T](format: String)(implicit tBinder: QueryStringBindable[T]): QueryStringBindable[ArrayWrapper[T]] =
     createArrQueryBindable(ArrayWrapper[T](format)(Nil))
 
   /**
-    * Factory method for path bindables of different types
-    *
-    * @param wrapper  the wrapper is used to distinguish different separator chars
-    * @param tBinder  the binder for underlying types
-    * @tparam T       the type of array items
-    * @return
-    */
+   * Factory method for path bindables of different types
+   *
+   * @param wrapper  the wrapper is used to distinguish different separator chars
+   * @param tBinder  the binder for underlying types
+   * @tparam T       the type of array items
+   * @return
+   */
   def createArrPathBindable[T](wrapper: ArrayWrapper[T])(implicit tBinder: PathBindable[T]): PathBindable[ArrayWrapper[T]] = new PathBindable[ArrayWrapper[T]] {
 
     val mapper = createMapper
@@ -199,8 +199,8 @@ object PlayPathBindables {
       val line = readArray(reader)(value)
       val xs = line map { tBinder.bind(key, _) }
 
-      val lefts = xs collect {case Left(x) => x }
-      lazy val rights = xs collect {case Right(x) => x}
+      val lefts = xs collect { case Left(x) => x }
+      lazy val rights = xs collect { case Right(x) => x }
 
       lazy val success = wrapper.copy(rights.toSeq)
       if (lefts.isEmpty) Right(success) else Left(lefts.mkString("\n"))
@@ -209,31 +209,29 @@ object PlayPathBindables {
     }
 
     /**
-      * Unbind method converts an ArrayWrapper to the Path string
- *
-      * @param key  parameter name
-      * @param w    wrapper to convert
-      * @return
-      */
+     * Unbind method converts an ArrayWrapper to the Path string
+     *
+     * @param key  parameter name
+     * @param w    wrapper to convert
+     * @return
+     */
     def unbind(key: String, w: ArrayWrapper[T]): String = writeArray(writer)(w.items map (tBinder.unbind(key, _)))
 
   }
 
-
   /**
-    * Factory method for query bindables of different types
-    *
-    * @param wrapper  the wrapper is used to distinguish different separator chars
-    * @param tBinder  the binder for underlying types
-    * @tparam T       the type of array items
-    * @return
-    */
-  def createArrQueryBindable[T](wrapper: ArrayWrapper[T])(implicit tBinder: QueryStringBindable[T]):
-    QueryStringBindable[ArrayWrapper[T]] = new QueryStringBindable[ArrayWrapper[T]] {
+   * Factory method for query bindables of different types
+   *
+   * @param wrapper  the wrapper is used to distinguish different separator chars
+   * @param tBinder  the binder for underlying types
+   * @tparam T       the type of array items
+   * @return
+   */
+  def createArrQueryBindable[T](wrapper: ArrayWrapper[T])(implicit tBinder: QueryStringBindable[T]): QueryStringBindable[ArrayWrapper[T]] = new QueryStringBindable[ArrayWrapper[T]] {
 
-  val mapper = createMapper
-  val reader = createReader(mapper, wrapper)
-  val writer = createWriter(mapper, wrapper)
+    val mapper = createMapper
+    val reader = createReader(mapper, wrapper)
+    val writer = createWriter(mapper, wrapper)
 
     def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, ArrayWrapper[T]]] = Some(try {
       val line: Option[Seq[String]] = params.get(key) flatMap {
@@ -246,8 +244,8 @@ object PlayPathBindables {
           throw new IllegalArgumentException("Got multiple parameters with the same name, but parameter type is not 'multi'")
       }
       val xs = line flatMap { l => tBinder.bind(key, Map(key -> l)) }
-      val lefts = xs collect {case Left(x) => x }
-      lazy val rights = xs collect {case Right(x) => x}
+      val lefts = xs collect { case Left(x) => x }
+      lazy val rights = xs collect { case Right(x) => x }
       lazy val success = wrapper.copy(rights.toSeq)
       if (lefts.isEmpty) Right(success) else Left(lefts.mkString("\n"))
     } catch {
@@ -255,12 +253,12 @@ object PlayPathBindables {
     })
 
     /**
-      * Unbind method converts an ArrayWrapper to the Path string
-      *
-      * @param key  parameter name
-      * @param w    wrapper to convert
-      * @return
-      */
+     * Unbind method converts an ArrayWrapper to the Path string
+     *
+     * @param key  parameter name
+     * @param w    wrapper to convert
+     * @return
+     */
     def unbind(key: String, w: ArrayWrapper[T]): String = writeArray(writer)(w.items map (tBinder.unbind(key, _)))
 
   }

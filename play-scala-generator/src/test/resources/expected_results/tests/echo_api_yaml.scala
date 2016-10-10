@@ -68,7 +68,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
                         val data = Map.empty[String, Seq[String]] 
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -109,7 +109,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
                         val data = Map.empty[String, Seq[String]] 
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -184,7 +184,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
                         val data = Map.empty[String, Seq[String]]   ++ name.map(m => "name" -> Seq(m.toString)).toSeq    ++ year.map(m => "year" -> Seq(m.toString)).toSeq  
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {
@@ -226,7 +226,7 @@ import Generators._
 
                         val files: Seq[FilePart[TemporaryFile]] = Nil
                         val data = Map.empty[String, Seq[String]]   ++ name.map(m => "name" -> Seq(m.toString)).toSeq    ++ year.map(m => "year" -> Seq(m.toString)).toSeq  
-                        val form = new MultipartFormData(data, files, Nil, Nil)
+                        val form = new MultipartFormData(data, files, Nil)
 
                         route(request.withMultipartFormDataBody(form)).get
                     } else if (contentType == "application/x-www-form-urlencoded") {

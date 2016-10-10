@@ -14,11 +14,11 @@ object TypeNormaliser {
 object TypeDeduplicator extends TypeAnalyzer {
 
   /**
-    * Removes redundant type definitions changing pointing references
-    *
-    * @param app
-    * @return
-    */
+   * Removes redundant type definitions changing pointing references
+   *
+   * @param app
+   * @return
+   */
   private[apifirst] def apply(app: StrictModel): StrictModel = {
     val types = app.typeDefs.values
     val equal = (t1: Type, t2: Type) => isSameTypeDef(t1)(t2) && isSameConstraints(t1)(t2)
@@ -39,8 +39,9 @@ object TypeDeduplicator extends TypeAnalyzer {
 
   private def replaceReferenceInCall(duplicateRefs: Seq[Reference], target: Reference): ApiCall => ApiCall = call => {
     val (resultTypesToReplace, resultTypesToHold) = call.resultTypes.results.partition { case (code, ref) => duplicateRefs.contains(ref.name) }
-    val resultTypesReplacement = resultTypesToReplace map { case (code, ref) =>
-      code -> ParameterRef(target)
+    val resultTypesReplacement = resultTypesToReplace map {
+      case (code, ref) =>
+        code -> ParameterRef(target)
     }
     val resultTypes = resultTypesToHold ++ resultTypesReplacement
     val default = call.resultTypes.default map { d =>
@@ -49,8 +50,7 @@ object TypeDeduplicator extends TypeAnalyzer {
     call.copy(resultTypes = TypesResponseInfo(resultTypes, default))
   }
 
-  private def replaceReferencesInTypes(duplicateRefs: Seq[Reference], target: Reference):
-  (Reference, Type) => (Reference, Type) = (ref, tpe) => ref -> {
+  private def replaceReferencesInTypes(duplicateRefs: Seq[Reference], target: Reference): (Reference, Type) => (Reference, Type) = (ref, tpe) => ref -> {
     tpe match {
       case c: Container =>
         c.tpe match {
@@ -67,7 +67,7 @@ object TypeDeduplicator extends TypeAnalyzer {
 
       case t: TypeDef =>
         val newFields = t.fields.map {
-          case f@Field(_, tpe: TypeRef) if duplicateRefs.contains(tpe.name) => f.copy(tpe = TypeRef(target))
+          case f @ Field(_, tpe: TypeRef) if duplicateRefs.contains(tpe.name) => f.copy(tpe = TypeRef(target))
           case o => o
         }
         val newName = if (duplicateRefs.contains(t.name)) target else t.name
@@ -79,15 +79,16 @@ object TypeDeduplicator extends TypeAnalyzer {
     }
   }
 
-  private def replaceReferenceInParameter(duplicateRefs: Seq[Reference], target: Reference):
-  ((ParameterRef, Parameter)) => (ParameterRef, Parameter) = {
+  private def replaceReferenceInParameter(duplicateRefs: Seq[Reference], target: Reference): ((ParameterRef, Parameter)) => (ParameterRef, Parameter) = {
     case (r: ParameterRef, p: Parameter) if duplicateRefs.contains(p.typeName.name) =>
       r -> p.copy(typeName = TypeRef(target))
     case o => o
   }
 
-  private def sortByDiscriminatorOrPathLength(discriminators: DiscriminatorLookupTable,
-                                              duplicates: TypeLookupTable): List[Reference] =
+  private def sortByDiscriminatorOrPathLength(
+    discriminators: DiscriminatorLookupTable,
+    duplicates: TypeLookupTable
+  ): List[Reference] =
     duplicates.toSeq.sortBy { p =>
       val factor =
         if (discriminators.keySet.contains(p._2.name)) 1
@@ -99,16 +100,16 @@ object TypeDeduplicator extends TypeAnalyzer {
 }
 
 /**
-  * Flattens types by recursively replacing nested type definitions with references
-  *
-  * This implementation relies on {@ParameterDereferencer} to extract all non-primitive types from parameter definitions
-  *
-  * Because of that, the {@ParameterDereferencer} MUST be applied before using `TypeFlattener`,
-  * otherwise results will be inconsistent parameter definitions
-  *
-  * @author  slasch
-  * @since   11.11.2015.
-  */
+ * Flattens types by recursively replacing nested type definitions with references
+ *
+ * This implementation relies on {@ParameterDereferencer} to extract all non-primitive types from parameter definitions
+ *
+ * Because of that, the {@ParameterDereferencer} MUST be applied before using `TypeFlattener`,
+ * otherwise results will be inconsistent parameter definitions
+ *
+ * @author  slasch
+ * @since   11.11.2015.
+ */
 object TypeFlattener extends TypeAnalyzer {
 
   private[apifirst] def apply(app: StrictModel): StrictModel = {
@@ -161,28 +162,28 @@ object TypeFlattener extends TypeAnalyzer {
     (newReference, newReference.name -> typeDef)
   }
 
-
 }
 
 object ParameterDereferencer extends TypeAnalyzer {
   /**
-    * Converts inline type definitions into type references
-    * @param app
-    * @return
-    */
+   * Converts inline type definitions into type references
+   * @param app
+   * @return
+   */
   @tailrec
   private[apifirst] def apply(app: StrictModel): StrictModel = {
     var result = app
-    result.params foreach { case (name, definition) =>
-      definition.typeName match {
-        case tpe if isComplexType(tpe) =>
-          val newName = name.name / "ref"
-          val newReference = TypeRef(newName)
-          val tps = app.typeDefs + (newName -> tpe)
-          val newParams = app.params.updated(name, definition.copy(typeName = newReference))
-          result = result.copy(typeDefs = tps, params = newParams)
-        case _ =>
-      }
+    result.params foreach {
+      case (name, definition) =>
+        definition.typeName match {
+          case tpe if isComplexType(tpe) =>
+            val newName = name.name / "ref"
+            val newReference = TypeRef(newName)
+            val tps = app.typeDefs + (newName -> tpe)
+            val newParams = app.params.updated(name, definition.copy(typeName = newReference))
+            result = result.copy(typeDefs = tps, params = newParams)
+          case _ =>
+        }
     }
     if (result == app) result else apply(result)
   }
@@ -190,7 +191,7 @@ object ParameterDereferencer extends TypeAnalyzer {
 
 trait TypeAnalyzer {
   def isComplexType(t: Type): Boolean = t match {
-    case tpe@(_: TypeDef | _: Composite | _: Container) => true
+    case tpe @ (_: TypeDef | _: Composite | _: Container) => true
     case _ => false
   }
 
@@ -233,7 +234,7 @@ trait TypeAnalyzer {
   def sameFields(t1: TypeDef, t2: TypeDef): Boolean =
     t1.fields.forall(p => t2.fields.exists(e => isSameTypeDef(p.tpe)(e.tpe) && sameNames(p, e)))
 
-  type hasSimpleName = {def name: {def simple: String}}
+  type hasSimpleName = { def name: { def simple: String } }
 
   def sameNames(p: hasSimpleName, e: hasSimpleName): Boolean =
     p.name.simple == e.name.simple

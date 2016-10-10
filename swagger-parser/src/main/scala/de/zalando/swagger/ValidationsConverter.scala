@@ -3,9 +3,9 @@ package de.zalando.swagger
 import de.zalando.swagger.strictModel._
 
 /**
-  * @author  slasch 
-  * @since   16.10.2015.
-  */
+ * @author  slasch
+ * @since   16.10.2015.
+ */
 
 object ValidationsConverter {
 
@@ -33,10 +33,10 @@ object ValidationsConverter {
 
   def toArrayValidations[T](a: ArrayValidation[T]): Seq[String] =
     Seq(
-      ifDefined(a.maxItems, s"maxItems(${a.maxItems.get})" ),
-      ifDefined(a.minItems, s"minItems(${a.minItems.get})" ),
+      ifDefined(a.maxItems, s"maxItems(${a.maxItems.get})"),
+      ifDefined(a.minItems, s"minItems(${a.minItems.get})"),
       ifDefined(a.uniqueItems, s"uniqueItems(${a.uniqueItems.get})"),
-      ifDefined(a.enum, "enum(\"" + a.enum.get.map(a => a.toString.replaceAll(",",",,")).mkString(",") + "\")" )
+      ifDefined(a.enum, "enum(\"" + a.enum.get.map(a => a.toString.replaceAll(",", ",,")).mkString(",") + "\")")
     ).flatten
 
   private def toStringValidations(p: StringValidation): Seq[String] = {
@@ -48,10 +48,10 @@ object ValidationsConverter {
     val result = Seq(
       ifDefined(p.maxLength, s"maxLength(${p.maxLength.get})"),
       ifDefined(p.minLength, s"minLength(${p.minLength.get})"),
-      p.pattern map { p => "pattern(\"\"\"" + p + "\"\"\".r)"},
+      p.pattern map { p => "pattern(\"\"\"" + p + "\"\"\".r)" },
       emailConstraint
     ).flatten
-    if (result.nonEmpty && format.filter(_ != null).map(_.toLowerCase()).exists(s => s == "date-time" || s == "date" || s == "uuid" )) {
+    if (result.nonEmpty && format.filter(_ != null).map(_.toLowerCase()).exists(s => s == "date-time" || s == "date" || s == "uuid")) {
       println(s"WARN: Ignoring nonsense validations for ${format.get}: ${result.mkString(", ")}")
       Seq.empty[String]
     } else {
@@ -60,7 +60,7 @@ object ValidationsConverter {
   }
 
   private def toNumberValidations(p: NumberValidation[_]): Seq[String] = {
-    assert(p.multipleOf.forall( _ != 0), "Zero cannot be a parameter of multipleOf validation")
+    assert(p.multipleOf.forall(_ != 0), "Zero cannot be a parameter of multipleOf validation")
     val strictMax = p.exclusiveMaximum.getOrElse(false)
     val strictMin = p.exclusiveMinimum.getOrElse(false)
     val typeCoerce = p.format match {
@@ -88,7 +88,7 @@ object ValidationsConverter {
       ifDefined(p.minProperties, s"minProperties(${p.minProperties.get})")
     ).flatten
 
-  def ifNot0(check:Int, result: String): Option[String] = if (check != 0) Some(result) else None
+  def ifNot0(check: Int, result: String): Option[String] = if (check != 0) Some(result) else None
 
   private def ifDefined[T](validation: Option[T], result: => String) = validation map { _ => result }
 }

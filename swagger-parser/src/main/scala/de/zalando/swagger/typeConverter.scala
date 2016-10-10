@@ -9,10 +9,10 @@ import de.zalando.apifirst.naming._
 import strictModel._
 
 import scala.collection.mutable
-import scala.language.{implicitConversions, postfixOps}
+import scala.language.{ implicitConversions, postfixOps }
 
 /**
- * @author  slasch 
+ * @author  slasch
  * @since   14.10.2015.
  */
 class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: String) extends ParameterNaming with DiscriminatorMemoizer {
@@ -60,7 +60,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     (url, pathItem) <- Option(paths).toSeq.flatten
     parameterList <- Option(pathItem.parameters).toSeq
     paramListItem <- parameterList
-    name = base / "paths" / url  / ""
+    name = base / "paths" / url / ""
   } yield name -> paramListItem
 
   private def responseCollector: (Reference, Operation) => (Reference, Responses) = (name, op) => name -> op.responses
@@ -75,7 +75,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
     fromParamListItem(pair._1, pair._2)
 
   private def fromParamListItem[T](name: Reference, param: ParametersListItem): NamedTypes = param match {
-    case r : JsonReference => Seq(fromReference(name, r, None))
+    case r: JsonReference => Seq(fromReference(name, r, None))
     case nb: NonBodyParameterCommons[_, _] => Seq(fromNonBodyParameter(name, nb))
     case bp: BodyParameter[_] => fromBodyParameter(name, bp)
     case nbp: NonBodyParameter[_] =>
@@ -176,8 +176,7 @@ class TypeConverter(base: URI, model: strictModel.SwaggerModel, keyPrefix: Strin
   // ------------------------------------ Single Types ------------------------------------
   private def fromNull(name: Reference): NamedType = name -> Null(TypeMeta(None))
 
-  private def extensionType[T](name: Reference, required: Option[Seq[String]])
-                              (schema: SchemaArray): NamedType = {
+  private def extensionType[T](name: Reference, required: Option[Seq[String]])(schema: SchemaArray): NamedType = {
     val allOf = fromSchemaArray(name, schema, required).map(_._2)
     val root = schema.collect {
       case Left(Left(s: Schema[_])) if s.discriminator != null => typeNameFromInlinedReference(s).map(_ / s.discriminator)
