@@ -3,6 +3,8 @@ import bintray.Keys._
 val PlayVersion  = "2.4.3"
 val ScalaVersion = "2.11.7"
 
+scalaVersion := "2.10.5"
+
 // This is the API project, it gets added to the runtime dependencies of any
 // project using play-swagger
 lazy val api = (project in file("api"))
@@ -84,6 +86,22 @@ lazy val swaggerParser = (project in file("swagger-parser"))
   )
   .dependsOn(swaggerModel, apiFirstCore)
 
+lazy val apiaryParser = (project in file("apiary-parser"))
+  .enablePlugins(BuildInfoPlugin)
+  .settings(common: _*)
+  .settings(
+    name := "apiary-parser",
+    scalaVersion := "2.10.5",
+    sbtPlugin := true,
+
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.oaganalytics",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+      "io.argonaut" %% "argonaut" % "6.1"
+    )
+  )
+  .dependsOn(swaggerModel, apiFirstCore)
 
 lazy val playScalaGenerator = (project in file("play-scala-generator"))
   .enablePlugins(BuildInfoPlugin)
@@ -141,7 +159,7 @@ lazy val plugin = (project in file("plugin"))
     },
     scriptedBufferLog := false
   )
-  .dependsOn(swaggerModel, swaggerParser, apiFirstCore, playScalaGenerator)
+  .dependsOn(swaggerModel, swaggerParser, apiFirstCore, playScalaGenerator, apiaryParser)
 
 lazy val root = (project in file("."))
   // Use sbt-doge cross building since we have different projects with different scala versions
@@ -150,7 +168,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "play-swagger-root"
   )
-  .aggregate(swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin)
+  .aggregate(swaggerModel, api, swaggerParser, apiFirstCore, playScalaGenerator, plugin, apiaryParser)
 
 def common: Seq[Setting[_]] = bintrayPublishSettings ++ Seq(
   organization := "de.zalando",

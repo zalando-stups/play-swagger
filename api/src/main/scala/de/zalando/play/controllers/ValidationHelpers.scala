@@ -69,19 +69,21 @@ object PlayValidations extends Constraints {
   }
 
   /**
-   * Defines a ‘enum’ constraint for `Array` values
-   * Items must be comma-separated, commas inside of the elements of the list must be escaped with comma
-   *
-   * '''name'''[constraint.enum]
-   * '''error'''[error.enum]
-   */
-  def enum[T <: String](commaSeparatedList: String): Constraint[T] = Constraint[T]("constraint.enum") { o =>
+    * Defines a ‘enum’ constraint for `Array` values
+    * Items must be comma-separated, commas inside of the elements of the list must be escaped with comma
+    *
+    * '''name'''[constraint.enum]
+    * '''error'''[error.enum]
+    */
+  def enum[T <: String](commaSeparatedList: String): Constraint[T] =
+    enum(commaSeparatedList.split(",[^,]").map(_.replaceAll(",,",",")).toSeq)
+
+  def enum[T <: String](allowedValues: Seq[String]): Constraint[T] = Constraint[T]("constraint.enum") { o =>
     def onlyAllowedItems: Boolean = {
-      val items: Seq[String] = commaSeparatedList.split(",[^,]").map(_.replaceAll(",,", ",")).toSeq
-      o.map { _.toString }.forall { s => items.contains(s) }
+      o.map{i=>i.toString}.forall(allowedValues.contains)
     }
     if (o == null) Invalid(ValidationError("error.required"))
-    else if (commaSeparatedList.isEmpty) Invalid(ValidationError("error.enum.empty"))
+    else if (allowedValues.isEmpty) Invalid(ValidationError("error.enum.empty"))
     else if (onlyAllowedItems) Valid
     else Invalid(ValidationError("error.enum.not.allowed", o))
 
@@ -150,6 +152,4 @@ object PlayValidations extends Constraints {
     if (o == null) Invalid(ValidationError("error.required"))
     else if (o.size < minProperties) Invalid(ValidationError("error.minProperties")) else Valid
   }
-
-
 }
